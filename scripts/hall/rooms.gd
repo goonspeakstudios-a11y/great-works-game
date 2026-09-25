@@ -3,6 +3,7 @@ extends RefCounted
 ## (works.json, in order); what a room holds comes from content/greece/rooms.json.
 
 const ROOMS_FILE := "res://content/greece/rooms.json"
+const WORKS_FILE := "res://content/greece/works.json"
 
 static var _rooms: Dictionary = {}
 
@@ -21,12 +22,15 @@ static func room(work_id: String) -> Dictionary:
 	return all_rooms().get(work_id, {})
 
 
-## One door per work, in reading-list order. A door is open once its room is written.
-static func doors(content: RefCounted) -> Array:
+## One door per work, in reading-list order (straight from works.json). A door is open
+## once its room is written.
+static func doors() -> Array:
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(WORKS_FILE))
+	if not data is Dictionary:
+		push_error("Bad or missing %s" % WORKS_FILE)
+		return []
 	var out: Array = []
-	for i in content.work_order.size():
-		var id: String = content.work_order[i]
-		var w: Dictionary = content.works[id]
+	for w in data["works"]:
 		var name: String = w["title"] if w["author"] == "" else "%s, %s" % [w["author"], w["title"]]
-		out.append({"work": id, "number": i + 1, "name": name, "open": room(id).get("open", false)})
+		out.append({"work": w["id"], "number": out.size() + 1, "name": name, "open": room(w["id"]).get("open", false)})
 	return out

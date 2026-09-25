@@ -15,6 +15,7 @@ import math
 import random
 import sys
 import wave
+from collections.abc import Callable
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ def fit(freq: float, seconds: float) -> float:
     return round(freq * seconds) / seconds
 
 
-def osc(buf: list[float], freq: float, level: float, start: int, env) -> None:
+def osc(buf: list[float], freq: float, level: float, start: int, env: Callable[[int], float]) -> None:
     """Add a sine at freq into buf from sample `start`, shaped by env(sample_index)."""
     step = freq * TABLE_SIZE / RATE
     phase = 0.0
@@ -76,7 +77,7 @@ def render_loop(spec: dict) -> list[float]:
     for i, chord in enumerate(spec["chords"]):
         start = int(i * span * RATE)
 
-        def env(n: int, att=att, hold=hold, rel=rel) -> float:
+        def env(n: int, att: float = att, hold: float = hold, rel: float = rel) -> float:
             if n < att:
                 return n / att
             if n < hold:

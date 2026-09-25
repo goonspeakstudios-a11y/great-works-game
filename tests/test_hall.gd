@@ -62,10 +62,55 @@ func test_reply_shows_answer_and_quotes() -> void:
 	check(str(refused["text"]).length() > 0, "a refusal still gives the player a line")
 
 
+func test_reply_survives_null_citations_and_empty_text() -> void:
+	var reply := AuthorAI.parse_reply({"content": [{"type": "text", "text": "Hi.", "citations": null}], "stop_reason": "end_turn"})
+	check_eq(reply["text"], "Hi.", "a text block with citations: null is fine")
+	var none := AuthorAI.parse_reply({"content": null, "stop_reason": "end_turn"})
+	check(str(none["error"]) != "", "an empty reply becomes a friendly message, not a blank")
+
+
+func test_each_author_remembers_only_their_own_talk() -> void:
+	var a := AuthorAI.new()
+	a.remember("porphyry-isagoge", "Q1", {"text": "A1", "quotes": [], "error": ""})
+	a.remember("porphyry-isagoge", "Q2", {"text": "", "quotes": [], "error": "lost"})
+	check_eq(a.history_for("porphyry-isagoge").size(), 1, "failed or empty replies are not remembered")
+	check_eq(a.history_for("aristotle-categories").size(), 0, "another author starts fresh")
+	a.free()
+
+
+func test_asking_without_a_book_does_not_jam_the_author() -> void:
+	var a := AuthorAI.new()
+	(Engine.get_main_loop() as SceneTree).root.add_child(a)
+	var got: Array = []
+	a.answered.connect(func(r): got.append(r))
+	a.ask("porphyry-isagoge", Rooms.room("porphyry-isagoge"), null, "Hello?")
+	check_eq(got.size(), 1, "the player hears back")
+	check(not a.busy, "the author is free for the next question")
+	a.free()
+
+
+func test_rooms_never_overlap() -> void:
+	check(Hall.SECTION >= 2.0 * (Hall.ROOM_HALF + Hall.WALL), "neighbouring rooms fit side by side")
+
+
+func test_every_fact_gets_its_own_plaque() -> void:
+	var spots: Array = Hall.fact_spots(8, -10.0, 7.6, -5.0)
+	var seen := {}
+	for s in spots:
+		seen[str(s)] = true
+	check_eq(seen.size(), 8, "eight facts, eight places")
+
+
+func test_plural_filler_words_are_ignored() -> void:
+	var ws: Array = Library.words("What books did you write? Answers please")
+	check(not ws.has("book") and not ws.has("answer"), "plural filler words are dropped: %s" % str(ws))
+
+
 func test_rooms_follow_the_reading_list() -> void:
 	var c := Content.new()
 	check(c.load_all(), "content loads")
-	var doors := Rooms.doors(c)
+	var doors := Rooms.doors()
+	check_eq(doors.map(func(d): return d["work"]), c.work_order, "doors come straight from the reading list")
 	check_eq(doors.size(), 17, "one door for every Greek work")
 	check_eq(doors[0]["work"], "porphyry-isagoge", "the first door is the Isagoge")
 	check(doors[0]["open"], "the Isagoge room is open")

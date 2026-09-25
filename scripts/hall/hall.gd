@@ -6,7 +6,6 @@ extends Node
 ## Controls: WASD/arrows walk, left/right arrows or mouse turn (click to capture the mouse),
 ## E to read or ask, Esc to close a panel / free the mouse / quit.
 
-const Content := preload("res://scripts/content.gd")
 const Rooms := preload("res://scripts/hall/rooms.gd")
 const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
@@ -16,16 +15,19 @@ const Player := preload("res://scripts/hall/player.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 const RES := Vector2i(320, 180)
-const SECTION := 6.0
+const SECTION := 9.0  # door to door; must fit a whole room (see ROOM_HALF)
 const HALL_W := 2.0  # half width
 const HEIGHT := 4.0
 const DOOR_W := 2.0
 const DOOR_H := 3.0
 const START_Z := -2.0
 const REACH := 1.7
+const ROOM_HALF := 4.0  # a room reaches this far either side of its door
+const ROOM_DEPTH := 7.6
+const WALL := 0.4
+const QUIT_WINDOW := 2.0
 
 var offline := false  # tests: no music, no mouse capture
-var content := Content.new()
 var doors: Array = []
 var interactables: Array = []  # {kind, pos, text, work}
 var player: CharacterBody3D
@@ -53,6 +55,10 @@ var _ask_work := ""
 var _t := 0.0
 var _args := {}
 var _frames := 0
+var _ok := false
+var _talk := {}  # work -> what has been said in that room, as shown in the panel
+var _mouse_was_captured := false
+var _quit_armed := -100.0
 
 
 static func ensure_actions() -> void:
@@ -86,10 +92,10 @@ static func ensure_actions() -> void:
 
 func _ready() -> void:
 	ensure_actions()
-	if not content.load_all():
+	doors = Rooms.doors()
+	if doors.is_empty():
 		push_error("Could not load the reading list.")
 		return
-	doors = Rooms.doors(content)
 	_build_view()
 	_build_hall()
 	for i in doors.size():
@@ -107,6 +113,7 @@ func _ready() -> void:
 		_stage_shot(_args.get("view", "hall"))
 	if not offline:
 		add_child(Music.new())
+	_ok = true
 
 
 ## Screenshot mode for checking the look without playing:
@@ -124,7 +131,8 @@ func _stage_shot(view: String) -> void:
 		activate(interactables.filter(func(i): return i["kind"] == "fact")[2])
 	elif view == "ask":
 		_open_ask(doors[0]["work"])
-		_answer.text = "[color=#a6c8cc]You:[/color] What's the difference between genus and species?\n\n[color=#e0b660]Porphyry:[/color] Think of it as a ladder: substance, then body, then living body, then animal, then man. Each step down is narrower. So 'animal' is the genus of 'man', and 'man' is a species of 'animal'.\n\n[i][color=#a89878]From the book (Isagoge, Chap. II): \"Substance indeed, is itself genus, under this is body, under body animated body, under which is animal...\"[/color][/i]"
+		_talk[doors[0]["work"]] = "[color=#a6c8cc]You:[/color] What's the difference between genus and species?\n\n[color=#e0b660]Porphyry:[/color] Think of it as a ladder: substance, then body, then living body, then animal, then man. Each step down is narrower. So 'animal' is the genus of 'man', and 'man' is a species of 'animal'.\n\n[i][color=#a89878]From the book (Isagoge, Chap. II): \"Substance indeed, is itself genus, under this is body, under body animated body, under which is animal...\"[/color][/i]"
+		_answer.text = _talk[doors[0]["work"]]
 
 
 # ---------- building the 3D world ----------
@@ -213,6 +221,7 @@ func _build_hall() -> void:
 		for pz in [z0 - piece / 2.0, z0 - SECTION + piece / 2.0]:
 			_box(Vector3(-HALL_W - 0.2, HEIGHT / 2.0, pz), Vector3(0.4, HEIGHT, piece), "wall")
 		_box(Vector3(-HALL_W - 0.2, (DOOR_H + HEIGHT) / 2.0, dz), Vector3(0.4, HEIGHT - DOOR_H, DOOR_W), "wall")
+		_box(Vector3(-HALL_W - WALL / 2.0, -0.1, dz), Vector3(WALL + 0.02, 0.2, DOOR_W), "floor")
 		if doors[i]["open"]:
 			_light(Vector3(-HALL_W + 0.3, 2.6, dz + 1.3), Color("ffa050"), 1.6, 6.0, true)
 		else:
@@ -230,16 +239,16 @@ func _build_room(i: int) -> void:
 	var work: String = doors[i]["work"]
 	var room := Rooms.room(work)
 	var dz := door_z(i)
-	var x0 := -HALL_W - 0.4
-	var x1 := x0 - 7.6
+	var x0 := -HALL_W - WALL
+	var x1 := x0 - ROOM_DEPTH
 	var cx := (x0 + x1) / 2.0
-	var depth := x0 - x1
-	var half := 4.0
+	var depth := ROOM_DEPTH
+	var half := ROOM_HALF
 	_box(Vector3(cx, -0.1, dz), Vector3(depth, 0.2, half * 2), "floor")
 	_box(Vector3(cx, HEIGHT + 0.1, dz), Vector3(depth, 0.2, half * 2), "ceiling")
 	_box(Vector3(x1 - 0.2, HEIGHT / 2.0, dz), Vector3(0.4, HEIGHT, half * 2), "room_wall")
-	for sz in [dz - half - 0.2, dz + half + 0.2]:
-		_box(Vector3(cx, HEIGHT / 2.0, sz), Vector3(depth + 0.4, HEIGHT, 0.4), "room_wall")
+	for sz in [dz - half - WALL / 2.0, dz + half + WALL / 2.0]:
+		_box(Vector3(cx, HEIGHT / 2.0, sz), Vector3(depth + WALL, HEIGHT, WALL), "room_wall")
 	_light(Vector3(x1 + 1.0, 2.8, dz - 2.4), Color("ffa860"), 1.4, 7.0, true)
 	_light(Vector3(x1 + 1.0, 2.8, dz + 2.4), Color("ffa860"), 1.4, 7.0, true)
 	_light(Vector3(cx + 1.5, 3.2, dz), Color("c8b090"), 0.5, 6.0)
@@ -266,18 +275,33 @@ func _build_room(i: int) -> void:
 		"text": "Ask %s about the %s" % [room["author"], room["book"]]})
 	# facts on plaques along the two side walls
 	var facts: Array = room.get("facts", [])
+	var spots := fact_spots(facts.size(), x1, depth, dz)
 	for k in facts.size():
-		var north := k < 3
-		var px := x1 + 1.8 + (k % 3) * 2.2
-		var pz := dz - half + 0.05 if north else dz + half - 0.05
-		_box(Vector3(px, 1.6, pz), Vector3(1.0, 0.66, 0.05), "plaque", false)
-		interactables.append({"kind": "fact", "pos": Vector3(px, 0, pz + (0.9 if north else -0.9)), "work": work,
+		var at: Vector3 = spots[k]
+		var north := at.z < dz
+		_box(Vector3(at.x, 1.6, at.z), Vector3(1.0, 0.66, 0.05), "plaque", false)
+		interactables.append({"kind": "fact", "pos": Vector3(at.x, 0, at.z + (0.9 if north else -0.9)), "work": work,
 			"text": facts[k]})
 	# the book itself on a lectern
 	_box(Vector3(cx + 0.8, 0.5, dz), Vector3(0.5, 1.0, 0.5), "wood")
 	_box(Vector3(cx + 0.8, 1.05, dz), Vector3(0.45, 0.06, 0.6), "page", false)
 	interactables.append({"kind": "book", "pos": Vector3(cx + 1.5, 0, dz), "work": work,
 		"text": "Open the %s and read a page" % room["book"]})
+
+
+## Where each fact's plaque hangs: split between the two side walls, evenly spaced,
+## so every fact has its own place however many there are.
+static func fact_spots(n: int, x1: float, depth: float, dz: float) -> Array:
+	var out: Array = []
+	var north := ceili(n / 2.0)
+	for k in n:
+		var on_north := k < north
+		var count := north if on_north else n - north
+		var j := k if on_north else k - north
+		var px := x1 + 1.2 + (j + 0.5) * (depth - 1.6) / maxi(1, count)
+		var pz := dz - ROOM_HALF + 0.05 if on_north else dz + ROOM_HALF - 0.05
+		out.append(Vector3(px, 0, pz))
+	return out
 
 
 # ---------- interface ----------
@@ -418,7 +442,8 @@ func _open_ask(work: String) -> void:
 		_suggestions[k].visible = k < qs.size()
 		if k < qs.size():
 			_suggestions[k].text = qs[k]
-	_answer.text = "[i]%s looks up from his writing.[/i]\n\nAsk me anything about my book. I'll answer from what I actually wrote." % _ask_room["author"]
+	_answer.text = _talk.get(work, "[i]%s looks up.[/i]\n\nAsk me anything about my book. I'll answer from what I actually wrote." % _ask_room["author"])
+	_mouse_was_captured = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 	_ask_panel.show()
 	_set_frozen(true)
 	_question_box.grab_focus()
@@ -429,19 +454,29 @@ func _send(question: String) -> void:
 	if question == "" or author.busy:
 		return
 	_question_box.text = ""
-	_answer.text = "[color=#a6c8cc]You:[/color] %s\n\n[i]%s is thinking...[/i]" % [_esc(question), _ask_room["author"]]
-	author.ask(_ask_room, _book(_ask_work), question)
+	_talk[_ask_work] = "%s\n\n[i]%s is thinking...[/i]" % [_you(question), _ask_room["author"]]
+	_answer.text = _talk[_ask_work]
+	author.ask(_ask_work, _ask_room, _book(_ask_work), question)
 
 
+static func _you(question: String) -> String:
+	return "[color=#a6c8cc]You:[/color] %s" % _esc(question)
+
+
+## Shows an answer in the room it belongs to, even if the player has walked off meanwhile.
 func _on_answer(reply: Dictionary) -> void:
+	var work: String = reply["work"]
+	var who: String = Rooms.room(work).get("author", "The author")
+	var out := _you(reply["question"])
 	if reply["error"] != "":
-		_answer.text += "\n\n[color=#c08070]%s[/color]" % reply["error"]
-		return
-	var lines := _answer.text.split("\n\n")[0]
-	var out := "%s\n\n[color=#e0b660]%s:[/color] %s" % [lines, _ask_room["author"], _esc(reply["text"])]
-	for q in reply["quotes"].slice(0, 2):
-		out += "\n\n[i][color=#a89878]From the book (%s): \"%s\"[/color][/i]" % [q["where"], _esc(_shorten(q["text"], 220))]
-	_answer.text = out
+		out += "\n\n[color=#c08070]%s[/color]" % _esc(reply["error"])
+	else:
+		out += "\n\n[color=#e0b660]%s:[/color] %s" % [who, _esc(reply["text"])]
+		for q in reply["quotes"].slice(0, 2):
+			out += "\n\n[i][color=#a89878]From the book (%s): \"%s\"[/color][/i]" % [q["where"], _esc(_shorten(q["text"], 220))]
+	_talk[work] = out
+	if _ask_panel.visible and _ask_work == work:
+		_answer.text = out
 
 
 static func _esc(s: String) -> String:
@@ -462,27 +497,33 @@ func _book(work: String) -> RefCounted:
 func _show_read(text: String) -> void:
 	_read_text.text = text + "\n\n[i][color=#8a8074]E to close[/color][/i]"
 	_read_panel.size = Vector2(260, 0)
+	_mouse_was_captured = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 	_read_panel.show()
 	_set_frozen(true)
 
 
 func _set_frozen(on: bool) -> void:
 	player.frozen = on
-	if not offline:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if on else Input.mouse_mode
+	if on and not offline:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 
+## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	_read_panel.hide()
 	_ask_panel.hide()
 	_question_box.release_focus()
 	player.frozen = false
+	if _mouse_was_captured and not offline:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 # ---------- moment to moment ----------
 
 func _process(delta: float) -> void:
 	_t += delta
+	if not _ok:
+		return
 	if _args.has("shot"):
 		_frames += 1
 		if _frames == 90:
@@ -494,7 +535,9 @@ func _process(delta: float) -> void:
 		_prompt.text = ""
 		return
 	target = _nearest()
-	if target.is_empty():
+	if _t - _quit_armed < QUIT_WINDOW:
+		_prompt.text = "Press Esc again to leave the Hall."
+	elif target.is_empty():
 		_prompt.text = ""
 	elif target["kind"] == "door":
 		_prompt.text = target["text"]
@@ -537,17 +580,21 @@ func activate(it: Dictionary) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
-		if _read_panel.visible or _ask_panel.visible:
+		if not _ok or _t - _quit_armed < QUIT_WINDOW:
+			get_tree().quit()
+		elif _read_panel.visible or _ask_panel.visible:
 			_close_panels()
 		elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:
-			get_tree().quit()
+			_quit_armed = _t
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not _ok:
+		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and not player.frozen:
-		player.look(event.relative)
+		player.look(event.screen_relative)  # real mouse movement, whatever the window scale
 		return
 	if event is InputEventMouseButton and event.pressed and not player.frozen and not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

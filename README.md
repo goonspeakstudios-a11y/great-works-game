@@ -32,4 +32,4 @@ the reading-list map: `docs/greek-game-map.md`. The earlier 3D card slice is kep
 ## Layout
 - `scripts/hall/` - hall (3D world and panels), player, rooms, library (passage search), author_ai, portrait, textures
 - `scripts/pixel/music.gd` - the code-made music (rendered by `tools/make_music.py`)
-- `scripts/` (top level) and `scripts/world`, `scripts/table` - the old 3D card slice, still tested, to be retired
+- `scripts/` (top level) and `scripts/world`, `scripts/table` - the old 3D card slice. Its tests still pass, but it no longer displays correctly at the new 320x180 setting; it is kept only until it is removed (history: tag `3d-slice-final`)

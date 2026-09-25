@@ -5,13 +5,16 @@ extends RefCounted
 const DIR := "res://content/books"
 const K1 := 1.4
 const B := 0.75
-const STOP := ["the", "and", "that", "this", "with", "what", "which", "from", "have", "for", "are", "was",
+const STOP_WORDS := ["the", "and", "that", "this", "with", "what", "which", "from", "have", "for", "are", "was",
 	"but", "not", "you", "your", "they", "their", "them", "there", "then", "than", "into", "also", "such",
 	"its", "his", "her", "him", "our", "who", "whom", "why", "how", "when", "where", "can", "could",
 	"would", "should", "will", "does", "did", "doe", "been", "being", "were", "any", "all", "some", "one",
 	"about", "tell", "say", "said", "mean", "means", "thing", "things", "book", "is", "a", "an", "of",
 	"to", "in", "it", "as", "be", "by", "or", "on", "at", "so", "if", "no", "me", "my", "we", "do",
 	"hello", "there", "please", "wouldn", "didn", "don", "isn", "answer"]
+
+static var _stop := {}
+static var _word_re: RegEx
 
 var work := ""
 var title := ""
@@ -41,13 +44,17 @@ static func load_book(work_id: String) -> RefCounted:
 
 
 static func words(text: String) -> Array:
+	if _word_re == null:
+		_word_re = RegEx.create_from_string("[a-z]+")
+		for w in STOP_WORDS:
+			_stop[w] = true
 	var out: Array = []
-	for m in RegEx.create_from_string("[a-z]+").search_all(text.to_lower()):
+	for m in _word_re.search_all(text.to_lower()):
 		var w := m.get_string()
-		if w.length() < 3 or w in STOP:
-			continue
 		if w.length() > 4 and w.ends_with("s") and not w.ends_with("ss"):
 			w = w.left(w.length() - 1)  # a crude plural fold: accidents -> accident
+		if w.length() < 3 or _stop.has(w):
+			continue
 		out.append(w)
 	return out
 

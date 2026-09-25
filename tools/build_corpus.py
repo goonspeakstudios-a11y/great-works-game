@@ -103,7 +103,9 @@ def chunk(body: str, spec: dict, title: str) -> list[dict]:
     for para in body.split("\n\n"):
         m = re.match(spec["chapter"], para, re.M)
         if m:
-            flush()
+            # a chapter's last lines stay with that chapter; only text before the
+            # first chapter (a title) is carried into the chapter that follows
+            flush(final=bool(chapter))
             chapter = m.group(1)
         text = clean(para)
         if not text:

@@ -32,11 +32,11 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
 ## Stages (reading-list order)
 | # | Work | What you play |
 |---|---|---|
-| 1 | Porphyry, Isagoge | BUILT: Guess Who against Porphyry (Sicily, 270 AD); questions split families (genus, species, difference), the cloak is an accident, laughing a property; ends on the open question of universals |
-| 2 | Aristotle, Categories | BUILT: ask a theft witness the ten questions; the report fills; the man himself is substance |
-| 3 | Aristotle, the Organon | BUILT: ten coins in the Agora; one sound syllogism and five tricks (consequent, "your dog is your father", circular, many questions, after-so-because) |
-| 4 | Rhetorica ad Herennium | BUILT: defend Gaius; five steps of a speech; place strange pictures in your house, walk it again in court |
-| 5 | Euclid, Elements | BUILT: rope and pegs for Prop. 1's equal triangle, then 9 + 16 = 25 tiles for Prop. 47; "no royal road" |
+| 1 | Porphyry, Isagoge | Built then replaced by the Hall (2026-09-25): Guess Who against Porphyry (Sicily, 270 AD); questions split families (genus, species, difference), the cloak is an accident, laughing a property; ends on the open question of universals |
+| 2 | Aristotle, Categories | Built then replaced by the Hall (2026-09-25): ask a theft witness the ten questions; the report fills; the man himself is substance |
+| 3 | Aristotle, the Organon | Built then replaced by the Hall (2026-09-25): ten coins in the Agora; one sound syllogism and five tricks (consequent, "your dog is your father", circular, many questions, after-so-because) |
+| 4 | Rhetorica ad Herennium | Built then replaced by the Hall (2026-09-25): defend Gaius; five steps of a speech; place strange pictures in your house, walk it again in court |
+| 5 | Euclid, Elements | Built then replaced by the Hall (2026-09-25): rope and pegs for Prop. 1's equal triangle, then 9 + 16 = 25 tiles for Prop. 47; "no royal road" |
 | 6 | Homer, Iliad and Odyssey | Achilles' pride, Hector at the gate, Priam kneels; Odysseus comes home |
 | 7 | Hesiod | Sons overthrow fathers, again and again; a farming year where shortcuts fail |
 | 8 | Sappho | Piece together torn poems, knowing most pieces are gone forever |
@@ -52,3 +52,9 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
 
 Playable look preview: https://claude.ai/artifact/HDxwQCS9Ze3Z8YGY2Q6YAb (story and mood are right;
 its quiz and battle screens are the part that was rejected).
+
+## Current direction (BB1, 2026-09-25): the Hall
+Silent puzzles and guided stories were both rejected in playtest. The game is now a dark,
+low-resolution 3D hall with one room per book (reading-list order). Each room has short facts,
+the real book on a lectern, and the author's portrait: ask the author anything and Claude Haiku 4.5
+answers in plain words from passages of the actual text, with quotes. See README.md.

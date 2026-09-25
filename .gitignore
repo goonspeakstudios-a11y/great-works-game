@@ -3,3 +3,4 @@ export/
 *.tmp
 .env
 cookies.json
+__pycache__/

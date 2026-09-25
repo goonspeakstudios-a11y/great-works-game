@@ -19,7 +19,7 @@ func _initialize() -> void:
 	author.answered.connect(_on_answer)
 	_started = Time.get_ticks_msec()
 	print("Q: ", question)
-	author.ask.call_deferred(Rooms.room(work), Library.load_book(work), question)  # once it is in the tree
+	author.ask.call_deferred(work, Rooms.room(work), Library.load_book(work), question)  # once it is in the tree
 
 
 func _on_answer(reply: Dictionary) -> void:

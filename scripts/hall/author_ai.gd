@@ -22,10 +22,11 @@ const RULES := """How to answer:
 - If those passages don't cover it, say so plainly and give only the simple gist you are sure of. Never invent a quotation.
 - If asked about things beyond your book, your life and your times, say kindly that it is outside what you wrote, and steer back to the book."""
 
-var history: Array = []  # [question, answer] pairs, newest last
+var histories := {}  # work -> [question, answer] pairs, newest last
 var busy := false
 var _http: HTTPRequest
 var _question := ""
+var _work := ""
 
 
 static func api_key() -> String:
@@ -64,45 +65,66 @@ static func parse_reply(data: Dictionary) -> Dictionary:
 	var text := ""
 	var quotes: Array = []
 	var seen := {}
-	for block in data.get("content", []):
-		if block.get("type", "") != "text":
+	var blocks: Variant = data.get("content", [])
+	for block in (blocks if blocks is Array else []):
+		if not block is Dictionary or block.get("type", "") != "text":
 			continue
 		text += str(block.get("text", ""))
-		for c in block.get("citations", []):
+		var cites: Variant = block.get("citations", [])
+		for c in (cites if cites is Array else []):
 			var q := str(c.get("cited_text", "")).strip_edges()
 			if q != "" and not seen.has(q):
 				seen[q] = true
 				quotes.append({"text": q, "where": str(c.get("document_title", ""))})
+	if text.strip_edges() == "":
+		return {"text": "", "quotes": [], "error": "I have nothing to say to that. Try asking another way."}
 	return {"text": text.strip_edges(), "quotes": quotes, "error": ""}
 
 
-func ask(room: Dictionary, book: RefCounted, question: String) -> void:
+func history_for(work: String) -> Array:
+	return histories.get(work, [])
+
+
+## Keeps a question and its answer for follow-ups, unless the answer failed or was empty.
+func remember(work: String, question: String, reply: Dictionary) -> void:
+	if reply["error"] != "" or str(reply["text"]).strip_edges() == "":
+		return
+	if not histories.has(work):
+		histories[work] = []
+	histories[work].append([question, reply["text"]])
+
+
+func ask(work: String, room: Dictionary, book: RefCounted, question: String) -> void:
 	if busy:
+		return
+	if book == null or not room.has("persona") or not room.has("summary"):
+		_reply(work, question, {"text": "", "quotes": [], "error": "My room isn't finished yet, so I can't answer from my book."})
 		return
 	var key := api_key()
 	if key == "":
-		answered.emit({"text": "", "quotes": [], "error": "I can't speak yet: no API key was found. See the README."})
+		_reply(work, question, {"text": "", "quotes": [], "error": "I can't speak yet: no API key was found. See the README."})
 		return
 	if _http == null:
 		_http = HTTPRequest.new()
 		_http.timeout = 45.0
 		_http.request_completed.connect(_on_done)
 		add_child(_http)
+	var body := build_request(room, book.search(question, PASSAGES), question, history_for(work))
 	busy = true
 	_question = question
-	var body := build_request(room, book.search(question, PASSAGES), question, history)
+	_work = work
 	var headers := PackedStringArray(["content-type: application/json", "x-api-key: " + key,
 		"anthropic-version: 2023-06-01"])
 	var err := _http.request(URL, headers, HTTPClient.METHOD_POST, JSON.stringify(body))
 	if err != OK:
 		busy = false
-		answered.emit({"text": "", "quotes": [], "error": "My voice is lost in the fog (could not send, error %d)." % err})
+		_reply(work, question, {"text": "", "quotes": [], "error": "My voice is lost in the fog (could not send, error %d)." % err})
 
 
 func _on_done(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	busy = false
 	if result != HTTPRequest.RESULT_SUCCESS:
-		answered.emit({"text": "", "quotes": [], "error": "My voice is lost in the fog. Is the internet reachable? (result %d)" % result})
+		_reply(_work, _question, {"text": "", "quotes": [], "error": "My voice is lost in the fog. Is the internet reachable? (result %d)" % result})
 		return
 	var data: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if code != 200 or not data is Dictionary:
@@ -110,8 +132,16 @@ func _on_done(result: int, code: int, _headers: PackedStringArray, body: PackedB
 		if data is Dictionary and data.has("error"):
 			why = str(data["error"].get("message", why))
 		push_warning("Author request failed: " + why)
-		answered.emit({"text": "", "quotes": [], "error": "Something went wrong reaching me (%s)." % why})
+		_reply(_work, _question, {"text": "", "quotes": [], "error": "Something went wrong reaching me (%s)." % why})
 		return
 	var reply := parse_reply(data)
-	history.append([_question, reply["text"]])
+	if data.get("stop_reason", "") != "refusal":
+		remember(_work, _question, reply)
+	_reply(_work, _question, reply)
+
+
+## Every answer says which author and question it belongs to, so the panel can't mix them up.
+func _reply(work: String, question: String, reply: Dictionary) -> void:
+	reply["work"] = work
+	reply["question"] = question
 	answered.emit(reply)
