@@ -1,20 +1,116 @@
 {
-  "phase": "p2",
+  "source": "essentials",
   "title": "The Greek World",
-  "span": "8th to 4th c. BC",
-  "questions": [
-    "What does Achilles want, and does he get it?",
-    "How do the tragedians treat the conflict between family obligation and the law of the city?",
-    "Thucydides and Plato both lived through the Peloponnesian War. What did each conclude from it?",
-    "How does Aristotle's account of the good life differ from Plato's?"
+  "modules": [
+    {
+      "id": "e1",
+      "title": "How to Read and Argue",
+      "style": "puzzle",
+      "intro": "The classical tools for reading and arguing: definition, the syllogism, the common fallacies, the parts of a speech, and the geometric proof. These are enough to follow the arguments in every later module.",
+      "takeaways": [
+        "Classification comes before argument. Genus, species, and difference are the basis of a definition.",
+        "A syllogism is valid because of its form, whatever its content. Fallacies are arguments that only look valid.",
+        "Rhetoric has five parts: invention, arrangement, style, memory, and delivery. Euclid's method of building from axioms became the model of certain knowledge."
+      ]
+    },
+    {
+      "id": "e2",
+      "title": "Homer and the Gods",
+      "style": "story-walk",
+      "intro": "The Iliad and the Odyssey are the most frequently referenced works in the Western sections of the list. This module reads the books that carry each poem's plot and turning points, plus Hesiod's account of the gods and the earliest Greek lyric.",
+      "takeaways": [
+        "The Iliad is about the anger of Achilles, and about honor, mortality, and recognizing a shared humanity in an enemy (Priam and Achilles in Book 24).",
+        "The Odyssey is about cunning, homecoming, and xenia, the obligations between guest and host.",
+        "Hesiod gives the family tree of the gods and a moral picture of justice and labor."
+      ]
+    },
+    {
+      "id": "e3",
+      "title": "Tragedy, History, and the City",
+      "style": "hard-choices",
+      "intro": "Athens in the fifth century BC produced tragedy, comedy, and history writing within a few decades. Read two tragedians, one comedy, and the founding passages of the two founding historians.",
+      "takeaways": [
+        "Tragedy stages conflicts that have no clean resolution: vengeance against justice, family against the law of the city.",
+        "Herodotus explains events through custom and fortune. Thucydides explains them through power, fear, and interest.",
+        "The Melian dialogue is the classic statement of 'the strong do what they can and the weak suffer what they must'."
+      ]
+    },
+    {
+      "id": "e4",
+      "title": "Plato and Aristotle",
+      "style": "thought-experiment",
+      "intro": "The two philosophers whose questions set the agenda for the rest of the list: what justice is, what the soul is, what a good life is, and how we know anything. The passages below are the ones later writers quote most often.",
+      "takeaways": [
+        "Plato: justice is an order in the soul and the city. True knowledge is of the Forms, and the Cave allegory shows the path from opinion to knowledge.",
+        "Aristotle: the good life is activity in accordance with virtue, virtue is a mean found by practical wisdom, and humans are political animals.",
+        "Heraclitus and Parmenides frame the question of change and permanence that both men answer."
+      ]
+    }
   ],
   "works": [
+    {
+      "id": "porphyry-isagoge",
+      "author": "Porphyry",
+      "title": "Isagoge",
+      "module": "e1",
+      "style": "puzzle",
+      "hours": 2,
+      "read": "The whole text; it is short. Learn the five predicables.",
+      "edition": "Tr. Jonathan Barnes, Porphyry: Introduction (Oxford Clarendon Later Ancient Philosophers)",
+      "match": "1:Porphyry — Isagoge"
+    },
+    {
+      "id": "aristotle-categories",
+      "author": "Aristotle",
+      "title": "Categories",
+      "module": "e1",
+      "style": "puzzle",
+      "hours": 2,
+      "read": "Chapters 1-5, ending with the account of substance.",
+      "edition": "Tr. J.L. Ackrill, Categories and De Interpretatione (Oxford Clarendon Aristotle Series); also in The Complete Works of Aristotle, ed. Barnes (Princeton)",
+      "match": "1:Aristotle — Categories"
+    },
+    {
+      "id": "aristotle-the-rest-of-the-organon",
+      "author": "Aristotle",
+      "title": "the rest of the Organon",
+      "module": "e1",
+      "style": "puzzle",
+      "hours": 3,
+      "read": "Prior Analytics I.1-7 (the syllogism) and Sophistical Refutations 4-5 (the thirteen fallacies).",
+      "edition": "The Complete Works of Aristotle, ed. Jonathan Barnes, vol. 1 (Princeton); Prior Analytics tr. Robin Smith (Hackett)",
+      "match": "1:Aristotle — the rest of the Organon"
+    },
+    {
+      "id": "rhetorica-ad-herennium",
+      "author": "",
+      "title": "Rhetorica ad Herennium",
+      "module": "e1",
+      "style": "puzzle",
+      "hours": 2,
+      "read": "Book I.2-4 (the five canons and the parts of a speech) and Book III.16-24 (the art of memory).",
+      "edition": "Tr. Harry Caplan (Loeb Classical Library 403)",
+      "match": "1:Rhetorica ad Herennium"
+    },
+    {
+      "id": "euclid-elements",
+      "author": "Euclid",
+      "title": "Elements",
+      "module": "e1",
+      "style": "puzzle",
+      "hours": 2.5,
+      "read": "Book I: definitions, postulates, common notions, then propositions 1-5 and 47 (the Pythagorean theorem).",
+      "edition": "Tr. T.L. Heath, The Thirteen Books of the Elements (Dover); Green Lion Press one-volume edition",
+      "match": "3:Euclid — Elements"
+    },
     {
       "id": "homer-the-iliad",
       "author": "Homer",
       "title": "The Iliad",
-      "hours": 40,
-      "focus": "Iliad first. Mark Book 9 (the embassy), Book 18 (the shield), and Book 24 (Priam and Achilles). Then the Odyssey, tracking hospitality and homecoming.",
+      "module": "e2",
+      "style": "story-walk",
+      "hours": 15,
+      "read": "Iliad 1, 6, 9, 18, 22, 24. Odyssey 1, 9-12, 19, 21-23.",
       "edition": "Iliad tr. Richmond Lattimore (Chicago) or Robert Fagles (Penguin); Odyssey tr. Lattimore (Harper) or Emily Wilson (Norton)",
       "match": "5:Homer — The Iliad"
     },
@@ -22,17 +118,32 @@
       "id": "hesiod-theogony",
       "author": "Hesiod",
       "title": "Theogony",
-      "hours": 4,
-      "focus": "Theogony for the genealogy of the gods; Works and Days for the ethic of labor and justice.",
+      "module": "e2",
+      "style": "story-walk",
+      "hours": 1.5,
+      "read": "Theogony 1-210 (creation and Kronos) and Works and Days 1-201 (Prometheus, Pandora, the five ages).",
       "edition": "Tr. M.L. West, Theogony and Works and Days (Oxford World's Classics)",
       "match": "5:Hesiod — Theogony"
+    },
+    {
+      "id": "sappho-fragments",
+      "author": "Sappho",
+      "title": "Fragments",
+      "module": "e2",
+      "style": "story-walk",
+      "hours": 0.5,
+      "read": "Fragments 1, 16, and 31.",
+      "edition": "Tr. Anne Carson, If Not, Winter (Vintage)",
+      "match": "5:Sappho — Fragments"
     },
     {
       "id": "aeschylus-the-oresteia",
       "author": "Aeschylus",
       "title": "The Oresteia",
-      "hours": 8,
-      "focus": "Read the Oresteia as one trilogy. The Eumenides ends a cycle of vengeance with a court at Athens.",
+      "module": "e3",
+      "style": "hard-choices",
+      "hours": 4,
+      "read": "Agamemnon and The Eumenides, the first and last plays of the trilogy.",
       "edition": "Tr. Richmond Lattimore, in The Complete Greek Tragedies (Chicago); or tr. Robert Fagles (Penguin)",
       "match": "5:Aeschylus — The Oresteia"
     },
@@ -40,8 +151,10 @@
       "id": "sophocles-the-theban-plays",
       "author": "Sophocles",
       "title": "The Theban Plays",
-      "hours": 8,
-      "focus": "Oedipus the King, Oedipus at Colonus, Antigone. Antigone sets divine law against the decree of the city.",
+      "module": "e3",
+      "style": "hard-choices",
+      "hours": 4,
+      "read": "Oedipus the King and Antigone.",
       "edition": "Tr. Robert Fagles, The Three Theban Plays (Penguin); or David Grene, Sophocles I (Chicago)",
       "match": "5:Sophocles — The Theban Plays"
     },
@@ -49,8 +162,10 @@
       "id": "euripides-the-tragedies",
       "author": "Euripides",
       "title": "The Tragedies",
-      "hours": 10,
-      "focus": "Medea, Hippolytus, The Trojan Women, The Bacchae.",
+      "module": "e3",
+      "style": "hard-choices",
+      "hours": 2,
+      "read": "The Bacchae.",
       "edition": "The Complete Greek Tragedies: Euripides, ed. Grene and Lattimore (Chicago)",
       "match": "5:Euripides — The Tragedies"
     },
@@ -58,8 +173,10 @@
       "id": "aristophanes-the-comedies",
       "author": "Aristophanes",
       "title": "The Comedies",
-      "hours": 5,
-      "focus": "The Clouds first; its caricature of Socrates is the counterpart to Plato's portrait. Then The Frogs and Lysistrata.",
+      "module": "e3",
+      "style": "hard-choices",
+      "hours": 2,
+      "read": "The Clouds, a comic portrait of Socrates.",
       "edition": "Tr. Peter Meineck, Clouds (Hackett); or Alan Sommerstein, Lysistrata and Other Plays (Penguin)",
       "match": "5:Aristophanes — The Comedies"
     },
@@ -67,8 +184,10 @@
       "id": "herodotus-the-histories",
       "author": "Herodotus",
       "title": "The Histories",
-      "hours": 30,
-      "focus": "Books I-II for method and digression, VII-IX for the Persian invasion.",
+      "module": "e3",
+      "style": "hard-choices",
+      "hours": 2.5,
+      "read": "The preface and I.1-45 (Croesus and Solon); VII.201-239 (Thermopylae).",
       "edition": "The Landmark Herodotus, ed. Robert Strassler, tr. Andrea Purvis (Anchor)",
       "match": "9:Herodotus — The Histories"
     },
@@ -76,8 +195,10 @@
       "id": "thucydides-the-peloponnesian-war",
       "author": "Thucydides",
       "title": "The Peloponnesian War",
-      "hours": 30,
-      "focus": "Pericles' Funeral Oration (II.35-46), the plague (II.47-54), the Mytilenean debate (III.36-50), the Melian dialogue (V.84-116), the Sicilian expedition (VI-VII).",
+      "module": "e3",
+      "style": "hard-choices",
+      "hours": 4,
+      "read": "I.20-23 (method); II.35-54 (Funeral Oration and plague); III.82-83 (civil strife at Corcyra); V.84-116 (the Melian dialogue).",
       "edition": "The Landmark Thucydides, ed. Robert Strassler, tr. Richard Crawley (Free Press)",
       "match": "9:Thucydides — The Peloponnesian War"
     },
@@ -85,8 +206,10 @@
       "id": "the-pre-socratics",
       "author": "",
       "title": "The Pre-Socratics",
-      "hours": 5,
-      "focus": "Heraclitus and Parmenides above all; the problem of change and permanence sets up Plato.",
+      "module": "e4",
+      "style": "thought-experiment",
+      "hours": 1.5,
+      "read": "The fragments of Heraclitus and of Parmenides only.",
       "edition": "Ed. and tr. Jonathan Barnes, Early Greek Philosophy (Penguin); or Kirk, Raven and Schofield, The Presocratic Philosophers (Cambridge)",
       "match": "12:The Pre-Socratics"
     },
@@ -94,8 +217,10 @@
       "id": "plato-republic",
       "author": "Plato",
       "title": "Republic",
-      "hours": 45,
-      "focus": "Suggested order: Gorgias, Phaedo, Symposium, Republic, Phaedrus, Timaeus. Leave the Laws for a later pass. The Apology and Crito, though not listed, are a short useful preface.",
+      "module": "e4",
+      "style": "thought-experiment",
+      "hours": 12,
+      "read": "The Apology (not on the list) as a preface. Republic I-II (Thrasymachus and the Ring of Gyges), IV (the parts of the soul), VI.507-VII.521 (sun, line, cave), X.614-621 (Myth of Er). Symposium 201d-212c (Diotima). Phaedo 115-118 (the death of Socrates).",
       "edition": "Plato: Complete Works, ed. John M. Cooper (Hackett). Republic tr. Allan Bloom (Basic Books) or Grube/Reeve (Hackett)",
       "match": "12:Plato — Republic"
     },
@@ -103,8 +228,10 @@
       "id": "aristotle-nicomachean-ethics",
       "author": "Aristotle",
       "title": "Nicomachean Ethics",
-      "hours": 40,
-      "focus": "Nicomachean Ethics in full; then Politics I-III, Poetics, On the Soul II-III, Physics II, Metaphysics I and XII.",
+      "module": "e4",
+      "style": "thought-experiment",
+      "hours": 6,
+      "read": "Nicomachean Ethics I, II, and X.6-8. Politics I.1-2. Poetics 6-14 (tragedy).",
       "edition": "Nicomachean Ethics tr. Terence Irwin (Hackett) or Bartlett and Collins (Chicago); Politics tr. C.D.C. Reeve (Hackett); Poetics tr. Joe Sachs (Focus)",
       "match": "12:Aristotle — Nicomachean Ethics"
     }

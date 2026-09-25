@@ -6,10 +6,21 @@ const Content := preload("res://scripts/content.gd")
 func test_real_content_loads_and_is_valid() -> void:
 	var c := Content.new()
 	check(c.load_all(), "content loads")
-	check_eq(c.works.size(), 11, "all 11 Greek works imported")
+	check_eq(c.works.size(), 17, "all 17 Greek works from Essentials modules 1-4")
+	check_eq(c.work_order[0], "porphyry-isagoge", "the game starts with the Isagoge")
+	check_eq(c.works[c.work_order[0]]["module"], "e1", "Isagoge opens module 1")
+	check_eq(c.work_order[-1], "aristotle-nicomachean-ethics", "Aristotle closes the Greek part")
 	check(c.ideas.size() >= 12, "region one has its ideas")
 	for e in c.validate():
 		failures.append(e)
+
+
+func test_validator_catches_bad_work() -> void:
+	var c := Content.new()
+	c.works = {"w": {"id": "w", "module": "e9", "style": "card game"}}
+	var errors := "\n".join(c.validate())
+	for needle in ["w: unknown module", "w: unknown game style"]:
+		check(errors.contains(needle), "validator reports '%s'" % needle)
 
 
 func test_validator_catches_bad_idea() -> void:

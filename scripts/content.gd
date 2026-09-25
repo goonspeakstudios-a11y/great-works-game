@@ -5,8 +5,11 @@ const CONTENT_DIR := "res://content/greece"
 const EFFECT_KINDS := ["attack", "block", "heal", "draw", "strength", "energy"]
 const INTENT_KINDS := ["attack", "block"]
 const MIN_IDEAS_PER_REGION := 4  # recall prompts need 3 wrong options
+const MODULES := ["e1", "e2", "e3", "e4"]  # Essentials modules that make up Greece
+const STYLES := ["puzzle", "story-walk", "hard-choices", "thought-experiment"]
 
 var works: Dictionary = {}   # work id -> work
+var work_order: Array = []   # work ids in reading-list order
 var ideas: Dictionary = {}   # idea id -> idea (with "region" added)
 var regions: Array = []      # region dictionaries, in index order
 var stories: Array = []      # story chapters (3D scenes and fights), in index order
@@ -30,6 +33,7 @@ func load_all(dir: String = CONTENT_DIR) -> bool:
 		return false
 	for work in w["works"]:
 		works[work["id"]] = work
+		work_order.append(work["id"])
 	for file_name in index["regions"]:
 		var r: Variant = read_json(dir + "/" + file_name)
 		if r == null:
@@ -58,6 +62,11 @@ func idea_ids(region_id: String = "") -> Array:
 func validate() -> Array[String]:
 	var errors: Array[String] = []
 	var names := {}
+	for wid in works:
+		if not works[wid].get("module", "") in MODULES:
+			errors.append("%s: unknown module '%s'" % [wid, works[wid].get("module", "")])
+		if not works[wid].get("style", "") in STYLES:
+			errors.append("%s: unknown game style '%s'" % [wid, works[wid].get("style", "")])
 	for r in regions:
 		var rid: String = r.get("id", "?")
 		if r.get("ideas", []).size() < MIN_IDEAS_PER_REGION:
