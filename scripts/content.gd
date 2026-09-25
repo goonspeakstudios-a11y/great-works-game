@@ -122,6 +122,8 @@ func _validate_story(st: Dictionary) -> Array[String]:
 	var errors: Array[String] = []
 	var sid: String = st.get("id", "?")
 	var actors: Dictionary = st.get("actors", {})
+	for aid in actors:
+		errors.append_array(_validate_look("%s/%s" % [sid, aid], actors[aid]))
 	var step_ids := {}
 	for step in st.get("steps", []):
 		var pid := "%s/%s" % [sid, step.get("id", "?")]
@@ -133,6 +135,7 @@ func _validate_story(st: Dictionary) -> Array[String]:
 		match step.get("type", ""):
 			"fight":
 				errors.append_array(_validate_foe(sid, step.get("enemy", {})))
+				errors.append_array(_validate_look("%s/%s" % [sid, step.get("id", "?")], step.get("enemy", {})))
 			"scene":
 				for a in step.get("cast", {}):
 					if not actors.has(a):
@@ -161,4 +164,15 @@ func _validate_beat(pid: String, beat: Dictionary, actors: Dictionary) -> Array[
 			errors.append("%s: teaches unknown idea '%s'" % [pid, beat["learn"]])
 	else:
 		errors.append("%s: beat has no say/move/learn: %s" % [pid, str(beat)])
+	return errors
+
+
+## Body and hair must be files that exist.
+func _validate_look(where: String, who: Dictionary) -> Array[String]:
+	var errors: Array[String] = []
+	if not who.get("body", "male") in ["male", "female"]:
+		errors.append("%s: body must be male or female" % where)
+	var hair: String = who.get("hair", "")
+	if hair != "" and not ResourceLoader.exists("res://assets/quaternius/hair/%s.gltf" % hair):
+		errors.append("%s: no hairstyle '%s'" % [where, hair])
 	return errors

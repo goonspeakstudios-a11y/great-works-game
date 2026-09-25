@@ -36,9 +36,7 @@ func _play_scene(m: Node) -> void:
 	while w.in_scene and guard < 100:
 		guard += 1
 		if w.busy:
-			var beat: Dictionary = w.story.scene["beats"][w.story.index]
-			w.actors[beat["move"]].position = Vector3(beat["to"][0], 0, beat["to"][1])
-			w.busy = false
+			w.finish_move(w.story.scene["beats"][w.story.index])
 		w.advance()
 	check(not w.in_scene, "scene ended")
 
@@ -111,4 +109,17 @@ func test_losing_the_fight_lets_you_retry() -> void:
 	m.table.fight_over.emit(false)
 	check_eq(m.done_steps(), ["quarrel", "embassy"], "fight not recorded on a loss")
 	check_eq(m.world.current_step()["id"], "hector", "fight is still next")
+	m.free()
+
+
+func test_priam_kneels_after_walking_in() -> void:
+	var m := _game()
+	for i in 3:
+		if m.world.current_step()["type"] == "fight":
+			m.world.fight_finished(true)
+		else:
+			_play_scene(m)
+	_play_scene(m)
+	check_eq(m.world.actors["priam"].current, "Fixing_Kneeling", "Priam ends kneeling")
+	check_eq(m.world.actors["achilles"].position, Vector3(16, 0, 1), "Achilles back at his tent")
 	m.free()

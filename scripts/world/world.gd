@@ -10,9 +10,9 @@ signal fight_requested(step: Dictionary)
 const Blocks := preload("res://scripts/world/blocks.gd")
 const Story := preload("res://scripts/story.gd")
 const Player := preload("res://scripts/world/player.gd")
+const Character := preload("res://scripts/world/character.gd")
 
 const REACH := 2.4
-const MOVE_SECONDS := 1.8
 const GOLD := Color(0.95, 0.78, 0.3)
 const DIM := Color(0.75, 0.78, 0.85)
 const SAND := Color(0.56, 0.48, 0.34)
@@ -197,6 +197,9 @@ func _end_scene() -> void:
 
 func _show_line(beat: Dictionary) -> void:
 	var who: String = beat["say"]
+	for id in story.scene.get("cast", {}):
+		if actors[id].current in ["Idle", "Idle_Talking"]:
+			actors[id].play("Idle_Talking" if id == who else "Idle")
 	talk_panel.show()
 	talk_line.text = beat["line"]
 	if who == "narrator":
@@ -212,13 +215,24 @@ func _move_actor(beat: Dictionary) -> void:
 	talk_panel.hide()
 	var a: Node3D = actors[beat["move"]]
 	var to := Vector3(beat["to"][0], 0, beat["to"][1])
+	# Walk time scales with distance so short steps are not slow-motion.
+	var seconds := clampf(a.position.distance_to(to) / 1.6, 0.6, 6.0)
 	_face(a, to)
 	_frame_wide()
+	a.play("Walk")
 	var tw := create_tween()
-	tw.tween_property(a, "position", to, MOVE_SECONDS)
+	tw.tween_property(a, "position", to, seconds)
 	tw.finished.connect(func():
-		busy = false
+		finish_move(beat)
 		advance())
+
+
+## Puts a walking actor at its destination in its end pose.
+func finish_move(beat: Dictionary) -> void:
+	var a: Node3D = actors[beat["move"]]
+	a.position = Vector3(beat["to"][0], 0, beat["to"][1])
+	a.play(beat.get("then", "Idle"))
+	busy = false
 
 
 func _show_learn(id: String) -> void:
@@ -329,8 +343,9 @@ func _build_actors() -> void:
 	for id in chapter["actors"]:
 		var data: Dictionary = chapter["actors"][id]
 		var c: Array = data["color"]
-		var a := Blocks.figure(data["name"], Color(c[0], c[1], c[2]))
+		var a := Character.new()
 		add_child(a)
+		a.build(data["name"], data.get("body", "male"), data.get("hair", ""), Color(c[0], c[1], c[2]))
 		actors[id] = a
 		if data["home"] == null:
 			a.hide()

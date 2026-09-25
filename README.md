@@ -7,7 +7,8 @@ You play a card at full power only by recalling its idea. Ideas you miss come ba
 sooner; ideas you master turn gold and hit harder.
 
 Version 1 covers ancient Greece. Slice 1: the camp at Troy (3 story scenes from the Iliad,
-1 card-table fight against Hector). Gray blocks stand in for art.
+1 card-table fight against Hector). Animated CC0 characters (Quaternius) in placeholder tunics;
+tents and ships are still gray blocks.
 
 ## Run it
 - Game: `Desktop\Tools\godot\Godot_v4.7.2-stable_win64.exe --path .`
@@ -21,3 +22,7 @@ Version 1 covers ancient Greece. Slice 1: the camp at Troy (3 story scenes from 
 - `scripts/world/` - 3D camp, player, gray-block builders; `scripts/table/` - 3D card table
 - Screenshot a view: `godot --path . -- --shot=out.png --state=world|scene|learn|table|recall [--beats=N]`
 - `tests/` - headless test runner; any engine error fails the test
+
+## Roadmap
+Tracked on GitHub: milestones M1-M4 plus "Later: paid upgrades". Free work comes first.
+Third-party assets and their licenses: `assets/quaternius/README.md`.

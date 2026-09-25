@@ -2,7 +2,7 @@ extends CharacterBody3D
 ## Third-person walker. WASD or arrow keys move relative to the camera;
 ## Q and E (or right-mouse drag) turn the camera.
 
-const Blocks := preload("res://scripts/world/blocks.gd")
+const Character := preload("res://scripts/world/character.gd")
 const SPEED := 5.5
 const TURN_SPEED := 2.2
 const GRAVITY := 18.0
@@ -13,8 +13,9 @@ var body: Node3D
 
 
 func _ready() -> void:
-	body = Blocks.figure("You", Color(0.25, 0.4, 0.75))
+	body = Character.new()
 	add_child(body)
+	body.build("You", "male", "Hair_SimpleParted", Color(0.3, 0.42, 0.7))
 	var shape := CollisionShape3D.new()
 	var cap := CapsuleShape3D.new()
 	cap.radius = 0.35
@@ -40,6 +41,7 @@ func _physics_process(delta: float) -> void:
 	velocity.z = dir.z * SPEED
 	if dir.length() > 0.1:
 		body.rotation.y = lerp_angle(body.rotation.y, atan2(-dir.x, -dir.z), 12.0 * delta)
+	body.play("Jog_Fwd" if dir.length() > 0.1 else "Idle")
 	move_and_slide()
 
 

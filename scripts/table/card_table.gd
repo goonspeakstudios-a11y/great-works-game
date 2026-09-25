@@ -7,6 +7,7 @@ signal fight_over(won: bool)
 signal memory_changed
 
 const Blocks := preload("res://scripts/world/blocks.gd")
+const Character := preload("res://scripts/world/character.gd")
 const Combat := preload("res://scripts/combat.gd")
 const RecallOverlay := preload("res://scripts/ui/recall_overlay.gd")
 
@@ -219,10 +220,15 @@ func _build_room() -> void:
 	key.spot_range = 6
 	key.light_energy = 0.8
 	add_child(key)
-	enemy_fig = Blocks.figure("", Color(0.4, 0.22, 0.2))
-	enemy_fig.scale = Vector3.ONE * 1.25
+	var foe: Dictionary = step["enemy"]
+	var c: Array = foe.get("color", [0.4, 0.22, 0.2])
+	enemy_fig = Character.new()
 	enemy_fig.position = Vector3(0, 0, -2.0)
 	add_child(enemy_fig)
+	enemy_fig.build("", foe.get("body", "male"), foe.get("hair", ""), Color(c[0], c[1], c[2]))
+	enemy_fig.scale = Vector3.ONE * 1.15
+	enemy_fig.look_at(Vector3(CAM_POS.x, 0, CAM_POS.z), Vector3.UP)
+	enemy_fig.play("Idle")
 	enemy_label = Blocks.label3d("", Vector3(0, 2.75, -2.0), 36, Color(1, 0.85, 0.8))
 	add_child(enemy_label)
 	hand_root = Node3D.new()
