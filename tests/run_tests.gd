@@ -11,7 +11,7 @@ const SUITES := [
 	"res://tests/test_content.gd",
 	"res://tests/test_characters.gd",
 	"res://tests/test_flow.gd",
-	"res://tests/test_module1.gd",
+	"res://tests/test_hall.gd",
 ]
 
 
@@ -34,6 +34,10 @@ func _run_all() -> void:
 	var failed := 0
 	for path in SUITES:
 		var script: GDScript = load(path)
+		if script == null or not script.can_instantiate():
+			failed += 1
+			print("FAIL ", path.get_file(), " - the test file does not load (see the parse error above)")
+			continue
 		for m in script.get_script_method_list():
 			if not m["name"].begins_with("test_"):
 				continue

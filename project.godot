@@ -5,8 +5,8 @@ config_version=5
 [application]
 
 config/name="Great Works"
-config/description="A haunted pixel journey through the great books, learned by playing them."
-run/main_scene="res://scenes/pixel_main.tscn"
+config/description="A haunted hall of the great books, where the authors answer your questions from their own words."
+run/main_scene="res://scenes/hall.tscn"
 config/features=PackedStringArray("4.7")
 
 [display]
