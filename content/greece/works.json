@@ -1,0 +1,112 @@
+{
+  "phase": "p2",
+  "title": "The Greek World",
+  "span": "8th to 4th c. BC",
+  "questions": [
+    "What does Achilles want, and does he get it?",
+    "How do the tragedians treat the conflict between family obligation and the law of the city?",
+    "Thucydides and Plato both lived through the Peloponnesian War. What did each conclude from it?",
+    "How does Aristotle's account of the good life differ from Plato's?"
+  ],
+  "works": [
+    {
+      "id": "homer-the-iliad",
+      "author": "Homer",
+      "title": "The Iliad",
+      "hours": 40,
+      "focus": "Iliad first. Mark Book 9 (the embassy), Book 18 (the shield), and Book 24 (Priam and Achilles). Then the Odyssey, tracking hospitality and homecoming.",
+      "edition": "Iliad tr. Richmond Lattimore (Chicago) or Robert Fagles (Penguin); Odyssey tr. Lattimore (Harper) or Emily Wilson (Norton)",
+      "match": "5:Homer — The Iliad"
+    },
+    {
+      "id": "hesiod-theogony",
+      "author": "Hesiod",
+      "title": "Theogony",
+      "hours": 4,
+      "focus": "Theogony for the genealogy of the gods; Works and Days for the ethic of labor and justice.",
+      "edition": "Tr. M.L. West, Theogony and Works and Days (Oxford World's Classics)",
+      "match": "5:Hesiod — Theogony"
+    },
+    {
+      "id": "aeschylus-the-oresteia",
+      "author": "Aeschylus",
+      "title": "The Oresteia",
+      "hours": 8,
+      "focus": "Read the Oresteia as one trilogy. The Eumenides ends a cycle of vengeance with a court at Athens.",
+      "edition": "Tr. Richmond Lattimore, in The Complete Greek Tragedies (Chicago); or tr. Robert Fagles (Penguin)",
+      "match": "5:Aeschylus — The Oresteia"
+    },
+    {
+      "id": "sophocles-the-theban-plays",
+      "author": "Sophocles",
+      "title": "The Theban Plays",
+      "hours": 8,
+      "focus": "Oedipus the King, Oedipus at Colonus, Antigone. Antigone sets divine law against the decree of the city.",
+      "edition": "Tr. Robert Fagles, The Three Theban Plays (Penguin); or David Grene, Sophocles I (Chicago)",
+      "match": "5:Sophocles — The Theban Plays"
+    },
+    {
+      "id": "euripides-the-tragedies",
+      "author": "Euripides",
+      "title": "The Tragedies",
+      "hours": 10,
+      "focus": "Medea, Hippolytus, The Trojan Women, The Bacchae.",
+      "edition": "The Complete Greek Tragedies: Euripides, ed. Grene and Lattimore (Chicago)",
+      "match": "5:Euripides — The Tragedies"
+    },
+    {
+      "id": "aristophanes-the-comedies",
+      "author": "Aristophanes",
+      "title": "The Comedies",
+      "hours": 5,
+      "focus": "The Clouds first; its caricature of Socrates is the counterpart to Plato's portrait. Then The Frogs and Lysistrata.",
+      "edition": "Tr. Peter Meineck, Clouds (Hackett); or Alan Sommerstein, Lysistrata and Other Plays (Penguin)",
+      "match": "5:Aristophanes — The Comedies"
+    },
+    {
+      "id": "herodotus-the-histories",
+      "author": "Herodotus",
+      "title": "The Histories",
+      "hours": 30,
+      "focus": "Books I-II for method and digression, VII-IX for the Persian invasion.",
+      "edition": "The Landmark Herodotus, ed. Robert Strassler, tr. Andrea Purvis (Anchor)",
+      "match": "9:Herodotus — The Histories"
+    },
+    {
+      "id": "thucydides-the-peloponnesian-war",
+      "author": "Thucydides",
+      "title": "The Peloponnesian War",
+      "hours": 30,
+      "focus": "Pericles' Funeral Oration (II.35-46), the plague (II.47-54), the Mytilenean debate (III.36-50), the Melian dialogue (V.84-116), the Sicilian expedition (VI-VII).",
+      "edition": "The Landmark Thucydides, ed. Robert Strassler, tr. Richard Crawley (Free Press)",
+      "match": "9:Thucydides — The Peloponnesian War"
+    },
+    {
+      "id": "the-pre-socratics",
+      "author": "",
+      "title": "The Pre-Socratics",
+      "hours": 5,
+      "focus": "Heraclitus and Parmenides above all; the problem of change and permanence sets up Plato.",
+      "edition": "Ed. and tr. Jonathan Barnes, Early Greek Philosophy (Penguin); or Kirk, Raven and Schofield, The Presocratic Philosophers (Cambridge)",
+      "match": "12:The Pre-Socratics"
+    },
+    {
+      "id": "plato-republic",
+      "author": "Plato",
+      "title": "Republic",
+      "hours": 45,
+      "focus": "Suggested order: Gorgias, Phaedo, Symposium, Republic, Phaedrus, Timaeus. Leave the Laws for a later pass. The Apology and Crito, though not listed, are a short useful preface.",
+      "edition": "Plato: Complete Works, ed. John M. Cooper (Hackett). Republic tr. Allan Bloom (Basic Books) or Grube/Reeve (Hackett)",
+      "match": "12:Plato — Republic"
+    },
+    {
+      "id": "aristotle-nicomachean-ethics",
+      "author": "Aristotle",
+      "title": "Nicomachean Ethics",
+      "hours": 40,
+      "focus": "Nicomachean Ethics in full; then Politics I-III, Poetics, On the Soul II-III, Physics II, Metaphysics I and XII.",
+      "edition": "Nicomachean Ethics tr. Terence Irwin (Hackett) or Bartlett and Collins (Chicago); Politics tr. C.D.C. Reeve (Hackett); Poetics tr. Joe Sachs (Focus)",
+      "match": "12:Aristotle — Nicomachean Ethics"
+    }
+  ]
+}

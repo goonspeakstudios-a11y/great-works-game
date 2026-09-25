@@ -1,0 +1,171 @@
+{
+  "id": "epic_age",
+  "title": "Troy and the Epic Age",
+  "intro": "Before philosophy, there were the poets. Homer and Hesiod gave the Greeks their gods, their heroes, and their first questions about honor, justice, and home.",
+  "ideas": [
+    {
+      "id": "menis",
+      "name": "The Wrath of Achilles",
+      "clue": "The first word of the Iliad names it: a hero's rage, which keeps him out of the fighting and costs his own side dearly.",
+      "summary": "The Iliad opens with the rage (menis) of Achilles. When Agamemnon takes his prize, the captive Briseis, Achilles withdraws from the war, and the Greeks suffer for it. The whole poem follows where that anger leads.",
+      "source": "Homer, Iliad",
+      "work": "homer-the-iliad",
+      "passage": "Iliad, Book 1",
+      "cost": 1,
+      "effects": [{"kind": "attack", "value": 8}]
+    },
+    {
+      "id": "kleos",
+      "name": "Kleos (Undying Glory)",
+      "clue": "Fame that outlives the hero. Told he can have a long quiet life or a short one remembered forever, the hero knows which he is choosing.",
+      "summary": "Kleos is glory that lives on in song after death. In Book 9 Achilles says his mother told him of two fates: go home and live long without fame, or stay at Troy, die young, and win glory that never dies.",
+      "source": "Homer, Iliad",
+      "work": "homer-the-iliad",
+      "passage": "Iliad, Book 9",
+      "cost": 1,
+      "effects": [{"kind": "strength", "value": 2}]
+    },
+    {
+      "id": "time",
+      "name": "Time (Honor)",
+      "clue": "Worth measured in public recognition and prizes. Taking a man's prize in front of the army is an attack on it, and that is how the Iliad's quarrel begins.",
+      "summary": "Time (said TEE-may) is honor you can see: rank, prizes, and respect from others. Agamemnon's seizure of Briseis strips Achilles of it in public, which is why the insult cannot be ignored.",
+      "source": "Homer, Iliad",
+      "work": "homer-the-iliad",
+      "passage": "Iliad, Book 1",
+      "cost": 1,
+      "effects": [{"kind": "block", "value": 7}]
+    },
+    {
+      "id": "embassy",
+      "name": "The Embassy to Achilles",
+      "clue": "Odysseus, Phoenix, and Ajax come to his tent with a king's list of gifts, begging him to return. He refuses.",
+      "summary": "In Book 9 Agamemnon sends Odysseus, old Phoenix, and Ajax to offer Achilles huge gifts if he will fight again. Achilles turns them all down, and the poem asks what honor is worth if it can be bought back.",
+      "source": "Homer, Iliad",
+      "work": "homer-the-iliad",
+      "passage": "Iliad, Book 9",
+      "cost": 1,
+      "effects": [{"kind": "draw", "value": 2}]
+    },
+    {
+      "id": "shield",
+      "name": "The Shield of Achilles",
+      "clue": "Forged by the smith god, it shows a city at peace and a city at war, fields, a dance, and the ocean around it all: the whole human world on one piece of armor.",
+      "summary": "In Book 18 Hephaestus makes new armor for Achilles. The shield shows weddings, a trial, a siege, harvest, a vineyard, a dance, and the river Ocean circling everything. It is Homer's picture of all of life, not only war.",
+      "source": "Homer, Iliad",
+      "work": "homer-the-iliad",
+      "passage": "Iliad, Book 18",
+      "cost": 2,
+      "effects": [{"kind": "block", "value": 13}]
+    },
+    {
+      "id": "priam",
+      "name": "Priam and Achilles",
+      "clue": "An old king crosses enemy lines at night and kisses the hands that killed his son. The two enemies weep together.",
+      "summary": "In Book 24 Priam of Troy goes alone to Achilles to ask for the body of his son Hector. Achilles thinks of his own father, and they mourn together. He gives the body back. The poem of rage ends in pity.",
+      "source": "Homer, Iliad",
+      "work": "homer-the-iliad",
+      "passage": "Iliad, Book 24",
+      "cost": 1,
+      "effects": [{"kind": "heal", "value": 6}]
+    },
+    {
+      "id": "xenia",
+      "name": "Xenia (Guest-Friendship)",
+      "clue": "The sacred bond between host and stranger, protected by Zeus. The men eating a missing king's food and courting his wife break it every day.",
+      "summary": "Xenia is the duty to welcome, feed, and protect a guest, and the guest's duty not to abuse the host. The Odyssey tests it again and again; the suitors who take over Odysseus's house are its great violators.",
+      "source": "Homer, Odyssey",
+      "work": "homer-the-iliad",
+      "passage": "Odyssey, Books 1 and 9",
+      "cost": 1,
+      "effects": [{"kind": "block", "value": 4}, {"kind": "heal", "value": 3}]
+    },
+    {
+      "id": "nostos",
+      "name": "Nostos (Homecoming)",
+      "clue": "The long road back. For ten years after the war one man fights monsters, gods, and the sea just to get home to his island and his wife.",
+      "summary": "Nostos means the return home. The Odyssey is the great nostos story: Odysseus spends ten years getting back to Ithaca and Penelope after Troy falls, then must win back his own house.",
+      "source": "Homer, Odyssey",
+      "work": "homer-the-iliad",
+      "passage": "Odyssey, Books 5 and 13",
+      "cost": 1,
+      "effects": [{"kind": "heal", "value": 3}, {"kind": "draw", "value": 1}]
+    },
+    {
+      "id": "metis",
+      "name": "Metis (Cunning Intelligence)",
+      "clue": "Winning with the mind instead of the arm. A giant asks his name and he answers 'Nobody', so when the giant cries for help, no one comes.",
+      "summary": "Metis is clever, practical intelligence: planning, disguise, and tricks. It is Odysseus's defining gift, seen in the wooden horse and in blinding the Cyclops after telling him his name is 'Nobody'.",
+      "source": "Homer, Odyssey",
+      "work": "homer-the-iliad",
+      "passage": "Odyssey, Book 9",
+      "cost": 0,
+      "effects": [{"kind": "attack", "value": 5}]
+    },
+    {
+      "id": "succession",
+      "name": "The Succession Myth",
+      "clue": "Sky is overthrown by his son, and that son is overthrown by his own son. Three generations of gods, each taking power from the one before.",
+      "summary": "Hesiod's Theogony tells how Ouranos (Sky) is overthrown by Kronos, and Kronos in turn by Zeus, who then rules by strength and by sharing honors among the gods. It is a story of how order comes out of violence.",
+      "source": "Hesiod, Theogony",
+      "work": "hesiod-theogony",
+      "passage": "Theogony, the reigns of Ouranos, Kronos, and Zeus",
+      "cost": 2,
+      "effects": [{"kind": "attack", "value": 14}]
+    },
+    {
+      "id": "prometheus",
+      "name": "Prometheus and Pandora",
+      "clue": "A Titan steals fire for mortals. The king of the gods answers with a gift: the first woman and a jar of troubles, with one thing left inside.",
+      "summary": "Prometheus tricks Zeus and steals fire for humanity. Zeus punishes mankind with Pandora, who opens a jar that releases evils into the world; only Hope (Elpis) stays inside. Hesiod tells it in both of his poems.",
+      "source": "Hesiod, Theogony and Works and Days",
+      "work": "hesiod-theogony",
+      "passage": "Theogony and Works and Days, the Prometheus story",
+      "cost": 1,
+      "effects": [{"kind": "attack", "value": 6}, {"kind": "heal", "value": 2}]
+    },
+    {
+      "id": "dike",
+      "name": "Dike (Justice)",
+      "clue": "A daughter of Zeus. A poet warns his greedy brother and the bribe-eating judges that cities which honor her flourish, and cities that twist her are ruined.",
+      "summary": "In Works and Days Hesiod tells his brother Perses to follow justice (Dike), not violence or crooked judgments bought with gifts. Justice is a daughter of Zeus, and whole cities rise or fall by how they treat her.",
+      "source": "Hesiod, Works and Days",
+      "work": "hesiod-theogony",
+      "passage": "Works and Days, the address to Perses and the judges",
+      "cost": 1,
+      "effects": [{"kind": "attack", "value": 5}, {"kind": "block", "value": 5}]
+    },
+    {
+      "id": "five_ages",
+      "name": "The Five Ages of Man",
+      "clue": "Gold, then Silver, then Bronze, then Heroes, then the hard age the poet lives in himself, full of toil and trouble.",
+      "summary": "Hesiod describes humanity getting worse over time: the Golden, Silver, and Bronze races, then the Age of Heroes who fought at Thebes and Troy, then his own grim Iron Age of labor and injustice.",
+      "source": "Hesiod, Works and Days",
+      "work": "hesiod-theogony",
+      "passage": "Works and Days, the myth of the races",
+      "cost": 2,
+      "effects": [{"kind": "attack", "value": 10}, {"kind": "block", "value": 4}]
+    },
+    {
+      "id": "ergon",
+      "name": "Ergon (Honest Work)",
+      "clue": "A farmer-poet's rule for life: work is no disgrace, idleness is.",
+      "summary": "Works and Days praises steady labor as the honest road to plenty and to the gods' favor. Its famous line: work is no disgrace; it is idleness that is a disgrace. Much of the poem is a farmer's calendar.",
+      "source": "Hesiod, Works and Days",
+      "work": "hesiod-theogony",
+      "passage": "Works and Days, the praise of work",
+      "cost": 0,
+      "effects": [{"kind": "energy", "value": 1}]
+    }
+  ],
+  "enemies": [
+    {"id": "antinous", "name": "Antinous, Chief of the Suitors", "hp": 28,
+     "intents": [{"kind": "attack", "value": 6}, {"kind": "attack", "value": 8}, {"kind": "block", "value": 6}]},
+    {"id": "polyphemus", "name": "Polyphemus the Cyclops", "hp": 40,
+     "intents": [{"kind": "attack", "value": 10}, {"kind": "block", "value": 8}, {"kind": "attack", "value": 5}]},
+    {"id": "sirens", "name": "The Sirens", "hp": 32,
+     "intents": [{"kind": "attack", "value": 7}, {"kind": "attack", "value": 7}, {"kind": "block", "value": 10}]}
+  ],
+  "boss": {"id": "achilles", "name": "Achilles in His Wrath", "hp": 70,
+    "intents": [{"kind": "attack", "value": 9}, {"kind": "block", "value": 10}, {"kind": "attack", "value": 15}, {"kind": "attack", "value": 6}]}
+}
