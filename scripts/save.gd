@@ -7,7 +7,8 @@ const VERSION := 1
 
 
 static func blank() -> Dictionary:
-	return {"version": VERSION, "memory": {}, "stats": {"runs": 0, "wins": 0}}
+	# memory: idea id -> review record; met: ideas taught so far; story: chapter id -> finished step ids
+	return {"version": VERSION, "memory": {}, "met": {}, "story": {}, "stats": {"runs": 0, "wins": 0}}
 
 
 static func load_save(path: String = DEFAULT_PATH) -> Dictionary:

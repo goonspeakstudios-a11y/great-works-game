@@ -1,54 +1,114 @@
 extends "res://tests/test_base.gd"
-## Drives the real game screen: start a run, play a card, answer its recall prompt.
+## Drives the real game: walk the chapter's scenes, fight at the card table,
+## answer recall prompts, and check what lands in the save file.
+## The runner has no frames, so _ready is called by hand where Godot defers it.
 
+const Save := preload("res://scripts/save.gd")
 const PATH := "user://test_flow_save.json"
 
 
-func _game() -> Control:
+func _game() -> Node:
 	if FileAccess.file_exists(PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
-	var m: Control = load("res://scenes/main.tscn").instantiate()
+	var m: Node = load("res://scenes/main.tscn").instantiate()
 	m.save_path = PATH
 	(Engine.get_main_loop() as SceneTree).root.add_child(m)
-	if m.screen == null:  # the runner has no frames, so _ready can be deferred
+	if m.menu == null:
 		m._ready()
-	m.start_run()
-	m.next_step()
+	m.enter_world()
+	if m.world.player == null:
+		m.world._ready()
 	return m
 
 
-func _play_first_card(m: Control, answer_right: bool) -> String:
-	var i := -1
-	for n in m.combat.hand.size():
-		if m.combat.can_play(n):
-			i = n
-			break
-	var id: String = m.combat.hand[i]
-	m._on_card(i)
-	check(m.overlay != null, "a new idea asks for recall")
-	var right: int = m.prompt["answer"]
-	m._answer(right if answer_right else (right + 1) % m.prompt["options"].size())
-	var box: Node = m.overlay.get_child(0)
-	var play_button: Button = box.get_child(box.get_child_count() - 1)
-	play_button.pressed.emit()
-	return id
+func _open_table(m: Node) -> Node3D:
+	m.world.begin_step()
+	if m.table and m.table.hud == null:
+		m.table._ready()
+	return m.table
 
 
-func test_right_answer_plays_card_and_saves_memory() -> void:
+## Plays the current scene to its end. Move beats wait on a tween, so finish them by hand.
+func _play_scene(m: Node) -> void:
+	var w: Node3D = m.world
+	w.begin_step()
+	var guard := 0
+	while w.in_scene and guard < 100:
+		guard += 1
+		if w.busy:
+			var beat: Dictionary = w.story.scene["beats"][w.story.index]
+			w.actors[beat["move"]].position = Vector3(beat["to"][0], 0, beat["to"][1])
+			w.busy = false
+		w.advance()
+	check(not w.in_scene, "scene ended")
+
+
+func _answer_open_prompt(t: Node3D, right: bool) -> void:
+	for c in t.get_children():
+		if c.has_method("ask") and c.waiting:
+			var a: int = c.prompt["answer"]
+			c.answer(a if right else (a + 1) % c.prompt["options"].size())
+			c.finished.emit(right)
+			c.queue_free()
+
+
+func test_scenes_teach_ideas_then_fight_uses_them() -> void:
 	var m := _game()
-	check_eq(m.run.current()["type"], "fight", "run opens with a fight")
-	var id := _play_first_card(m, true)
-	check(id in m.combat.discard, "played card went to the discard pile")
-	check_eq(m.memory.box(id), 1, "idea moved up a box")
-	check_eq(m.run_right, 1, "right answer counted")
-	var saved: Dictionary = preload("res://scripts/save.gd").load_save(PATH)
-	check(saved["memory"].has(id), "memory written to the save file")
+	_play_scene(m)
+	check(m.save_data["met"].has("time") and m.save_data["met"].has("menis"), "quarrel teaches two ideas")
+	check_eq(m.done_steps(), ["quarrel"], "quarrel recorded")
+	_play_scene(m)
+	check_eq(m.save_data["met"].size(), 4, "embassy teaches two more")
+	check_eq(Save.load_save(PATH)["story"]["troy"], ["quarrel", "embassy"], "progress saved to disk")
+	var t := _open_table(m)
+	check(t != null, "fight step opens the card table")
+	check(not m.world.is_inside_tree(), "world is set aside during the fight")
+	check_eq(t.deck.size(), 4, "deck is the four ideas taught so far")
 	m.free()
 
 
-func test_wrong_answer_counts_miss_and_stays_due() -> void:
+func test_table_recall_then_win_returns_to_world() -> void:
 	var m := _game()
-	var id := _play_first_card(m, false)
-	check_eq(m.run_wrong, 1, "miss counted")
-	check(m.memory.is_due(id, m._now()), "missed idea is due again")
+	_play_scene(m)
+	_play_scene(m)
+	var t := _open_table(m)
+	var id: String = t.combat.hand[0]
+	t.on_card(0)
+	check(t.recalling, "a learned-but-unreviewed idea asks for recall")
+	_answer_open_prompt(t, true)
+	check_eq(m.memory.box(id), 1, "right answer moved the idea up")
+	check(not t.recalling, "back to the table")
+	t.combat.enemy_hp = 0
+	t.render()
+	t.fight_over.emit(true)
+	check(m.table == null, "table closed")
+	check(m.world.is_inside_tree(), "back in the world")
+	check_eq(m.done_steps(), ["quarrel", "embassy", "hector"], "fight recorded")
+	_play_scene(m)
+	check_eq(m.done_steps().size(), 4, "chapter finished")
+	check(m.world.current_step().is_empty(), "no steps left")
+	m.free()
+
+
+func test_wrong_recall_weakens_and_stays_due() -> void:
+	var m := _game()
+	_play_scene(m)
+	_play_scene(m)
+	var t := _open_table(m)
+	var id: String = t.combat.hand[0]
+	t.on_card(0)
+	_answer_open_prompt(t, false)
+	check_eq(m.memory.box(id), 1, "wrong answer sits in box 1")
+	check(m.memory.is_due(id, t._now()), "and comes back right away")
+	m.free()
+
+
+func test_losing_the_fight_lets_you_retry() -> void:
+	var m := _game()
+	_play_scene(m)
+	_play_scene(m)
+	_open_table(m)
+	m.table.fight_over.emit(false)
+	check_eq(m.done_steps(), ["quarrel", "embassy"], "fight not recorded on a loss")
+	check_eq(m.world.current_step()["id"], "hector", "fight is still next")
 	m.free()

@@ -1,3 +1,4 @@
 {
-  "regions": ["region_epic_age.json"]
+  "regions": ["region_epic_age.json"],
+  "stories": ["story_troy.json"]
 }

@@ -9,6 +9,7 @@ const MIN_IDEAS_PER_REGION := 4  # recall prompts need 3 wrong options
 var works: Dictionary = {}   # work id -> work
 var ideas: Dictionary = {}   # idea id -> idea (with "region" added)
 var regions: Array = []      # region dictionaries, in index order
+var stories: Array = []      # story chapters (3D scenes and fights), in index order
 
 
 static func read_json(path: String) -> Variant:
@@ -37,6 +38,11 @@ func load_all(dir: String = CONTENT_DIR) -> bool:
 		for idea in r["ideas"]:
 			idea["region"] = r["id"]
 			ideas[idea["id"]] = idea
+	for file_name in index.get("stories", []):
+		var st: Variant = read_json(dir + "/" + file_name)
+		if st == null:
+			return false
+		stories.append(st)
 	return true
 
 
@@ -62,6 +68,8 @@ func validate() -> Array[String]:
 			errors.append("%s: has no boss" % rid)
 		for foe in r.get("enemies", []) + ([r["boss"]] if r.has("boss") else []):
 			errors.append_array(_validate_foe(rid, foe))
+	for st in stories:
+		errors.append_array(_validate_story(st))
 	for id in ideas:
 		errors.append_array(_validate_idea(ideas[id]))
 		var n: String = ideas[id].get("name", "")
@@ -107,4 +115,50 @@ func _validate_foe(rid: String, foe: Dictionary) -> Array[String]:
 	for i in foe.get("intents", []):
 		if not i.get("kind", "") in INTENT_KINDS or int(i.get("value", 0)) <= 0:
 			errors.append("%s/%s: bad intent %s" % [rid, fid, str(i)])
+	return errors
+
+
+func _validate_story(st: Dictionary) -> Array[String]:
+	var errors: Array[String] = []
+	var sid: String = st.get("id", "?")
+	var actors: Dictionary = st.get("actors", {})
+	var step_ids := {}
+	for step in st.get("steps", []):
+		var pid := "%s/%s" % [sid, step.get("id", "?")]
+		if step_ids.has(step.get("id")):
+			errors.append("%s: duplicate step id" % pid)
+		step_ids[step.get("id")] = true
+		if step.get("at", []).size() != 2:
+			errors.append("%s: 'at' must be [x, z]" % pid)
+		match step.get("type", ""):
+			"fight":
+				errors.append_array(_validate_foe(sid, step.get("enemy", {})))
+			"scene":
+				for a in step.get("cast", {}):
+					if not actors.has(a):
+						errors.append("%s: cast member '%s' is not an actor" % [pid, a])
+				if step.get("beats", []).is_empty():
+					errors.append("%s: has no beats" % pid)
+				for beat in step.get("beats", []):
+					errors.append_array(_validate_beat(pid, beat, actors))
+			_:
+				errors.append("%s: unknown step type '%s'" % [pid, step.get("type", "")])
+	return errors
+
+
+func _validate_beat(pid: String, beat: Dictionary, actors: Dictionary) -> Array[String]:
+	var errors: Array[String] = []
+	if beat.has("say"):
+		if beat["say"] != "narrator" and not actors.has(beat["say"]):
+			errors.append("%s: speaker '%s' is not an actor" % [pid, beat["say"]])
+		if str(beat.get("line", "")).strip_edges() == "":
+			errors.append("%s: empty line for %s" % [pid, beat["say"]])
+	elif beat.has("move"):
+		if not actors.has(beat["move"]) or beat.get("to", []).size() != 2:
+			errors.append("%s: bad move %s" % [pid, str(beat)])
+	elif beat.has("learn"):
+		if not ideas.has(beat["learn"]):
+			errors.append("%s: teaches unknown idea '%s'" % [pid, beat["learn"]])
+	else:
+		errors.append("%s: beat has no say/move/learn: %s" % [pid, str(beat)])
 	return errors

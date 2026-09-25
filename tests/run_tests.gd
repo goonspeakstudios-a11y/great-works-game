@@ -6,14 +6,26 @@ const SUITES := [
 	"res://tests/test_memory.gd",
 	"res://tests/test_recall.gd",
 	"res://tests/test_combat.gd",
-	"res://tests/test_run.gd",
+	"res://tests/test_story.gd",
 	"res://tests/test_save.gd",
 	"res://tests/test_content.gd",
 	"res://tests/test_flow.gd",
 ]
 
 
-func _initialize() -> void:
+var _started := false
+
+
+## Tests run on the first frame so nodes added to the tree get a real _ready.
+func _process(_delta: float) -> bool:
+	if _started:
+		return false
+	_started = true
+	_run_all()
+	return false
+
+
+func _run_all() -> void:
 	var errors := preload("res://tests/error_counter.gd").new()
 	OS.add_logger(errors)
 	var passed := 0

@@ -1,0 +1,81 @@
+{
+  "id": "troy",
+  "title": "The Camp at Troy",
+  "region": "epic_age",
+  "player_start": [0, 14],
+  "actors": {
+    "agamemnon": {"name": "Agamemnon", "color": [0.55, 0.2, 0.3], "home": [0, 1]},
+    "achilles": {"name": "Achilles", "color": [0.85, 0.7, 0.3], "home": [16, 1]},
+    "odysseus": {"name": "Odysseus", "color": [0.45, 0.35, 0.2], "home": [-7, 5]},
+    "phoenix": {"name": "Phoenix", "color": [0.6, 0.6, 0.6], "home": [13, 1.5]},
+    "ajax": {"name": "Ajax", "color": [0.2, 0.4, 0.25], "home": [-11, -8]},
+    "priam": {"name": "Priam", "color": [0.9, 0.9, 0.85], "home": null}
+  },
+  "steps": [
+    {
+      "type": "scene",
+      "id": "quarrel",
+      "title": "The Quarrel",
+      "at": [0, 6],
+      "cast": {"agamemnon": [-1.6, 2], "achilles": [1.6, 2]},
+      "beats": [
+        {"say": "narrator", "line": "Nine years into the war at Troy, a plague is killing the Greek army. The god Apollo sent it, angry because King Agamemnon took the daughter of his priest and will not give her back."},
+        {"say": "agamemnon", "line": "Fine. I will send the girl back to her father. But I am the king. I will not be the only man in this army left without a prize."},
+        {"say": "achilles", "line": "Every prize has already been handed out. Wait until we take Troy, and you will be paid back three and four times over."},
+        {"say": "agamemnon", "line": "Then I will take yours. Your Briseis. So you learn how much greater I am than you, and no one else dares to speak to me as an equal."},
+        {"say": "narrator", "line": "To a Greek warrior, a prize is not just a thing. It is his honor made visible: proof, in front of the whole army, of what he is worth. To take it is to shame him."},
+        {"learn": "time"},
+        {"say": "narrator", "line": "Achilles begins to draw his sword. The goddess Athena, seen by him alone, holds him back. He puts the sword away, but his rage does not cool."},
+        {"say": "achilles", "line": "One day every Greek will long for me, when Hector is cutting your men down and you cannot save them. I am done fighting for you."},
+        {"move": "achilles", "to": [16, 1]},
+        {"say": "narrator", "line": "The very first word of Homer's Iliad is this rage. Achilles leaves the war, and the Greeks pay for it in blood."},
+        {"learn": "menis"}
+      ]
+    },
+    {
+      "type": "scene",
+      "id": "embassy",
+      "title": "The Embassy",
+      "at": [16, 7],
+      "cast": {"achilles": [16, 1], "odysseus": [14.4, 3.6], "phoenix": [16, 4.2], "ajax": [17.6, 3.6]},
+      "beats": [
+        {"say": "narrator", "line": "Without Achilles, the Trojans have driven the Greeks back to their ships. Desperate, Agamemnon sends three men to Achilles' tent."},
+        {"say": "odysseus", "line": "Agamemnon offers you gold, tripods, horses, seven women, Briseis herself given back, and one of his own daughters as your wife. Only come back and fight."},
+        {"say": "achilles", "line": "His gifts are hateful to me. I value him no more than a splinter. Not if he gave me ten times as much, not until he pays for the insult that tears at my heart."},
+        {"say": "phoenix", "line": "I raised you, child, from when you were small. Even the gods can be moved by prayer. Do not wait until you have to fight anyway, without the gifts and without the honor."},
+        {"say": "ajax", "line": "He has made his heart savage. He cares nothing for the love of his friends. Come, let us go."},
+        {"learn": "embassy"},
+        {"say": "achilles", "line": "My mother, the goddess Thetis, told me I carry two fates. If I stay and fight at Troy, I will never go home, but my glory will never die. If I go home, my life will be long, and my glory will be gone."},
+        {"say": "narrator", "line": "That glory which lives on after death has a name: kleos. It is what Homer's heroes are willing to die for."},
+        {"learn": "kleos"}
+      ]
+    },
+    {
+      "type": "fight",
+      "id": "hector",
+      "title": "Hector at the Ships",
+      "at": [-12, -11],
+      "intro": "With Achilles gone, Hector breaks through the Greek wall and brings fire to the ships. Hold the line with the ideas you have learned.",
+      "enemy": {"id": "hector", "name": "Hector, Breaker of Horses", "hp": 34,
+        "intents": [{"kind": "attack", "value": 7}, {"kind": "block", "value": 6}, {"kind": "attack", "value": 10}]}
+    },
+    {
+      "type": "scene",
+      "id": "priam",
+      "title": "The Ransom of Hector",
+      "at": [16, 7],
+      "night": true,
+      "cast": {"achilles": [16, 1], "priam": [23, 9]},
+      "beats": [
+        {"say": "narrator", "line": "Patroclus, Achilles' dearest friend, went into battle wearing Achilles' armor and was killed by Hector. Achilles came back to the war, killed Hector, and dragged his body behind his chariot. For days he has refused to give it back."},
+        {"say": "narrator", "line": "Then, at night, guided by the god Hermes, an old man walks alone into the Greek camp. It is Priam, King of Troy, Hector's father."},
+        {"move": "priam", "to": [16.6, 2.4]},
+        {"say": "priam", "line": "Remember your father, Achilles. He is old, like me. I have done what no man on earth has done before: I put to my lips the hands of the man who killed my son."},
+        {"say": "narrator", "line": "Achilles thinks of his own father, whom he will never see again. The two enemies weep together, one for his son, the other for his father and his friend."},
+        {"say": "achilles", "line": "Sit, old man. Grief does no good. I will give you back your son, and I will hold back the war for as many days as you need to bury him."},
+        {"say": "narrator", "line": "The poem that began with rage ends in pity. Hector's body goes home to Troy."},
+        {"learn": "priam"}
+      ]
+    }
+  ]
+}
