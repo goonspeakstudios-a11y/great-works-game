@@ -12,6 +12,10 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
   of the level, or you live the choice and its cost.
 - **Quick stages:** one work is one stage, about 10 minutes. One short line of text at a time.
   Book names, authors and Greek words are optional extras, never required.
+- **Music is made in-house, in code** (BB1 approved the preview's sketch, 2026-09-25): low drones,
+  slow minor chords, long reverb, distant bells, wind. Built with Godot's own audio (no downloads).
+  Vary it by module where it fits: e1 sparse and quiet (thinking), e2 grand and mournful,
+  e3 heavier and darker, e4 higher and stranger. Memory scenes can warm up; silence is allowed.
 - One world, one hero, one art style. Each module changes *how you play*, not the world.
 
 ## Game style per module
