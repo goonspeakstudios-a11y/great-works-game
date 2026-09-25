@@ -1,7 +1,8 @@
 extends Node
 ## The haunted look every stage shares, as layers from back to front:
-##   world (drawn by the stage) -> gray filter -> vivid (memories keep their color)
-##   -> ash and vignette -> fade -> one line of text, a small note, a centre card.
+##   world (drawn by the stage) -> gray filter -> vivid (always in colour)
+##   -> ash and vignette -> fade -> text: a dialog box with the speaker's name,
+##   a small note in the corner, and a centre card.
 
 const Pix := preload("res://scripts/pixel/pix.gd")
 const Painter := preload("res://scripts/pixel/painter.gd")
@@ -18,18 +19,22 @@ void fragment() {
 	COLOR = vec4(g, 1.0);
 }
 """
+const BOX_TOP := 142.0
 
 var world: Node2D
 var vivid: Node2D
+var ui: CanvasLayer
 var line: Label
+var speaker: Label
 var note: Label
 var card: Label
 var card_sub: Label
 var _gray: ShaderMaterial
 var _fade: ColorRect
-var _line_panel: PanelContainer
+var _box: PanelContainer
 var _line_left := 0.0
 var _ash: Array = []
+var _sat_tween: Tween
 
 
 func setup(draw_world: Callable, draw_vivid: Callable) -> void:
@@ -54,14 +59,14 @@ func setup(draw_world: Callable, draw_vivid: Callable) -> void:
 	vignette.texture = _vignette()
 	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_layer(3).add_child(vignette)
-	var ui := _layer(10)
+	ui = _layer(10)
 	_fade = ColorRect.new()
 	_fade.color = Color(0, 0, 0, 1)
 	_fade.size = Vector2(Pix.W, Pix.H)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(_fade)
-	_build_text(ui)
-	for i in 60:
+	_build_text()
+	for i in 50:
 		_ash.append({"p": Vector2(randf() * Pix.W, randf() * Pix.H), "s": randf_range(3, 9),
 			"ph": randf() * TAU, "c": Pix.P["bone"] if randf() < 0.2 else Pix.P["ash"]})
 	fade_in(1.2)
@@ -81,43 +86,53 @@ func _layer(n: int) -> CanvasLayer:
 	return l
 
 
-func _build_text(ui: CanvasLayer) -> void:
-	_line_panel = PanelContainer.new()
+static func panel_style(alpha: float = 0.92) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.035, 0.03, 0.045, 0.9)
+	box.bg_color = Color(0.035, 0.03, 0.045, alpha)
 	box.border_color = Color("3a3542")
 	box.set_border_width_all(1)
-	box.content_margin_left = 6
-	box.content_margin_right = 6
-	box.content_margin_top = 2
+	box.content_margin_left = 7
+	box.content_margin_right = 7
+	box.content_margin_top = 3
 	box.content_margin_bottom = 3
-	_line_panel.add_theme_stylebox_override("panel", box)
-	_line_panel.position = Vector2(16, 158)
-	_line_panel.size = Vector2(Pix.W - 32, 16)
-	_line_panel.custom_minimum_size = Vector2(Pix.W - 32, 16)
-	_line_panel.hide()
-	ui.add_child(_line_panel)
-	line = _label(9, Pix.P["bone"])
-	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_line_panel.add_child(line)
-	note = _label(6, Pix.P["ghost"])
-	note.position = Vector2(Pix.W - 150, 4)
-	note.size = Vector2(146, 10)
+	return box
+
+
+func _build_text() -> void:
+	_box = PanelContainer.new()
+	_box.add_theme_stylebox_override("panel", panel_style())
+	_box.position = Vector2(10, BOX_TOP)
+	_box.size = Vector2(Pix.W - 20, 34)
+	_box.custom_minimum_size = Vector2(Pix.W - 20, 34)
+	_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_box.hide()
+	ui.add_child(_box)
+	line = label(9, Pix.P["bone"])
+	line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	line.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_box.add_child(line)
+	speaker = label(8, Pix.P["gold"])
+	speaker.position = Vector2(14, BOX_TOP - 11)
+	speaker.size = Vector2(200, 10)
+	ui.add_child(speaker)
+	note = label(6, Pix.P["ghost"])
+	note.position = Vector2(Pix.W - 170, 3)
+	note.size = Vector2(166, 10)
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	ui.add_child(note)
-	card = _label(16, Pix.P["bone"])
-	card.position = Vector2(0, 2)
+	card = label(16, Pix.P["bone"])
+	card.position = Vector2(0, 50)
 	card.size = Vector2(Pix.W, 24)
 	card.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ui.add_child(card)
-	card_sub = _label(8, Pix.P["ghost"])
-	card_sub.position = Vector2(0, 138)
+	card_sub = label(8, Pix.P["ghost"])
+	card_sub.position = Vector2(0, 76)
 	card_sub.size = Vector2(Pix.W, 14)
 	card_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ui.add_child(card_sub)
 
 
-func _label(size: int, col: Color) -> Label:
+static func label(size: int, col: Color) -> Label:
 	var l := Label.new()
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", col)
@@ -128,10 +143,17 @@ func _label(size: int, col: Color) -> Label:
 	return l
 
 
-## One short line at a time; seconds > 0 hides it again after that long.
-func say(words: String, seconds: float = 0.0) -> void:
+## A line from a character (who = "" for the narrator).
+func speak(who: String, words: String) -> void:
+	speaker.text = who
 	line.text = words
-	_line_panel.visible = words != ""
+	_box.visible = words != ""
+	_line_left = 0.0
+
+
+## One short line with no speaker; seconds > 0 hides it again after that long.
+func say(words: String, seconds: float = 0.0) -> void:
+	speak("", words)
 	_line_left = seconds
 
 
@@ -141,11 +163,16 @@ func show_card(title: String, sub: String) -> void:
 
 
 func set_saturation(value: float, seconds: float = 0.0) -> void:
-	if seconds <= 0.0:
+	if seconds <= 0.0 or not is_inside_tree():
+		if _sat_tween:
+			_sat_tween.kill()
 		_gray.set_shader_parameter("sat", value)
 		return
+	if _sat_tween:
+		_sat_tween.kill()
 	var from: float = _gray.get_shader_parameter("sat")
-	create_tween().tween_method(func(v: float): _gray.set_shader_parameter("sat", v), from, value, seconds)
+	_sat_tween = create_tween()
+	_sat_tween.tween_method(func(v: float): _gray.set_shader_parameter("sat", v), from, value, seconds)
 
 
 func fade_in(seconds: float) -> void:
@@ -163,7 +190,7 @@ func _draw_fx(ci: CanvasItem) -> void:
 		if a["p"].x < 0:
 			a["p"].x += Pix.W
 		var c: Color = a["c"]
-		c.a = 0.6
+		c.a = 0.5
 		ci.draw_rect(Rect2(floorf(a["p"].x), floorf(a["p"].y), 1, 1), c)
 
 

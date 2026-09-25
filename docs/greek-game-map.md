@@ -10,6 +10,9 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
   The world is gray; only memories have color. Music: slow, dark and grand (King's Field IV mood), original.
 - **No quizzes, no health-bar battles.** You learn an idea by playing it: the idea is the rule
   of the level, or you live the choice and its cost.
+- **Guided stories (BB1 playtest, 2026-09-25):** abstract silent puzzles were rejected as too
+  esoteric. Every stage is a guided story: a guide explains in plain words, and the player plays a
+  game everyone already knows (Guess Who, a witness report, spotting a con, walking your house).
 - **Quick stages:** one work is one stage, about 10 minutes. One short line of text at a time.
   Book names, authors and Greek words are optional extras, never required.
 - **Music is made in-house, in code** (BB1 approved the preview's sketch, 2026-09-25): low drones,
@@ -29,11 +32,11 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
 ## Stages (reading-list order)
 | # | Work | What you play |
 |---|---|---|
-| 1 | Porphyry, Isagoge | Rebuild a shattered statue: strip what is extra, keep what makes it *that* thing (genus, species, difference, property, accident) |
-| 2 | Aristotle, Categories | A ruined storeroom that only settles when everything is on its right shelf |
-| 3 | Aristotle, the Organon | Cross a chasm on bridges of argument: valid forms hold, fallacies collapse; a trickster offers shortcuts |
-| 4 | Rhetorica ad Herennium | Build a memory palace: place memories in rooms, walk back to recall them (the camp works this way) |
-| 5 | Euclid, Elements | Rebuild a fallen temple with only compass and straight edge |
+| 1 | Porphyry, Isagoge | BUILT: Guess Who against Porphyry (Sicily, 270 AD); questions split families (genus, species, difference), the cloak is an accident, laughing a property; ends on the open question of universals |
+| 2 | Aristotle, Categories | BUILT: ask a theft witness the ten questions; the report fills; the man himself is substance |
+| 3 | Aristotle, the Organon | BUILT: ten coins in the Agora; one sound syllogism and five tricks (consequent, "your dog is your father", circular, many questions, after-so-because) |
+| 4 | Rhetorica ad Herennium | BUILT: defend Gaius; five steps of a speech; place strange pictures in your house, walk it again in court |
+| 5 | Euclid, Elements | BUILT: rope and pegs for Prop. 1's equal triangle, then 9 + 16 = 25 tiles for Prop. 47; "no royal road" |
 | 6 | Homer, Iliad and Odyssey | Achilles' pride, Hector at the gate, Priam kneels; Odysseus comes home |
 | 7 | Hesiod | Sons overthrow fathers, again and again; a farming year where shortcuts fail |
 | 8 | Sappho | Piece together torn poems, knowing most pieces are gone forever |
