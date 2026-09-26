@@ -120,8 +120,9 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	check_eq(hall.here, "hub", "you start on the Shore")
-	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate")
+	hall.travel("hub")
+	check_eq(hall.here, "hub", "Greece's hub is the Shore")
+	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and i["to"] != "nexus")
 	check_eq(gates.size(), 17, "one gateway for every Greek work")
 	check_eq(gates.map(func(g): return g["to"]), Rooms.doors().map(func(d): return d["work"]), "gateways follow the reading list")
 	check(gates[0]["open"] and gates[1]["open"] and not gates[2]["open"], "the first two are open, the rest not yet")
@@ -132,6 +133,7 @@ func test_porphyrys_villa_has_everything() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("hub")
 	hall.activate(hall.interactables[0])
 	check_eq(hall.here, "porphyry-isagoge", "the first gateway leads to Porphyry's place")
 	var kinds := {}
@@ -247,6 +249,7 @@ func test_mastery_lights_the_gateway_and_restores_the_temple() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("hub")
 	var before: int = hall.restored_columns
 	hall.progress.learn("porphyry-isagoge", Rooms.room("porphyry-isagoge")["lesson"].map(func(x): return x["id"]))
 	hall.progress.check_mastery("porphyry-isagoge", Rooms.room("porphyry-isagoge")["lesson"])
@@ -305,7 +308,7 @@ func test_you_can_sit_and_watch_the_sunset() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	for place in ["hub", "porphyry-isagoge"]:
+	for place in ["hub", "porphyry-isagoge", "nexus"]:
 		hall.travel(place)
 		var seats: Array = hall.interactables.filter(func(i): return i["kind"] == "seat")
 		check(seats.size() >= 1, "%s has somewhere to sit" % place)
@@ -323,6 +326,7 @@ func test_the_places_are_alive() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("hub")
 	check(hall.birds.size() >= 5, "swallows circle over the Shore")
 	check(hall.sway.size() >= 7, "the Shore's trees stir in the breeze")
 	var p0: Vector3 = hall.birds[0]["node"].position
@@ -338,6 +342,7 @@ func test_the_toad_follows_you_everywhere() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("hub")
 	check(not hall.toad.is_empty(), "a fat toad keeps you company")
 	hall.player.position += Vector3(6, 0, 0)
 	var before: float = hall.toad["root"].position.distance_to(hall.player.position)
