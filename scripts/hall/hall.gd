@@ -38,6 +38,8 @@ const BLINK_EVERY := 45.0
 const FALL_Y := -20.0  # below this you are falling through the void, for as long as you like
 const FALL_ASK := 10.0  # seconds of falling before you are asked if you are ready to stop
 const FALL_MAX := 30.0  # how fast you fall, at most (m/s)
+const FALL_DARK := 300.0  # seconds of falling until the stars, the light and the music are all gone
+const FALL_WRAP := [-1200.0, 4000.0]  # below the first, you are lifted by the second: the fall has no floor
 const GRAIL_AFTER := 60.0  # AUDITION (BB1 is listening): back to 1800.0, half an hour in the Nexus, all visits together
 const GRAIL_FILE := "res://assets/music/grail_voice.wav"  # "What is the secret of the grail? Who does it serve?"
 const GRAIL_SLOTS := [0.0, 24.0]  # it speaks only as the prelude's loop (48 s) turns to C minor or D flat
@@ -73,6 +75,7 @@ var ground: Array = []  # where you can stand, if the place says (the Nexus): di
 var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which way
 var _falling_since := -1.0  # when you went over the edge (-1: on solid ground)
 var _fall_fx: Node3D  # the stars rushing past while you fall
+var _fall_sky: Array = []  # the star shells, which sink with you so they never run out
 var _grail: AudioStreamPlayer  # the voice in the Nexus, once it has begun
 var _grail_last_pos := -1.0  # where the music was last frame, to catch it crossing a slot
 var _hint := ""  # the one goal, shown when nothing else is
@@ -505,6 +508,7 @@ func _catch_fall() -> void:
 		if player.position.y > FALL_Y:
 			return
 		_falling_since = _t
+		_fall_sky = world.find_children("*", "MultiMeshInstance3D", true, false)
 		_fall_fx = Node3D.new()
 		player.add_child(_fall_fx)
 		for layer in [["mote", 160, 0.08], ["mote_gold", 40, 0.14], ["ash", 60, 0.5]]:
@@ -514,8 +518,28 @@ func _catch_fall() -> void:
 			p.emission_box_extents = Vector3(14, 2, 14)
 			p.preprocess = 2.0
 	player.velocity.y = maxf(player.velocity.y, -FALL_MAX)
-	if player.position.y < -400.0:
-		player.position.y += 380.0
+	if player.position.y < FALL_WRAP[0]:  # far below everything but the stars, which come with you
+		player.position.y += FALL_WRAP[1]
+	for sky in _fall_sky:
+		if is_instance_valid(sky):
+			sky.position.y = minf(0.0, player.position.y)
+	_fall_fade(clampf((_t - _falling_since) / FALL_DARK, 0.0, 1.0))
+
+
+## How far the long fall has gone into the dark (0 to 1): the rushing stars thin out, the
+## picture sinks to black and the music dies away, all slowly, as if from very far off.
+func _fall_fade(k: float) -> void:
+	var gone := k * k  # slow at first, then the last of it goes
+	for env in world.find_children("*", "WorldEnvironment", true, false):
+		if env.environment:
+			env.environment.adjustment_brightness = 1.0 - gone
+	if is_instance_valid(_fall_fx):
+		for p in _fall_fx.get_children():
+			(p as CPUParticles3D).scale_amount_min = maxf(0.0, 1.0 - gone)  # they dwindle to nothing
+			(p as CPUParticles3D).scale_amount_max = maxf(0.0, 1.0 - gone)
+	var bus := AudioServer.get_bus_index(Music.BUS)
+	if bus != -1:
+		AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(1.0 - gone, 0.0001)))
 
 
 func _ready_to_land() -> bool:
@@ -528,6 +552,11 @@ func _stop_falling() -> void:
 		_falling_since = -1.0
 		if is_instance_valid(_fall_fx):
 			_fall_fx.queue_free()
+		_fall_fade(0.0)
+		for sky in _fall_sky:
+			if is_instance_valid(sky):
+				sky.position.y = 0.0
+		_fall_sky = []
 		player.position = _arrival[0]
 		player.rotation.y = _arrival[1]
 		player.velocity = Vector3.ZERO
