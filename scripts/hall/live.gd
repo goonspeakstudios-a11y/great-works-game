@@ -12,6 +12,9 @@ const Tex := preload("res://scripts/hall/textures.gd")
 
 const DIRS := ["res://scripts/hall", "res://scripts/pixel", "res://content", "res://content/greece"]
 const EVERY := 0.5  # seconds between looks
+## Never swapped while running: this file, and the Hall that is running it. Swapping a script in
+## the middle of one of its own calls crashes the game; a change to either asks for F6 instead.
+const RUNNING := ["res://scripts/hall/live.gd", "res://scripts/hall/hall.gd"]
 
 static var resume := ""  # the place to come back to after F5
 
@@ -62,7 +65,7 @@ func _changed() -> Array:
 func refresh() -> void:
 	for dir in DIRS:
 		for f in DirAccess.get_files_at(dir):
-			if f.ends_with(".gd"):
+			if f.ends_with(".gd") and not RUNNING.has(dir.path_join(f)):
 				_reload(dir.path_join(f))
 	resume = hall.here if hall else ""
 	get_tree().reload_current_scene()
@@ -93,6 +96,11 @@ func _reload(path: String) -> void:
 
 func apply(changed: Array) -> void:
 	for path in changed:
+		if RUNNING.has(path):
+			if hall:
+				hall._quip = "Live: %s changed. Press F6." % path.get_file()
+				hall._quip_until = hall._t + 6.0
+			return
 		if path.ends_with(".gd"):
 			_reload(path)
 	Rooms._rooms = {}
