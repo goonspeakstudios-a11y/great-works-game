@@ -187,7 +187,8 @@ func _ready() -> void:
 		music = Music.new()
 		add_child(music)
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # look around straight away
-	_load_place("hub" if _args.has("demo") else "nexus")
+	var back_to: String = load("res://scripts/hall/live.gd").resume if _args.has("live") else ""
+	_load_place(back_to if back_to != "" else ("hub" if _args.has("demo") else "nexus"))
 	_ok = true
 	if _args.has("live"):  # watch the files and rebuild as they change (Live)
 		var live: Node = load("res://scripts/hall/live.gd").new()

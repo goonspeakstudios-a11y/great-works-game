@@ -2,7 +2,7 @@ extends Node
 ## Live mode (--live): the game watches its own scripts and content while you play. When a file
 ## changes, the changed scripts are reloaded in place, the cached content is dropped, and the
 ## place you are standing in is rebuilt round you, so a change shows up without restarting.
-## F5 rebuilds the place by hand.
+## F5 reloads everything: every script afresh and the whole scene, back in the place you were in.
 
 const Rooms := preload("res://scripts/hall/rooms.gd")
 const Worlds := preload("res://scripts/hall/worlds.gd")
@@ -11,6 +11,8 @@ const Tex := preload("res://scripts/hall/textures.gd")
 
 const DIRS := ["res://scripts/hall", "res://scripts/pixel", "res://content", "res://content/greece"]
 const EVERY := 0.5  # seconds between looks
+
+static var resume := ""  # the place to come back to after F5
 
 var hall: Node
 var _seen := {}  # path -> modified time
@@ -33,7 +35,7 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F5:
-		apply([])
+		refresh()
 
 
 ## The files that changed since the last look.
@@ -51,15 +53,30 @@ func _changed() -> Array:
 	return out
 
 
+## The whole world afresh, without closing the window: every script reloaded from disk, then the
+## scene built again from the start, back in the place you were in.
+func refresh() -> void:
+	for dir in DIRS:
+		for f in DirAccess.get_files_at(dir):
+			if f.ends_with(".gd"):
+				_reload(dir.path_join(f))
+	resume = hall.here if hall else ""
+	get_tree().reload_current_scene()
+
+
+func _reload(path: String) -> void:
+	var sc := load(path) as GDScript
+	if sc:
+		sc.source_code = FileAccess.get_file_as_string(path)
+		var err := sc.reload(true)
+		if err != OK:
+			push_warning("Live: could not reload %s (%s)" % [path, error_string(err)])
+
+
 func apply(changed: Array) -> void:
 	for path in changed:
 		if path.ends_with(".gd"):
-			var sc := load(path) as GDScript
-			if sc:
-				sc.source_code = FileAccess.get_file_as_string(path)
-				var err := sc.reload(true)
-				if err != OK:
-					push_warning("Live: could not reload %s (%s)" % [path, error_string(err)])
+			_reload(path)
 	Rooms._rooms = {}
 	Worlds._worlds = {}
 	Nexus._content = {}
@@ -67,5 +84,5 @@ func apply(changed: Array) -> void:
 	if hall and not hall.travelling:
 		hall.doors = Rooms.doors()
 		hall._load_place(hall.here, true)
-		hall._quip = "Live: rebuilt (%s)" % (", ".join(changed.map(func(p: String) -> String: return p.get_file())) if not changed.is_empty() else "F5")
+		hall._quip = "Live: rebuilt (%s)" % (", ".join(changed.map(func(p: String) -> String: return p.get_file())) if not changed.is_empty() else "by hand")
 		hall._quip_until = hall._t + 3.0
