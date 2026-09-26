@@ -4,6 +4,9 @@ Every zone has its own track: the Shore's is slow, dark and grand (a low drone, 
 minor chords, distant bells triggered in-game); Porphyry's Sicily is warmer, a plucked
 lyre (a simulated string, Karplus-Strong) over a soft drone in the Dorian mode; Aristotle's
 Lyceum is a bright morning, pan pipes in the Phrygian mode over a walking bass.
+A place's track is written as layers (stems) of the same length that loop in step, so the
+game can bring them back one at a time as the place is restored; each place also has its
+"ghost", the faint echo of its tune heard while the place is lost to the world.
 Ambient loops give each place its sound: waves, wind, fire, cicadas, a fountain, birds, a stream.
 Reverb is added in-game on the Music bus, so these files are dry. Loops are seamless:
 drone partials fit the loop exactly, tails past the end fold back to the start, and
@@ -119,31 +122,37 @@ def pluck(buf: list[float], freq: float, level: float, start: int, seconds: floa
 SICILY_SCALE = [220.0, 246.94, 261.63, 293.66, 329.63, 369.99, 392.0, 440.0, 493.88, 523.25]
 
 
-def render_lyre(seconds: int = 48, seed: int = 11) -> list[float]:
+def _fold(buf: list[float], total: int) -> list[float]:
+    """Fold everything past the loop end back onto the start, so the loop has no seam."""
+    out = buf[:total]
+    for n in range(total, len(buf)):
+        out[n - total] += buf[n]
+    return out
+
+
+def render_sicily(seconds: int = 48, seed: int = 11) -> dict[str, list[float]]:
+    """Porphyry's Sicily in three layers: the drone, the lyre, and the low notes under it."""
     rng = random.Random(seed)
     total = seconds * RATE
-    buf = [0.0] * (total + 4 * RATE)
+    stems = {k: [0.0] * (total + 4 * RATE) for k in ("drone", "lyre", "low")}
     for freq, level in ((110.0, 0.05), (164.81, 0.03), (220.0, 0.012)):
         f = fit(freq, seconds)
-        osc(buf, f, level, 0, lambda n: 1.0 if n < total else -1)
-        osc(buf, fit(f * 2, seconds), level * 0.25, 0, lambda n: 1.0 if n < total else -1)
+        osc(stems["drone"], f, level, 0, lambda n: 1.0 if n < total else -1)
+        osc(stems["drone"], fit(f * 2, seconds), level * 0.25, 0, lambda n: 1.0 if n < total else -1)
     t = 0.6
     step = 4
     while t < seconds - 3.0:
         for k in range(rng.randint(4, 7)):  # a phrase: a gentle walk up and down the mode
             step = max(0, min(len(SICILY_SCALE) - 1, step + rng.choice([-2, -1, -1, 1, 1, 2])))
             last = k == 6 or rng.random() < 0.15
-            pluck(buf, SICILY_SCALE[step], 0.2 if not last else 0.24, int(t * RATE), 3.0, rng)
+            pluck(stems["lyre"], SICILY_SCALE[step], 0.2 if not last else 0.24, int(t * RATE), 3.0, rng)
             if rng.random() < 0.25:  # sometimes a low note under it
-                pluck(buf, SICILY_SCALE[step] / 2, 0.12, int(t * RATE), 3.0, rng, 0.3)
+                pluck(stems["low"], SICILY_SCALE[step] / 2, 0.12, int(t * RATE), 3.0, rng, 0.3)
             t += rng.choice([0.45, 0.6, 0.6, 0.9]) + (0.8 if last else 0.0)
             if last:
                 break
         t += rng.uniform(1.4, 2.6)  # rest between phrases
-    out = buf[:total]
-    for n in range(total, len(buf)):
-        out[n - total] += buf[n]
-    return out
+    return {k: _fold(v, total) for k, v in stems.items()}
 
 
 # Aristotle's Lyceum, a bright morning in Athens: a syrinx (pan pipes) in E Phrygian over a
@@ -151,7 +160,8 @@ def render_lyre(seconds: int = 48, seed: int = 11) -> list[float]:
 ATHENS_SCALE = [329.63, 349.23, 392.0, 440.0, 493.88, 523.25, 587.33, 659.26, 698.46, 783.99]
 
 
-def pipe(buf: list[float], freq: float, level: float, start: int, seconds: float, rng: random.Random) -> None:
+def pipe(buf: list[float], freq: float, level: float, start: int, seconds: float, rng: random.Random,
+         attack: float = 0.06) -> None:
     """A breathy pipe note: a sine with slow vibrato and a little air, swelling in and out."""
     total = int(seconds * RATE)
     phase = 0.0
@@ -160,7 +170,7 @@ def pipe(buf: list[float], freq: float, level: float, start: int, seconds: float
         if start + n >= len(buf):
             break
         t = n / RATE
-        env = min(1.0, n / (0.06 * RATE)) * min(1.0, (total - n) / (0.12 * RATE))
+        env = min(1.0, n / (attack * RATE)) * min(1.0, (total - n) / (max(0.12, attack) * RATE))
         vib = 1.0 + 0.006 * math.sin(TAU * 5.5 * t) * min(1.0, t / 0.4)
         phase += freq * vib * TABLE_SIZE / RATE
         air += (rng.uniform(-1, 1) - air) * 0.3
@@ -168,32 +178,71 @@ def pipe(buf: list[float], freq: float, level: float, start: int, seconds: float
         buf[start + n] += (tone + air * 0.08) * level * env
 
 
-def render_athens(seconds: int = 48, seed: int = 23) -> list[float]:
+def drum(buf: list[float], start: int, level: float, rng: random.Random) -> None:
+    """A marching drum: a low skin that drops in pitch as it settles, with a little slap."""
+    for n in range(int(0.35 * RATE)):
+        if start + n >= len(buf):
+            break
+        t = n / RATE
+        f = 68.0 * (1.0 + 0.6 * math.exp(-t * 30.0))
+        env = math.exp(-t * 9.0)
+        slap = rng.uniform(-1, 1) * 0.25 * math.exp(-t * 40.0)
+        buf[start + n] += (math.sin(TAU * f * t) * 0.9 + slap) * env * level
+
+
+def render_athens(seconds: int = 48, seed: int = 23) -> dict[str, list[float]]:
+    """Aristotle's Lyceum in four layers: the drone, the walking bass, the pipes, and the
+    soldiers' drum (heard only once they are men again)."""
     rng = random.Random(seed)
     total = seconds * RATE
-    buf = [0.0] * (total + 4 * RATE)
+    stems = {k: [0.0] * (total + 4 * RATE) for k in ("drone", "walk", "pipes", "drum")}
     for freq, level in ((82.41, 0.045), (123.47, 0.03), (164.81, 0.018)):  # E2, B2, E3
         f = fit(freq, seconds)
-        osc(buf, f, level, 0, lambda n: 1.0 if n < total else -1)
-        osc(buf, fit(f * 2, seconds), level * 0.2, 0, lambda n: 1.0 if n < total else -1)
-    beat = 60.0 / 66.0  # an unhurried walking pace
-    t = 0.0
-    while t < seconds:  # the walk: a low note every other step
-        pluck(buf, 82.41 if int(t / beat) % 4 else 123.47, 0.13, int(t * RATE), 1.6, rng, 0.25)
-        t += beat * 2
+        osc(stems["drone"], f, level, 0, lambda n: 1.0 if n < total else -1)
+        osc(stems["drone"], fit(f * 2, seconds), level * 0.2, 0, lambda n: 1.0 if n < total else -1)
+    beat = seconds / 52  # an unhurried walking pace (about 65 steps a minute), fitted to the loop
+    for k in range(0, 52, 2):  # the walk: a low note every other step
+        pluck(stems["walk"], 123.47 if k % 4 == 0 else 82.41, 0.13, int(k * beat * RATE), 1.6, rng, 0.25)
+    drum_rng = random.Random(seed + 1)
+    for k in range(52):  # left, right: every step, the left a little heavier
+        drum(stems["drum"], int(k * beat * RATE), 0.2 if k % 2 == 0 else 0.13, drum_rng)
     t = 1.2
     step = 4
     while t < seconds - 4.0:
         for k in range(rng.randint(3, 6)):  # a phrase on the pipe
             step = max(0, min(len(ATHENS_SCALE) - 1, step + rng.choice([-2, -1, 1, 1, 2, 3])))
             length = rng.choice([0.5, 0.75, 1.0, 1.5])
-            pipe(buf, ATHENS_SCALE[step], 0.16, int(t * RATE), length * 0.95, rng)
+            pipe(stems["pipes"], ATHENS_SCALE[step], 0.16, int(t * RATE), length * 0.95, rng)
             t += length
         t += rng.uniform(2.0, 3.5)  # then quiet, and the walk goes on
-    out = buf[:total]
-    for n in range(total, len(buf)):
-        out[n - total] += buf[n]
-    return out
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
+def render_ghost(scale: list[float], root: float, voice: str, seconds: int = 48, seed: int = 41) -> list[float]:
+    """A place's tune as it is while the place is lost: its own mode an octave down, slow and
+    sparse, each note doubled a little out of tune, over a cold drone that beats against itself."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    buf = [0.0] * (total + 6 * RATE)
+    for freq, level in ((root, 0.05), (root * 1.006, 0.045), (root * 2.0, 0.01)):
+        osc(buf, fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    t = 2.0
+    step = 3
+    while t < seconds - 5.0:
+        for _ in range(rng.randint(1, 3)):  # a fragment of the old tune
+            step = max(0, min(len(scale) - 1, step + rng.choice([-2, -1, 1])))
+            f = scale[step] / 2
+            if voice == "pipe":
+                length = rng.choice([1.8, 2.4, 3.0])
+                pipe(buf, f, 0.12, int(t * RATE), length, rng, attack=0.5)
+                pipe(buf, f * 1.007, 0.07, int((t + 0.05) * RATE), length, rng, attack=0.5)
+            else:
+                length = 1.6
+                pluck(buf, f, 0.18, int(t * RATE), 5.0, rng, 0.2, 0.998)
+                pluck(buf, f * 1.007, 0.1, int((t + 0.03) * RATE), 5.0, rng, 0.2, 0.998)
+            t += length
+        t += rng.uniform(3.5, 6.5)  # long silences
+    return _fold(buf, total)
 
 
 def render_birds(seconds: int = 14, seed: int = 29) -> list[float]:
@@ -347,8 +396,9 @@ def render_bell(seconds: float = 7.0, base: float = 587.33) -> list[float]:
     return out
 
 
-def write_wav(path: Path, samples: list[float], peak: float) -> None:
-    top = max(1e-9, max(abs(s) for s in samples))
+def write_wav(path: Path, samples: list[float], peak: float, top: float | None = None) -> None:
+    """Write a mono 16-bit file, scaled so `top` (by default its own loudest sample) hits `peak`."""
+    top = top or max(1e-9, max(abs(s) for s in samples))
     data = array.array("h", (int(s / top * peak * 32767) for s in samples))
     if sys.byteorder == "big":
         data.byteswap()
@@ -360,11 +410,20 @@ def write_wav(path: Path, samples: list[float], peak: float) -> None:
     logger.info("Wrote %s (%.1f s)", path.name, len(samples) / RATE)
 
 
+def write_stems(name: str, stems: dict[str, list[float]], peak: float) -> None:
+    """Write a track's layers with one shared scale, so together they sound as mixed."""
+    mix = [sum(v) for v in zip(*stems.values())]
+    top = max(1e-9, max(abs(s) for s in mix))
+    for part, samples in stems.items():
+        write_wav(OUT / f"{name}_{part}.wav", samples, peak, top)
+
+
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     OUT.mkdir(parents=True, exist_ok=True)
     write_wav(OUT / "shore.wav", render_loop(E1), 0.7)
-    write_wav(OUT / "sicily.wav", render_lyre(), 0.7)
+    write_stems("sicily", render_sicily(), 0.7)
+    write_wav(OUT / "sicily_ghost.wav", render_ghost(SICILY_SCALE, 110.0, "lyre", seed=43), 0.7)
     write_wav(OUT / "wind.wav", render_wind(12), 0.35)
     write_wav(OUT / "bell.wav", render_bell(), 0.6)
     write_wav(OUT / "waves.wav", render_waves(), 0.5)
@@ -372,7 +431,8 @@ def main() -> int:
     write_wav(OUT / "fire.wav", render_fire(), 0.4)
     write_wav(OUT / "fountain.wav", render_fountain(), 0.3)
     write_wav(OUT / "croak.wav", render_croak(), 0.8)
-    write_wav(OUT / "athens.wav", render_athens(), 0.7)
+    write_stems("athens", render_athens(), 0.7)
+    write_wav(OUT / "athens_ghost.wav", render_ghost(ATHENS_SCALE, 82.41, "pipe", seed=41), 0.7)
     write_wav(OUT / "birds.wav", render_birds(), 0.4)
     write_wav(OUT / "stream.wav", render_stream(), 0.3)
     return 0

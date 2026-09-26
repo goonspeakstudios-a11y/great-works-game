@@ -18,12 +18,24 @@ Categories are taught in his own words from the book itself.
 6. (BB1) Alexander's men: a block of sixteen pikemen marching a circuit of the meadow beyond the
    grove, the sixteen-rayed sun of Macedon on every shield; F tells you who they are.
 7. The Categories text (Edghill, public domain) in the library of passages, 63 of them.
+8. (BB1) Lost to the world: "This place feels too good. These materials are almost lost in the
+   world." Every place starts lost: grey sky, falling ash, no colour, dead trees, a dry stream,
+   a broken walkway, the teacher a pale shade, the soldiers undead. Each lesson point you
+   understand brings one piece back when you turn from the teacher (a wash of warm light and a
+   line saying what returned), in order: Lyceum water, leaves, walkway, sun, teacher, soldiers;
+   villa water, leaves, lamps, sun, teacher, household. Colour returns step by step with them.
+9. (BB1) The music tells the truth: a lost place plays only a faint, out-of-tune echo of its
+   tune and a loud wind. Each piece brought back returns its own layer (stream, birds, the
+   walking bass, the warm drone, the teacher's melody, the soldiers' drum), in step, until the
+   echo is gone and the whole track plays.
 
 ## Playtest checklist for BB1
 - Does the Lyceum feel like a different place from the villa (light, sound, pace)?
 - Did you find Aristotle without being told where? Did you like walking beside him?
 - Ask him the four suggested questions and one of your own. Do his answers sound like him?
-- Watch the soldiers for a minute. Do they read as Macedonians?
+- Watch the dead soldiers for a minute. Do they read as Alexander's men, long dead?
+- Does the Lyceum feel lost at first? After each point you explain back, does a piece of it
+  return, and can you hear the music change? Is the wait until you close the talk right?
 - Anything annoying, confusing or ugly?
 
 ## Retro

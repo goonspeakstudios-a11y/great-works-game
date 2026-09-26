@@ -50,7 +50,9 @@ var travelling := false
 var progress: RefCounted  # what the player has learned (Progress)
 var teacher := {}  # the author in person, if this place has one: {root, head, hand}
 var people: Array = []  # everyone here in person, the teacher first
-var squads: Array = []  # soldiers marching a circuit: {root, legs, path, leg, speed, step}
+var squads: Array = []  # soldiers marching a circuit: {root, legs, path, leg, speed, step, undead}
+var restored_here: Array = []  # the pieces of this place that are back (Places.back)
+var _restore_pending := false  # something was understood: bring a piece back when the talk ends
 var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
 var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
@@ -169,8 +171,11 @@ func _ready() -> void:
 
 
 ## Screenshot mode for checking the look without playing:
-##   godot --path . -- --shot=C:/out.png --view=hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|lyceum_map
+##   godot --path . -- --shot=C:/out.png --view=hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map [--stage=0-6]
 func _stage_shot(view: String) -> void:
+	if _args.has("stage"):  # --stage=N: see the places with N pieces brought back
+		for d in doors.slice(0, 2):
+			progress.learn(d["work"], Rooms.room(d["work"]).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
 	if view in ["lyceum", "walk", "lyceum_map", "march"]:
 		_load_place(doors[1]["work"])
 	elif not view in ["hub", "gate", "ruins", "head", "toad"]:
@@ -183,7 +188,7 @@ func _stage_shot(view: String) -> void:
 			people[0]["root"].position = Vector3(-6.5, 0, 4.0)
 			people[0]["root"].rotation.y = 0.0
 		"march":
-			_stand(Vector3(37, 0, 9), Vector3(30, 0, 15))  # their shield side
+			_stand(Vector3(33.2, 0, 14.0), Vector3(30.5, 0, 16.6))  # close, on their shield side
 		"lyceum_map":
 			_stand(spots["map"], spots["map"] + Vector3(-5, 0, 0))
 			activate(interactables.filter(func(i): return i["kind"] == "map")[0])
@@ -262,20 +267,22 @@ func travel(to: String) -> void:
 	travelling = false
 
 
-func _load_place(to: String) -> void:
+func _load_place(to: String, keep: bool = false) -> void:
+	var held := _where_everyone_is() if keep else {}
 	for c in world.get_children():
 		world.remove_child(c)
 		c.queue_free()
 	var world_id: String = "greece" if to == "hub" else Rooms.room(to).get("world", "greece")
 	_view.size = Worlds.render_size(world_id, DisplayServer.window_get_size())
 	Kit.detail = Worlds.detail(world_id)
-	var built: Dictionary = Places.hub(world, doors, progress) if to == "hub" else Places.place(world, to, Rooms.room(to))
-	if to != "hub":
+	var built: Dictionary = Places.hub(world, doors, progress) if to == "hub" else Places.place(world, to, Rooms.room(to), _stage(to))
+	if to != "hub" and not keep:
 		progress.visit(to)
 		progress.save()
 	here = to
+	restored_here = built.get("back", [])
 	if music:
-		music.play("shore" if to == "hub" else Rooms.room(to).get("zone", "shore"))
+		music.play("shore" if to == "hub" else Rooms.room(to).get("zone", "shore"), restored_here)
 	people = built.get("people", [])
 	squads = built.get("squads", [])
 	teacher = people[0] if not people.is_empty() else {}
@@ -293,12 +300,69 @@ func _load_place(to: String) -> void:
 	_seat = {}
 	if music:
 		music.swell(false)
-	player.position = built["spawn"]
-	player.rotation.y = built["yaw"]
+	if keep:
+		_put_back(held)
+	else:
+		player.position = built["spawn"]
+		player.rotation.y = built["yaw"]
 	player.velocity = Vector3.ZERO
 	target = {}
 	if _where:
 		_where.text = here_name
+
+
+## How many pieces of a book's place are back: one for each lesson point understood.
+func _stage(work: String) -> int:
+	return mini(progress.understood(work).size(), Rooms.room(work).get("restores", []).size())
+
+
+## Where you, the people and the soldiers are, so a place can be rebuilt around you.
+func _where_everyone_is() -> Dictionary:
+	var at := func(d: Dictionary) -> Array:
+		return [d["root"].position, d["root"].rotation.y, d.get("leg", 0)] if is_instance_valid(d.get("root")) else []
+	return {"player": [player.position, player.rotation.y], "people": people.map(at), "squads": squads.map(at)}
+
+
+func _put_back(held: Dictionary) -> void:
+	player.position = held["player"][0]
+	player.rotation.y = held["player"][1]
+	for group in [["people", people], ["squads", squads]]:
+		var was: Array = held[group[0]]
+		for i in mini(was.size(), group[1].size()):
+			if was[i].is_empty():
+				continue
+			group[1][i]["root"].position = was[i][0]
+			group[1][i]["root"].rotation.y = was[i][1]
+			group[1][i]["leg"] = was[i][2]
+
+
+## What you came to understand brings a piece of this place back: a wash of warm light, and
+## there it is, with a line saying what returned.
+func _restore() -> void:
+	var before := restored_here.duplicate()
+	if offline:
+		_load_place(here, true)
+	else:
+		travelling = true
+		player.frozen = true
+		_fade.color = Color(1.0, 0.94, 0.8, 0.0)
+		var out := create_tween()
+		out.tween_property(_fade, "color:a", 0.85, 0.6)
+		await out.finished
+		_load_place(here, true)
+		var back := create_tween()
+		back.tween_property(_fade, "color:a", 0.0, 1.8)
+		await back.finished
+		_fade.color = Color(0, 0, 0, 0)
+		player.frozen = false
+		travelling = false
+	var lines: Array = []
+	for r in Rooms.room(here).get("restores", []):
+		if restored_here.has(r["what"]) and not before.has(r["what"]):
+			lines.append(r["line"])
+	if not lines.is_empty():
+		_quip = "\n".join(lines)
+		_quip_until = _t + 6.0
 
 
 # ---------- interface ----------
@@ -588,7 +652,8 @@ func _build_tree_panel() -> void:
 
 func _open_ask(work: String) -> void:
 	_ask_work = work
-	_ask_room = Rooms.room(work)
+	_ask_room = Rooms.room(work).duplicate()
+	_ask_room["state"] = _state_note(work)
 	_ask_portrait.texture = Portrait.make(_ask_room.get("portrait", {}))
 	_ask_name.text = _ask_room["author"]
 	_ask_life.text = _ask_room["life"]
@@ -615,6 +680,19 @@ func _send(question: String) -> void:
 	author.ask(_ask_work, _ask_room, _book(_ask_work), question, progress.understood(_ask_work), progress.visits(_ask_work))
 
 
+## What the teacher is told about his place as it is now: lost, partly back, or whole.
+func _state_note(work: String) -> String:
+	var room := Rooms.room(work)
+	var total: int = room.get("restores", []).size()
+	if total == 0:
+		return ""
+	var home: String = room.get("home", "home")
+	if _stage(work) >= total:
+		return "Where you are now: your %s is alive again, brought back by what this visitor came to understand. You are glad of it." % home
+	return ("Where you are now: your %s has faded almost out of the world. It lies grey and in ruins, and you are only a pale shade of yourself. " +
+		"Each point the visitor truly understands brings a piece of it back (%d of %d so far). You may say so once, in a few words, if it fits; never dwell on it.") % [home, _stage(work), total]
+
+
 ## His first words: a greeting the first time, a welcome back that picks up where you left off.
 func _greeting(work: String) -> String:
 	var room := Rooms.room(work)
@@ -622,7 +700,7 @@ func _greeting(work: String) -> String:
 	if progress.is_mastered(work):
 		return "You again, my friend. You know my little book as well as I do now. Ask me anything."
 	if have.is_empty():
-		return room.get("greeting", "Ask me anything about my book.")
+		return room.get("greeting_lost", room.get("greeting", "Ask me anything about my book."))
 	var done: Array = room.get("lesson", []).filter(func(p): return have.has(p["id"])).map(func(p): return p["label"])
 	return "Back again? Last time you came to understand: %s. Shall we go on?" % ", ".join(done).to_lower()
 
@@ -648,6 +726,9 @@ func _on_judged(work: String, ids: Array) -> void:
 	var room := Rooms.room(work)
 	var names: Array = room.get("lesson", []).filter(func(p): return fresh.has(p["id"])).map(func(p): return p["label"])
 	var note := "\n\n[color=#a6c8cc]On your tablet: %s[/color]" % ", ".join(names)
+	if work == here and not Rooms.room(work).get("restores", []).is_empty():
+		_restore_pending = true
+		note += "\n[i][color=#a6c8cc]Something in this place stirs.[/color][/i]"
 	if progress.check_mastery(work, room.get("lesson", [])):
 		note += "\n\n[i][color=#e0b660]%s[/color][/i]\n[color=#e0b660]You have mastered the %s. Its gateway on the Shore now burns.[/color]" % [
 			_esc(room.get("gift", "")), room.get("book", "book")]
@@ -747,6 +828,9 @@ func _close_panels() -> void:
 	player.frozen = false
 	if not offline:
 		Input.mouse_mode = _mouse_before
+	if _restore_pending:
+		_restore_pending = false
+		_restore()
 
 
 # ---------- moment to moment ----------
@@ -820,9 +904,10 @@ func _animate_squads(delta: float) -> void:
 			continue
 		root.position += d.normalized() * minf(d.length(), sq["speed"] * delta)
 		root.rotation.y = lerp_angle(root.rotation.y, atan2(d.x, d.z), minf(1.0, delta * 2.0))
-		sq["step"] += delta * 5.5
+		var dead: bool = sq.get("undead", false)
+		sq["step"] += delta * (3.8 if dead else 5.5)  # the dead drag their feet
 		for j in sq["legs"].size():
-			sq["legs"][j].rotation.x = sin(sq["step"] + (j % 2) * PI) * 0.5
+			sq["legs"][j].rotation.x = sin(sq["step"] + (j % 2) * PI) * (0.32 if dead else 0.5)
 
 
 ## A walking teacher paces between the points of his path; when you come close he stops,
@@ -944,7 +1029,7 @@ func activate(it: Dictionary) -> void:
 	match it.get("kind", ""):
 		"fact":
 			_show_read(it["text"])
-		"statue", "person":
+		"statue", "person", "look":
 			_show_read(it["note"])
 		"map":
 			_open_map(it)

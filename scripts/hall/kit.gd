@@ -90,8 +90,9 @@ static func blob(parent: Node3D, center: Vector3, radius: float, mat: String, sq
 ## Evening light over the sea. "golden" (the places you visit, like memories): a warm low sun,
 ## a violet-to-amber sky. "dusk" (the Shore, the lonely present): the sun almost gone, a deeper
 ## sky, the first stars.
-## The sky and light of a place: "golden" (late sun), "dusk" (the last light, first stars) or
-## "morning" (a clear bright day, the sun climbing in the east).
+## The sky and light of a place: "golden" (late sun), "dusk" (the last light, first stars),
+## "morning" (a clear bright day, the sun climbing in the east) or "ashen" (a place lost to the
+## world: a low grey sky, a weak cold sun, thick haze).
 const MOODS := {
 	"golden": {"top": "2a3a6e", "horizon": "f0aa74", "curve": 0.12, "ground": "b8765a", "bottom": "1a2230",
 		"ambient": "7c7a92", "ambient_energy": 0.65, "fog": "c89a84", "fog_density": 0.0022,
@@ -102,10 +103,14 @@ const MOODS := {
 	"morning": {"top": "2c5aa8", "horizon": "c8d8e8", "curve": 0.16, "ground": "a8b090", "bottom": "3a4a3a",
 		"ambient": "8a94a0", "ambient_energy": 0.8, "fog": "d0dce8", "fog_density": 0.0011,
 		"sun": [-38.0, 70.0], "sun_color": "fff4e0", "sun_energy": 1.3, "stars": false},
+	"ashen": {"top": "3a3e4c", "horizon": "8c8a90", "curve": 0.1, "ground": "5c5a5a", "bottom": "1c1e24",
+		"ambient": "6c7080", "ambient_energy": 0.6, "fog": "7e7e86", "fog_density": 0.0045,
+		"sun": [-22.0, 60.0], "sun_color": "b8bccc", "sun_energy": 0.45, "stars": false},
 }
 
 
-static func sunset(parent: Node3D, mood: String = "golden") -> DirectionalLight3D:
+## `saturation` below 1 drains the colour out of everything: a place fading from the world.
+static func sunset(parent: Node3D, mood: String = "golden", saturation: float = 1.0) -> DirectionalLight3D:
 	var m: Dictionary = MOODS.get(mood, MOODS["golden"])
 	var sky_mat := ProceduralSkyMaterial.new()
 	sky_mat.sky_top_color = Color(m["top"])
@@ -127,6 +132,9 @@ static func sunset(parent: Node3D, mood: String = "golden") -> DirectionalLight3
 	env.fog_density = m["fog_density"]
 	env.fog_sky_affect = 0.15
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	if saturation < 1.0:
+		env.adjustment_enabled = true
+		env.adjustment_saturation = saturation
 	var we := WorldEnvironment.new()
 	we.environment = env
 	parent.add_child(we)
@@ -330,21 +338,37 @@ static func tower_site(parent: Node3D, at: Vector3) -> void:
 
 
 ## An olive tree; returns its crown (branches and leaves), which the breeze can stir.
-static func olive(parent: Node3D, at: Vector3, size: float = 1.0) -> Node3D:
+static func olive(parent: Node3D, at: Vector3, size: float = 1.0, alive: bool = true) -> Node3D:
 	var g := group(parent, at, at.x * 1.7 + at.z)
-	cylinder(g, Vector3.ZERO, 0.2 * size, 1.1 * size, "trunk", true, 6, 0.15 * size)
+	var wood := "trunk" if alive else "deadwood"
+	cylinder(g, Vector3.ZERO, 0.2 * size, 1.1 * size, wood, true, 6, 0.15 * size)
 	var crown := group(g, Vector3(0, 1.0 * size, 0))
-	mesh(crown, _cyl(0.14 * size, 1.0 * size), "trunk", Vector3(0.18, 0.45, 0) * size, Vector3(0, 0, -0.5))
+	mesh(crown, _cyl(0.14 * size, 1.0 * size), wood, Vector3(0.18, 0.45, 0) * size, Vector3(0, 0, -0.5))
+	if not alive:
+		_bare(crown, size, [Vector3(0.5, 1.1, 0.1), Vector3(-0.4, 0.9, 0.3), Vector3(0.1, 1.4, -0.4), Vector3(0.6, 0.8, -0.5)])
+		return crown
 	for p in [Vector3(0.5, 1.3, 0.1), Vector3(-0.4, 1.1, 0.3), Vector3(0.1, 1.6, -0.4), Vector3(0.7, 0.9, -0.5)]:
 		blob(crown, p * size, 0.85 * size, "olive", Vector3(1.2, 0.75, 1.1))
 	return crown
 
 
-## A cypress; returns its green spire, which the breeze can stir.
-static func cypress(parent: Node3D, at: Vector3, height: float = 7.0) -> Node3D:
-	cylinder(parent, at, 0.16, 0.8, "trunk", true, 5)
+## Bare dead branches reaching out to the given tips, each with a crooked twig.
+static func _bare(crown: Node3D, size: float, tips: Array) -> void:
+	for tip in tips:
+		var d: Vector3 = tip * size
+		mesh(crown, _cyl(0.045 * size, d.length()), "deadwood", d / 2.0, Quaternion(Vector3.UP, d.normalized()).get_euler())
+		var off := Vector3(-d.z, 0.5 * size, d.x).normalized() * 0.5 * size
+		mesh(crown, _cyl(0.025 * size, off.length()), "deadwood", d * 0.6 + off / 2.0, Quaternion(Vector3.UP, off.normalized()).get_euler())
+
+
+## A cypress; returns its green spire (or, dead, a thin brown one), which the breeze can stir.
+static func cypress(parent: Node3D, at: Vector3, height: float = 7.0, alive: bool = true) -> Node3D:
+	cylinder(parent, at, 0.16, 0.8, "trunk" if alive else "deadwood", true, 5)
 	var spire := group(parent, at + Vector3(0, 0.6, 0))
-	cylinder(spire, Vector3.ZERO, 0.8, height, "cypress", false, 6, 0.05)
+	if alive:
+		cylinder(spire, Vector3.ZERO, 0.8, height, "cypress", false, 6, 0.05)
+	else:
+		cylinder(spire, Vector3.ZERO, 0.45, height * 0.8, "withered", false, 5, 0.03)
 	return spire
 
 
@@ -491,12 +515,23 @@ static func bed(parent: Node3D, at: Vector3, yaw: float) -> void:
 
 
 ## A hearth on the floor: a ring of stones, a fire, embers and smoke, and firewood beside
-## it. Returns the firelight for the Hall to flicker.
-static func hearth(parent: Node3D, at: Vector3) -> OmniLight3D:
+## it. Returns the firelight for the Hall to flicker (cold: grey ash and charred ends, no light).
+static func hearth(parent: Node3D, at: Vector3, lit: bool = true) -> OmniLight3D:
 	var g := group(parent, at)
 	g.set_meta("prop", "hearth")
 	cylinder(g, Vector3.ZERO, 0.6, 0.22, "stone", false, 8, 0.55)
 	cylinder(g, Vector3(0, 0.22, 0), 0.4, 0.02, "dark", false, 8)
+	for k in 3:
+		mesh(g, _cyl(0.06, 0.5), "wood", Vector3(0.85, 0.06 + k * 0.1, -0.2 + k * 0.05), Vector3(PI / 2.0, 0, 0.2 * k))
+	var body := CylinderShape3D.new()
+	body.radius = 0.6
+	body.height = 0.4
+	solid(g, body, Vector3(0, 0.2, 0))
+	if not lit:
+		blob(g, Vector3(0, 0.24, 0), 0.3, "ashbed", Vector3(1.0, 0.25, 1.0), 6)
+		for k in 2:
+			mesh(g, _cyl(0.05, 0.4), "dark", Vector3(-0.1 + k * 0.2, 0.28, 0), Vector3(PI / 2.0, 0, 0.6 * k))
+		return null
 	for p in [Vector3(0, 0.36, 0), Vector3(0.12, 0.3, 0.08), Vector3(-0.1, 0.32, -0.06)]:
 		blob(g, p, 0.16, "fire", Vector3(1.0, 1.5, 1.0), 5)
 	var embers := _drift(g, Vector3(0, 0.4, 0), 10, 2.0, 0.05, "fire", Vector3.UP, 20.0, Vector2(0.5, 1.0))
@@ -504,18 +539,12 @@ static func hearth(parent: Node3D, at: Vector3) -> OmniLight3D:
 	var smoke := _drift(g, Vector3(0, 0.6, 0), 5, 3.5, 0.6, "smoke", Vector3.UP, 8.0, Vector2(0.4, 0.7))
 	smoke.scale_amount_min = 0.5
 	smoke.scale_amount_max = 1.4
-	for k in 3:
-		mesh(g, _cyl(0.06, 0.5), "wood", Vector3(0.85, 0.06 + k * 0.1, -0.2 + k * 0.05), Vector3(PI / 2.0, 0, 0.2 * k))
 	var l := OmniLight3D.new()
 	l.position = Vector3(0, 0.9, 0)
 	l.light_color = Color("ff9a48")
 	l.light_energy = 1.6
 	l.omni_range = 7.0
 	g.add_child(l)
-	var body := CylinderShape3D.new()
-	body.radius = 0.6
-	body.height = 0.4
-	solid(g, body, Vector3(0, 0.2, 0))
 	return l
 
 
@@ -594,15 +623,47 @@ static func fireflies(parent: Node3D, center: Vector3, size: float) -> void:
 	p.color_ramp = ramp
 
 
+# ---------- lost to the world ----------
+
+## Grey ash drifting down over a lost place.
+static func ash(parent: Node3D, center: Vector3, size: float) -> void:
+	var p := _drift(parent, center + Vector3(0, 9.0, 0), 70, 10.0, 0.06, "ash", Vector3.DOWN, 25.0, Vector2(0.5, 1.0))
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(size, 1.0, size)
+	p.preprocess = 10.0
+	p.angular_velocity_min = -90.0
+	p.angular_velocity_max = 90.0
+
+
+## A shade: everything under `node` turns pale, cold and half see-through. The more of his
+## place is restored, the more solid he becomes (alpha).
+static func shade(node: Node, alpha: float) -> void:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.72, 0.78, 0.86, alpha)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.emission_enabled = true
+	m.emission = Color(0.35, 0.42, 0.55)
+	m.emission_energy_multiplier = 0.5
+	m.roughness = 1.0
+	for c in node.find_children("*", "MeshInstance3D", true, false):
+		(c as MeshInstance3D).material_override = m
+		(c as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
 # ---------- Athens: the Lyceum ----------
 
-## A plane tree: tall pale trunk, a broad light-green crown. Returns the crown for the breeze.
-static func plane_tree(parent: Node3D, at: Vector3, size: float = 1.0) -> Node3D:
+## A plane tree: tall pale trunk, a broad light-green crown (dead: bare grey branches).
+## Returns the crown for the breeze.
+static func plane_tree(parent: Node3D, at: Vector3, size: float = 1.0, alive: bool = true) -> Node3D:
 	var g := group(parent, at, at.x * 1.3 + at.z * 0.7)
-	cylinder(g, Vector3.ZERO, 0.34 * size, 4.6 * size, "bark", true, 7, 0.26 * size)
+	var bark := "bark" if alive else "deadwood"
+	cylinder(g, Vector3.ZERO, 0.34 * size, 4.6 * size, bark, true, 7, 0.26 * size)
 	for a in [0.6, 2.7, 4.6]:
-		box(g, Vector3(cos(a) * 0.9 * size, 4.4 * size, sin(a) * 0.9 * size), Vector3(0.22, 1.6, 0.22) * size, "bark", false, Vector3(0.3 * sin(a), 0, 0.3 * cos(a)))
+		box(g, Vector3(cos(a) * 0.9 * size, 4.4 * size, sin(a) * 0.9 * size), Vector3(0.22, 1.6, 0.22) * size, bark, false, Vector3(0.3 * sin(a), 0, 0.3 * cos(a)))
 	var crown := group(g, Vector3(0, 5.2 * size, 0))
+	if not alive:
+		_bare(crown, size, [Vector3(2.2, 1.6, 0.4), Vector3(-1.8, 1.9, -0.9), Vector3(0.3, 2.6, 1.6), Vector3(-0.6, 1.2, 2.2), Vector3(1.2, 2.2, -1.9)])
+		return crown
 	blob(crown, Vector3.ZERO, 2.6 * size, "plane", Vector3(1.25, 0.8, 1.15), 7)
 	blob(crown, Vector3(1.4 * size, 0.7 * size, 0.6 * size), 1.7 * size, "plane", Vector3(1.1, 0.8, 1.0), 6)
 	blob(crown, Vector3(-1.3 * size, 0.5 * size, -0.9 * size), 1.6 * size, "plane", Vector3(1.0, 0.75, 1.1), 6)
@@ -611,27 +672,46 @@ static func plane_tree(parent: Node3D, at: Vector3, size: float = 1.0) -> Node3D
 
 
 ## A stoa, the covered walkway: a back wall, a floor, a row of columns along the open side
-## (+Z of its group) and a roof. Runs along X for `length`.
-static func stoa(parent: Node3D, at: Vector3, yaw: float, length: float, depth: float) -> Node3D:
+## (+Z of its group) and a roof. Runs along X for `length`. In ruin (whole = false) most of the
+## roof is down, the wall has fallen low in places, and two columns in three are broken stumps
+## or lie fallen on the grass.
+static func stoa(parent: Node3D, at: Vector3, yaw: float, length: float, depth: float, whole: bool = true) -> Node3D:
 	var g := group(parent, at, yaw)
 	box(g, Vector3(0, 0.06, 0), Vector3(length + 0.6, 0.12, depth + 0.6), "paving", false)
-	box(g, Vector3(0, 2.1, -depth / 2.0), Vector3(length + 0.6, 4.2, 0.4), "stone")
 	for x in [-length / 2.0, length / 2.0]:
 		box(g, Vector3(x, 2.1, -0.4), Vector3(0.4, 4.2, depth - 0.8), "stone")
+	const SECTIONS := 6
+	var seg := (length + 0.6) / SECTIONS
+	for i in SECTIONS:  # the back wall and the roof, section by section
+		var x := -(length + 0.6) / 2.0 + seg * (i + 0.5)
+		var wall_h := 4.2 if whole or i in [0, 3, 4] else 1.6 + 0.5 * (i % 2)
+		box(g, Vector3(x, wall_h / 2.0, -depth / 2.0), Vector3(seg, wall_h, 0.4), "stone")
+		if whole or i in [0, 3]:
+			box(g, Vector3(x, 4.45, 0), Vector3(seg + 0.1, 0.3, depth + 1.0), "roof", false)
+			box(g, Vector3(x, 4.15, depth / 2.0 - 0.5), Vector3(seg, 0.3, 0.7), "marble", false)  # the beam over the columns
+	if not whole:  # a slab of the fallen roof, lying across the back of the walkway
+		box(g, Vector3(-(length + 0.6) / 2.0 + seg * 1.5, 0.4, -depth / 2.0 + 1.0), Vector3(seg * 0.7, 0.3, 1.4), "roof", false, Vector3(0.12, 0.2, 0.3))
 	var n := int(length / 3.0)
 	for k in n + 1:
-		column(g, Vector3(-length / 2.0 + k * (length / n), 0.12, depth / 2.0 - 0.5), 4.0)
-	box(g, Vector3(0, 4.45, 0), Vector3(length + 1.2, 0.3, depth + 1.0), "roof", false)
-	box(g, Vector3(0, 4.15, depth / 2.0 - 0.5), Vector3(length + 0.6, 0.3, 0.7), "marble", false)  # the beam over the columns
+		var cx := -length / 2.0 + k * (length / n)
+		var cz := depth / 2.0 - 0.5
+		if whole or k % 3 == 0:
+			column(g, Vector3(cx, 0.12, cz), 4.0)
+		elif k % 3 == 1:
+			column(g, Vector3(cx, 0.12, cz), 4.0, true)
+		else:  # fallen outward onto the grass
+			box(g, Vector3(cx, 0.24, cz), Vector3(0.9, 0.24, 0.9), "marble")
+			fallen_column(g, Vector3(cx + 0.3, 0, cz + 1.5), 0.25, 2.8)
 	return g
 
 
-## The Ilissos: a stream in a shallow bed with rocky banks, from one point to another.
-static func stream(parent: Node3D, from: Vector3, to: Vector3, width: float) -> void:
+## The Ilissos: a stream in a shallow bed with rocky banks, from one point to another (dry,
+## a cracked bed of stones, until it is restored).
+static func stream(parent: Node3D, from: Vector3, to: Vector3, width: float, flowing: bool = true) -> void:
 	var mid := (from + to) / 2.0
 	var length := from.distance_to(to)
 	var g := group(parent, Vector3(mid.x, 0, mid.z), atan2(to.x - from.x, to.z - from.z))
-	box(g, Vector3(0, 0.03, 0), Vector3(width, 0.06, length), "water", false)
+	box(g, Vector3(0, 0.03, 0), Vector3(width, 0.06, length), "water" if flowing else "drybed", false)
 	for side in [-1.0, 1.0]:
 		box(g, Vector3(side * (width / 2.0 + 0.35), 0.12, 0), Vector3(0.7, 0.24, length), "rock", false)
 	var rng := RandomNumberGenerator.new()
@@ -713,46 +793,60 @@ static func walker(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) ->
 ## A Macedonian foot soldier of Philip and Alexander: bare legs and greaves, a red tunic under
 ## a linen cuirass, a bronze helmet with its peak and crest, the small shield with the sun on
 ## his left arm, and the sarissa (a pike near six metres long) upright in his right hand.
-## Faces +Z. Returns his two legs, for marching.
-static func soldier(parent: Node3D, at: Vector3) -> Array:
+## Undead, he is bones in rotten linen, his bronze gone green, his pike snapped, a cold light
+## in his empty eyes. Faces +Z. Returns his two legs, for marching.
+static func soldier(parent: Node3D, at: Vector3, undead: bool = false) -> Array:
 	var g := group(parent, at)
-	var skin := "#c8a078"
+	var skin := "bone" if undead else "#c8a078"
+	var metal := "verdigris" if undead else "bronze"
+	var linen := "#8a8474" if undead else "#e8e0d0"
+	var limb := 0.045 if undead else 0.075
 	var legs: Array = []
 	for side in [-1.0, 1.0]:
 		var hip := group(g, Vector3(0.1 * side, 0.82, 0))
-		mesh(hip, _cyl(0.075, 0.78), skin, Vector3(0, -0.39, 0))
-		box(hip, Vector3(0, -0.5, 0.0), Vector3(0.14, 0.4, 0.15), "bronze", false)  # greave
-		box(hip, Vector3(0, -0.8, 0.06), Vector3(0.13, 0.05, 0.25), "#6a4a34", false)  # sandal
+		mesh(hip, _cyl(limb, 0.78), skin, Vector3(0, -0.39, 0))
+		box(hip, Vector3(0, -0.5, 0.0), Vector3(0.14, 0.4, 0.15), metal, false)  # greave
+		box(hip, Vector3(0, -0.8, 0.06), Vector3(0.13, 0.05, 0.25), "#3a3028" if undead else "#6a4a34", false)  # sandal
 		legs.append(hip)
-	cylinder(g, Vector3(0, 0.72, 0), 0.22, 0.32, "#8a2a2a", false, 8, 0.22)  # tunic
-	cylinder(g, Vector3(0, 1.0, 0), 0.23, 0.5, "#e8e0d0", false, 8, 0.2)  # linen cuirass
-	blob(g, Vector3(0, 1.52, 0), 0.24, "#e8e0d0", Vector3(1.25, 0.5, 0.85), 8)
-	mesh(g, _cyl(0.06, 0.5), skin, Vector3(0.28, 1.2, 0))  # right arm down, on the sarissa
-	mesh(g, _cyl(0.06, 0.45), skin, Vector3(-0.28, 1.25, 0.08), Vector3(-1.2, 0, 0))  # left arm behind the shield
+	cylinder(g, Vector3(0, 0.72, 0), 0.22, 0.32, "#3e2a2a" if undead else "#8a2a2a", false, 8, 0.22)  # tunic
+	cylinder(g, Vector3(0, 1.0, 0), 0.23, 0.5, linen, false, 8, 0.2)  # linen cuirass
+	blob(g, Vector3(0, 1.52, 0), 0.24, linen, Vector3(1.25, 0.5, 0.85), 8)
+	mesh(g, _cyl(limb * 0.8, 0.5), skin, Vector3(0.28, 1.2, 0))  # right arm down, on the sarissa
+	mesh(g, _cyl(limb * 0.8, 0.45), skin, Vector3(-0.28, 1.25, 0.08), Vector3(-1.2, 0, 0))  # left arm behind the shield
 	var shield := group(g, Vector3(-0.42, 1.15, 0.14), -PI / 2.0 + 0.5)  # faces left and a little forward
 	var face := QuadMesh.new()
 	face.size = Vector2(0.72, 0.72)
-	mesh(shield, face, "shield", Vector3.ZERO)
-	mesh(shield, _cyl(0.35, 0.05), "bronze", Vector3(0, 0, -0.03), Vector3(PI / 2.0, 0, 0))
-	box(g, Vector3(0.36, 2.6, 0.05), Vector3(0.04, 5.2, 0.04), "wood", false)  # the sarissa
-	box(g, Vector3(0.36, 5.35, 0.05), Vector3(0.05, 0.35, 0.05), "bronze", false)
+	mesh(shield, face, "shield_dead" if undead else "shield", Vector3.ZERO)
+	mesh(shield, _cyl(0.35, 0.05), metal, Vector3(0, 0, -0.03), Vector3(PI / 2.0, 0, 0))
+	if undead:  # the sarissa snapped off, its head green with age
+		box(g, Vector3(0.38, 1.75, 0.05), Vector3(0.04, 3.4, 0.04), "deadwood", false, Vector3(0, 0, -0.06))
+		box(g, Vector3(0.48, 3.5, 0.05), Vector3(0.05, 0.3, 0.05), "verdigris", false, Vector3(0, 0, -0.06))
+	else:
+		box(g, Vector3(0.36, 2.6, 0.05), Vector3(0.04, 5.2, 0.04), "wood", false)  # the sarissa
+		box(g, Vector3(0.36, 5.35, 0.05), Vector3(0.05, 0.35, 0.05), "bronze", false)
 	var head := group(g, Vector3(0, 1.68, 0.02))
-	blob(head, Vector3(0, 0.06, 0), 0.13, skin, Vector3(1.0, 1.1, 1.0), 7)
-	blob(head, Vector3(0, 0.16, -0.02), 0.145, "bronze", Vector3(1.05, 0.9, 1.05), 7)  # the helmet
-	box(head, Vector3(0, 0.3, 0.05), Vector3(0.08, 0.14, 0.1), "bronze", false, Vector3(0.5, 0, 0))  # its forward peak
-	box(head, Vector3(0, 0.28, -0.05), Vector3(0.03, 0.12, 0.3), "#8a2a2a", false)  # the crest
+	blob(head, Vector3(0, 0.06, 0), 0.12 if undead else 0.13, skin, Vector3(1.0, 1.1, 1.0), 7)
+	blob(head, Vector3(0, 0.2, -0.02), 0.145, metal, Vector3(1.05, 0.9, 1.05), 7)  # the helmet
+	box(head, Vector3(0, 0.34, 0.05), Vector3(0.08, 0.14, 0.1), metal, false, Vector3(0.5, 0, 0))  # its forward peak
+	box(head, Vector3(0, 0.32, -0.05), Vector3(0.03, 0.12, 0.3), "#3a2a2a" if undead else "#8a2a2a", false)  # the crest
+	if undead:  # empty eye sockets with a cold light deep in them, and the grin of the skull
+		for x in [-0.045, 0.045]:
+			box(head, Vector3(x, 0.07, 0.112), Vector3(0.05, 0.04, 0.02), "dark", false)
+			box(head, Vector3(x, 0.07, 0.124), Vector3(0.016, 0.016, 0.006), "soulfire", false)
+		box(head, Vector3(0, -0.02, 0.108), Vector3(0.08, 0.02, 0.02), "dark", false)
 	return legs
 
 
-## A block of soldiers in rows and files, one metre apart, who march together as one node.
-## Returns {"root", "legs", "leg", "speed", "step"}; give it a "path" and the Hall marches it.
-static func squad(parent: Node3D, at: Vector3, rows: int, files: int) -> Dictionary:
+## A block of soldiers in rows and files, one metre apart, who march together as one node
+## (the dead ones slower). Returns {"root", "legs", "leg", "speed", "step", "undead"}; give it
+## a "path" and the Hall marches it.
+static func squad(parent: Node3D, at: Vector3, rows: int, files: int, undead: bool = false) -> Dictionary:
 	var root := group(parent, at)
 	var legs: Array = []
 	for r in rows:
 		for f in files:
-			legs.append_array(soldier(root, Vector3((f - (files - 1) / 2.0) * 1.0, 0, -r * 1.1)))
-	return {"root": root, "legs": legs, "leg": 0, "speed": 1.25, "step": 0.0}
+			legs.append_array(soldier(root, Vector3((f - (files - 1) / 2.0) * 1.0, 0, -r * 1.1), undead))
+	return {"root": root, "legs": legs, "leg": 0, "speed": 0.8 if undead else 1.25, "step": 0.0, "undead": undead}
 
 
 # ---------- the comforts of a lived-in house ----------
@@ -774,13 +868,21 @@ static func amphora(parent: Node3D, at: Vector3, lean: float = 0.0) -> void:
 	solid(g, body, Vector3(0, 0.45, 0))
 
 
-## A tall bronze lamp stand with a small flame; returns its light for the Hall to flicker.
-static func lamp_stand(parent: Node3D, at: Vector3) -> OmniLight3D:
+## A tall bronze lamp stand with a small flame; returns its light for the Hall to flicker
+## (unlit: cold green bronze, no flame, no light).
+static func lamp_stand(parent: Node3D, at: Vector3, lit: bool = true) -> OmniLight3D:
 	var g := group(parent, at)
 	g.set_meta("prop", "lamp")
-	cylinder(g, Vector3.ZERO, 0.16, 0.05, "bronze", false, 8)
-	cylinder(g, Vector3(0, 0.05, 0), 0.03, 1.25, "bronze", false, 6)
-	cylinder(g, Vector3(0, 1.3, 0), 0.05, 0.08, "bronze", false, 8, 0.12)  # the oil dish
+	var metal := "bronze" if lit else "verdigris"
+	cylinder(g, Vector3.ZERO, 0.16, 0.05, metal, false, 8)
+	cylinder(g, Vector3(0, 0.05, 0), 0.03, 1.25, metal, false, 6)
+	cylinder(g, Vector3(0, 1.3, 0), 0.05, 0.08, metal, false, 8, 0.12)  # the oil dish
+	var body := CylinderShape3D.new()
+	body.radius = 0.16
+	body.height = 1.4
+	solid(g, body, Vector3(0, 0.7, 0))
+	if not lit:
+		return null
 	blob(g, Vector3(0, 1.44, 0), 0.05, "fire", Vector3(1.0, 1.7, 1.0), 5)
 	var l := OmniLight3D.new()
 	l.position = Vector3(0, 1.6, 0)
@@ -788,10 +890,6 @@ static func lamp_stand(parent: Node3D, at: Vector3) -> OmniLight3D:
 	l.light_energy = 0.7
 	l.omni_range = 4.0
 	g.add_child(l)
-	var body := CylinderShape3D.new()
-	body.radius = 0.16
-	body.height = 1.4
-	solid(g, body, Vector3(0, 0.7, 0))
 	return l
 
 
@@ -837,15 +935,17 @@ static func lyre(parent: Node3D, at: Vector3, yaw: float) -> void:
 
 
 ## A potted plant: a clay pot with a green head of leaves.
-static func plant(parent: Node3D, at: Vector3) -> Node3D:
+static func plant(parent: Node3D, at: Vector3, alive: bool = true) -> Node3D:
 	var g := group(parent, at, at.x * 2.0 + at.z)
 	g.set_meta("prop", "plant")
 	cylinder(g, Vector3.ZERO, 0.16, 0.34, "clay", false, 8, 0.22)
 	var crown := group(g, Vector3(0, 0.48, 0))
-	blob(crown, Vector3.ZERO, 0.24, "olive", Vector3(1.0, 0.9, 1.0), 6)
-	for k in 5:
+	var leaf := "olive" if alive else "withered"
+	blob(crown, Vector3.ZERO, 0.24 if alive else 0.15, leaf, Vector3(1.0, 0.9, 1.0), 6)
+	for k in (5 if alive else 3):
 		var a := k * 1.26
-		box(crown, Vector3(cos(a) * 0.22, 0.05 + (k % 2) * 0.06, sin(a) * 0.22), Vector3(0.22, 0.02, 0.07), "olive", false, Vector3(0.3, -a, 0))
+		box(crown, Vector3(cos(a) * 0.22, 0.05 + (k % 2) * 0.06, sin(a) * 0.22), Vector3(0.22, 0.02, 0.07), leaf, false,
+			Vector3(0.3 if alive else 0.9, -a, 0))
 	var body := CylinderShape3D.new()
 	body.radius = 0.24
 	body.height = 0.8
@@ -863,7 +963,7 @@ static func bench(parent: Node3D, at: Vector3, yaw: float) -> Vector3:
 
 
 ## A writing desk with scrolls, an open scroll, an oil lamp and a stool.
-static func desk(parent: Node3D, at: Vector3, yaw: float, with_stool: bool = true) -> OmniLight3D:
+static func desk(parent: Node3D, at: Vector3, yaw: float, with_stool: bool = true, lit: bool = true) -> OmniLight3D:
 	var g := group(parent, at, yaw)
 	box(g, Vector3(0, 0.78, 0), Vector3(1.7, 0.08, 0.85), "wood")
 	for p in [Vector3(-0.75, 0.37, -0.35), Vector3(0.75, 0.37, -0.35), Vector3(-0.75, 0.37, 0.35), Vector3(0.75, 0.37, 0.35)]:
@@ -877,6 +977,8 @@ static func desk(parent: Node3D, at: Vector3, yaw: float, with_stool: bool = tru
 	box(g, Vector3(0.62, 0.86, -0.2), Vector3(0.12, 0.08, 0.08), "bronze", false)
 	if with_stool:
 		box(g, Vector3(0, 0.25, 0.75), Vector3(0.45, 0.5, 0.45), "wood", false)
+	if not lit:
+		return null
 	var lamp := OmniLight3D.new()
 	lamp.position = Vector3(0.62, 1.05, -0.2)
 	lamp.light_color = Color("ffb060")

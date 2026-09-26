@@ -289,13 +289,16 @@ func test_the_world_sharpens_as_history_moves_on() -> void:
 func test_every_zone_has_its_own_music_and_sounds() -> void:
 	var music := preload("res://scripts/pixel/music.gd")
 	check(music.ZONES.has("shore"), "the Shore has its sound")
-	var zone: String = Rooms.room("porphyry-isagoge").get("zone", "")
-	check(music.ZONES.has(zone), "Porphyry's place has a zone with its own sound")
-	check(music.ZONES["shore"]["music"][0] != music.ZONES[zone]["music"][0], "Sicily's track is not the Shore's")
+	for work in ["porphyry-isagoge", "aristotle-categories"]:
+		check(music.ZONES.has(Rooms.room(work).get("zone", "")), "%s's place has a zone with its own sound" % work)
 	for z in music.ZONES:
-		var names: Array = [music.ZONES[z]["music"][0]] + music.ZONES[z]["sounds"].keys()
-		for n in names:
-			check(ResourceLoader.exists(music.file_for(n)), "%s has its sound file %s" % [z, n])
+		for layer in music.ZONES[z]["layers"]:
+			check(ResourceLoader.exists(music.file_for(layer["file"])), "%s has its sound file %s" % [z, layer["file"]])
+	var tunes := func(z: String) -> Array:
+		return music.plan(z, _all_back(z)).filter(func(l): return l["music"]).map(func(l): return l["file"])
+	for z in ["sicily", "athens"]:
+		for f in tunes.call(z):
+			check(not tunes.call("shore").has(f), "%s's music is its own, not the Shore's (%s)" % [z, f])
 
 
 func test_you_can_sit_and_watch_the_sunset() -> void:
@@ -350,6 +353,7 @@ func test_the_villa_feels_lived_in() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.learn("porphyry-isagoge", _ids("porphyry-isagoge"))
 	hall.travel("porphyry-isagoge")
 	var names := {}
 	for n in hall.world.get_children():
@@ -404,7 +408,7 @@ func test_aristotles_lyceum_is_ready() -> void:
 	check_eq(room.get("place", ""), "lyceum", "the Categories are taught at the Lyceum")
 	check_eq(room.get("zone", ""), "athens", "with Athens' own music")
 	check_eq(room.get("lesson", []).size(), 6, "a six-point lesson")
-	for f in ["athens", "birds", "stream"]:
+	for f in ["athens_ghost", "athens_pipes", "birds", "stream"]:
 		check(FileAccess.file_exists(Music.file_for(f)), "%s.wav is rendered" % f)
 	var book := Library.load_book("aristotle-categories")
 	check(book != null and book.chunks.size() > 10, "the Categories are in the library")
@@ -455,4 +459,113 @@ func test_the_macedonians_march_in_step() -> void:
 	check(hall.interactables.any(func(i): return i["kind"] == "person" and i["note"].contains("sarissa")), "you can learn who they are")
 	var shield: Material = preload("res://scripts/hall/textures.gd").material("shield")
 	check(shield is StandardMaterial3D and shield.albedo_texture != null, "the sun of Macedon is on the shield")
+	hall.free()
+
+
+# ---------- lost places, brought back by understanding ----------
+
+
+
+static func _ids(work: String) -> Array:
+	return Rooms.room(work)["lesson"].map(func(p): return p["id"])
+
+
+## Everything that can come back in a zone's place, in order.
+static func _all_back(zone: String) -> Array:
+	for work in ["porphyry-isagoge", "aristotle-categories"]:
+		if Rooms.room(work).get("zone", "") == zone:
+			return Rooms.room(work)["restores"].map(func(r): return r["what"])
+	return []
+
+
+static func _db(plan: Array, file: String) -> float:
+	for layer in plan:
+		if layer["file"] == file:
+			return layer["db"]
+	return -999.0
+
+
+func test_every_place_starts_lost() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for work in ["porphyry-isagoge", "aristotle-categories"]:
+		hall.travel(work)
+		check_eq(hall.restored_here, [], "%s starts lost to the world" % work)
+		check(hall.teacher.get("shade", false), "%s is only a pale shade" % Rooms.room(work)["author"])
+		var author: Array = hall.interactables.filter(func(i): return i["kind"] == "author")
+		check(author.size() == 1 and author[0]["text"].contains("shade"), "you speak with his shade")
+	check(hall.squads[0].get("undead", false), "Alexander's men march on, undead")
+	check(hall.interactables.any(func(i): return i.get("note", "").contains("sarissa") and i["note"].contains("forgotten")), "the dead soldiers are explained")
+	hall.travel("porphyry-isagoge")
+	check_eq(hall.people.size(), 1, "the copyist's stool is empty")
+	hall.free()
+
+
+func test_each_point_understood_brings_a_piece_back() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for work in ["porphyry-isagoge", "aristotle-categories"]:
+		var ids := _ids(work)
+		var restores: Array = Rooms.room(work)["restores"]
+		check_eq(restores.size(), ids.size(), "one piece of %s for each lesson point" % work)
+		for k in ids.size() + 1:
+			hall.progress.data = {"works": {}}
+			hall.progress.learn(work, ids.slice(0, k))
+			hall.travel(work)
+			check_eq(hall.restored_here, restores.slice(0, k).map(func(r): return r["what"]), "%s: %d points understood, %d pieces back" % [work, k, k])
+		check(not hall.teacher.is_empty() and not hall.teacher.get("shade", false), "%s is himself again" % Rooms.room(work)["author"])
+		if work == "aristotle-categories":
+			check(not hall.squads[0].get("undead", true), "the soldiers are men again")
+		else:
+			check_eq(hall.people.size(), 2, "the copyist is back at work")
+	hall.free()
+
+
+func test_the_music_tells_you_how_much_is_restored() -> void:
+	var files := func(z: String, back: Array) -> Array:
+		return Music.plan(z, back).map(func(l): return l["file"])
+	var lost: Array = files.call("athens", [])
+	check(lost.has("athens_ghost") and lost.has("wind"), "a lost place: a faint echo of its tune, and the wind")
+	for f in ["athens_pipes", "athens_drone", "athens_walk", "athens_drum", "birds", "stream"]:
+		check(not lost.has(f), "%s is silent while the Lyceum is lost" % f)
+	for z in ["sicily", "athens"]:
+		var all_back := _all_back(z)
+		check_eq(all_back.size(), 6, "%s has six pieces to bring back" % z)
+		for k in range(1, all_back.size() + 1):
+			var before: Array = files.call(z, all_back.slice(0, k - 1))
+			var after: Array = files.call(z, all_back.slice(0, k))
+			before.sort()
+			after.sort()
+			check(before != after, "%s: bringing back '%s' changes what you hear" % [z, all_back[k - 1]])
+		var whole: Array = files.call(z, all_back)
+		check(not whole.has(z + "_ghost"), "%s: the echo is gone once the place is whole" % z)
+		check(_db(Music.plan(z, all_back.slice(0, 3)), z + "_ghost") < _db(Music.plan(z, []), z + "_ghost"), "%s: the echo fades as life returns" % z)
+		check(_db(Music.plan(z, []), "wind") > _db(Music.plan(z, all_back), "wind"), "%s: the wind is louder in the lost place" % z)
+	check(files.call("athens", ["water"]).has("stream"), "the stream is heard when it runs again")
+	check(files.call("athens", _all_back("athens")).has("athens_drum"), "the living soldiers bring their drum")
+	check(Music.plan("shore", []).any(func(l): return l["file"] == "shore"), "the Shore keeps its own theme")
+
+
+func test_restoration_happens_before_your_eyes() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("aristotle-categories")
+	var stand := Vector3(-4.0, 0.05, 3.0)
+	hall.player.position = stand
+	hall._open_ask("aristotle-categories")
+	check(hall._ask_room.get("state", "").contains("ruin"), "he knows his school lies in ruins")
+	check(hall._talk["aristotle-categories"].contains(Rooms.room("aristotle-categories")["greeting_lost"].left(20)), "and greets you from the ruin")
+	hall._on_judged("aristotle-categories", ["ten_questions"])
+	check_eq(hall.restored_here, [], "nothing changes while you talk")
+	hall._close_panels()
+	check_eq(hall.restored_here, ["water"], "when you turn from him, the first piece comes back")
+	check(hall.player.position.distance_to(stand) < 0.01, "and you are still standing where you were")
+	check(hall._quip.contains("Ilissos"), "you are told what came back")
+	check_eq(hall.progress.visits("aristotle-categories"), 1, "it doesn't count as another visit")
+	var body := AuthorAI.build_request(hall._ask_room, [], "Hello", [])
+	check(body["system"].contains(hall._ask_room["state"]), "the teacher is told what state his place is in")
+	check(not body["system"].contains("Plotinus"), "Aristotle is not told about Porphyry's study")
 	hall.free()

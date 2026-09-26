@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://bk1132rim0m3e"
-path="res://.godot/imported/athens.wav-e2d5f16901453462bd649dc8021aa153.sample"
+uid="uid://hfsi2fufi2at"
+path="res://.godot/imported/sicily_low.wav-314278dc2696392791b1bd137f736b49.sample"
 
 [deps]
 
-source_file="res://assets/music/athens.wav"
-dest_files=["res://.godot/imported/athens.wav-e2d5f16901453462bd649dc8021aa153.sample"]
+source_file="res://assets/music/sicily_low.wav"
+dest_files=["res://.godot/imported/sicily_low.wav-314278dc2696392791b1bd137f736b49.sample"]
 
 [params]
 

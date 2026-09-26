@@ -37,7 +37,7 @@ This is their visit number %d.
 How to teach:
 - Answer what they ask first, briefly.
 - Then lead gently toward the first point still to teach. One point at a time, with one everyday example.
-- Use the things in your study when they help: your tree carved on the wall, the busts of Aristotle and Plotinus, the map of the world.
+- Use the things around you when they help: %s.
 - After you explain a point, ask them to put it in their own words, for example: "Tell me in your own words: what is a genus?" Or ask them for an example of their own. If they get it, tell them warmly. If not, explain it another way. Never grade them or lecture.
 - If they seem lost, go simpler. If they say "next", move on.
 - When every point is understood, tell them warmly that they have it all, and say a fond goodbye."""
@@ -84,7 +84,10 @@ static func build_request(room: Dictionary, passages: Array, question: String, p
 	var system := "%s\n\nYour book, in brief: %s\n\n%s" % [room["persona"], room["summary"], RULES]
 	if room.has("lesson"):
 		var points := "\n".join(room["lesson"].map(func(p): return "- %s: %s" % [p["label"], p["point"]]))
-		system += "\n\n" + TEACHING % [points, _labels(room, understood, true), _labels(room, understood, false), visit]
+		system += "\n\n" + TEACHING % [points, _labels(room, understood, true), _labels(room, understood, false), visit,
+			room.get("props", "the things in your place")]
+	if room.get("state", "") != "":
+		system += "\n\n" + room["state"]
 	var messages: Array = []
 	for pair in past.slice(maxi(0, past.size() - KEEP_EXCHANGES)):
 		messages.append({"role": "user", "content": pair[0]})

@@ -103,6 +103,28 @@ static func material(kind: String) -> Material:
 			m.albedo_color = Color("1a1612")
 		"clay":
 			world_tex.call(_noise(Color("a86a48"), Color("8e5638"), Color("b87c58"), 13), 0.5)
+		"deadwood":
+			world_tex.call(_noise(Color("7a746c"), Color("5e5852"), Color("908a82"), 19), 0.5)
+		"withered":
+			world_tex.call(_noise(Color("6e6250"), Color("564c3e"), Color("857866"), 23), 1.0)
+		"drybed":
+			world_tex.call(_noise(Color("9a8a70"), Color("6e6250"), Color("aa9c84"), 29), 0.4)
+		"ashbed":
+			world_tex.call(_noise(Color("8a8886"), Color("6a6866"), Color("a4a2a0"), 31), 1.0)
+		"bone":
+			world_tex.call(_noise(Color("d8d0b4"), Color("b8ae90"), Color("e8e2cc"), 37), 1.0)
+		"verdigris":
+			world_tex.call(_noise(Color("5e7c62"), Color("46604a"), Color("7a9a7a"), 41), 1.0)
+		"soulfire":
+			m.albedo_color = Color("a8f0e0")
+			m.emission_enabled = true
+			m.emission = Color("7ae8d0")
+			m.emission_energy_multiplier = 3.0
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		"ash":
+			m.albedo_color = Color("c4c0bc")
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 		"plane":
 			world_tex.call(_noise(Color("7c9a58"), Color("607c44"), Color("98b070"), 6), 1.0)
 		"bark":
@@ -111,8 +133,8 @@ static func material(kind: String) -> Material:
 			m.albedo_texture = _rug()  # spans the rug's own surface, not the world
 		"plaque":
 			m.albedo_texture = _plaque()
-		"shield":
-			m.albedo_texture = _shield()
+		"shield", "shield_dead":
+			m.albedo_texture = _shield() if kind == "shield" else _shield(Color("26342c"), Color("5e7c62"), Color("76865a"), Color("4e5e46"))
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 			m.alpha_scissor_threshold = 0.5
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
@@ -205,12 +227,13 @@ static func _rug() -> ImageTexture:
 
 
 ## A Macedonian shield: a bronze rim round a blue field bearing the sixteen-rayed sun of
-## the Argead kings (the star of Vergina), in gold. Round; the corners are cut away.
-static func _shield() -> ImageTexture:
+## the Argead kings (the star of Vergina), in gold. Round; the corners are cut away. The dead
+## men's shields are the same, gone green and black with age.
+static func _shield(field := Color("2a3a7a"), rim := Color("8a6a3a"), gold := Color("e0b640"),
+		boss := Color("a8862a")) -> ImageTexture:
 	const N := 40
 	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
 	var c := (N - 1) / 2.0
-	var gold := Color("e0b640")
 	for y in N:
 		for x in N:
 			var dx := x - c
@@ -219,7 +242,7 @@ static func _shield() -> ImageTexture:
 			if r > c:
 				img.set_pixel(x, y, Color(0, 0, 0, 0))
 				continue
-			var col := Color("8a6a3a") if r > c - 2.5 else Color("2a3a7a")
+			var col := rim if r > c - 2.5 else field
 			var a := atan2(dy, dx)
 			var k := roundf(a / (TAU / 16.0))
 			var off := absf(a - k * (TAU / 16.0))  # angle away from the nearest ray
@@ -227,7 +250,7 @@ static func _shield() -> ImageTexture:
 			if r <= 3.2 or (r > 2.0 and r < reach and off < 0.16 * (1.0 - r / reach) + 0.04):
 				col = gold
 			if r <= 1.2:
-				col = Color("a8862a")
+				col = boss
 			img.set_pixel(x, y, col)
 	return ImageTexture.create_from_image(img)
 

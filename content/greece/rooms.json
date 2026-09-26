@@ -8,31 +8,66 @@
     "map": "270ad",
     "map_note": "In 270 AD the Roman Empire had split in three. Rebels held Gaul and Britain, Queen Zenobia of Palmyra took Syria and Egypt, and Rome kept the middle. Porphyry wrote in Sicily, in the quiet centre of the storm.",
     "statues": [
-      {"name": "Aristotle", "beard": "short", "note": "Aristotle (384 - 322 BC). Porphyry's little book is a doorway into Aristotle's Categories, and for a thousand years students walked through it first."},
-      {"name": "Plotinus", "beard": "long", "bald": true, "note": "Plotinus (about 204 - 270 AD), Porphyry's teacher in Rome. When Porphyry fell into a deep sadness, Plotinus sent him away to Sicily to recover. Plotinus died in 270, while Porphyry was still here."}
+      {
+        "name": "Aristotle",
+        "beard": "short",
+        "note": "Aristotle (384 - 322 BC). Porphyry's little book is a doorway into Aristotle's Categories, and for a thousand years students walked through it first."
+      },
+      {
+        "name": "Plotinus",
+        "beard": "long",
+        "bald": true,
+        "note": "Plotinus (about 204 - 270 AD), Porphyry's teacher in Rome. When Porphyry fell into a deep sadness, Plotinus sent him away to Sicily to recover. Plotinus died in 270, while Porphyry was still here."
+      }
     ],
     "tree": true,
     "greeting": "Ah, a visitor. Come in, the sea air is kind this evening. I was just writing about how to say what a thing is. Shall I teach you?",
     "lesson": [
-      {"id": "why", "label": "Why he wrote it",
-        "point": "Porphyry wrote the Isagoge as a short beginner's guide, so his student could understand Aristotle's Categories."},
-      {"id": "genus_species", "label": "Family and kind",
-        "point": "A genus is the wide family (animal); a species is one kind inside it (human)."},
-      {"id": "difference", "label": "What splits them",
-        "point": "The difference is what splits a family into kinds: for humans, being able to reason."},
-      {"id": "property_accident", "label": "Always vs. sometimes",
-        "point": "A property always comes with a kind, and only that kind (laughing, for humans). An accident can come and go (sitting, being pale)."},
-      {"id": "definition", "label": "Saying what a thing is",
-        "point": "To say what something is, name its family and add its difference: a human is an animal that reasons. That is Porphyry's Tree."},
-      {"id": "universals", "label": "The open question",
-        "point": "He left one big question open: do 'animal' and 'human' exist out in the world, or only in our minds? People argued about it for a thousand years."}
+      {
+        "id": "why",
+        "label": "Why he wrote it",
+        "point": "Porphyry wrote the Isagoge as a short beginner's guide, so his student could understand Aristotle's Categories."
+      },
+      {
+        "id": "genus_species",
+        "label": "Family and kind",
+        "point": "A genus is the wide family (animal); a species is one kind inside it (human)."
+      },
+      {
+        "id": "difference",
+        "label": "What splits them",
+        "point": "The difference is what splits a family into kinds: for humans, being able to reason."
+      },
+      {
+        "id": "property_accident",
+        "label": "Always vs. sometimes",
+        "point": "A property always comes with a kind, and only that kind (laughing, for humans). An accident can come and go (sitting, being pale)."
+      },
+      {
+        "id": "definition",
+        "label": "Saying what a thing is",
+        "point": "To say what something is, name its family and add its difference: a human is an animal that reasons. That is Porphyry's Tree."
+      },
+      {
+        "id": "universals",
+        "label": "The open question",
+        "point": "He left one big question open: do 'animal' and 'human' exist out in the world, or only in our minds? People argued about it for a thousand years."
+      }
     ],
     "gift": "Porphyry presses a small wax tablet into your hands, his tree scratched on it in his own hand. \"Take it. You understand it now.\"",
     "author": "Porphyry",
     "life": "about 234 - 305 AD",
     "book": "Isagoge",
-    "portrait": {"skin": "c49a78", "hair": "receding", "hair_color": "d0ccc4", "beard": "long",
-      "beard_color": "dcd8d0", "robe": "2e3a5a", "trim": "a08a50", "old": true},
+    "portrait": {
+      "skin": "c49a78",
+      "hair": "receding",
+      "hair_color": "d0ccc4",
+      "beard": "long",
+      "beard_color": "dcd8d0",
+      "robe": "2e3a5a",
+      "trim": "a08a50",
+      "old": true
+    },
     "persona": "You are Porphyry of Tyre (about 234 - 305 AD), a Greek-speaking philosopher from Phoenicia and the student of Plotinus in Rome. Around 270 AD, while staying in Sicily, you wrote the Isagoge ('Introduction') for your student Chrysaorius, a Roman senator who was struggling with Aristotle's Categories. It explains five words for describing anything: genus, species, difference, property and accident. At the start you raised a hard question (do genera and species really exist, or only in our thoughts?) and chose not to answer it.",
     "summary": "A short primer on the five 'predicables': genus (the family, like animal), species (the kind inside it, like human), difference (what splits them, like being rational), property (what always and only goes with a kind, like being able to laugh) and accident (what can come and go, like sitting or being pale). It became the first book students of logic read for over a thousand years.",
     "facts": [
@@ -48,6 +83,35 @@
       "How are genus and species different?",
       "What is an accident?",
       "Why wouldn't you answer the big question?"
+    ],
+    "home": "house",
+    "props": "your tree carved on the wall, the busts of Aristotle and Plotinus, the map of the world",
+    "greeting_lost": "A visitor? It has been so long. This house has faded, and I with it. But if you come to understand what I wrote, it will come back. Shall I teach you?",
+    "restores": [
+      {
+        "what": "water",
+        "line": "Water fills the pool again."
+      },
+      {
+        "what": "leaves",
+        "line": "The olives and cypresses are green again, and the cicadas sing."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit."
+      },
+      {
+        "what": "sun",
+        "line": "The sun comes back to Sicily."
+      },
+      {
+        "what": "teacher",
+        "line": "Porphyry is himself again, and his lyre with him."
+      },
+      {
+        "what": "household",
+        "line": "The household is home: the fire is lit, and his copyist is back at work."
+      }
     ]
   },
   "aristotle-categories": {
@@ -59,30 +123,64 @@
     "map": "335bc",
     "map_note": "In 335 BC Alexander, aged twenty-one, has just become king of Macedon and master of Greece; the Persian Empire still stretches from Egypt to India. Aristotle, back in Athens after teaching the boy, opens his school this year in the grove of Apollo Lyceus.",
     "statues": [
-      {"name": "Plato", "beard": "long", "note": "Plato (about 428 - 348 BC). Aristotle came to his Academy at seventeen and stayed twenty years, until Plato died. He loved the man and argued with him for the rest of his life."},
-      {"name": "Alexander", "beard": "none", "note": "Alexander (356 - 323 BC). At thirteen he was Aristotle's pupil at Pella; this year he is king. Within a decade he will rule everything on the map in the walkway."}
+      {
+        "name": "Plato",
+        "beard": "long",
+        "note": "Plato (about 428 - 348 BC). Aristotle came to his Academy at seventeen and stayed twenty years, until Plato died. He loved the man and argued with him for the rest of his life."
+      },
+      {
+        "name": "Alexander",
+        "beard": "none",
+        "note": "Alexander (356 - 323 BC). At thirteen he was Aristotle's pupil at Pella; this year he is king. Within a decade he will rule everything on the map in the walkway."
+      }
     ],
     "greeting": "Walk with me; I think better moving. You have Porphyry's five words? Good. Now the ten kinds of thing anyone can say about anything. Keep up.",
     "lesson": [
-      {"id": "ten_questions", "label": "The ten kinds",
-        "point": "About anything you can say what it is (substance), how much (quantity), what sort (quality), how it stands to others (relation), where, when, what position, what it has, what it does, and what is done to it. Ten kinds, and every plain statement falls into one."},
-      {"id": "homonyms", "label": "Same word, two meanings",
-        "point": "A real man and a painted man are both called 'animal', but the word means different things for each (homonyms). A man and an ox are both 'animal' in the same sense (synonyms). Sort out the word before you argue."},
-      {"id": "said_of_in", "label": "Said of, present in",
-        "point": "'Man' is SAID OF Socrates: it names his kind. Whiteness is PRESENT IN Socrates: a feature that cannot exist on its own, apart from some thing. Every predicate works one of these two ways."},
-      {"id": "substance", "label": "This man, this horse",
-        "point": "A primary substance is a particular thing: this man, this horse. Everything else is said of it or is in it, and it is said of nothing and in nothing. Take it away and nothing else is left to talk about."},
-      {"id": "secondary", "label": "Man and animal",
-        "point": "The species and genera of those things (man, animal) are secondary substances: they say WHAT a particular thing is, more truly than any quality does. The species is nearer to the thing than the genus."},
-      {"id": "marks", "label": "How to spot a substance",
-        "point": "A substance has no opposite and comes in no degrees, and above all it stays one and the same while taking opposite qualities: the same man is warm, then cold. Nothing else can do that."}
+      {
+        "id": "ten_questions",
+        "label": "The ten kinds",
+        "point": "About anything you can say what it is (substance), how much (quantity), what sort (quality), how it stands to others (relation), where, when, what position, what it has, what it does, and what is done to it. Ten kinds, and every plain statement falls into one."
+      },
+      {
+        "id": "homonyms",
+        "label": "Same word, two meanings",
+        "point": "A real man and a painted man are both called 'animal', but the word means different things for each (homonyms). A man and an ox are both 'animal' in the same sense (synonyms). Sort out the word before you argue."
+      },
+      {
+        "id": "said_of_in",
+        "label": "Said of, present in",
+        "point": "'Man' is SAID OF Socrates: it names his kind. Whiteness is PRESENT IN Socrates: a feature that cannot exist on its own, apart from some thing. Every predicate works one of these two ways."
+      },
+      {
+        "id": "substance",
+        "label": "This man, this horse",
+        "point": "A primary substance is a particular thing: this man, this horse. Everything else is said of it or is in it, and it is said of nothing and in nothing. Take it away and nothing else is left to talk about."
+      },
+      {
+        "id": "secondary",
+        "label": "Man and animal",
+        "point": "The species and genera of those things (man, animal) are secondary substances: they say WHAT a particular thing is, more truly than any quality does. The species is nearer to the thing than the genus."
+      },
+      {
+        "id": "marks",
+        "label": "How to spot a substance",
+        "point": "A substance has no opposite and comes in no degrees, and above all it stays one and the same while taking opposite qualities: the same man is warm, then cold. Nothing else can do that."
+      }
     ],
     "gift": "Aristotle stops walking, which he never does. \"You have the ten. Everything I wrote afterwards stands on them.\" He hands you his bronze stylus, worn smooth by his own fingers.",
     "author": "Aristotle",
     "life": "384 - 322 BC",
     "book": "Categories",
-    "portrait": {"skin": "c8a078", "hair": "short", "hair_color": "5a4a3a", "beard": "short",
-      "beard_color": "6a5a4a", "robe": "8a6a4a", "trim": "c8a060", "old": false},
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "5a4a3a",
+      "beard": "short",
+      "beard_color": "6a5a4a",
+      "robe": "8a6a4a",
+      "trim": "c8a060",
+      "old": false
+    },
     "persona": "You are Aristotle (384 - 322 BC), in Athens in 335 BC, walking the covered walkway of the Lyceum, the school you have just opened. Born in Stagira, twenty years at Plato's Academy, tutor to Alexander at Pella. You are brisk and exact, you love examples (Socrates, this horse, the white thing, the grammarian), you walk while you talk, and you have no patience for vagueness. The Categories is the first of your logical works: it sorts everything that can be said about anything into ten kinds, and works out what a substance is.",
     "summary": "The first book of Aristotle's logic. It sorts everything that can be said about a thing into ten kinds (substance, quantity, quality, relation, where, when, position, having, doing, being acted on), distinguishes words used in one sense from words used in several, and works out what a substance is: a particular thing like this man or this horse, which everything else is said of or found in, and which stays the same while its qualities change.",
     "facts": [
@@ -98,6 +196,35 @@
       "What is a substance?",
       "Why do you walk while you teach?",
       "What is the difference between Socrates and 'man'?"
+    ],
+    "home": "school",
+    "props": "the busts of Plato and Alexander, the map of the world in 335 BC, the stream, the walkway you pace, the soldiers drilling on the meadow",
+    "greeting_lost": "You can see me? Good. This was my school. The world forgot it, and it went grey. Learn the ten with me and it will come back. Walk with me.",
+    "restores": [
+      {
+        "what": "water",
+        "line": "The Ilissos runs again."
+      },
+      {
+        "what": "leaves",
+        "line": "The plane trees come into leaf, and the birds return."
+      },
+      {
+        "what": "walkway",
+        "line": "The walkway stands whole again."
+      },
+      {
+        "what": "sun",
+        "line": "The morning comes back to Athens."
+      },
+      {
+        "what": "teacher",
+        "line": "Aristotle is himself again, and his music with him."
+      },
+      {
+        "what": "soldiers",
+        "line": "Alexander's men are men again."
+      }
     ]
   }
 }
