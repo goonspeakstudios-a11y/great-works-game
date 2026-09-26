@@ -43,6 +43,17 @@ var progress: RefCounted  # what the player has learned (Progress)
 var teacher := {}  # the author in person, if this place has one: {root, head, hand}
 var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
+var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
+var sway: Array = []  # tree crowns the breeze stirs
+var toad := {}  # your companion through every world: {root, body, throat}
+var _toad_hop := 0.0
+var toad_hold := false  # screenshots: keep the toad where it was put
+var _toad_puff := 0.0
+var _quip := ""
+var _quip_until := 0.0
+const TOAD_QUIPS := ["The toad puffs up proudly.", "The toad blinks at you, very slowly.",
+	"The toad lets out a deep, satisfied croak.", "The toad shuffles closer to your foot.",
+	"The toad looks out at the sea with you."]
 
 var _view: SubViewport
 var _ui: CanvasLayer
@@ -146,7 +157,7 @@ func _ready() -> void:
 ## Screenshot mode for checking the look without playing:
 ##   godot --path . -- --shot=C:/out.png --view=hub|gate|villa|path|study|map|tree|ask|read
 func _stage_shot(view: String) -> void:
-	if not view in ["hub", "gate", "ruins", "head"]:
+	if not view in ["hub", "gate", "ruins", "head", "toad"]:
 		_load_place(doors[0]["work"])
 	match view:
 		"gate":
@@ -155,6 +166,12 @@ func _stage_shot(view: String) -> void:
 			_stand(Vector3(3, 0, 8), Vector3(-60, 0, -95))
 		"head":
 			_stand(Vector3(6, 0, 3), Vector3(14, 0, 12))
+		"toad":
+			_stand(Vector3(-27.5, 0, 3.0), Vector3(-40, 0, 3.0))
+			toad_hold = true
+			toad["root"].position = Vector3(-28.9, 0.02, 3.35)
+			toad["root"].rotation.y = PI * 0.62
+			player.camera.rotation.x = -0.42
 		"path":
 			_stand(Vector3(0, 0, 19), Vector3(0, 0, 0))
 		"villa":
@@ -193,6 +210,7 @@ func _build_view() -> void:
 	player = Player.new()
 	_view.add_child(player)
 	player.camera.current = true
+	toad = Kit.toad(_view)
 
 
 ## Walk through a gateway: fade out, build the other place, fade in.
@@ -234,6 +252,8 @@ func _load_place(to: String) -> void:
 	here_name = built["name"]
 	interactables = built["interactables"]
 	spots = built["spots"]
+	birds = built.get("birds", [])
+	sway = built.get("sway", [])
 	flicker.clear()
 	for l in built["flicker"]:
 		if l:
@@ -677,8 +697,12 @@ func _process(delta: float) -> void:
 		if is_instance_valid(f["light"]):
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
 	_animate_teacher(delta)
+	_animate_life(delta)
 	if player.frozen:
 		_prompt.text = ""
+		return
+	if _t < _quip_until:
+		_prompt.text = _quip
 		return
 	if player.seated:
 		_prompt.text = "F: Stand up"
@@ -694,6 +718,65 @@ func _process(delta: float) -> void:
 		_prompt.text = target["text"] + ("\nF: Enter" if target["to"] != "hub" else "\nF: Go")
 	else:
 		_prompt.text = "F: " + target["text"]
+
+
+## Swallows wheel overhead, the trees stir, and the toad hops along after you.
+func _animate_life(delta: float) -> void:
+	for b in birds:
+		b["angle"] += b["speed"] * delta
+		var a: float = b["angle"]
+		var node: Node3D = b["node"]
+		node.position = b["center"] + Vector3(cos(a) * b["r"], b["h"] + sin(a * 2.0 + b["phase"]) * 0.6, sin(a) * b["r"])
+		var heading := Vector3(-sin(a), 0, cos(a)) * signf(b["speed"])
+		node.rotation.y = atan2(heading.x, heading.z)
+		var flap := sin(_t * 14.0 + b["phase"]) * 0.7
+		b["wings"][0].rotation.z = -flap
+		b["wings"][1].rotation.z = flap
+	for i in sway.size():
+		if is_instance_valid(sway[i]):
+			sway[i].rotation.z = sin(_t * 0.9 + i * 1.3) * 0.03
+			sway[i].rotation.x = cos(_t * 0.7 + i * 0.9) * 0.02
+	_animate_toad(delta)
+
+
+## The toad stays a little behind you and to the right, hops to catch up, and faces you when
+## you stop. After a gateway it is simply there with you.
+func _animate_toad(delta: float) -> void:
+	if toad.is_empty():
+		return
+	var root: Node3D = toad["root"]
+	var body: Node3D = toad["body"]
+	if toad_hold:
+		toad["throat"].scale = Vector3.ONE * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)))
+		return
+	var basis := player.global_transform.basis
+	var want := player.global_position + basis.x * 0.9 + basis.z * (0.2 if player.seated else 1.1)
+	var flat := Vector3(want.x - root.position.x, 0, want.z - root.position.z)
+	var d := flat.length()
+	if d > 14.0:
+		root.position = Vector3(want.x, 0.02, want.z)
+	elif d > 0.35:
+		var speed := 2.6 if d < 4.0 else 5.2
+		root.position += flat.normalized() * minf(d, speed * delta)
+		root.position.y = 0.02
+		_toad_hop += delta * 7.0
+		body.position.y = absf(sin(_toad_hop)) * 0.18
+		root.rotation.y = lerp_angle(root.rotation.y, atan2(flat.x, flat.z), minf(1.0, delta * 8.0))
+	else:
+		body.position.y = lerpf(body.position.y, 0.0, minf(1.0, delta * 8.0))
+		var look := player.global_position - root.position
+		root.rotation.y = lerp_angle(root.rotation.y, atan2(look.x, look.z), minf(1.0, delta * 2.0))
+	_toad_puff = maxf(0.0, _toad_puff - delta * 0.8)
+	toad["throat"].scale = Vector3.ONE * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)) + _toad_puff)
+	body.scale = Vector3.ONE * (1.0 + _toad_puff * 0.25)
+
+
+func pat_toad() -> void:
+	_toad_puff = 0.9
+	_quip = TOAD_QUIPS[randi() % TOAD_QUIPS.size()]
+	_quip_until = _t + 2.5
+	if music:
+		music.croak()
 
 
 ## He breathes, writes when alone, and looks up and turns toward you when you come near.
@@ -728,6 +811,11 @@ func _nearest() -> Dictionary:
 		if d < best_d:
 			best = it
 			best_d = d
+	if not toad.is_empty():
+		var to_toad: Vector3 = toad["root"].position - at
+		to_toad.y = 0.0
+		if to_toad.length() < minf(best_d, 1.6) and (to_toad.length() < 0.5 or player.facing().dot(to_toad.normalized()) > 0.2):
+			best = {"kind": "toad", "pos": toad["root"].position, "text": "Pat the toad"}
 	return best
 
 
@@ -753,6 +841,8 @@ func activate(it: Dictionary) -> void:
 				travel(it["to"])
 		"seat":
 			sit(it)
+		"toad":
+			pat_toad()
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.

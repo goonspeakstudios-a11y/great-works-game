@@ -306,18 +306,23 @@ static func tower_site(parent: Node3D, at: Vector3) -> void:
 	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
-static func olive(parent: Node3D, at: Vector3, size: float = 1.0) -> void:
+## An olive tree; returns its crown (branches and leaves), which the breeze can stir.
+static func olive(parent: Node3D, at: Vector3, size: float = 1.0) -> Node3D:
 	var g := group(parent, at, at.x * 1.7 + at.z)
 	cylinder(g, Vector3.ZERO, 0.2 * size, 1.1 * size, "trunk", true, 6, 0.15 * size)
-	var lean := mesh(g, _cyl(0.14 * size, 1.0 * size), "trunk", Vector3(0.18, 1.45, 0) * size, Vector3(0, 0, -0.5))
-	lean.name = "limb"
-	for p in [Vector3(0.5, 2.3, 0.1), Vector3(-0.4, 2.1, 0.3), Vector3(0.1, 2.6, -0.4), Vector3(0.7, 1.9, -0.5)]:
-		blob(g, p * size, 0.85 * size, "olive", Vector3(1.2, 0.75, 1.1))
+	var crown := group(g, Vector3(0, 1.0 * size, 0))
+	mesh(crown, _cyl(0.14 * size, 1.0 * size), "trunk", Vector3(0.18, 0.45, 0) * size, Vector3(0, 0, -0.5))
+	for p in [Vector3(0.5, 1.3, 0.1), Vector3(-0.4, 1.1, 0.3), Vector3(0.1, 1.6, -0.4), Vector3(0.7, 0.9, -0.5)]:
+		blob(crown, p * size, 0.85 * size, "olive", Vector3(1.2, 0.75, 1.1))
+	return crown
 
 
-static func cypress(parent: Node3D, at: Vector3, height: float = 7.0) -> void:
+## A cypress; returns its green spire, which the breeze can stir.
+static func cypress(parent: Node3D, at: Vector3, height: float = 7.0) -> Node3D:
 	cylinder(parent, at, 0.16, 0.8, "trunk", true, 5)
-	cylinder(parent, at + Vector3(0, 0.6, 0), 0.8, height, "cypress", false, 6, 0.05)
+	var spire := group(parent, at + Vector3(0, 0.6, 0))
+	cylinder(spire, Vector3.ZERO, 0.8, height, "cypress", false, 6, 0.05)
+	return spire
 
 
 static func rock(parent: Node3D, at: Vector3, size: float) -> void:
@@ -423,6 +428,96 @@ static func scroll_shelf(parent: Node3D, at: Vector3, yaw: float) -> void:
 			mesh(g, _cyl(0.06, 0.32), "parchment", Vector3(-0.72 + k * 0.24, y + 0.09, 0), Vector3(PI / 2.0, 0, 0))
 	for x in [-0.92, 0.92]:
 		box(g, Vector3(x, 1.25, 0), Vector3(0.06, 2.5, 0.35), "wood", false)
+
+
+## Swallows circling over a spot. Returns their state for the Hall to fly them.
+static func flock(parent: Node3D, center: Vector3, count: int, radius: float, height: float) -> Array:
+	var out: Array = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(center.x * 13 + center.z * 7) + count
+	for i in count:
+		var bird := Node3D.new()
+		parent.add_child(bird)
+		box(bird, Vector3.ZERO, Vector3(0.1, 0.07, 0.3), "#2a2630", false)
+		var wings: Array = []
+		for side in [-1.0, 1.0]:
+			var w := group(bird, Vector3(0.05 * side, 0.02, 0.02))
+			box(w, Vector3(0.22 * side, 0, 0), Vector3(0.42, 0.02, 0.14), "#2a2630", false)
+			wings.append(w)
+		out.append({"node": bird, "wings": wings, "center": center, "r": radius * rng.randf_range(0.5, 1.1),
+			"h": height + rng.randf_range(-2.0, 2.5), "speed": rng.randf_range(0.35, 0.7) * (1 if i % 2 else -1),
+			"angle": rng.randf() * TAU, "phase": rng.randf() * TAU})
+	return out
+
+
+## Your companion: a fat, warty toad, facing +Z. Returns {"root", "body", "throat"} so the
+## Hall can make it hop along, breathe, and puff up.
+static func toad(parent: Node) -> Dictionary:
+	var root := Node3D.new()
+	parent.add_child(root)
+	var body := group(root, Vector3.ZERO)
+	blob(body, Vector3(0, 0.17, 0), 0.24, "#7e8646", Vector3(1.25, 0.72, 1.2), 8)  # the fat back
+	blob(body, Vector3(0, 0.12, 0.08), 0.2, "#b8ac78", Vector3(1.2, 0.55, 1.05), 8)  # pale belly
+	for p in [Vector3(-0.14, 0.27, 0.0), Vector3(0.12, 0.29, -0.1), Vector3(0.02, 0.31, 0.1), Vector3(-0.05, 0.26, -0.16)]:
+		blob(body, p, 0.035, "#56602e")  # warts
+	for side in [-1.0, 1.0]:
+		blob(body, Vector3(0.1 * side, 0.3, 0.2), 0.065, "#7e8646")  # eye bumps
+		blob(body, Vector3(0.11 * side, 0.33, 0.24), 0.035, "#d8a830")  # gold eyes
+		blob(body, Vector3(0.115 * side, 0.335, 0.265), 0.015, "#101008")
+		blob(body, Vector3(0.24 * side, 0.06, 0.16), 0.07, "#62683a", Vector3(1.0, 0.5, 1.4))  # front feet
+		blob(body, Vector3(0.26 * side, 0.08, -0.14), 0.1, "#62683a", Vector3(1.0, 0.6, 1.5))  # hind legs
+	box(body, Vector3(0, 0.17, 0.28), Vector3(0.2, 0.012, 0.02), "#2a2a18", false)  # the wide mouth
+	var throat := blob(body, Vector3(0, 0.12, 0.24), 0.07, "#c8bc88", Vector3(1.3, 0.8, 0.8))
+	return {"root": root, "body": body, "throat": throat}
+
+
+## Moths drifting around a lamp.
+static func moths(parent: Node3D, at: Vector3) -> void:
+	var p := CPUParticles3D.new()
+	p.position = at
+	p.amount = 6
+	p.lifetime = 3.0
+	var q := QuadMesh.new()
+	q.size = Vector2(0.05, 0.05)
+	p.mesh = q
+	p.material_override = Tex.material("moth")
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+	p.emission_sphere_radius = 0.35
+	p.direction = Vector3.UP
+	p.spread = 180.0
+	p.initial_velocity_min = 0.2
+	p.initial_velocity_max = 0.5
+	p.gravity = Vector3.ZERO
+	p.angular_velocity_min = -180.0
+	p.angular_velocity_max = 180.0
+	parent.add_child(p)
+
+
+## Fireflies blinking low over a patch of ground at dusk.
+static func fireflies(parent: Node3D, center: Vector3, size: float) -> void:
+	var p := CPUParticles3D.new()
+	p.position = center + Vector3(0, 1.0, 0)
+	p.amount = 18
+	p.lifetime = 5.0
+	var q := QuadMesh.new()
+	q.size = Vector2(0.07, 0.07)
+	p.mesh = q
+	p.material_override = Tex.material("firefly")
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(size, 0.8, size)
+	p.direction = Vector3.UP
+	p.spread = 180.0
+	p.initial_velocity_min = 0.05
+	p.initial_velocity_max = 0.2
+	p.gravity = Vector3.ZERO
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(0.8, 1.0, 0.4, 0.0))
+	ramp.set_color(1, Color(0.8, 1.0, 0.4, 0.0))
+	ramp.add_point(0.3, Color(0.85, 1.0, 0.45, 1.0))
+	ramp.add_point(0.55, Color(0.85, 1.0, 0.45, 0.1))
+	ramp.add_point(0.75, Color(0.85, 1.0, 0.45, 0.9))
+	p.color_ramp = ramp
+	parent.add_child(p)
 
 
 ## A marble bench facing +Z of its group; returns where a sitter's feet go.

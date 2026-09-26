@@ -314,3 +314,33 @@ func test_you_can_sit_and_watch_the_sunset() -> void:
 		hall.stand_up()
 		check(not hall.player.seated, "standing up again")
 	hall.free()
+
+
+func test_the_places_are_alive() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	check(hall.birds.size() >= 5, "swallows circle over the Shore")
+	check(hall.sway.size() >= 7, "the Shore's trees stir in the breeze")
+	var p0: Vector3 = hall.birds[0]["node"].position
+	hall._animate_life(0.5)
+	check(hall.birds[0]["node"].position.distance_to(p0) > 0.1, "the swallows fly")
+	hall.travel("porphyry-isagoge")
+	check(hall.birds.size() >= 3, "birds over the villa too")
+	hall.free()
+
+
+func test_the_toad_follows_you_everywhere() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	check(not hall.toad.is_empty(), "a fat toad keeps you company")
+	hall.player.position += Vector3(6, 0, 0)
+	var before: float = hall.toad["root"].position.distance_to(hall.player.position)
+	for i in 30:
+		hall._animate_life(0.1)
+	check(hall.toad["root"].position.distance_to(hall.player.position) < before - 2.0, "the toad hops after you")
+	hall.travel("porphyry-isagoge")
+	hall._animate_life(0.1)
+	check(hall.toad["root"].position.distance_to(hall.player.position) < 4.0, "the toad comes through the gateway with you")
+	hall.free()

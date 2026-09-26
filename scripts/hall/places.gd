@@ -37,6 +37,10 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 	Kit.tower_site(world, Vector3(-150, -10, -250))
 	Kit.cylinder(world, Vector3(0, -0.02, 0), 7.0, 0.1, "paving", false, 12)
 	var flicker: Array = [Kit.brazier(world, Vector3.ZERO)]
+	var sway: Array = []
+	var birds := Kit.flock(world, Vector3(0, 0, -2), 7, 16.0, 9.0)
+	Kit.fireflies(world, Vector3(-8, 0, 10), 7.0)
+	Kit.fireflies(world, Vector3(9, 0, 2), 6.0)
 	var restored: int = progress.mastered_count() if progress else 0
 	Kit.temple_ruin(world, Vector3(0, 0, -19), 0.0, restored)
 	var out: Array = []
@@ -54,16 +58,17 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 			"text": "%d. %s%s" % [d["number"], d["name"], " (mastered)" if mastered else ""]})
 		var between := deg_to_rad(GATE_START_DEG + GATE_STEP_DEG * (i + 0.5))
 		if i < doors.size() - 1:
-			Kit.cypress(world, Vector3(cos(between), 0, sin(between)) * 29.5, 6.0 + (i % 3))
+			sway.append(Kit.cypress(world, Vector3(cos(between), 0, sin(between)) * 29.5, 6.0 + (i % 3)))
 	for p in [Vector3(8, 0, 4), Vector3(-10, 0, 6), Vector3(5, 0, 15), Vector3(-7, 0, 15),
 			Vector3(13, 0, -4), Vector3(-17, 0, 1), Vector3(-1, 0, 19)]:
-		Kit.olive(world, p, 1.0 + fmod(p.x * 0.37, 0.4))
+		sway.append(Kit.olive(world, p, 1.0 + fmod(p.x * 0.37, 0.4)))
 	for p in [Vector3(20, 0, 12), Vector3(-19, 0, 13), Vector3(8, 0, -27), Vector3(-9, 0, -27), Vector3(16, 0, 19)]:
 		Kit.rock(world, p, 0.9)
 	out.append(seat(world, Vector3(-29.5, 0, 3.0), Vector3(-1, 0, 0)))
 	var spawn := Vector3(0, 0.05, 5.0)
 	return {"name": "The Shore of the Great Works", "interactables": out, "spawn": spawn,
-		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "teacher": {}, "restored": restored}
+		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "teacher": {}, "restored": restored,
+		"sway": sway, "birds": birds}
 
 
 ## A bench looking out in direction `facing`, and its interactable: you stand behind it and sit.
@@ -92,6 +97,9 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 	var flicker: Array = []
 	var out: Array = []
 	var spots := {}
+	var sway: Array = []
+	var birds := Kit.flock(world, Vector3(0, 0, -6), 5, 10.0, 10.0)
+	Kit.fireflies(world, Vector3(0, 0, -6), 5.0)
 	# arrival: the way back to the Shore, and a path north to the villa
 	var gate_at := Vector3(0, 0, 27)
 	flicker.append(Kit.gateway(world, gate_at, Kit.face_yaw(gate_at, Vector3.ZERO), true))
@@ -107,7 +115,7 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 		out.append({"kind": "fact", "pos": reader, "text": facts[k]})
 	for z in [23.0, 17.0, 11.0, 5.0]:
 		for x in [-5.0, 5.0]:
-			Kit.cypress(world, Vector3(x, 0, z), 6.5)
+			sway.append(Kit.cypress(world, Vector3(x, 0, z), 6.5))
 	# the courtyard
 	Kit.box(world, Vector3(0, 0.01, -6), Vector3(15.5, 0.02, 13.5), "paving", false)
 	for x in [-7.0, -4.3, -1.7, 1.7, 4.3, 7.0]:
@@ -120,8 +128,8 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 		Kit.box(world, Vector3(x, 4.15, -6), Vector3(2.4, 0.3, 14.4), "roof", false)
 	Kit.box(world, Vector3(0, 0.2, -6), Vector3(4.6, 0.4, 3.6), "marble")
 	Kit.box(world, Vector3(0, 0.36, -6), Vector3(4.0, 0.04, 3.0), "water", false)
-	Kit.olive(world, Vector3(4.2, 0, -9.0), 0.9)
-	Kit.olive(world, Vector3(-4.0, 0, -3.2), 0.8)
+	sway.append(Kit.olive(world, Vector3(4.2, 0, -9.0), 0.9))
+	sway.append(Kit.olive(world, Vector3(-4.0, 0, -3.2), 0.8))
 	# the study, open to the courtyard
 	Kit.box(world, Vector3(0, 2.1, -18.2), Vector3(10.8, 4.2, 0.4), "plaster")
 	for x in [-5.2, 5.2]:
@@ -158,10 +166,11 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 	out.append({"kind": "book", "pos": Vector3(3.9, 0, -12.1), "text": "Read a page of the %s" % room["book"]})
 	spots["book"] = Vector3(3.9, 0, -12.1)
 	for p in [Vector3(-12, 0, -8), Vector3(12, 0, -6), Vector3(-11, 0, 8), Vector3(12, 0, 10), Vector3(-15, 0, -20)]:
-		Kit.olive(world, p, 1.1)
+		sway.append(Kit.olive(world, p, 1.1))
 	for p in [Vector3(-9, 0, -20), Vector3(9, 0, -20)]:
-		Kit.cypress(world, p, 7.5)
+		sway.append(Kit.cypress(world, p, 7.5))
 	for i in [0, 1]:
+		Kit.moths(world, Vector3(-3.4 + i * 6.8, 3.0, -15.2))
 		var lamp := OmniLight3D.new()
 		lamp.position = Vector3(-3.4 + i * 6.8, 3.2, -15.2)
 		lamp.light_color = Color("ffb870")
@@ -172,7 +181,8 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 	spots["study"] = Vector3(0, 0, -11.0)
 	var spawn := Vector3(0, 0.05, 23.5)
 	return {"name": "%s - %s" % [room.get("where", ""), room.get("when", "")], "interactables": out, "spawn": spawn,
-		"yaw": 0.0, "spots": spots, "flicker": flicker, "teacher": teacher, "restored": 0}
+		"yaw": 0.0, "spots": spots, "flicker": flicker, "teacher": teacher, "restored": 0,
+		"sway": sway, "birds": birds}
 
 
 ## Porphyry's Tree carved in marble: a trunk of kinds with a branch off each level.

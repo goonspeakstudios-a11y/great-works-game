@@ -217,6 +217,23 @@ def render_fountain(seconds: int = 10, seed: int = 13) -> list[float]:
     return _seam(out, total, fade)
 
 
+def render_croak(seed: int = 17) -> list[float]:
+    """A fat toad's croak: two low, buzzing grunts."""
+    rng = random.Random(seed)
+    out = [0.0] * int(0.75 * RATE)
+    lo = 0.0
+    for start, length in ((0.0, 0.22), (0.3, 0.34)):
+        s0, n_len = int(start * RATE), int(length * RATE)
+        for n in range(n_len):
+            t = n / RATE
+            f = 78.0 - 18.0 * (n / n_len)
+            pulse = 1.0 if math.sin(TAU * f * t) > 0.6 else -0.25  # a buzzy, reedy wave
+            env = math.sin(math.pi * n / n_len) ** 0.6 * (0.7 + 0.3 * math.sin(TAU * 22 * t))
+            lo += (pulse + rng.uniform(-0.3, 0.3) - lo) * 0.18
+            out[s0 + n] += lo * env
+    return out
+
+
 def render_wind(seconds: int, seed: int = 3) -> list[float]:
     rng = random.Random(seed)
     total, fade = seconds * RATE, RATE
@@ -265,6 +282,7 @@ def main() -> int:
     write_wav(OUT / "cicadas.wav", render_cicadas(), 0.35)
     write_wav(OUT / "fire.wav", render_fire(), 0.4)
     write_wav(OUT / "fountain.wav", render_fountain(), 0.3)
+    write_wav(OUT / "croak.wav", render_croak(), 0.8)
     return 0
 
 

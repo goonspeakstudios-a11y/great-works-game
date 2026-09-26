@@ -83,6 +83,16 @@ static func material(kind: String) -> Material:
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"moth":
+			m.albedo_color = Color("e8e0cc")
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		"firefly":
+			m.vertex_color_use_as_albedo = true
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+			m.disable_fog = true
 		"beam":
 			m.albedo_color = Color(1.0, 0.85, 0.6, 0.13)
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA

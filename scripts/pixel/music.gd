@@ -18,6 +18,7 @@ const ZONES := {
 var zone := ""
 var _players: Array = []  # [player, target dB, is_music]
 var _bell: AudioStreamPlayer
+var _croak: AudioStreamPlayer
 var _bells_on := false
 var _swell := 0.0
 var _rng := RandomNumberGenerator.new()
@@ -31,6 +32,10 @@ func _ready() -> void:
 	_bell.volume_db = -14.0
 	_bell.bus = BUS
 	add_child(_bell)
+	_croak = AudioStreamPlayer.new()
+	_croak.stream = load("res://assets/music/croak.wav")
+	_croak.volume_db = -6.0
+	add_child(_croak)
 	var timer := Timer.new()
 	timer.wait_time = 7.0
 	timer.timeout.connect(_ring)
@@ -77,6 +82,12 @@ func swell(on: bool) -> void:
 	for p in _players:
 		if p[2] and is_instance_valid(p[0]):
 			create_tween().tween_property(p[0], "volume_db", p[1] + _swell, 1.5)
+
+
+## The toad's deep croak.
+func croak() -> void:
+	_croak.pitch_scale = _rng.randf_range(0.85, 1.1)
+	_croak.play()
 
 
 func _ring() -> void:
