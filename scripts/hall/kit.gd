@@ -1035,6 +1035,548 @@ static func board(parent: Node3D, at: Vector3, yaw: float, size: Vector2, tex: T
 		box(g, f[0], f[1], "gold", false)
 
 
+# ---------- the Nexus ----------
+
+## How see-through the ghost of the Tower is (0.14 to 0.22 reads well at 320x180).
+const GHOST_ALPHA := 0.18
+
+
+## The dark of the Nexus: no sky, horizon or sun, only a near-black background that far things
+## fade into (the fog is the very same colour), faint cold starlight, and the colour drained to
+## `saturation`. Returns the starlight. (Named the_void: "void" is a GDScript word.)
+static func the_void(parent: Node3D, saturation: float) -> DirectionalLight3D:
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color("07070b")
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color("50526a")
+	env.ambient_light_energy = 0.55
+	env.fog_enabled = true
+	env.fog_light_color = env.background_color
+	env.fog_density = 0.006
+	env.fog_sky_affect = 0.0
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.adjustment_enabled = true
+	env.adjustment_saturation = saturation
+	var we := WorldEnvironment.new()
+	we.environment = env
+	parent.add_child(we)
+	var light := DirectionalLight3D.new()
+	light.rotation_degrees = Vector3(-70.0, 30.0, 0.0)
+	light.light_color = Color("9aa0c0")
+	light.light_energy = 0.4
+	light.shadow_enabled = true
+	light.directional_shadow_max_distance = 60.0
+	parent.add_child(light)
+	return light
+
+
+## A point `r` metres out at bearing `b` (degrees clockwise from north, north being -Z) and
+## elevation `el` (degrees above the level).
+static func sky_point(b: float, el: float, r: float) -> Vector3:
+	var br := deg_to_rad(b)
+	var er := deg_to_rad(el)
+	return Vector3(cos(er) * sin(br), sin(er), -cos(er) * cos(br)) * r
+
+
+## Specks of light far out in the void, all one MultiMesh: unlit, never fogged, no shadows.
+static func _specks(parent: Node3D, mm: MultiMesh) -> MultiMeshInstance3D:
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.vertex_color_use_as_albedo = true
+	mat.disable_fog = true
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	mmi.material_override = mat
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mmi)
+	return mmi
+
+
+static func _cube_multimesh(count: int) -> MultiMesh:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_colors = true
+	var cube := BoxMesh.new()
+	cube.size = Vector3.ONE
+	mm.mesh = cube
+	mm.instance_count = count
+	return mm
+
+
+## Dead stars: `count` grey specks on a far sphere, above and below you alike. They never change.
+static func void_stars(parent: Node3D, count: int, seed_value: int) -> MultiMeshInstance3D:
+	var mm := _cube_multimesh(count)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var reach := sin(deg_to_rad(80.0))
+	for i in count:
+		var el := rad_to_deg(asin(rng.randf_range(-reach, reach)))  # spread evenly over the sphere
+		var at := sky_point(rng.randf() * 360.0, el, 780.0)
+		mm.set_instance_transform(i, Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * rng.randf_range(6.0, 10.0)), at))
+		var v := rng.randf_range(0.9, 1.1)
+		mm.set_instance_color(i, Color(0.541 * v, 0.557 * v, 0.612 * v))  # #8a8e9c, a little lighter or darker
+	return _specks(parent, mm)
+
+
+## Idea stars: one warm star for each idea understood (`lit` of the 800 places show), strewn round
+## the sky by the golden angle. Place 0 hangs straight above the Tower as seen from Greece's door.
+static func idea_stars(parent: Node3D, lit: int) -> MultiMeshInstance3D:
+	const SLOTS := 800
+	var mm := _cube_multimesh(SLOTS)
+	for k in SLOTS:
+		var at := sky_point(180.0 + 137.508 * k, 18.0 + 40.0 * fposmod(0.618034 * k, 1.0), 700.0)
+		mm.set_instance_transform(k, Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * 10.0), at))
+		mm.set_instance_color(k, Color("ffe2a8"))
+	mm.visible_instance_count = clampi(lit, 0, SLOTS)
+	return _specks(parent, mm)
+
+
+## A faint cloud of colour far out in the void: a flat square turned to face the centre (not a
+## billboard), see-through, never fogged.
+static func nebula(parent: Node3D, at: Vector3, size: float, tint: Color) -> MeshInstance3D:
+	var q := QuadMesh.new()
+	q.size = Vector2(size, size)
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = Tex._cloud(int(absf(at.x) + absf(at.y) * 3.0 + absf(at.z) * 7.0))
+	m.albedo_color = Color(tint.r, tint.g, tint.b, 0.35)
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.disable_fog = true
+	var mi := MeshInstance3D.new()
+	mi.mesh = q
+	mi.material_override = m
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var out := at.normalized()
+	mi.transform = Transform3D(Basis.looking_at(out, Vector3.UP if absf(out.y) < 0.95 else Vector3.BACK), at)
+	parent.add_child(mi)
+	return mi
+
+
+## A slow river of faint light, from one point toward another. Along the way (the default),
+## motes appear anywhere on it, in a box 2 m either side of its line; otherwise every mote sets
+## out from `from` (a thread). They fade in and out, never fogged. `speed` is (slowest, fastest).
+static func current(parent: Node3D, from: Vector3, to: Vector3, mat: String, amount: int, lifetime: float,
+		speed: Vector2, along: bool = true, size: float = 2.5) -> CPUParticles3D:
+	var length := from.distance_to(to)
+	var x := (to - from) / maxf(length, 0.001)  # local X runs down the river
+	var up := Vector3.UP if absf(x.y) < 0.95 else Vector3.RIGHT
+	var z := x.cross(up).normalized()
+	var p := CPUParticles3D.new()
+	p.transform = Transform3D(Basis(x, z.cross(x), z), (from + to) / 2.0 if along else from)
+	p.amount = amount
+	p.lifetime = lifetime
+	p.preprocess = lifetime
+	var q := QuadMesh.new()
+	q.size = Vector2(size, size)
+	p.mesh = q
+	p.material_override = Tex.material(mat)
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(length / 2.0, 2.0, 2.0) if along else Vector3(0.05, 0.08, 0.05)
+	p.direction = Vector3(1, 0, 0)
+	p.spread = 2.0 if along else 0.5
+	p.initial_velocity_min = speed.x
+	p.initial_velocity_max = speed.y
+	p.gravity = Vector3.ZERO
+	if along:
+		p.scale_amount_min = 1.0
+		p.scale_amount_max = 1.6
+	var ramp := Gradient.new()
+	ramp.set_color(0, Color(1, 1, 1, 0))
+	ramp.set_color(1, Color(1, 1, 1, 0))
+	ramp.add_point(0.2, Color.WHITE)
+	ramp.add_point(0.75, Color.WHITE)
+	p.color_ramp = ramp
+	parent.add_child(p)
+	return p
+
+
+## One entry for the Hall to drift: `node` bobs `bob` metres up and down over `period` seconds
+## (from `phase`, in radians), tumbles steadily at `spin` radians a second, and swings its yaw
+## `sway` radians on the same beat. "base" and "rot" keep where it started.
+static func drifting(node: Node3D, bob: float, period: float, phase: float, spin: Vector3 = Vector3.ZERO,
+		sway: float = 0.0) -> Dictionary:
+	return {"node": node, "base": node.position, "rot": node.rotation, "bob": bob, "period": period, "phase": phase,
+		"spin": spin, "sway": sway}
+
+
+## An island of rock torn loose and hanging in the void: a flat top (its top at `at`, `sides`
+## corners round, solid if asked), an upside-down cone of rock tapering `depth` metres down,
+## lumps on its flanks and three spikes hanging below. Returns its group.
+static func shard(parent: Node3D, at: Vector3, radius: float, depth: float, is_solid: bool, mat: String,
+		seed_value: int, sides: int = 12) -> Node3D:
+	var g := group(parent, at)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	cylinder(g, Vector3(0, -0.8, 0), radius, 0.8, mat, is_solid, sides)
+	var cone := cylinder(g, Vector3(0, -depth, 0), radius * 0.156, depth - 0.8, mat, false, sides, radius - 0.5)
+	cone.rotation.y = rng.randf() * TAU
+	var inner := cylinder(g, Vector3(rng.randf_range(-0.15, 0.15) * radius, -depth * 0.8, rng.randf_range(-0.15, 0.15) * radius),
+		radius * 0.1, depth * 0.8 - 0.8, mat, false, maxi(5, sides / 2), radius * 0.8)
+	inner.rotation.y = rng.randf() * TAU
+	for k in 3:  # hanging spikes
+		var a := rng.randf() * TAU
+		var off := Vector3(cos(a), 0, sin(a)) * radius * rng.randf_range(0.3, 0.45)
+		var length := depth * rng.randf_range(0.32, 0.46)
+		cylinder(g, off + Vector3(0, -0.8 - length, 0), radius * 0.012, length, mat, false, 5, radius * rng.randf_range(0.07, 0.1))
+	for k in 5:  # lumps that break the cone's outline
+		var a := rng.randf() * TAU
+		var down := rng.randf_range(0.1, 0.55)
+		var reach := lerpf(radius - 0.5, radius * 0.156, down) * 0.95
+		blob(g, Vector3(cos(a) * reach, -0.8 - depth * down, sin(a) * reach), radius * rng.randf_range(0.1, 0.2), mat,
+			Vector3(1.2, 0.8, 1.0), 5)
+	return g
+
+
+## A cloud of rock chunks far out in the void (1.5 to 4 m each, between `r_min` and `r_max`
+## out and `y_min` to `y_max` high), all one MultiMesh so the whole set can turn as one.
+static func debris(parent: Node3D, seed_value: int, count: int, r_min: float, r_max: float, y_min: float,
+		y_max: float) -> MultiMeshInstance3D:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	var lump := SphereMesh.new()
+	lump.radius = 0.5
+	lump.height = 1.0
+	lump.radial_segments = 5
+	lump.rings = 3
+	mm.mesh = lump
+	mm.instance_count = count
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	for i in count:
+		var a := rng.randf() * TAU
+		var r := rng.randf_range(r_min, r_max)
+		var size := rng.randf_range(1.5, 4.0)
+		var basis := Basis.from_euler(Vector3(rng.randf() * TAU, rng.randf() * TAU, rng.randf() * TAU))
+		basis = basis.scaled(Vector3(size * rng.randf_range(0.8, 1.3), size * rng.randf_range(0.5, 0.9), size))
+		mm.set_instance_transform(i, Transform3D(basis, Vector3(cos(a) * r, rng.randf_range(y_min, y_max), sin(a) * r)))
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	mmi.material_override = Tex.material("voidstone")
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mmi)
+	return mmi
+
+
+## One invisible rail box (1.2 m tall, 0.3 thick) from a to b on the ground, as a shape of
+## `body`; returns it as an x/z segment {"a", "b"}.
+static func _rail(body: StaticBody3D, a: Vector3, b: Vector3) -> Dictionary:
+	var d := b - a
+	var s := BoxShape3D.new()
+	s.size = Vector3(Vector2(d.x, d.z).length(), 1.2, 0.3)
+	var cs := CollisionShape3D.new()
+	cs.shape = s
+	cs.position = (a + b) / 2.0 + Vector3(0, 0.6, 0)
+	cs.rotation.y = atan2(-d.z, d.x)
+	body.add_child(cs)
+	return {"a": Vector2(a.x, a.z), "b": Vector2(b.x, b.z)}
+
+
+static func _rail_body(parent: Node3D) -> StaticBody3D:
+	var body := StaticBody3D.new()
+	body.name = "Rails"
+	parent.add_child(body)
+	return body
+
+
+## Invisible rails round the edge of a round island, so nobody walks off into the void: chords of
+## 2 m or less at `radius` round `center`, leaving the gaps given as Vector2(bearing in degrees,
+## width in metres). Returns the rails as x/z segments {"a", "b"}.
+static func rim(parent: Node3D, center: Vector3, radius: float, gaps: Array = []) -> Array:
+	var cuts: Array = []
+	for gap in gaps:
+		var half := asin(clampf((gap as Vector2).y / 2.0 / radius, 0.0, 1.0))
+		var b := fposmod(deg_to_rad((gap as Vector2).x), TAU)
+		cuts.append([b - half, b + half])
+	cuts.sort_custom(func(p: Array, q: Array) -> bool: return p[0] < q[0])
+	var spans: Array = []
+	if cuts.is_empty():
+		spans.append([0.0, TAU])
+	for i in cuts.size():
+		var start: float = cuts[i][1]
+		var end: float = cuts[(i + 1) % cuts.size()][0]
+		while end <= start:
+			end += TAU
+		spans.append([start, end])
+	var body := _rail_body(parent)
+	var out: Array = []
+	for arc in spans:
+		var n := maxi(1, ceili((arc[1] - arc[0]) * radius / 1.9))
+		for k in n:
+			var a0: float = lerpf(arc[0], arc[1], float(k) / n)
+			var a1: float = lerpf(arc[0], arc[1], float(k + 1) / n)
+			out.append(_rail(body, center + Vector3(sin(a0), 0, -cos(a0)) * radius,
+				center + Vector3(sin(a1), 0, -cos(a1)) * radius))
+	return out
+
+
+## Invisible rails down both sides of a way from `from` to `to`, `half_width` either side of its
+## middle, in pieces of 2 m or less. Returns them as x/z segments {"a", "b"}.
+static func rails(parent: Node3D, from: Vector3, to: Vector3, half_width: float) -> Array:
+	var d := to - from
+	d.y = 0.0
+	var side := Vector3(-d.z, 0, d.x).normalized() * half_width
+	var n := maxi(1, ceili(d.length() / 1.9))
+	var body := _rail_body(parent)
+	var out: Array = []
+	for s in [side, -side]:
+		for k in n:
+			out.append(_rail(body, from + s + d * (float(k) / n), from + s + d * (float(k + 1) / n)))
+	return out
+
+
+## A stone way from one island to another, `width` wide, its walking surface at the height of
+## `from` (one invisible solid box, reaching a little onto each island) with rails nobody sees
+## down both sides. Broken: six cracked slabs, each askew, with chipped edges, and five loose slabs
+## drifting beside and below. Whole: one smooth slab with low kerbs.
+## Returns {"drift": [...], "rails": [...]}.
+static func span(parent: Node3D, from: Vector3, to: Vector3, width: float, whole: bool) -> Dictionary:
+	var length := from.distance_to(to)
+	var dir := (to - from) / length
+	var g := group(parent, (from + to) / 2.0, face_yaw(from, to))  # local +Z runs from -> to
+	var walk := BoxShape3D.new()
+	walk.size = Vector3(width, 0.3, length + 0.8)
+	solid(g, walk, Vector3(0, -0.15, 0))
+	var drift: Array = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 97
+	if whole:
+		box(g, Vector3(0, -0.2, 0), Vector3(width, 0.4, length), "marble", false)
+		for x in [-1.0, 1.0]:
+			box(g, Vector3(x * (width / 2.0 - 0.15), 0.15, 0), Vector3(0.3, 0.3, length), "marble", false)
+	else:
+		for k in 6:
+			var z := -length / 2.0 + 0.125 + 0.75 + k * 1.65
+			var slab := group(g, Vector3(rng.randf_range(-0.12, 0.12), -0.19, z))
+			slab.rotation = Vector3(rng.randf_range(-0.03, 0.03), deg_to_rad(rng.randf_range(-5.0, 5.0)), deg_to_rad(rng.randf_range(-3.0, 3.0)))
+			var chip := rng.randf_range(0.3, 0.7)  # one corner broken away
+			var side := -1.0 if k % 2 == 0 else 1.0
+			box(slab, Vector3(-side * 0.25, 0, 0), Vector3(width - 0.5, 0.3, 1.5), "marble", false)
+			box(slab, Vector3(side * (width / 2.0 - 0.25), 0, -chip / 2.0), Vector3(0.5, 0.3, 1.5 - chip), "marble", false)
+			box(slab, Vector3(side * (width / 2.0 - 0.1), -0.02, 0.75 - chip / 2.0), Vector3(0.2, 0.2, chip * 0.6), "marble", false)
+		for k in 5:  # loose slabs, fallen away beside and below
+			var s := -1.0 if k % 2 == 0 else 1.0
+			var at := Vector3(s * rng.randf_range(2.6, 4.5), rng.randf_range(-5.5, -1.2), -length / 2.0 + 1.0 + k * 2.0)
+			var loose := group(g, at)
+			loose.rotation = Vector3(rng.randf_range(-0.5, 0.5), rng.randf_range(-0.6, 0.6), rng.randf_range(-0.6, 0.6))
+			box(loose, Vector3.ZERO, Vector3(rng.randf_range(1.1, 1.6), 0.3, rng.randf_range(1.0, 1.5)), "marble", false)
+			drift.append(drifting(loose, rng.randf_range(0.2, 0.5), rng.randf_range(9.0, 16.0), rng.randf() * TAU,
+				Vector3(rng.randf_range(-1, 1), rng.randf_range(-1, 1), rng.randf_range(-1, 1)).normalized() * deg_to_rad(rng.randf_range(2.0, 5.0))))
+	var r := rails(parent, from - dir * 0.6, to + dir * 0.6, width / 2.0 + 0.15)
+	return {"drift": drift, "rails": r}
+
+
+## Where a way once ran out from the edge of the Heart to a later world's island: a slab jutting
+## from the rim with a jagged end, then four loose slabs strung out toward the island, rising or
+## sinking to its height. Nothing here is solid. Returns the drift entries of the loose slabs.
+static func stub(parent: Node3D, bearing: float, frag_at: Vector3) -> Array:
+	var out_dir := Vector3(sin(deg_to_rad(bearing)), 0, -cos(deg_to_rad(bearing)))
+	var yaw := face_yaw(Vector3.ZERO, out_dir)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(bearing * 7.0) + 5
+	var g := group(parent, out_dir * 17.5 + Vector3(0, -0.15, 0), yaw)
+	box(g, Vector3.ZERO, Vector3(2.4, 0.3, 3.0), "voidstone", false)
+	for k in 3:  # the jagged end
+		var l := rng.randf_range(0.2, 0.8)
+		box(g, Vector3(-0.8 + k * 0.8, -0.02, 1.5 + l / 2.0), Vector3(0.8, 0.26, l), "voidstone", false, Vector3(0.1 * k, 0, 0))
+	var far := Vector2(frag_at.x, frag_at.z).length()
+	var drift: Array = []
+	for r in [21.0, 24.5, 28.0, 31.5]:
+		var t := clampf((r - 17.5) / maxf(far - 17.5, 1.0), 0.0, 1.0)
+		var slab := group(parent, out_dir * r + Vector3(0, lerpf(-0.15, frag_at.y, t), 0), yaw + rng.randf_range(-0.3, 0.3))
+		slab.rotation.x = rng.randf_range(-0.25, 0.25)
+		slab.rotation.z = rng.randf_range(-0.3, 0.3)
+		box(slab, Vector3.ZERO, Vector3(rng.randf_range(1.8, 2.4), 0.3, rng.randf_range(1.6, 2.6)), "voidstone", false)
+		drift.append(drifting(slab, rng.randf_range(0.3, 0.7), rng.randf_range(14.0, 24.0), rng.randf() * TAU,
+			Vector3(0, 0, 0), deg_to_rad(rng.randf_range(2.0, 5.0))))
+	return drift
+
+
+## The ruin of a later world adrift far out in the void, on its own rock: "aqueduct", "ziggurat",
+## "dome", "spire", "minaret", "pagoda" or "clock" (a clock tower). Plain shapes only: at this
+## distance, through the fog, they are silhouettes. `size` scales it (1 = about 30 m tall on a
+## rock of radius 20). Returns its group, for drifting.
+static func far_wreck(parent: Node3D, at: Vector3, kind: String, size: float) -> Node3D:
+	var g := group(parent, at, face_yaw(at, Vector3(0, at.y, 0)))
+	g.scale = Vector3.ONE * size
+	shard(g, Vector3.ZERO, 20.0, 34.0, false, "voidstone", int(at.x * 3.0 + at.z), 9)
+	match kind:
+		"aqueduct":  # arches on piers, the run broken off at one end
+			for i in 5:
+				if i == 3:
+					box(g, Vector3(-12.0 + i * 6.0, 3.0, 0), Vector3(2.4, 6.0, 2.4), "#d8ccb0", false)
+					continue
+				box(g, Vector3(-12.0 + i * 6.0, 8.0, 0), Vector3(2.4, 16.0, 2.4), "#d8ccb0", false)
+			box(g, Vector3(-6.0, 17.5, 0), Vector3(15.0, 3.0, 2.8), "#d8ccb0", false)
+			box(g, Vector3(10.5, 17.0, 0), Vector3(5.0, 2.4, 2.8), "#d8ccb0", false, Vector3(0, 0, -0.25))
+			for i in 2:
+				box(g, Vector3(-9.0 + i * 6.0, 23.0, 0), Vector3(1.6, 8.0, 1.8), "#d8ccb0", false)
+			box(g, Vector3(-6.0, 27.5, 0), Vector3(9.0, 1.4, 2.0), "#d8ccb0", false)
+		"ziggurat":  # stepped terraces of mud brick, one corner fallen
+			for i in 4:
+				box(g, Vector3(0, 3.5 + i * 7.0, 0), Vector3(28.0 - i * 7.0, 7.0, 28.0 - i * 7.0), "#c8a878", false)
+			box(g, Vector3(9.0, 1.5, 9.0), Vector3(10.0, 3.0, 10.0), "#8a4a34", false, Vector3(0.2, 0.4, 0.3))
+			box(g, Vector3(0, 12.0, 11.0), Vector3(4.0, 24.0, 3.0), "#c8a878", false, Vector3(-0.5, 0, 0))  # the great stair
+		"dome":  # a drum in bands of brick and stone, under a leaded dome split open
+			for i in 4:
+				cylinder(g, Vector3(0, i * 3.5, 0), 11.0, 3.5, "#8a4a34" if i % 2 == 0 else "#e0d4b8", false, 12)
+			blob(g, Vector3(0, 14.0, 0), 11.0, "#6a6e74", Vector3(1.0, 0.7, 1.0), 10)
+			box(g, Vector3(4.0, 19.0, 3.0), Vector3(5.0, 8.0, 5.0), "#07070b", false, Vector3(0.3, 0.5, 0.2))
+			cylinder(g, Vector3(0, 21.0, 0), 1.2, 4.0, "#6a6e74", false, 6, 0.4)
+		"spire":  # a Gothic tower whose spire snapped part way up
+			box(g, Vector3(0, 11.0, 0), Vector3(9.0, 22.0, 9.0), "#8a8a86", false)
+			cylinder(g, Vector3(0, 22.0, 0), 4.2, 12.0, "#6a6e74", false, 8, 1.2)
+			box(g, Vector3(3.0, 35.0, 1.0), Vector3(1.4, 5.0, 1.4), "#6a6e74", false, Vector3(0.4, 0, 0.6))
+			for p in [Vector3(-4.5, 22.0, -4.5), Vector3(4.5, 22.0, -4.5), Vector3(-4.5, 22.0, 4.5)]:
+				cylinder(g, p, 0.8, 5.0, "#8a8a86", false, 4, 0.05)
+		"minaret":  # a slender tower with a balcony, leaning
+			var m := group(g, Vector3.ZERO)
+			m.rotation.z = 0.12
+			cylinder(m, Vector3.ZERO, 3.2, 4.0, "#e0d4b8", false, 8)
+			cylinder(m, Vector3(0, 4.0, 0), 2.2, 20.0, "#e0d4b8", false, 8, 1.9)
+			cylinder(m, Vector3(0, 23.0, 0), 3.0, 1.0, "#9a3a2a", false, 8)
+			cylinder(m, Vector3(0, 24.0, 0), 1.5, 4.0, "#e0d4b8", false, 8)
+			blob(m, Vector3(0, 28.5, 0), 1.6, "#2e6a70", Vector3(1.0, 1.3, 1.0), 6)
+		"pagoda":  # five storeys under dark eaves, the top ones gone askew
+			for i in 5:
+				var w := 12.0 - i * 1.8
+				var tier := group(g, Vector3(0, i * 6.0, 0))
+				if i >= 3:
+					tier.rotation = Vector3(0.08 * (i - 2), 0.3 * (i - 2), 0.1)
+					tier.position.x = (i - 2) * 1.2
+				box(tier, Vector3(0, 2.5, 0), Vector3(w, 5.0, w), "#b8402c", false)
+				box(tier, Vector3(0, 5.3, 0), Vector3(w + 5.0, 0.8, w + 5.0), "#1a1616", false)
+			cylinder(g, Vector3(2.4, 30.0, 0), 0.4, 7.0, "#6a6e74", false, 6, 0.1)
+		"clock":  # a clock tower of concrete and steel, its face stopped, its top torn off
+			box(g, Vector3(0, 13.0, 0), Vector3(7.0, 26.0, 7.0), "#9a9690", false)
+			var face := cylinder(g, Vector3(0, 20.0, 3.6), 2.6, 0.3, "#e0d4b8", false, 12)
+			face.rotation.x = PI / 2.0
+			box(g, Vector3(0.6, 20.0, 3.9), Vector3(0.25, 2.2, 0.1), "#1a1616", false, Vector3(0, 0, 0.6))
+			box(g, Vector3(-0.4, 20.3, 3.9), Vector3(0.25, 1.4, 0.1), "#1a1616", false, Vector3(0, 0, -1.2))
+			box(g, Vector3(1.5, 27.5, 0), Vector3(4.0, 3.0, 7.0), "#2a2c30", false, Vector3(0, 0, 0.3))
+	return g
+
+
+## The ghost of the Tower of the Reformed Man, above its broken base at `at` (the top of the
+## plinth): for each of the 17 column slots not `standing`, the missing upper part of its
+## column; the beam blocks between the column tops; nine rough tiers of piers, each with its cap
+## ring; and on top the Reformed Man himself, four times life size. All one see-through shade
+## (GHOST_ALPHA) with no collision. Once `tier_whole`, the Greek tier's beams stand in solid
+## marble with a warm light inside, and only the tiers above are ghosts.
+## Returns {"root", "ghost_columns": how many ghost column tops there are, "light"}.
+static func tower(parent: Node3D, at: Vector3, standing: Array, tier_whole: bool) -> Dictionary:
+	var g := group(parent, at)
+	var ghost := group(g, Vector3.ZERO)
+	var n := standing.size()
+	var ghosts := 0
+	for k in n:
+		if standing[k] or tier_whole:
+			continue
+		var p := sky_point(k * 360.0 / n, 0.0, 4.9)
+		cylinder(ghost, p + Vector3(0, 1.53, 0), 0.3, 2.31, "marble", false, 8, 0.28)
+		box(ghost, p + Vector3(0, 4.02, 0), Vector3(0.95, 0.36, 0.95), "marble", false)
+		ghosts += 1
+	var beams := group(g, Vector3.ZERO) if tier_whole else ghost
+	for k in n:
+		var b := (k + 0.5) * 360.0 / n
+		box(beams, sky_point(b, 0.0, 4.9 * cos(PI / n)) + Vector3(0, 4.5, 0), Vector3(1.9, 0.6, 0.9), "marble", false,
+			Vector3(0, -deg_to_rad(b), 0))
+	for i in range(1, 10):
+		var y0 := 5.0 + (i - 1) * 4.4
+		var r := 5.2 - 0.2 * i
+		for j in 12:
+			var b := j * 30.0 + (15.0 if i % 2 == 0 else 0.0)
+			box(ghost, sky_point(b, 0.0, r) + Vector3(0, y0 + 1.8, 0), Vector3(0.6, 3.6, 0.6), "marble", false,
+				Vector3(0, -deg_to_rad(b), 0))
+		cylinder(ghost, Vector3(0, y0 + 3.6, 0), r + 0.4, 0.5, "marble", false, 12)
+	var crown := group(ghost, Vector3(0, 44.6, 0))
+	crown.scale = Vector3.ONE * 4.0
+	walker(crown, Vector3.ZERO, 0.0, {"beard": "long"})
+	unsolid(g)
+	shade(ghost, GHOST_ALPHA)
+	var light: OmniLight3D = null
+	if tier_whole:
+		light = OmniLight3D.new()
+		light.position = Vector3(0, 2.6, 0)
+		light.light_color = Color("ffcf8a")
+		light.light_energy = 0.8
+		light.omni_range = 8.0
+		g.add_child(light)
+	return {"root": g, "ghost_columns": ghosts, "light": light}
+
+
+## A giant marble hand rising from a heap of rubble, reaching up: the forearm out of the ground,
+## a palm, four fingers of two joints each and a thumb, curled a little. About 4.5 m tall; its
+## palm faces +Z of its group.
+static func stone_hand(parent: Node3D, at: Vector3, yaw: float) -> Node3D:
+	var g := group(parent, at, yaw)
+	for r in [[Vector3(-1.0, 0, 0.5), 0.55], [Vector3(1.0, 0, -0.35), 0.5], [Vector3(0.3, 0, 1.1), 0.4], [Vector3(-0.5, 0, -1.0), 0.45]]:
+		rock(g, r[0], r[1])
+	fallen_column(g, Vector3(1.3, 0, 1.2), 0.9, 2.0)
+	var hand := group(g, Vector3.ZERO)
+	hand.rotation = Vector3(-0.12, 0, 0.1)
+	cylinder(hand, Vector3(0, -0.3, 0), 0.6, 2.1, "marble", false, 8, 0.5)  # the forearm
+	box(hand, Vector3(0, 2.3, 0), Vector3(1.3, 1.1, 0.5), "marble", false)  # the palm
+	var lengths := [0.8, 0.95, 0.9, 0.7]
+	for k in 4:
+		var finger := group(hand, Vector3(-0.48 + k * 0.32, 2.85, 0))
+		finger.rotation = Vector3(0.12 + 0.05 * k, 0, 0.06 * (1.5 - k))
+		var l: float = lengths[k]
+		box(finger, Vector3(0, l / 2.0, 0), Vector3(0.27, l, 0.32), "marble", false)
+		var tip := group(finger, Vector3(0, l, 0))
+		tip.rotation.x = 0.3 + 0.08 * k
+		box(tip, Vector3(0, l * 0.38, 0), Vector3(0.25, l * 0.76, 0.3), "marble", false)
+	var thumb := group(hand, Vector3(0.66, 1.95, 0.1))
+	thumb.rotation = Vector3(0.3, 0, -0.75)
+	box(thumb, Vector3(0, 0.35, 0), Vector3(0.3, 0.7, 0.34), "marble", false)
+	var thumb_tip := group(thumb, Vector3(0, 0.7, 0))
+	thumb_tip.rotation.x = 0.4
+	box(thumb_tip, Vector3(0, 0.25, 0), Vector3(0.28, 0.5, 0.32), "marble", false)
+	var wrist := BoxShape3D.new()
+	wrist.size = Vector3(1.4, 3.0, 1.0)
+	solid(g, wrist, Vector3(0, 1.5, 0))
+	return g
+
+
+## A mourning shade sitting on a stone at the broken edge, facing +Z of its group: a teacher's
+## body, pale and half see-through, on a seat of plain stone, its head bowed (or, `lifted`,
+## raised). Returns its parts {"root", "head", "hand"}.
+static func mourner(parent: Node3D, at: Vector3, yaw: float, lifted: bool) -> Dictionary:
+	var who := teacher(parent, at, yaw, {"robe": "8a8e9c", "skin": "b0b4c0", "hair_color": "c0c4cc", "beard": "short"})
+	for c in (who["root"] as Node).find_children("*", "MeshInstance3D", true, false):
+		if c.has_meta("keep"):
+			(c as MeshInstance3D).material_override = Tex.material("stone")
+	(who["head"] as Node3D).rotation.x = -0.1 if lifted else 0.6
+	shade(who["root"], 0.3)
+	return who
+
+
+## Takes every collision body out from under `node`: it can still be seen but never touched (a
+## ghost, a drifting piece, anything in a group that moves or is scaled).
+static func unsolid(node: Node) -> void:
+	for c in node.find_children("*", "CollisionObject3D", true, false):
+		if is_instance_valid(c):
+			c.get_parent().remove_child(c)
+			c.free()
+
+
+## Stones laid round an arch in the parent's X/Y plane: `count` blocks from `from_deg` to `to_deg`
+## (counter-clockwise from +X, so 0 to 180 is the top half) with their inner faces on `radius`
+## round `centre`. `block` is each stone's size (along the curve, outward, deep); the materials
+## in `mats` take turns. No collision. Returns the stones.
+static func arch(parent: Node3D, centre: Vector3, radius: float, from_deg: float, to_deg: float, count: int,
+		block: Vector3, mats: Array) -> Array:
+	var out: Array = []
+	for i in count:
+		var a := deg_to_rad(lerpf(from_deg, to_deg, (i + 0.5) / count))
+		var p := centre + Vector3(cos(a), sin(a), 0) * (radius + block.y / 2.0)
+		out.append(box(parent, p, block, mats[i % mats.size()], false, Vector3(0, 0, a - PI / 2.0)))
+	return out
+
+
 static func _cyl(radius: float, height: float) -> CylinderMesh:
 	var c := CylinderMesh.new()
 	c.top_radius = radius
