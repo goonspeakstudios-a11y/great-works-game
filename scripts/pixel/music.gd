@@ -16,7 +16,7 @@ const BELL_NOTES := [1.0, 1.1892, 1.3348, 1.4983, 1.7818]  # D minor pentatonic 
 ## zone -> its layers. Each is a loop: its "file", its volume "db", whether it is "music" (music
 ## layers start in step and swell when you sit), "needs" (the piece of the place that must be
 ## back before it is heard), "until" (the piece whose return silences it), "fade" (dB it drops
-## for each piece back) and "lost_db" (its volume until the sun comes back).
+## for each piece back), and "loud_db" with "loud_until" (louder until that piece is back).
 const ZONES := {
 	"shore": {"bells": true, "layers": [
 		{"file": "shore", "db": -8.0, "music": true},
@@ -30,7 +30,7 @@ const ZONES := {
 		{"file": "cicadas", "db": -22.0, "needs": "leaves"},
 		{"file": "fire", "db": -30.0, "needs": "household"},
 		{"file": "waves", "db": -24.0},
-		{"file": "wind", "db": -24.0, "lost_db": -16.0}]},
+		{"file": "wind", "db": -24.0, "loud_db": -16.0, "loud_until": "sun"}]},
 	"athens": {"bells": false, "layers": [
 		{"file": "athens_ghost", "db": -10.0, "music": true, "until": "teacher", "fade": 1.5},
 		{"file": "athens_walk", "db": -10.0, "music": true, "needs": "walkway"},
@@ -39,7 +39,7 @@ const ZONES := {
 		{"file": "athens_drum", "db": -10.0, "music": true, "needs": "soldiers"},
 		{"file": "stream", "db": -22.0, "needs": "water"},
 		{"file": "birds", "db": -20.0, "needs": "leaves"},
-		{"file": "wind", "db": -27.0, "lost_db": -17.0}]},
+		{"file": "wind", "db": -27.0, "loud_db": -17.0, "loud_until": "sun"}]},
 }
 
 var zone := ""
@@ -83,8 +83,8 @@ static func plan(to: String, back: Array) -> Array:
 		if layer.get("until", "") != "" and back.has(layer["until"]):
 			continue
 		var db: float = layer["db"] - layer.get("fade", 0.0) * back.size()
-		if layer.has("lost_db") and not back.has("sun"):
-			db = layer["lost_db"]
+		if layer.has("loud_until") and not back.has(layer["loud_until"]):
+			db = layer["loud_db"]
 		out.append({"file": layer["file"], "db": db, "music": layer.get("music", false)})
 	return out
 

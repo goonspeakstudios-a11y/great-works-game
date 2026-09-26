@@ -52,7 +52,7 @@ var teacher := {}  # the author in person, if this place has one: {root, head, h
 var people: Array = []  # everyone here in person, the teacher first
 var squads: Array = []  # soldiers marching a circuit: {root, legs, path, leg, speed, step, undead}
 var restored_here: Array = []  # the pieces of this place that are back (Places.back)
-var _restore_pending := false  # something was understood: bring a piece back when the talk ends
+var _restore_pending := ""  # the place whose next piece comes back when the talk (or a fade) ends
 var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
 var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
@@ -254,21 +254,31 @@ func travel(to: String) -> void:
 	if offline:
 		_load_place(to)
 		return
+	await _fade_through(Color.BLACK, FADE, FADE * 1.5, _load_place.bind(to))
+
+
+## Covers the screen in a colour, runs `build` while it is covered, and uncovers it again.
+## Only one at a time (travelling), and the player cannot move meanwhile.
+func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> void:
 	travelling = true
 	player.frozen = true
-	var out := create_tween()
-	out.tween_property(_fade, "color:a", 1.0, FADE)
-	await out.finished
-	_load_place(to)
-	var back := create_tween()
-	back.tween_property(_fade, "color:a", 0.0, FADE * 1.5)
-	await back.finished
-	player.frozen = false
+	_fade.color = Color(color.r, color.g, color.b, 0.0)
+	var cover := create_tween()
+	cover.tween_property(_fade, "color:a", color.a, out_s)
+	await cover.finished
+	build.call()
+	var uncover := create_tween()
+	uncover.tween_property(_fade, "color:a", 0.0, in_s)
+	await uncover.finished
+	_fade.color = Color(0, 0, 0, 0)
+	player.frozen = _any_panel()
 	travelling = false
 
 
 func _load_place(to: String, keep: bool = false) -> void:
 	var held := _where_everyone_is() if keep else {}
+	if not keep:
+		_restore_pending = ""  # a piece of the place you are leaving waits for your return
 	for c in world.get_children():
 		world.remove_child(c)
 		c.queue_free()
@@ -313,7 +323,10 @@ func _load_place(to: String, keep: bool = false) -> void:
 
 ## How many pieces of a book's place are back: one for each lesson point understood.
 func _stage(work: String) -> int:
-	return mini(progress.understood(work).size(), Rooms.room(work).get("restores", []).size())
+	var room := Rooms.room(work)
+	var ids: Array = room.get("lesson", []).map(func(p): return p["id"])
+	var have: int = progress.understood(work).filter(func(id): return ids.has(id)).size()
+	return mini(have, room.get("restores", []).size())
 
 
 ## Where you, the people and the soldiers are, so a place can be rebuilt around you.
@@ -339,23 +352,15 @@ func _put_back(held: Dictionary) -> void:
 ## What you came to understand brings a piece of this place back: a wash of warm light, and
 ## there it is, with a line saying what returned.
 func _restore() -> void:
+	_restore_pending = ""
+	if travelling:
+		_restore_pending = here  # after the fade that is running
+		return
 	var before := restored_here.duplicate()
 	if offline:
 		_load_place(here, true)
 	else:
-		travelling = true
-		player.frozen = true
-		_fade.color = Color(1.0, 0.94, 0.8, 0.0)
-		var out := create_tween()
-		out.tween_property(_fade, "color:a", 0.85, 0.6)
-		await out.finished
-		_load_place(here, true)
-		var back := create_tween()
-		back.tween_property(_fade, "color:a", 0.0, 1.8)
-		await back.finished
-		_fade.color = Color(0, 0, 0, 0)
-		player.frozen = false
-		travelling = false
+		await _fade_through(Color(1.0, 0.94, 0.8, 0.85), 0.6, 1.8, _load_place.bind(here, true))
 	var lines: Array = []
 	for r in Rooms.room(here).get("restores", []):
 		if restored_here.has(r["what"]) and not before.has(r["what"]):
@@ -363,6 +368,8 @@ func _restore() -> void:
 	if not lines.is_empty():
 		_quip = "\n".join(lines)
 		_quip_until = _t + 6.0
+	if _restore_pending == here and not _any_panel():
+		_restore()
 
 
 # ---------- interface ----------
@@ -683,14 +690,20 @@ func _send(question: String) -> void:
 ## What the teacher is told about his place as it is now: lost, partly back, or whole.
 func _state_note(work: String) -> String:
 	var room := Rooms.room(work)
-	var total: int = room.get("restores", []).size()
-	if total == 0:
+	var restores: Array = room.get("restores", [])
+	if restores.is_empty():
 		return ""
 	var home: String = room.get("home", "home")
-	if _stage(work) >= total:
+	var stage := _stage(work)
+	if stage >= restores.size():
 		return "Where you are now: your %s is alive again, brought back by what this visitor came to understand. You are glad of it." % home
-	return ("Where you are now: your %s has faded almost out of the world. It lies grey and in ruins, and you are only a pale shade of yourself. " +
-		"Each point the visitor truly understands brings a piece of it back (%d of %d so far). You may say so once, in a few words, if it fits; never dwell on it.") % [home, _stage(work), total]
+	var back: Array = restores.slice(0, stage)
+	var himself := back.any(func(r): return r["what"] == "teacher")
+	var note := "Where you are now: your %s had faded almost out of the world, and %s. Each point the visitor truly understands brings a piece of it back (%d of %d so far)." % [
+		home, "you are yourself again" if himself else "you are only a pale shade of yourself", stage, restores.size()]
+	if not back.is_empty():
+		note += " Already back: %s" % " ".join(back.map(func(r): return r["line"]))
+	return note + " You may say so once, in a few words, if it fits; never dwell on it."
 
 
 ## His first words: a greeting the first time, a welcome back that picks up where you left off.
@@ -727,8 +740,10 @@ func _on_judged(work: String, ids: Array) -> void:
 	var names: Array = room.get("lesson", []).filter(func(p): return fresh.has(p["id"])).map(func(p): return p["label"])
 	var note := "\n\n[color=#a6c8cc]On your tablet: %s[/color]" % ", ".join(names)
 	if work == here and not Rooms.room(work).get("restores", []).is_empty():
-		_restore_pending = true
 		note += "\n[i][color=#a6c8cc]Something in this place stirs.[/color][/i]"
+		_restore_pending = work  # it comes back when you turn from the talk
+		if not _any_panel():
+			_restore()  # the check came back after you had already walked away
 	if progress.check_mastery(work, room.get("lesson", [])):
 		note += "\n\n[i][color=#e0b660]%s[/color][/i]\n[color=#e0b660]You have mastered the %s. Its gateway on the Shore now burns.[/color]" % [
 			_esc(room.get("gift", "")), room.get("book", "book")]
@@ -828,8 +843,9 @@ func _close_panels() -> void:
 	player.frozen = false
 	if not offline:
 		Input.mouse_mode = _mouse_before
-	if _restore_pending:
-		_restore_pending = false
+	var due := _restore_pending != "" and _restore_pending == here
+	_restore_pending = ""
+	if due:
 		_restore()
 
 
@@ -1092,7 +1108,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _ok:
+	if not _ok or travelling:  # nothing opens in the middle of a fade
 		return
 	if event is InputEventMouseButton and event.pressed and not player.frozen and not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

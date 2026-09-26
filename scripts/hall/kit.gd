@@ -444,7 +444,7 @@ static func teacher(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -
 	var skin := "#" + str(look.get("skin", "c49a78"))
 	var hair := "#" + str(look.get("beard_color", look.get("hair_color", "d0ccc4")))
 	var root := group(parent, at, yaw)
-	box(root, Vector3(0, 0.25, -0.05), Vector3(0.45, 0.5, 0.45), "wood")
+	box(root, Vector3(0, 0.25, -0.05), Vector3(0.45, 0.5, 0.45), "wood").set_meta("keep", true)  # his chair stays a chair when he is a shade
 	box(root, Vector3(0, 0.6, 0.15), Vector3(0.5, 0.22, 0.55), robe, false)
 	box(root, Vector3(0, 0.3, 0.4), Vector3(0.44, 0.52, 0.2), robe, false)
 	cylinder(root, Vector3(0, 0.62, -0.02), 0.25, 0.62, robe, false, 8, 0.2)
@@ -635,8 +635,9 @@ static func ash(parent: Node3D, center: Vector3, size: float) -> void:
 	p.angular_velocity_max = 90.0
 
 
-## A shade: everything under `node` turns pale, cold and half see-through. The more of his
-## place is restored, the more solid he becomes (alpha).
+## A shade: the person under `node` turns pale, cold and half see-through (things marked "keep",
+## like his chair, stay as they are). The more of his place is restored, the more solid he
+## becomes (alpha).
 static func shade(node: Node, alpha: float) -> void:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = Color(0.72, 0.78, 0.86, alpha)
@@ -646,6 +647,8 @@ static func shade(node: Node, alpha: float) -> void:
 	m.emission_energy_multiplier = 0.5
 	m.roughness = 1.0
 	for c in node.find_children("*", "MeshInstance3D", true, false):
+		if c.has_meta("keep"):
+			continue
 		(c as MeshInstance3D).material_override = m
 		(c as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
@@ -680,17 +683,22 @@ static func stoa(parent: Node3D, at: Vector3, yaw: float, length: float, depth: 
 	box(g, Vector3(0, 0.06, 0), Vector3(length + 0.6, 0.12, depth + 0.6), "paving", false)
 	for x in [-length / 2.0, length / 2.0]:
 		box(g, Vector3(x, 2.1, -0.4), Vector3(0.4, 4.2, depth - 0.8), "stone")
-	const SECTIONS := 6
-	var seg := (length + 0.6) / SECTIONS
-	for i in SECTIONS:  # the back wall and the roof, section by section
-		var x := -(length + 0.6) / 2.0 + seg * (i + 0.5)
-		var wall_h := 4.2 if whole or i in [0, 3, 4] else 1.6 + 0.5 * (i % 2)
-		box(g, Vector3(x, wall_h / 2.0, -depth / 2.0), Vector3(seg, wall_h, 0.4), "stone")
-		if whole or i in [0, 3]:
-			box(g, Vector3(x, 4.45, 0), Vector3(seg + 0.1, 0.3, depth + 1.0), "roof", false)
-			box(g, Vector3(x, 4.15, depth / 2.0 - 0.5), Vector3(seg, 0.3, 0.7), "marble", false)  # the beam over the columns
-	if not whole:  # a slab of the fallen roof, lying across the back of the walkway
-		box(g, Vector3(-(length + 0.6) / 2.0 + seg * 1.5, 0.4, -depth / 2.0 + 1.0), Vector3(seg * 0.7, 0.3, 1.4), "roof", false, Vector3(0.12, 0.2, 0.3))
+	if whole:
+		box(g, Vector3(0, 2.1, -depth / 2.0), Vector3(length + 0.6, 4.2, 0.4), "stone")
+		box(g, Vector3(0, 4.45, 0), Vector3(length + 1.2, 0.3, depth + 1.0), "roof", false)
+		box(g, Vector3(0, 4.15, depth / 2.0 - 0.5), Vector3(length + 0.6, 0.3, 0.7), "marble", false)  # the beam over the columns
+	else:  # in ruin: the wall has fallen low in two sections, the roof stands over only two
+		const SECTIONS := 6
+		var seg := (length + 0.6) / SECTIONS
+		for i in SECTIONS:
+			var x := -(length + 0.6) / 2.0 + seg * (i + 0.5)
+			var wall_h := 1.6 + 0.5 * (i % 2) if i in [1, 2] else 4.2
+			box(g, Vector3(x, wall_h / 2.0, -depth / 2.0), Vector3(seg, wall_h, 0.4), "stone")
+			if i in [0, 3]:
+				box(g, Vector3(x, 4.45, 0), Vector3(seg, 0.3, depth + 1.0), "roof", false)
+				box(g, Vector3(x, 4.15, depth / 2.0 - 0.5), Vector3(seg, 0.3, 0.7), "marble", false)
+		# a slab of the fallen roof across the back of the walkway, where the fifth section's roof was
+		box(g, Vector3(7.0, 0.4, -depth / 2.0 + 1.0), Vector3(2.8, 0.3, 1.4), "roof", false, Vector3(0.12, 0.2, 0.3))
 	var n := int(length / 3.0)
 	for k in n + 1:
 		var cx := -length / 2.0 + k * (length / n)

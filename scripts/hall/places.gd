@@ -81,14 +81,37 @@ static func seat(world: Node3D, at: Vector3, facing: Vector3, text: String = "Si
 	return {"kind": "seat", "pos": at - facing * 1.6, "seat": at, "look": at + facing * 100.0, "text": text}
 
 
+## Every piece any place can bring back. A place with no restore list is simply whole.
+const ALL_PIECES := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "household", "soldiers"]
+
+
 ## The pieces of a place that are back, in the order they return.
 static func back(room: Dictionary, stage: int) -> Array:
-	return room.get("restores", []).slice(0, stage).map(func(r): return r["what"])
+	var restores: Array = room.get("restores", [])
+	if restores.is_empty():
+		return ALL_PIECES.duplicate()
+	return restores.slice(0, stage).map(func(r): return r["what"])
 
 
 ## How much colour a place has: almost none while it is lost, all of it once it is whole.
 static func saturation(room: Dictionary, stage: int) -> float:
-	return lerpf(0.15, 1.0, float(stage) / maxi(1, room.get("restores", []).size()))
+	var total: int = room.get("restores", []).size()
+	return 1.0 if total == 0 else lerpf(0.15, 1.0, float(stage) / total)
+
+
+## The sky of a book's place as far as it is restored: its own light once the sun is back,
+## otherwise the ashen sky with ash falling; colour returns piece by piece. Returns the pieces back.
+static func _sky(world: Node3D, room: Dictionary, stage: int, mood: String, ash_at: Vector3, ash_size: float) -> Array:
+	var b := back(room, stage)
+	Kit.sunset(world, mood if b.has("sun") else "ashen", saturation(room, stage))
+	if not b.has("sun"):
+		Kit.ash(world, ash_at, ash_size)
+	return b
+
+
+## What the teacher is called: himself, or his shade until he is restored.
+static func _who(room: Dictionary, b: Array) -> String:
+	return room["author"] if b.has("teacher") else "the shade of %s" % room["author"]
 
 
 ## The teacher while his place is not yet whole: a pale shade, more solid with each piece back.
@@ -113,12 +136,9 @@ static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 ## It starts lost, grey and cold, and comes back a piece at a time: the pool fills, the trees
 ## turn green, the lamps are lit, the sun comes back, Porphyry is himself, the household is home.
 static func villa(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
-	var b := back(room, stage)
+	var b := _sky(world, room, stage, "golden", Vector3(0, 0, -2), 22.0)
 	var leaves := b.has("leaves")
 	var lamps := b.has("lamps")
-	Kit.sunset(world, "golden" if b.has("sun") else "ashen", saturation(room, stage))
-	if not b.has("sun"):
-		Kit.ash(world, Vector3(0, 0, -2), 22.0)
 	Kit.sea(world, -10.0)
 	Kit.plateau(world, 40.0)
 	Kit.mountain(world, Vector3(230, -10, -320), 150.0, 125.0, true)  # Etna, far off
@@ -126,7 +146,7 @@ static func villa(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 	var out: Array = []
 	var spots := {}
 	var sway: Array = []
-	var birds := Kit.flock(world, Vector3(0, 0, -6), 5, 10.0, 10.0)
+	var birds: Array = Kit.flock(world, Vector3(0, 0, -6), 5, 10.0, 10.0) if leaves else []  # no birds over a dead place
 	if leaves:
 		Kit.fireflies(world, Vector3(0, 0, -6), 5.0)
 	# arrival: the way back to the Shore, and a path north to the villa
@@ -174,7 +194,7 @@ static func villa(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 	var teacher := Kit.teacher(world, Vector3(0, 0, -16.6), 0.0, room.get("portrait", {}))
 	if not b.has("teacher"):
 		_haunt(teacher, stage)
-	var who: String = room["author"] if b.has("teacher") else "the shade of %s" % room["author"]
+	var who := _who(room, b)
 	out.append({"kind": "author", "pos": Vector3(0, 0, -14.1), "text": "Talk to %s" % who})
 	spots["author"] = Vector3(0, 0, -14.1)
 	var statues: Array = room.get("statues", [])
@@ -262,11 +282,8 @@ static func villa(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 ## lost, grey and dead, and comes back a piece at a time: the stream runs, the trees leaf, the
 ## walkway stands whole, the morning returns, Aristotle is himself, the soldiers are men again.
 static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
-	var b := back(room, stage)
+	var b := _sky(world, room, stage, "morning", Vector3(0, 0, -4), 26.0)
 	var leaves := b.has("leaves")
-	Kit.sunset(world, "morning" if b.has("sun") else "ashen", saturation(room, stage))
-	if not b.has("sun"):
-		Kit.ash(world, Vector3(0, 0, -4), 26.0)
 	Kit.plateau(world, 48.0, "earth", false)
 	Kit.acropolis(world, Vector3(-150, -10, -230))
 	Kit.mountain(world, Vector3(280, -10, -160), 130.0, 75.0, false)  # Hymettus
@@ -275,7 +292,7 @@ static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	var out: Array = []
 	var spots := {}
 	var sway: Array = []
-	var birds := Kit.flock(world, Vector3(0, 0, -6), 6, 14.0, 12.0)
+	var birds: Array = Kit.flock(world, Vector3(0, 0, -6), 6, 14.0, 12.0) if leaves else []  # no birds over a dead place
 	# arrival: the gateway back to the Shore, and the path north
 	var gate_at := Vector3(0, 0, 27)
 	flicker.append(Kit.gateway(world, gate_at, Kit.face_yaw(gate_at, Vector3.ZERO), true))
@@ -322,7 +339,7 @@ static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	aristotle["speed"] = 1.1
 	if not b.has("teacher"):
 		_haunt(aristotle, stage)
-	var who: String = room["author"] if b.has("teacher") else "the shade of %s" % room["author"]
+	var who := _who(room, b)
 	out.append({"kind": "author", "pos": Vector3(-6.5, 0, 6.0), "follow": aristotle["root"], "text": "Walk with %s" % who})
 	spots["author"] = Vector3(-6.5, 0, 6.0)
 	# for later lessons: the library at the north end, and the grove across the bridge

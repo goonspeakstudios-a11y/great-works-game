@@ -328,8 +328,9 @@ func test_the_places_are_alive() -> void:
 	var p0: Vector3 = hall.birds[0]["node"].position
 	hall._animate_life(0.5)
 	check(hall.birds[0]["node"].position.distance_to(p0) > 0.1, "the swallows fly")
+	hall.progress.learn("porphyry-isagoge", _ids("porphyry-isagoge"))
 	hall.travel("porphyry-isagoge")
-	check(hall.birds.size() >= 3, "birds over the villa too")
+	check(hall.birds.size() >= 3, "birds over the restored villa too")
 	hall.free()
 
 
@@ -556,7 +557,7 @@ func test_restoration_happens_before_your_eyes() -> void:
 	var stand := Vector3(-4.0, 0.05, 3.0)
 	hall.player.position = stand
 	hall._open_ask("aristotle-categories")
-	check(hall._ask_room.get("state", "").contains("ruin"), "he knows his school lies in ruins")
+	check(hall._ask_room.get("state", "").contains("pale shade"), "he knows his school has faded and he is a shade")
 	check(hall._talk["aristotle-categories"].contains(Rooms.room("aristotle-categories")["greeting_lost"].left(20)), "and greets you from the ruin")
 	hall._on_judged("aristotle-categories", ["ten_questions"])
 	check_eq(hall.restored_here, [], "nothing changes while you talk")
@@ -569,3 +570,120 @@ func test_restoration_happens_before_your_eyes() -> void:
 	check(body["system"].contains(hall._ask_room["state"]), "the teacher is told what state his place is in")
 	check(not body["system"].contains("Plotinus"), "Aristotle is not told about Porphyry's study")
 	hall.free()
+
+
+# ---------- review fixes: restoring safely, and honestly ----------
+
+const Places := preload("res://scripts/hall/places.gd")
+
+
+func _lyceum_hall() -> Node:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("aristotle-categories")
+	return hall
+
+
+func test_an_understanding_judged_after_you_walk_away_still_restores() -> void:
+	var hall := _lyceum_hall()
+	hall._open_ask("aristotle-categories")
+	hall._close_panels()
+	hall._on_judged("aristotle-categories", ["ten_questions"])
+	check_eq(hall.restored_here, ["water"], "the piece comes back even though the talk had ended")
+	check_eq(hall._restore_pending, "", "and nothing is left waiting")
+	hall.free()
+
+
+func test_leaving_the_place_cancels_what_was_waiting() -> void:
+	var hall := _lyceum_hall()
+	hall._open_ask("aristotle-categories")
+	hall._on_judged("aristotle-categories", ["ten_questions"])
+	check_eq(hall._restore_pending, "aristotle-categories", "a piece waits for the talk to end")
+	hall.travel("hub")
+	hall._close_panels()
+	check_eq(hall.here, "hub", "closing a panel later does not drag you back")
+	check_eq(hall._restore_pending, "", "the waiting piece was dropped when you left")
+	hall.free()
+
+
+func test_no_restoring_in_the_middle_of_a_fade() -> void:
+	var hall := _lyceum_hall()
+	hall.progress.learn("aristotle-categories", ["ten_questions"])
+	hall.travelling = true
+	hall._restore()
+	check_eq(hall.restored_here, [], "nothing is rebuilt while a fade is running")
+	check_eq(hall._restore_pending, "aristotle-categories", "it waits instead")
+	var t := InputEventKey.new()
+	t.physical_keycode = KEY_T
+	t.pressed = true
+	hall._unhandled_input(t)
+	check(not hall._read_panel.visible, "the tablet does not open in the middle of a fade")
+	hall.travelling = false
+	hall._close_panels()
+	check_eq(hall.restored_here, ["water"], "and it comes back once the fade is over")
+	hall.free()
+
+
+func test_a_place_without_a_restore_list_is_whole() -> void:
+	check(Places.back({}, 0).has("sun") and Places.back({}, 0).has("teacher"), "nothing to restore means nothing is missing")
+	check_eq(Places.saturation({}, 0), 1.0, "and it is in full colour")
+
+
+func test_the_teacher_is_told_how_far_his_place_is_back() -> void:
+	var hall := _lyceum_hall()
+	hall._open_ask("aristotle-categories")
+	check(hall._ask_room["state"].contains("pale shade"), "lost: he is a shade")
+	hall._close_panels()
+	hall.progress.learn("aristotle-categories", _ids("aristotle-categories").slice(0, 5))
+	hall.travel("aristotle-categories")
+	hall._open_ask("aristotle-categories")
+	var state: String = hall._ask_room["state"]
+	check(state.contains("yourself again") and not state.contains("pale shade"), "five pieces back: he knows he is himself again")
+	check(state.contains("The morning comes back to Athens."), "and what has come back")
+	hall.free()
+
+
+func test_old_points_in_a_save_restore_nothing() -> void:
+	var hall := _lyceum_hall()
+	hall.progress.learn("aristotle-categories", ["a_point_that_no_longer_exists", "ten_questions"])
+	check_eq(hall._stage("aristotle-categories"), 1, "only points of the current lesson count")
+	hall.free()
+
+
+func test_no_birds_over_a_dead_place() -> void:
+	var hall := _lyceum_hall()
+	check(hall.birds.is_empty(), "no swallows over the dead Lyceum")
+	hall.progress.learn("aristotle-categories", _ids("aristotle-categories").slice(0, 2))
+	hall.travel("aristotle-categories")
+	check(not hall.birds.is_empty(), "the birds return with the leaves")
+	hall.free()
+
+
+func test_a_shade_keeps_his_chair() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("porphyry-isagoge")
+	var meshes: Array = hall.teacher["root"].find_children("*", "MeshInstance3D", true, false)
+	var chair: Array = meshes.filter(func(m): return m.has_meta("keep"))
+	var wood: Material = preload("res://scripts/hall/textures.gd").material("wood")
+	check(chair.size() == 1 and chair[0].material_override == wood, "his chair stays wood while he is a shade")
+	var shade: Material = meshes.filter(func(m): return not m.has_meta("keep"))[0].material_override
+	check(shade != wood and shade.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA, "the man himself is the shade")
+	hall.free()
+
+
+func test_the_whole_walkway_has_one_roof() -> void:
+	var holder := Node3D.new()
+	var stoa: Node3D = Kit.stoa(holder, Vector3.ZERO, 0.0, 34.0, 5.0, true)
+	var roofs: Array = stoa.get_children().filter(func(n): return n is MeshInstance3D and absf(n.position.y - 4.45) < 0.01)
+	check_eq(roofs.size(), 1, "one roof, no overlapping strips to flicker")
+	holder.free()
+
+
+func test_music_layers_say_when_they_are_loud() -> void:
+	for z in Music.ZONES:
+		for layer in Music.ZONES[z]["layers"]:
+			check(not layer.has("lost_db"), "%s/%s: no hidden rule about the sun" % [z, layer["file"]])
+			check(layer.has("loud_db") == layer.has("loud_until"), "%s/%s: loud_db and loud_until go together" % [z, layer["file"]])

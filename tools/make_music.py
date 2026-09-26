@@ -410,20 +410,40 @@ def write_wav(path: Path, samples: list[float], peak: float, top: float | None =
     logger.info("Wrote %s (%.1f s)", path.name, len(samples) / RATE)
 
 
-def write_stems(name: str, stems: dict[str, list[float]], peak: float) -> None:
-    """Write a track's layers with one shared scale, so together they sound as mixed."""
-    mix = [sum(v) for v in zip(*stems.values())]
+def rms(samples: list[float]) -> float:
+    return math.sqrt(sum(s * s for s in samples) / max(1, len(samples)))
+
+
+def write_stems(name: str, stems: dict[str, list[float]], peak: float, core: tuple[str, ...] = ()) -> float:
+    """Write a track's layers with one shared scale, so together they sound as mixed. The scale
+    comes from the core layers (by default all), so an extra layer heard only at the very end
+    (the soldiers' drum) does not turn the rest down. Returns the loudness (RMS) of the core mix
+    as written, for the ghost to sit under."""
+    mix = [sum(v) for v in zip(*(stems[k] for k in (core or stems)))]
     top = max(1e-9, max(abs(s) for s in mix))
     for part, samples in stems.items():
         write_wav(OUT / f"{name}_{part}.wav", samples, peak, top)
+    return rms(mix) * peak / top
+
+
+def write_ghost(path: Path, samples: list[float], under: float) -> None:
+    """Write a ghost (the echo heard while a place is lost) at about half the loudness of the
+    place's whole track, so the echo is truly faint next to what comes back."""
+    target = under * 0.5
+    gain = target / max(1e-9, rms(samples))
+    top = max(abs(s) for s in samples)
+    gain = min(gain, 0.95 / max(1e-9, top))
+    write_wav(path, samples, top * gain, top)
+    logger.info("  %s sits at RMS %.3f under the whole track's %.3f", path.name, rms(samples) * gain, under)
+    assert rms(samples) * gain < under, "a ghost must be quieter than the place it haunts"
 
 
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     OUT.mkdir(parents=True, exist_ok=True)
     write_wav(OUT / "shore.wav", render_loop(E1), 0.7)
-    write_stems("sicily", render_sicily(), 0.7)
-    write_wav(OUT / "sicily_ghost.wav", render_ghost(SICILY_SCALE, 110.0, "lyre", seed=43), 0.7)
+    sicily = write_stems("sicily", render_sicily(), 0.7)
+    write_ghost(OUT / "sicily_ghost.wav", render_ghost(SICILY_SCALE, 110.0, "lyre", seed=43), sicily)
     write_wav(OUT / "wind.wav", render_wind(12), 0.35)
     write_wav(OUT / "bell.wav", render_bell(), 0.6)
     write_wav(OUT / "waves.wav", render_waves(), 0.5)
@@ -431,8 +451,8 @@ def main() -> int:
     write_wav(OUT / "fire.wav", render_fire(), 0.4)
     write_wav(OUT / "fountain.wav", render_fountain(), 0.3)
     write_wav(OUT / "croak.wav", render_croak(), 0.8)
-    write_stems("athens", render_athens(), 0.7)
-    write_wav(OUT / "athens_ghost.wav", render_ghost(ATHENS_SCALE, 82.41, "pipe", seed=41), 0.7)
+    athens = write_stems("athens", render_athens(), 0.7, core=("drone", "walk", "pipes"))
+    write_ghost(OUT / "athens_ghost.wav", render_ghost(ATHENS_SCALE, 82.41, "pipe", seed=41), athens)
     write_wav(OUT / "birds.wav", render_birds(), 0.4)
     write_wav(OUT / "stream.wav", render_stream(), 0.3)
     return 0
