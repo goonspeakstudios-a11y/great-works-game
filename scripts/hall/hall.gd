@@ -34,6 +34,7 @@ const REACH := 1.8
 const GATE_REACH := 2.4
 const QUIT_WINDOW := 2.0
 const FADE := 0.9
+const BLINK_EVERY := 45.0
 const FALL_Y := -20.0  # below this you are falling through the void, for as long as you like
 const FALL_ASK := 10.0  # seconds of falling before you are asked if you are ready to stop
 const FALL_MAX := 30.0  # how fast you fall, at most (m/s)
@@ -66,6 +67,7 @@ var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
 var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
 var sway: Array = []  # tree crowns the breeze stirs
+var blink: Array = []  # the far toad's eyes, which close once every BLINK_EVERY seconds
 var drift: Array = []  # things hanging in the void that bob and turn (Kit.drifting)
 var ground: Array = []  # where you can stand, if the place says (the Nexus): discs and rects in x/z
 var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which way
@@ -343,6 +345,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	spots = built["spots"]
 	birds = built.get("birds", [])
 	sway = built.get("sway", [])
+	blink = built.get("blink", [])
 	drift = built.get("drift", [])
 	ground = built.get("ground", [])
 	flicker.clear()
@@ -1159,6 +1162,11 @@ func _animate_life(delta: float) -> void:
 		if is_instance_valid(sway[i]):
 			sway[i].rotation.z = sin(_t * 0.9 + i * 1.3) * 0.03
 			sway[i].rotation.x = cos(_t * 0.7 + i * 0.9) * 0.02
+	var lid := fmod(_t, BLINK_EVERY)
+	var shut := sin(lid / 0.6 * PI) if lid < 0.6 else 0.0  # down and up again in 0.6 s
+	for eye in blink:
+		if is_instance_valid(eye):
+			eye.scale.y = 1.0 - 0.9 * shut
 	for d in drift:
 		var node: Node3D = d["node"]
 		if not is_instance_valid(node):
