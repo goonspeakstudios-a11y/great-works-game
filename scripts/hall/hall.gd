@@ -1224,11 +1224,14 @@ func _walk(person: Dictionary, to: Vector3, delta: float, t: float) -> void:
 		legs[j].rotation.x = sin(t * 6.0 + j * PI) * 0.45
 
 
-## Where the toad likes to sit: a couple of paces behind you and to the right (closer when you
-## sit), never out over the void.
+## Where the toad wants to be: about two paces from you, on its own side of you. Only where
+## you stand matters, not which way you look, so turning round leaves it sitting.
 func _toad_spot() -> Vector3:
-	var basis := Basis(Vector3.UP, player.rotation.y)
-	var want := player.position + basis.x * 1.5 + basis.z * (0.6 if player.seated else 2.4)
+	var away: Vector3 = toad["root"].position - player.position
+	away.y = 0.0
+	if away.length() < 0.1:
+		away = Basis(Vector3.UP, player.rotation.y) * Vector3(1, 0, 1)
+	var want: Vector3 = player.position + away.normalized() * (1.2 if player.seated else 2.0)
 	var on := _to_ground(ground, Vector2(want.x, want.z))
 	return Vector3(on.x, 0.02, on.y)
 
@@ -1237,7 +1240,9 @@ func _toad_spot() -> Vector3:
 func _toad_to_heel() -> void:
 	if toad.is_empty() or toad_hold:
 		return
-	toad["root"].position = _toad_spot()
+	var behind := Basis(Vector3.UP, player.rotation.y) * Vector3(1.2, 0, 1.6)  # behind you and to the right
+	var on := _to_ground(ground, Vector2(player.position.x + behind.x, player.position.z + behind.z))
+	toad["root"].position = Vector3(on.x, 0.02, on.y)
 	_toad_moving = false
 
 
