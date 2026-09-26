@@ -180,7 +180,7 @@ def render_cicadas(seconds: int = 12, seed: int = 7) -> list[float]:
             a += (x - a) * 0.75
             b += (a - b) * 0.18
             band = a - b  # roughly 4-6 kHz
-            burst = max(0.0, math.sin(TAU * (t + offset) / 5.5)) ** 0.5
+            burst = max(0.0, math.sin(TAU * (t + offset) / 6.0)) ** 0.5  # 6 s divides the 12 s loop: no seam
             pulse = max(0.0, math.sin(TAU * rate * t)) ** 6
             out[n] += band * pulse * burst * level
     return _seam(out, total, fade)

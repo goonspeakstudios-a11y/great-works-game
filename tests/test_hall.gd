@@ -177,7 +177,7 @@ func test_nothing_steals_the_mouse_while_walking() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	var centre := Vector2(Hall.RES) / 2.0
+	var centre := Vector2(Hall.UI) / 2.0
 	var stack: Array = [hall]
 	while not stack.is_empty():
 		var n: Node = stack.pop_back()
@@ -343,4 +343,56 @@ func test_the_toad_follows_you_everywhere() -> void:
 	hall.travel("porphyry-isagoge")
 	hall._animate_life(0.1)
 	check(hall.toad["root"].position.distance_to(hall.player.position) < 4.0, "the toad comes through the gateway with you")
+	hall.free()
+
+
+func test_the_villa_feels_lived_in() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("porphyry-isagoge")
+	var names := {}
+	for n in hall.world.get_children():
+		names[str(n.get_meta("prop", ""))] = true
+	for prop in ["amphora", "lamp", "table", "rug", "lyre", "plant", "bed", "hearth"]:
+		check(names.has(prop), "the villa has a %s" % prop)
+	check_eq(hall.people.size(), 2, "Porphyry and his copyist are both there in person")
+	check(hall.interactables.any(func(i): return i["kind"] == "person" and i["note"].contains("wax tablet")), "she can tell you how books were made")
+	hall.free()
+
+
+const Lettering := preload("res://scripts/hall/lettering.gd")
+
+
+func test_the_lettering_is_hand_cut_not_the_default() -> void:
+	for f in [Lettering.LAPIDARY, Lettering.SCRIBE]:
+		check(f is Font and f != ThemeDB.fallback_font, "lettering of our own, not the engine's")
+	for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;'\"-!?()/&":
+		check(Lettering.LAPIDARY.has_char(c.unicode_at(0)), "the inscription capitals can cut '%s'" % c)
+		check(Lettering.SCRIBE.has_char(c.unicode_at(0)), "the scribe's hand can write '%s'" % c)
+	check(Lettering.LAPIDARY.get_string_size("ROME", HORIZONTAL_ALIGNMENT_LEFT, -1, Lettering.TITLE).x > Lettering.SCRIBE.get_string_size("ROME", HORIZONTAL_ALIGNMENT_LEFT, -1, Lettering.BODY).x, "capitals are cut larger than the reading hand")
+	check_eq(Hall.UI, Vector2i(640, 360), "words get twice the pixels the world does")
+	check_eq(int(ProjectSettings.get_setting("display/window/size/viewport_width")), 640, "the window agrees")
+
+
+func test_every_word_on_screen_uses_our_lettering() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("porphyry-isagoge")
+	hall._open_ask("porphyry-isagoge")
+	var cheap: Array = []
+	var stack: Array = [hall._ui]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		stack.append_array(n.get_children())
+		if n is RichTextLabel:
+			for item in ["normal_font", "bold_font", "italics_font", "bold_italics_font"]:
+				if n.get_theme_font(item) == ThemeDB.fallback_font:
+					cheap.append("%s.%s" % [n.name, item])
+		elif n is Label or n is Button or n is LineEdit:
+			if n.get_theme_font("font") == ThemeDB.fallback_font:
+				cheap.append(n.name)
+	check_eq(cheap.size(), 0, "no cheap lettering anywhere: %s" % str(cheap))
+	check(hall._answer.get_content_height() <= hall._answer.size.y, "the teacher's greeting fits the page (%d of %d)" % [hall._answer.get_content_height(), hall._answer.size.y])
 	hall.free()

@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://bnknbphbahl3e"
+path="res://.godot/imported/lapidary.fnt-674ce60f5619f48b87678193dda7ff1e.fontdata"
+
+[deps]
+
+source_file="res://assets/fonts/lapidary.fnt"
+dest_files=["res://.godot/imported/lapidary.fnt-674ce60f5619f48b87678193dda7ff1e.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

@@ -16,7 +16,7 @@ const ZONES := {
 }
 
 var zone := ""
-var _players: Array = []  # [player, target dB, is_music]
+var _players: Array = []  # {player, db, music, tween}: one fade at a time per player
 var _bell: AudioStreamPlayer
 var _croak: AudioStreamPlayer
 var _bells_on := false
@@ -53,10 +53,7 @@ func play(to: String) -> void:
 		return
 	zone = to
 	for p in _players:
-		var old: AudioStreamPlayer = p[0]
-		var tw := create_tween()
-		tw.tween_property(old, "volume_db", SILENT, FADE)
-		tw.tween_callback(old.queue_free)
+		_fade(p, SILENT, FADE).tween_callback(p["player"].queue_free)
 	_players.clear()
 	var spec: Dictionary = ZONES[to]
 	_start(spec["music"][0], spec["music"][1], true)
@@ -72,16 +69,31 @@ func _start(name: String, db: float, is_music: bool) -> void:
 	p.volume_db = SILENT
 	add_child(p)
 	p.play(_rng.randf() * 4.0 if not is_music else 0.0)
-	_players.append([p, db, is_music])
-	create_tween().tween_property(p, "volume_db", db + (_swell if is_music else 0.0), FADE)
+	var entry := {"player": p, "db": db, "music": is_music, "tween": null}
+	_players.append(entry)
+	_fade(entry, db + (_swell if is_music else 0.0), FADE)
+
+
+## One fade at a time per player: a new one replaces whatever was still running, so a
+## swell during a crossfade is not undone by the older tween finishing later.
+func _fade(entry: Dictionary, to_db: float, secs: float) -> Tween:
+	if entry["tween"] is Tween and entry["tween"].is_valid():
+		entry["tween"].kill()
+	var tw := create_tween()
+	tw.tween_property(entry["player"], "volume_db", to_db, secs)
+	entry["tween"] = tw
+	return tw
 
 
 ## Sitting down lets the music rise a little over the sounds of the place.
 func swell(on: bool) -> void:
-	_swell = SWELL if on else 0.0
+	var want := SWELL if on else 0.0
+	if want == _swell:
+		return
+	_swell = want
 	for p in _players:
-		if p[2] and is_instance_valid(p[0]):
-			create_tween().tween_property(p[0], "volume_db", p[1] + _swell, 1.5)
+		if p["music"] and is_instance_valid(p["player"]):
+			_fade(p, p["db"] + _swell, 1.5)
 
 
 ## The toad's deep croak.

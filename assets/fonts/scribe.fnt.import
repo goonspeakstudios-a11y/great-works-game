@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://sh7tnib8cyp3"
+path="res://.godot/imported/scribe.fnt-a81072d542b2a893e287a9df2be06a02.fontdata"
+
+[deps]
+
+source_file="res://assets/fonts/scribe.fnt"
+dest_files=["res://.godot/imported/scribe.fnt-a81072d542b2a893e287a9df2be06a02.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

@@ -1,5 +1,6 @@
 extends Node
-## The world of the Great Works, in low-resolution 3D (320x180, scaled up for the retro look).
+## The world of the Great Works, in low-resolution 3D (320x180 for Greece, scaled up for the
+## retro look; the words on screen get twice those pixels and the game's own lettering).
 ## You start on the Shore: a clifftop temple ruin over the sea at sunset, with a stone
 ## gateway for every book on the reading list, in order. An open gateway takes you to the
 ## book's own place and time (Porphyry's villa in Sicily, 270 AD, for the Isagoge): facts on
@@ -18,8 +19,15 @@ const Progress := preload("res://scripts/hall/progress.gd")
 const Worlds := preload("res://scripts/hall/worlds.gd")
 const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
+const Lettering := preload("res://scripts/hall/lettering.gd")
 
-const RES := Vector2i(320, 180)
+const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
+const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
+const READ_W := 520
+const ASK_COL := 168  # where the teacher's words start, right of the portrait column
+const ASK_W := 436
+const MAP_SCALE := 2.0
+const THROAT := Vector3(1.3, 0.8, 0.8)  # the toad's throat at rest, as Kit.toad shaped it
 const REACH := 1.8
 const GATE_REACH := 2.4
 const QUIT_WINDOW := 2.0
@@ -41,6 +49,7 @@ var flicker: Array = []  # {light, base, seed}
 var travelling := false
 var progress: RefCounted  # what the player has learned (Progress)
 var teacher := {}  # the author in person, if this place has one: {root, head, hand}
+var people: Array = []  # everyone here in person, the teacher first
 var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
 var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
@@ -56,7 +65,9 @@ const TOAD_QUIPS := ["The toad puffs up proudly.", "The toad blinks at you, very
 	"The toad looks out at the sea with you."]
 
 var _view: SubViewport
+var _screen: TextureRect
 var _ui: CanvasLayer
+var _root: Control  # everything on screen hangs here and wears the game's lettering
 var _prompt: Label
 var _where: Label
 var _fade: ColorRect
@@ -84,6 +95,8 @@ var _frames := 0
 var _ok := false
 var _talk := {}  # work -> what has been said there, as shown in the panel
 var _quit_armed := -100.0
+var _seat := {}  # the bench you are sitting on
+var _mouse_before := Input.MOUSE_MODE_CAPTURED  # how the mouse was before a panel opened
 
 
 static func ensure_actions() -> void:
@@ -155,7 +168,7 @@ func _ready() -> void:
 
 
 ## Screenshot mode for checking the look without playing:
-##   godot --path . -- --shot=C:/out.png --view=hub|gate|villa|path|study|map|tree|ask|read
+##   godot --path . -- --shot=C:/out.png --view=hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read
 func _stage_shot(view: String) -> void:
 	if not view in ["hub", "gate", "ruins", "head", "toad"]:
 		_load_place(doors[0]["work"])
@@ -178,6 +191,8 @@ func _stage_shot(view: String) -> void:
 			_stand(Vector3(0, 0, 8), Vector3(0, 0, -10))
 		"study", "ask":
 			_stand(spots["study"], Vector3(0, 0, -18))
+		"hut":
+			_stand(Vector3(4.2, 0, -19.0), Vector3(1.6, 0, -21.6))
 		"map":
 			_stand(spots["map"], spots["map"] + Vector3(-5, 0, 0))
 			activate(interactables.filter(func(i): return i["kind"] == "map")[0])
@@ -247,7 +262,8 @@ func _load_place(to: String) -> void:
 	here = to
 	if music:
 		music.play("shore" if to == "hub" else Rooms.room(to).get("zone", "shore"))
-	teacher = built.get("teacher", {})
+	people = built.get("people", [])
+	teacher = people[0] if not people.is_empty() else {}
 	restored_columns = built.get("restored", 0)
 	here_name = built["name"]
 	interactables = built["interactables"]
@@ -258,7 +274,10 @@ func _load_place(to: String) -> void:
 	for l in built["flicker"]:
 		if l:
 			flicker.append({"light": l, "base": l.light_energy, "seed": randf() * 10.0})
-	player.seated = false
+	player.stand()
+	_seat = {}
+	if music:
+		music.swell(false)
 	player.position = built["spawn"]
 	player.rotation.y = built["yaw"]
 	player.velocity = Vector3.ZERO
@@ -273,17 +292,19 @@ static func _style(alpha: float = 0.92, border: Color = Color("3a3542")) -> Styl
 	var s := StyleBoxFlat.new()
 	s.bg_color = Color(0.035, 0.03, 0.045, alpha)
 	s.border_color = border
-	s.set_border_width_all(1)
-	s.content_margin_left = 6
-	s.content_margin_right = 6
-	s.content_margin_top = 4
-	s.content_margin_bottom = 4
+	s.set_border_width_all(2)
+	s.content_margin_left = 12
+	s.content_margin_right = 12
+	s.content_margin_top = 8
+	s.content_margin_bottom = 8
 	return s
 
 
-static func _label(size: int, col: Color) -> Label:
+## A label in the scribe's hand, or in inscription capitals for names and titles.
+static func _label(col: Color, capitals: bool = false) -> Label:
 	var l := Label.new()
-	l.add_theme_font_size_override("font_size", size)
+	if capitals:
+		Lettering.capitals(l)
 	l.add_theme_color_override("font_color", col)
 	l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
 	l.add_theme_constant_override("shadow_offset_y", 1)
@@ -291,45 +312,52 @@ static func _label(size: int, col: Color) -> Label:
 	return l
 
 
+## The interface draws at UI (640x360) over the world picture, whatever size that world renders
+## at: Greece's 320x180 is doubled to fill it, sharper worlds fit it exactly.
 func _build_ui() -> void:
-	var screen := TextureRect.new()
-	screen.texture = _view.get_texture()
-	screen.size = Vector2(RES)
-	screen.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(screen)
+	_screen = TextureRect.new()
+	_screen.texture = _view.get_texture()
+	_screen.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_screen.stretch_mode = TextureRect.STRETCH_SCALE
+	_screen.size = Vector2(UI)
+	_screen.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_screen)
 	_ui = CanvasLayer.new()
 	_ui.layer = 10
 	add_child(_ui)
+	_root = Control.new()
+	_root.theme = Lettering.theme()
+	_root.size = Vector2(UI)
+	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ui.add_child(_root)
 	var dot := ColorRect.new()
 	dot.color = Color(0.9, 0.85, 0.7, 0.5)
-	dot.size = Vector2(1, 1)
-	dot.position = Vector2(RES) / 2.0
+	dot.size = Vector2(2, 2)
+	dot.position = Vector2(UI) / 2.0 - Vector2(1, 1)
 	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE  # the locked mouse sits right here
-	_ui.add_child(dot)
-	_where = _label(6, Color("f0d8b0"))
-	_where.position = Vector2(5, 3)
-	_ui.add_child(_where)
-	_prompt = _label(8, Color("f4ead6"))
-	_prompt.position = Vector2(10, 146)
-	_prompt.size = Vector2(RES.x - 20, 30)
+	_root.add_child(dot)
+	_where = _label(Color("f0d8b0"), true)
+	_where.position = Vector2(10, 6)
+	_root.add_child(_where)
+	_prompt = _label(Color("f4ead6"), true)
+	_prompt.position = Vector2(20, 284)
+	_prompt.size = Vector2(UI.x - 40, 68)
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_prompt.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_ui.add_child(_prompt)
+	_root.add_child(_prompt)
 	_read_panel = PanelContainer.new()
 	_read_panel.add_theme_stylebox_override("panel", _style())
-	_read_panel.position = Vector2(30, 24)
-	_read_panel.custom_minimum_size = Vector2(260, 0)
-	_read_panel.size = Vector2(260, 0)
+	_read_panel.position = Vector2(60, 48)
+	_read_panel.custom_minimum_size = Vector2(READ_W, 0)
+	_read_panel.size = Vector2(READ_W, 0)
 	_read_panel.hide()
-	_ui.add_child(_read_panel)
+	_root.add_child(_read_panel)
 	_read_text = RichTextLabel.new()
 	_read_text.bbcode_enabled = true
 	_read_text.fit_content = true
-	_read_text.custom_minimum_size = Vector2(248, 0)
-	_read_text.add_theme_font_size_override("normal_font_size", 8)
-	_read_text.add_theme_font_size_override("italics_font_size", 7)
+	_read_text.custom_minimum_size = Vector2(READ_W - 24, 0)
 	_read_text.add_theme_color_override("default_color", Color("e8dcc0"))
 	_read_panel.add_child(_read_text)
 	_build_ask_panel()
@@ -337,59 +365,57 @@ func _build_ui() -> void:
 	_build_tree_panel()
 	_fade = ColorRect.new()
 	_fade.color = Color(0, 0, 0, 0)
-	_fade.size = Vector2(RES)
+	_fade.size = Vector2(UI)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_ui.add_child(_fade)
+	_root.add_child(_fade)
 
 
 func _build_ask_panel() -> void:
 	_ask_panel = Panel.new()
 	_ask_panel.add_theme_stylebox_override("panel", _style(0.95))
-	_ask_panel.position = Vector2(6, 6)
-	_ask_panel.size = Vector2(RES.x - 12, RES.y - 12)
+	_ask_panel.position = Vector2(12, 12)
+	_ask_panel.size = Vector2(UI.x - 24, UI.y - 24)
 	_ask_panel.hide()
-	_ui.add_child(_ask_panel)
+	_root.add_child(_ask_panel)
 	_ask_portrait = TextureRect.new()
-	_ask_portrait.position = Vector2(8, 8)
-	_ask_portrait.size = Vector2(48, 64)
+	_ask_portrait.position = Vector2(16, 16)
+	_ask_portrait.size = Vector2(96, 128)
+	_ask_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_ask_portrait.stretch_mode = TextureRect.STRETCH_SCALE
 	_ask_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_ask_panel.add_child(_ask_portrait)
-	_ask_name = _label(8, Color("e0b660"))
-	_ask_name.position = Vector2(8, 74)
-	_ask_name.size = Vector2(56, 10)
+	_ask_name = _label(Color("e0b660"), true)
+	_ask_name.position = Vector2(16, 148)
+	_ask_name.size = Vector2(112, 20)
 	_ask_panel.add_child(_ask_name)
-	_ask_life = _label(5, Color("a6c8cc"))
-	_ask_life.position = Vector2(8, 85)
-	_ask_life.size = Vector2(60, 8)
+	_ask_life = _label(Color("a6c8cc"))
+	_ask_life.position = Vector2(16, 170)
+	_ask_life.size = Vector2(120, 16)
 	_ask_panel.add_child(_ask_life)
 	_lessons = RichTextLabel.new()
 	_lessons.bbcode_enabled = true
-	_lessons.position = Vector2(6, 95)
-	_lessons.size = Vector2(60, 56)
+	_lessons.position = Vector2(12, 190)
+	_lessons.size = Vector2(ASK_COL - 12, 120)
 	_lessons.scroll_active = false
-	_lessons.add_theme_font_size_override("normal_font_size", 5)
 	_lessons.add_theme_color_override("default_color", Color("8a8074"))
 	_ask_panel.add_child(_lessons)
-	var hint := _label(5, Color("8a8074"))
-	hint.text = "Esc to leave  T: tablet"
-	hint.position = Vector2(8, 155)
+	var hint := _label(Color("8a8074"))
+	hint.text = "Esc to leave"
+	hint.position = Vector2(16, 316)
 	_ask_panel.add_child(hint)
 	_answer = RichTextLabel.new()
 	_answer.bbcode_enabled = true
-	_answer.position = Vector2(66, 8)
-	_answer.size = Vector2(236, 98)
-	_answer.add_theme_font_size_override("normal_font_size", 7)
-	_answer.add_theme_font_size_override("italics_font_size", 6)
+	_answer.position = Vector2(ASK_COL, 16)
+	_answer.size = Vector2(ASK_W, 196)
 	_answer.add_theme_color_override("default_color", Color("e8dcc0"))
 	_ask_panel.add_child(_answer)
 	for k in 4:
 		var b := Button.new()
-		b.position = Vector2(66 + (k % 2) * 119, 108 + (k / 2) * 13)
-		b.custom_minimum_size = Vector2(117, 11)
-		b.size = Vector2(117, 11)
+		b.position = Vector2(ASK_COL + (k % 2) * (ASK_W / 2 + 2), 216 + (k / 2) * 26)
+		b.custom_minimum_size = Vector2(ASK_W / 2 - 2, 22)
+		b.size = Vector2(ASK_W / 2 - 2, 22)
 		b.clip_text = true
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.add_theme_font_size_override("font_size", 5)
 		b.add_theme_stylebox_override("normal", _style(0.9))
 		b.add_theme_stylebox_override("hover", _style(0.9, Color("e0b660")))
 		b.add_theme_stylebox_override("focus", _style(0.9, Color("e0b660")))
@@ -398,10 +424,9 @@ func _build_ask_panel() -> void:
 		_ask_panel.add_child(b)
 		_suggestions.append(b)
 	_question_box = LineEdit.new()
-	_question_box.position = Vector2(66, 137)
-	_question_box.size = Vector2(236, 16)
+	_question_box.position = Vector2(ASK_COL, 274)
+	_question_box.size = Vector2(ASK_W, 32)
 	_question_box.placeholder_text = "Type your own question, then Enter"
-	_question_box.add_theme_font_size_override("font_size", 7)
 	_question_box.add_theme_stylebox_override("normal", _style(0.9, Color("5a5060")))
 	_question_box.add_theme_stylebox_override("focus", _style(0.9, Color("e0b660")))
 	_question_box.text_submitted.connect(func(q: String): _send(q))
@@ -411,63 +436,86 @@ func _build_ask_panel() -> void:
 func _build_map_panel() -> void:
 	_map_panel = Panel.new()
 	_map_panel.add_theme_stylebox_override("panel", _style(0.96))
-	_map_panel.position = Vector2(4, 4)
-	_map_panel.size = Vector2(RES.x - 8, RES.y - 8)
+	_map_panel.position = Vector2(8, 8)
+	_map_panel.size = Vector2(UI.x - 16, UI.y - 16)
 	_map_panel.hide()
-	_ui.add_child(_map_panel)
-	_map_title = _label(8, Color("e0b660"))
-	_map_title.position = Vector2(8, 3)
+	_root.add_child(_map_panel)
+	_map_title = _label(Color("e0b660"), true)
+	_map_title.position = Vector2(16, 6)
 	_map_panel.add_child(_map_title)
 	_map_image = TextureRect.new()
-	_map_image.position = Vector2(6, 14)
+	_map_image.position = Vector2(12, 28)
+	_map_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_map_image.stretch_mode = TextureRect.STRETCH_SCALE
 	_map_image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_map_panel.add_child(_map_image)
 	_map_marks = Control.new()
 	_map_marks.position = _map_image.position
 	_map_marks.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_map_panel.add_child(_map_marks)
-	_map_note = _label(6, Color("e8dcc0"))
+	_map_note = _label(Color("e8dcc0"))
 	_map_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_map_panel.add_child(_map_note)
-	_map_note.position = Vector2(228, 16)
-	_map_note.custom_minimum_size = Vector2(80, 0)
-	_map_note.size = Vector2(80, 130)
-	var hint := _label(5, Color("8a8074"))
+	_map_note.position = Vector2(456, 32)
+	_map_note.custom_minimum_size = Vector2(160, 0)
+	_map_note.size = Vector2(160, 260)
+	var hint := _label(Color("8a8074"))
 	hint.text = "F to close"
-	hint.position = Vector2(RES.x - 44, 162)
+	hint.position = Vector2(UI.x - 88, 324)
 	_map_panel.add_child(hint)
 
 
+## The map is drawn at MAP_SCALE times its pixel size; names and pins follow.
 func _open_map(it: Dictionary) -> void:
 	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/maps/%s.json" % it["map"]))
 	if not data is Dictionary:
 		return
-	_map_image.texture = load("res://assets/maps/%s.png" % it["map"])
+	var tex: Texture2D = load("res://assets/maps/%s.png" % it["map"])
+	_map_image.texture = tex
+	_map_image.size = tex.get_size() * MAP_SCALE
 	_map_title.text = data["title"]
 	_map_note.text = it.get("note", "")
 	for c in _map_marks.get_children():
 		c.queue_free()
 	for r in data["regions"]:
-		_mark(Vector2(r["label"][0], r["label"][1]), r["name"], Color("fff4e0"), 5, true)
+		_mark(Vector2(r["label"][0], r["label"][1]) * MAP_SCALE, r["name"], Color("fff4e0"), true, true)
 	for o in data["others"]:
-		_mark(Vector2(o["label"][0], o["label"][1]), o["name"], Color("4a3e2c"), 4, true)
+		_mark(Vector2(o["label"][0], o["label"][1]) * MAP_SCALE, o["name"], Color("4a3e2c"), false, true)
 	for p in data["pins"]:
-		var at := Vector2(p["at"][0], p["at"][1])
+		var at := Vector2(p["at"][0], p["at"][1]) * MAP_SCALE
 		var dot := ColorRect.new()
 		dot.color = Color("ffe070") if p["main"] else Color("f4f0e8")
-		dot.size = Vector2(3, 3) if p["main"] else Vector2(2, 2)
+		dot.size = Vector2(6, 6) if p["main"] else Vector2(4, 4)
 		dot.position = at - dot.size / 2.0
 		_map_marks.add_child(dot)
-		_mark(at + Vector2(3, -4), p["name"], Color("ffe070") if p["main"] else Color("f4f0e8"), 4, false)
+		var col := Color("ffe070") if p["main"] else Color("f4f0e8")
+		match p.get("side", "right"):  # where the name sits so neighbours do not collide
+			"left":
+				_mark(at + Vector2(-6 - Lettering.width(p["name"]), -8), p["name"], col, false, false)
+			"above":
+				_mark(at + Vector2(0, -16), p["name"], col, false, true)
+			"below":
+				_mark(at + Vector2(0, 12), p["name"], col, false, true)
+			_:
+				_mark(at + Vector2(6, -8), p["name"], col, false, false)
 	_show_panel(_map_panel)
 
 
-func _mark(at: Vector2, text: String, col: Color, size: int, centred: bool) -> void:
-	var l := _label(size, col)
-	l.text = text
+## A name on the map; a long inscription breaks onto two lines so it stays over its land.
+func _mark(at: Vector2, text: String, col: Color, capitals: bool, centred: bool) -> void:
+	var l := _label(col, capitals)
+	var lines: Array = [text]
+	if capitals and Lettering.width(text, true) > 160 and text.contains(" "):
+		var cut := text.rfind(" ", text.length() / 2 + 2)
+		lines = [text.left(cut), text.substr(cut + 1)]
+	l.text = "\n".join(lines)
+	if centred:
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_map_marks.add_child(l)
-	var w := ThemeDB.fallback_font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	l.position = at - (Vector2(w / 2.0, 3) if centred else Vector2.ZERO)
+	var w := 0.0
+	for line in lines:
+		w = maxf(w, Lettering.width(line, capitals))
+	l.position = at - (Vector2(w / 2.0, 7) if centred else Vector2.ZERO)
 
 
 ## Porphyry's Tree, the book's most famous picture: follow the family down, adding one
@@ -478,48 +526,48 @@ class TreeCanvas extends Control:
 		["Human", "reasons", ""], ["Socrates, Plato...", "", ""]]
 
 	func _draw() -> void:
-		var font := ThemeDB.fallback_font
 		var ink := Color("e8dcc0")
 		var gold := Color("e0b660")
 		var dim := Color("a89878")
 		for i in ROWS.size():
-			var y := 14.0 + i * 20.0
-			var x := 70.0
+			var y := 28.0 + i * 40.0
+			var x := 140.0
 			if i > 0:
-				draw_line(Vector2(x + 8, y - 16), Vector2(x + 8, y - 6), dim, 1.0)
+				draw_line(Vector2(x + 16, y - 32), Vector2(x + 16, y - 12), dim, 2.0)
 				if ROWS[i][1] != "":
-					draw_string(font, Vector2(x + 12, y - 8), "+ " + ROWS[i][1], HORIZONTAL_ALIGNMENT_LEFT, -1, 5, gold)
-			draw_string(font, Vector2(x, y + 4), ROWS[i][0], HORIZONTAL_ALIGNMENT_LEFT, -1, 7, ink)
+					draw_string(Lettering.SCRIBE, Vector2(x + 24, y - 16), "+ " + ROWS[i][1], HORIZONTAL_ALIGNMENT_LEFT, -1, Lettering.BODY, gold)
+			draw_string(Lettering.LAPIDARY, Vector2(x, y + 8), ROWS[i][0], HORIZONTAL_ALIGNMENT_LEFT, -1, Lettering.TITLE, ink)
 			if ROWS[i][2] != "":
-				draw_line(Vector2(x + 60, y + 1), Vector2(x + 120, y + 1), dim, 1.0)
-				draw_string(font, Vector2(x + 124, y + 4), ROWS[i][2], HORIZONTAL_ALIGNMENT_LEFT, -1, 5, dim)
+				draw_line(Vector2(x + 190, y + 2), Vector2(x + 250, y + 2), dim, 2.0)
+				draw_string(Lettering.SCRIBE, Vector2(x + 258, y + 8), ROWS[i][2], HORIZONTAL_ALIGNMENT_LEFT, -1, Lettering.BODY, dim)
 
 
 func _build_tree_panel() -> void:
 	_tree_panel = Panel.new()
 	_tree_panel.add_theme_stylebox_override("panel", _style(0.96))
-	_tree_panel.position = Vector2(4, 4)
-	_tree_panel.size = Vector2(RES.x - 8, RES.y - 8)
+	_tree_panel.position = Vector2(8, 8)
+	_tree_panel.size = Vector2(UI.x - 16, UI.y - 16)
 	_tree_panel.hide()
-	_ui.add_child(_tree_panel)
-	var title := _label(8, Color("e0b660"))
+	_root.add_child(_tree_panel)
+	var title := _label(Color("e0b660"), true)
 	title.text = "Porphyry's Tree"
-	title.position = Vector2(8, 3)
+	title.position = Vector2(16, 6)
 	_tree_panel.add_child(title)
 	var canvas := TreeCanvas.new()
-	canvas.position = Vector2(0, 14)
-	canvas.size = Vector2(RES.x - 8, 124)
+	canvas.position = Vector2(0, 28)
+	canvas.size = Vector2(UI.x - 16, 248)
+	canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tree_panel.add_child(canvas)
-	var note := _label(5, Color("e8dcc0"))
+	var note := _label(Color("e8dcc0"))
 	note.text = "To say what a human is, walk down the family and add one difference at each step: a living body that feels and reasons. The genus is the family; the species is where you stop."
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_tree_panel.add_child(note)
-	note.position = Vector2(8, 138)
-	note.custom_minimum_size = Vector2(RES.x - 64, 0)
-	note.size = Vector2(RES.x - 64, 30)
-	var hint := _label(5, Color("8a8074"))
+	note.position = Vector2(16, 278)
+	note.custom_minimum_size = Vector2(UI.x - 128, 0)
+	note.size = Vector2(UI.x - 128, 60)
+	var hint := _label(Color("8a8074"))
 	hint.text = "F to close"
-	hint.position = Vector2(RES.x - 44, 158)
+	hint.position = Vector2(UI.x - 88, 316)
 	_tree_panel.add_child(hint)
 
 
@@ -657,12 +705,15 @@ func _book(work: String) -> RefCounted:
 
 func _show_read(text: String) -> void:
 	_read_text.text = text + "\n\n[i][color=#8a8074]F to close[/color][/i]"
-	_read_panel.size = Vector2(260, 0)
+	_read_panel.size = Vector2(READ_W, 0)
 	_show_panel(_read_panel)
 
 
 func _show_panel(p: Control) -> void:
+	if not _any_panel():
+		_mouse_before = Input.mouse_mode
 	p.show()
+	_where.hide()  # the place name would poke out above the panel
 	player.frozen = true
 	if not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -676,10 +727,11 @@ func _any_panel() -> bool:
 func _close_panels() -> void:
 	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel]:
 		p.hide()
+	_where.show()
 	_question_box.release_focus()
 	player.frozen = false
 	if not offline:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # straight back to looking around
+		Input.mouse_mode = _mouse_before
 
 
 # ---------- moment to moment ----------
@@ -696,19 +748,18 @@ func _process(delta: float) -> void:
 	for f in flicker:
 		if is_instance_valid(f["light"]):
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
-	_animate_teacher(delta)
+	_animate_people(delta)
 	_animate_life(delta)
 	if player.frozen:
 		_prompt.text = ""
-		return
-	if _t < _quip_until:
-		_prompt.text = _quip
 		return
 	if player.seated:
 		_prompt.text = "F: Stand up"
 		return
 	target = _nearest()
-	if _t - _quit_armed < QUIT_WINDOW:
+	if _t < _quip_until:
+		_prompt.text = _quip
+	elif _t - _quit_armed < QUIT_WINDOW:
 		_prompt.text = "Press Esc again to leave."
 	elif target.is_empty():
 		_prompt.text = ""
@@ -747,7 +798,7 @@ func _animate_toad(delta: float) -> void:
 	var root: Node3D = toad["root"]
 	var body: Node3D = toad["body"]
 	if toad_hold:
-		toad["throat"].scale = Vector3.ONE * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)))
+		toad["throat"].scale = THROAT * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)))
 		return
 	var basis := player.global_transform.basis
 	var want := player.global_position + basis.x * 0.9 + basis.z * (0.2 if player.seated else 1.1)
@@ -767,7 +818,7 @@ func _animate_toad(delta: float) -> void:
 		var look := player.global_position - root.position
 		root.rotation.y = lerp_angle(root.rotation.y, atan2(look.x, look.z), minf(1.0, delta * 2.0))
 	_toad_puff = maxf(0.0, _toad_puff - delta * 0.8)
-	toad["throat"].scale = Vector3.ONE * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)) + _toad_puff)
+	toad["throat"].scale = THROAT * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)) + _toad_puff)
 	body.scale = Vector3.ONE * (1.0 + _toad_puff * 0.25)
 
 
@@ -779,21 +830,26 @@ func pat_toad() -> void:
 		music.croak()
 
 
-## He breathes, writes when alone, and looks up and turns toward you when you come near.
-func _animate_teacher(delta: float) -> void:
-	if teacher.is_empty() or not is_instance_valid(teacher["head"]):
-		return
-	var root: Node3D = teacher["root"]
-	var head: Node3D = teacher["head"]
-	root.scale.y = 1.0 + 0.008 * sin(_t * 1.6)
-	var to: Vector3 = root.to_local(player.global_position)
-	var near := to.length() < 6.0 and to.z > 0.0
-	var want_yaw := clampf(atan2(to.x, to.z), -0.9, 0.9) if near else 0.0
-	var want_pitch := -0.12 if near else 0.35 + 0.05 * sin(_t * 0.7)
-	head.rotation.y = lerpf(head.rotation.y, want_yaw, delta * 3.0)
-	head.rotation.x = lerpf(head.rotation.x, want_pitch, delta * 3.0)
-	var hand: Node3D = teacher["hand"]
-	hand.position = Vector3(0.03 * sin(_t * 7.0), 0.0, 0.02 * sin(_t * 3.5)) if not near else hand.position.lerp(Vector3.ZERO, delta * 4.0)
+## Everyone present breathes, writes when left alone, and looks up and turns toward you
+## when you come near.
+func _animate_people(delta: float) -> void:
+	for i in people.size():
+		var person: Dictionary = people[i]
+		if not is_instance_valid(person["head"]):
+			continue
+		var root: Node3D = person["root"]
+		var head: Node3D = person["head"]
+		var t := _t + i * 1.7  # each at their own moment
+		root.scale.y = 1.0 + 0.008 * sin(t * 1.6)
+		var to: Vector3 = root.to_local(player.global_position)
+		var near := to.length() < 6.0 and to.z > 0.0
+		var want_yaw := clampf(atan2(to.x, to.z), -0.9, 0.9) if near else 0.0
+		var want_pitch := -0.12 if near else 0.35 + 0.05 * sin(t * 0.7)
+		var k := minf(1.0, delta * 3.0)
+		head.rotation.y = lerpf(head.rotation.y, want_yaw, k)
+		head.rotation.x = lerpf(head.rotation.x, want_pitch, k)
+		var hand: Node3D = person["hand"]
+		hand.position = Vector3(0.03 * sin(t * 7.0), 0.0, 0.02 * sin(t * 3.5)) if not near else hand.position.lerp(Vector3.ZERO, minf(1.0, delta * 4.0))
 
 
 func _nearest() -> Dictionary:
@@ -823,7 +879,7 @@ func activate(it: Dictionary) -> void:
 	match it.get("kind", ""):
 		"fact":
 			_show_read(it["text"])
-		"statue":
+		"statue", "person":
 			_show_read(it["note"])
 		"map":
 			_open_map(it)
@@ -847,17 +903,20 @@ func activate(it: Dictionary) -> void:
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.
 func sit(it: Dictionary) -> void:
-	player.seated = true
-	player.position = Vector3(it["seat"].x, player.position.y, it["seat"].z)
-	player.rotation.y = Places.look_yaw(it["look"] - it["seat"])
-	player.velocity = Vector3.ZERO
+	_seat = it
+	player.sit(it["seat"], Places.look_yaw(it["look"] - it["seat"]))
 	if music:
 		music.swell(true)
 
 
 func stand_up() -> void:
-	player.seated = false
-	player.position += player.global_transform.basis.z * 0.9  # step back off the bench
+	var away := Vector3.ZERO
+	if not _seat.is_empty():
+		away = (_seat["seat"] - _seat["look"])
+		away.y = 0.0
+		away = away.normalized() * 0.9  # step back off the bench, away from the view
+	_seat = {}
+	player.stand(away)
 	if music:
 		music.swell(false)
 
@@ -870,10 +929,12 @@ func _input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
-		if not _ok or _t - _quit_armed < QUIT_WINDOW:
+		if not _ok:
 			get_tree().quit()
 		elif _any_panel():
 			_close_panels()
+		elif _t - _quit_armed < QUIT_WINDOW:
+			get_tree().quit()
 		elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:

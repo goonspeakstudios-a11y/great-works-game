@@ -67,7 +67,7 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 	out.append(seat(world, Vector3(-29.5, 0, 3.0), Vector3(-1, 0, 0)))
 	var spawn := Vector3(0, 0.05, 5.0)
 	return {"name": "The Shore of the Great Works", "interactables": out, "spawn": spawn,
-		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "teacher": {}, "restored": restored,
+		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "people": [], "restored": restored,
 		"sway": sway, "birds": birds}
 
 
@@ -130,8 +130,10 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 	Kit.box(world, Vector3(0, 0.36, -6), Vector3(4.0, 0.04, 3.0), "water", false)
 	sway.append(Kit.olive(world, Vector3(4.2, 0, -9.0), 0.9))
 	sway.append(Kit.olive(world, Vector3(-4.0, 0, -3.2), 0.8))
-	# the study, open to the courtyard
-	Kit.box(world, Vector3(0, 2.1, -18.2), Vector3(10.8, 4.2, 0.4), "plaster")
+	# the study, open to the courtyard; its back wall has a doorway at the east end
+	Kit.box(world, Vector3(-1.1, 2.1, -18.2), Vector3(8.6, 4.2, 0.4), "plaster")
+	Kit.box(world, Vector3(5.0, 2.1, -18.2), Vector3(0.8, 4.2, 0.4), "plaster")
+	Kit.box(world, Vector3(3.9, 3.4, -18.2), Vector3(1.4, 1.6, 0.4), "plaster", false)  # the lintel
 	for x in [-5.2, 5.2]:
 		Kit.box(world, Vector3(x, 2.1, -15.1), Vector3(0.4, 4.2, 6.6), "plaster")
 	Kit.box(world, Vector3(0, 4.35, -15.1), Vector3(11.2, 0.3, 7.0), "roof", false)
@@ -177,11 +179,39 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 		lamp.light_energy = 0.8
 		lamp.omni_range = 5.0
 		world.add_child(lamp)
+	# a house someone lives in: a rug under the desk, lamps, jars, bread and wine, plants, a lyre
+	Kit.rug(world, Vector3(0, 0.03, -14.5), Vector2(4.4, 2.8))
+	flicker.append(Kit.lamp_stand(world, Vector3(-4.4, 0, -13.0)))
+	flicker.append(Kit.lamp_stand(world, Vector3(4.55, 0, -14.4)))
+	# behind the study, through the doorway: the small room the household lives in, with a
+	# bed, the hearth, and the woman who copies his pages
+	Kit.box(world, Vector3(2.85, 0.02, -21.0), Vector3(5.1, 0.02, 5.2), "stone", false)
+	Kit.box(world, Vector3(2.85, 1.6, -23.6), Vector3(5.5, 3.2, 0.4), "plaster")
+	Kit.box(world, Vector3(0.3, 1.6, -21.0), Vector3(0.4, 3.2, 5.2), "plaster")
+	Kit.box(world, Vector3(5.4, 1.6, -21.0), Vector3(0.4, 3.2, 5.2), "plaster")
+	Kit.box(world, Vector3(2.85, 3.35, -21.0), Vector3(5.7, 0.3, 5.6), "roof", false)
+	Kit.bed(world, Vector3(3.6, 0, -22.9), 0.0)
+	flicker.append(Kit.hearth(world, Vector3(1.3, 0, -22.3)))
+	var scribe := Kit.scribe(world, Vector3(1.7, 0, -20.6), Kit.face_yaw(Vector3(1.7, 0, -20.6), Vector3(3.9, 0, -18.0)))
+	Kit.cylinder(world, Vector3(2.6, 0, -21.4), 0.22, 0.34, "wood", false, 8, 0.26)  # her basket of scrolls
+	for k in 3:
+		Kit.mesh(world, Kit._cyl(0.05, 0.4), "parchment", Vector3(2.5 + k * 0.1, 0.4, -21.5 + (k % 2) * 0.1), Vector3(0.2 * k, 0, 0.15))
+	Kit.amphora(world, Vector3(4.9, 0, -19.0), 0.0)
+	out.append({"kind": "person", "pos": Vector3(2.7, 0, -19.9), "text": "Ask the copyist about her work", "note": "Porphyry's copyist. In 270 AD every book is written out by hand, one copy at a time: she takes his words down on a wax tablet with a stylus (its flat end rubs the wax smooth again), then copies the fair text onto papyrus. One book can take her a month."})
+	spots["hut"] = Vector3(3.9, 0, -19.4)
+	Kit.amphora(world, Vector3(-4.6, 0, -17.6))
+	Kit.amphora(world, Vector3(-4.1, 0, -17.7), 0.35)
+	Kit.amphora(world, Vector3(-6.4, 0, -1.4))
+	Kit.amphora(world, Vector3(6.4, 0, -10.6), -0.3)
+	Kit.table(world, Vector3(6.0, 0, -7.6), 0.0)
+	Kit.lyre(world, Vector3(4.93, 1.9, -13.2), -PI / 2.0)
+	for p in [Vector3(-3.3, 0, -11.6), Vector3(3.3, 0, -11.6), Vector3(2.8, 0, -8.3), Vector3(-6.3, 0, -8.0)]:
+		sway.append(Kit.plant(world, p))
 	out.append(seat(world, Vector3(-12.0, 0, -1.0), Vector3(-1, 0, 0)))
 	spots["study"] = Vector3(0, 0, -11.0)
 	var spawn := Vector3(0, 0.05, 23.5)
 	return {"name": "%s - %s" % [room.get("where", ""), room.get("when", "")], "interactables": out, "spawn": spawn,
-		"yaw": 0.0, "spots": spots, "flicker": flicker, "teacher": teacher, "restored": 0,
+		"yaw": 0.0, "spots": spots, "flicker": flicker, "people": [teacher, scribe], "restored": 0,
 		"sway": sway, "birds": birds}
 
 

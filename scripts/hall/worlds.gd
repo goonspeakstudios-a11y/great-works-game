@@ -17,7 +17,7 @@ static func settings(world: String) -> Dictionary:
 
 
 static func render_size(world: String, window: Vector2i) -> Vector2i:
-	var r: Array = settings(world)["render"]
+	var r: Array = settings(world).get("render", DEFAULT["render"])
 	return window if r[0] <= 0 else Vector2i(r[0], r[1])
 
 

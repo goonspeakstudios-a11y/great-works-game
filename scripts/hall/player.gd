@@ -14,16 +14,17 @@ var frozen := false
 var seated := false  # sitting on a bench: look around, no walking
 var _pitch := 0.0
 var _bob := 0.0
+var _shape: CollisionShape3D
 
 
 func _init() -> void:
-	var shape := CollisionShape3D.new()
+	_shape = CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.3
 	capsule.height = 1.7
-	shape.shape = capsule
-	shape.position.y = 0.85
-	add_child(shape)
+	_shape.shape = capsule
+	_shape.position.y = 0.85
+	add_child(_shape)
 	camera = Camera3D.new()
 	camera.position.y = EYE
 	camera.fov = 70.0
@@ -43,12 +44,33 @@ func facing() -> Vector3:
 	return -global_transform.basis.z
 
 
+## Sit at a spot facing yaw. The bench is solid, so the body stops colliding while seated:
+## otherwise physics would push it up on top of the seat.
+func sit(at: Vector3, yaw: float) -> void:
+	seated = true
+	_shape.disabled = true
+	position = Vector3(at.x, position.y, at.z)
+	rotation.y = yaw
+	velocity = Vector3.ZERO
+
+
+## Stand up (optionally stepping aside first); a no-op when already standing.
+func stand(step: Vector3 = Vector3.ZERO) -> void:
+	if not seated:
+		return
+	seated = false
+	_shape.disabled = false
+	position += step
+	velocity = Vector3.ZERO
+
+
 func _physics_process(delta: float) -> void:
+	if seated:  # no collision while seated, so no gravity and no sliding either
+		camera.position.y = lerpf(camera.position.y, EYE - 0.45, minf(1.0, delta * 3.0))
+		return
 	if not is_on_floor():
 		velocity.y -= 9.8 * delta
-	if seated:
-		camera.position.y = lerpf(camera.position.y, EYE - 0.45, delta * 3.0)
-	if frozen or seated:
+	if frozen:
 		velocity.x = 0.0
 		velocity.z = 0.0
 		move_and_slide()

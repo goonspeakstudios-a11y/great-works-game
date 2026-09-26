@@ -178,23 +178,31 @@ static func mountain(parent: Node3D, at: Vector3, radius: float, height: float, 
 	cylinder(parent, at, radius, height, "rock", false, 10, radius * 0.08)
 	cylinder(parent, at + Vector3(0, height * 0.78, 0), radius * 0.3, height * 0.22, "snow", false, 10, radius * 0.08)
 	if smoke:
-		var p := CPUParticles3D.new()
-		p.position = at + Vector3(0, height + 2.0, 0)
-		p.amount = 14
-		p.lifetime = 14.0
+		var p := _drift(parent, at + Vector3(0, height + 2.0, 0), 14, 14.0, 14.0, "smoke", Vector3(0.6, 1, 0), 12.0, Vector2(2.0, 3.5))
 		p.preprocess = 14.0
-		var q := QuadMesh.new()
-		q.size = Vector2(14, 14)
-		p.mesh = q
-		p.material_override = Tex.material("smoke")
-		p.direction = Vector3(0.6, 1, 0)
-		p.spread = 12.0
-		p.initial_velocity_min = 2.0
-		p.initial_velocity_max = 3.5
-		p.gravity = Vector3.ZERO
 		p.scale_amount_min = 1.0
 		p.scale_amount_max = 2.5
-		parent.add_child(p)
+
+
+## The common ground of every drifting effect (smoke, moths, fireflies, embers): flat
+## sprites launched along a direction with some spread, floating free of gravity.
+static func _drift(parent: Node3D, at: Vector3, amount: int, lifetime: float, size: float, mat: String,
+		direction: Vector3, spread: float, speed: Vector2) -> CPUParticles3D:
+	var p := CPUParticles3D.new()
+	p.position = at
+	p.amount = amount
+	p.lifetime = lifetime
+	var q := QuadMesh.new()
+	q.size = Vector2(size, size)
+	p.mesh = q
+	p.material_override = Tex.material(mat)
+	p.direction = direction
+	p.spread = spread
+	p.initial_velocity_min = speed.x
+	p.initial_velocity_max = speed.y
+	p.gravity = Vector3.ZERO
+	parent.add_child(p)
+	return p
 
 
 # ---------- architecture ----------
@@ -419,6 +427,83 @@ static func teacher(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -
 	return {"root": root, "head": head, "hand": hand}
 
 
+## The household's copyist: a woman on a stool in a long cream stola with a shawl, her hair
+## in a bun, a wax tablet in her lap and a stylus in her writing hand. Faces +Z of its group.
+## Returns {"root", "head", "hand"} like the teacher, so the Hall can bring her to life too.
+static func scribe(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+	var stola := "#e8e0d0"
+	var shawl := "#8a5a6a"
+	var skin := "#d4a888"
+	var hair := "#3a2418"
+	var root := group(parent, at, yaw)
+	box(root, Vector3(0, 0.22, -0.05), Vector3(0.4, 0.45, 0.4), "wood")  # the stool
+	box(root, Vector3(0, 0.56, 0.15), Vector3(0.46, 0.2, 0.55), stola, false)  # lap
+	box(root, Vector3(0, 0.28, 0.4), Vector3(0.42, 0.52, 0.2), stola, false)  # the skirt falls to the floor
+	cylinder(root, Vector3(0, 0.6, -0.02), 0.21, 0.6, stola, false, 8, 0.17)
+	blob(root, Vector3(0, 1.22, 0), 0.24, shawl, Vector3(1.35, 0.5, 0.85), 8)
+	var hand: Node3D = group(root, Vector3.ZERO)
+	for x in [-0.2, 0.2]:
+		mesh(root, _cyl(0.065, 0.46), stola, Vector3(x, 1.04, 0.16), Vector3(-1.15, 0, 0))
+	blob(root, Vector3(-0.17, 0.9, 0.38), 0.06, skin)
+	blob(hand, Vector3(0.17, 0.92, 0.38), 0.06, skin)
+	box(root, Vector3(-0.02, 0.9, 0.34), Vector3(0.3, 0.02, 0.22), "#4a3420", false, Vector3(-0.5, 0, 0))  # the wax tablet
+	box(root, Vector3(-0.02, 0.912, 0.34), Vector3(0.24, 0.006, 0.16), "#1e1c14", false, Vector3(-0.5, 0, 0))
+	mesh(hand, _cyl(0.008, 0.16), "bronze", Vector3(0.17, 0.97, 0.4), Vector3(-0.9, 0, 0.4))  # the stylus
+	var head: Node3D = group(root, Vector3(0, 1.46, 0.02))
+	blob(head, Vector3(0, 0.08, 0), 0.13, skin, Vector3(0.95, 1.15, 1.0), 8)
+	blob(head, Vector3(0, 0.15, -0.03), 0.13, hair, Vector3(1.05, 0.8, 1.05), 8)
+	blob(head, Vector3(0, 0.12, -0.13), 0.08, hair)  # the bun
+	box(head, Vector3(0, 0.07, 0.13), Vector3(0.035, 0.06, 0.035), skin, false)
+	var body := BoxShape3D.new()
+	body.size = Vector3(0.6, 1.5, 0.9)
+	solid(root, body, Vector3(0, 0.75, 0.15))
+	return {"root": root, "head": head, "hand": hand}
+
+
+## A wooden bed with a mattress, a dark wool blanket and a pillow; long side along X.
+static func bed(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	g.set_meta("prop", "bed")
+	box(g, Vector3(0, 0.34, 0), Vector3(2.0, 0.12, 0.95), "wood", false)
+	for p in [Vector3(-0.92, 0.15, -0.4), Vector3(0.92, 0.15, -0.4), Vector3(-0.92, 0.15, 0.4), Vector3(0.92, 0.15, 0.4)]:
+		box(g, p, Vector3(0.08, 0.3, 0.08), "wood", false)
+	box(g, Vector3(0, 0.47, 0), Vector3(1.9, 0.14, 0.85), "#cfc4a8", false)
+	box(g, Vector3(-0.3, 0.57, 0), Vector3(1.1, 0.06, 0.87), "#6a2e34", false)
+	blob(g, Vector3(0.75, 0.58, 0), 0.12, "#e0d8c4", Vector3(1.6, 0.5, 1.1), 6)
+	var body := BoxShape3D.new()
+	body.size = Vector3(2.0, 0.6, 0.95)
+	solid(g, body, Vector3(0, 0.3, 0))
+
+
+## A hearth on the floor: a ring of stones, a fire, embers and smoke, and firewood beside
+## it. Returns the firelight for the Hall to flicker.
+static func hearth(parent: Node3D, at: Vector3) -> OmniLight3D:
+	var g := group(parent, at)
+	g.set_meta("prop", "hearth")
+	cylinder(g, Vector3.ZERO, 0.6, 0.22, "stone", false, 8, 0.55)
+	cylinder(g, Vector3(0, 0.22, 0), 0.4, 0.02, "dark", false, 8)
+	for p in [Vector3(0, 0.36, 0), Vector3(0.12, 0.3, 0.08), Vector3(-0.1, 0.32, -0.06)]:
+		blob(g, p, 0.16, "fire", Vector3(1.0, 1.5, 1.0), 5)
+	var embers := _drift(g, Vector3(0, 0.4, 0), 10, 2.0, 0.05, "fire", Vector3.UP, 20.0, Vector2(0.5, 1.0))
+	embers.gravity = Vector3(0, 0.2, 0)
+	var smoke := _drift(g, Vector3(0, 0.6, 0), 5, 3.5, 0.6, "smoke", Vector3.UP, 8.0, Vector2(0.4, 0.7))
+	smoke.scale_amount_min = 0.5
+	smoke.scale_amount_max = 1.4
+	for k in 3:
+		mesh(g, _cyl(0.06, 0.5), "wood", Vector3(0.85, 0.06 + k * 0.1, -0.2 + k * 0.05), Vector3(PI / 2.0, 0, 0.2 * k))
+	var l := OmniLight3D.new()
+	l.position = Vector3(0, 0.9, 0)
+	l.light_color = Color("ff9a48")
+	l.light_energy = 1.6
+	l.omni_range = 7.0
+	g.add_child(l)
+	var body := CylinderShape3D.new()
+	body.radius = 0.6
+	body.height = 0.4
+	solid(g, body, Vector3(0, 0.2, 0))
+	return l
+
+
 ## A shelf of scrolls for the wall behind a writer.
 static func scroll_shelf(parent: Node3D, at: Vector3, yaw: float) -> void:
 	var g := group(parent, at, yaw)
@@ -473,43 +558,18 @@ static func toad(parent: Node) -> Dictionary:
 
 ## Moths drifting around a lamp.
 static func moths(parent: Node3D, at: Vector3) -> void:
-	var p := CPUParticles3D.new()
-	p.position = at
-	p.amount = 6
-	p.lifetime = 3.0
-	var q := QuadMesh.new()
-	q.size = Vector2(0.05, 0.05)
-	p.mesh = q
-	p.material_override = Tex.material("moth")
+	var p := _drift(parent, at, 6, 3.0, 0.05, "moth", Vector3.UP, 180.0, Vector2(0.2, 0.5))
 	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
 	p.emission_sphere_radius = 0.35
-	p.direction = Vector3.UP
-	p.spread = 180.0
-	p.initial_velocity_min = 0.2
-	p.initial_velocity_max = 0.5
-	p.gravity = Vector3.ZERO
 	p.angular_velocity_min = -180.0
 	p.angular_velocity_max = 180.0
-	parent.add_child(p)
 
 
 ## Fireflies blinking low over a patch of ground at dusk.
 static func fireflies(parent: Node3D, center: Vector3, size: float) -> void:
-	var p := CPUParticles3D.new()
-	p.position = center + Vector3(0, 1.0, 0)
-	p.amount = 18
-	p.lifetime = 5.0
-	var q := QuadMesh.new()
-	q.size = Vector2(0.07, 0.07)
-	p.mesh = q
-	p.material_override = Tex.material("firefly")
+	var p := _drift(parent, center + Vector3(0, 1.0, 0), 18, 5.0, 0.07, "firefly", Vector3.UP, 180.0, Vector2(0.05, 0.2))
 	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
 	p.emission_box_extents = Vector3(size, 0.8, size)
-	p.direction = Vector3.UP
-	p.spread = 180.0
-	p.initial_velocity_min = 0.05
-	p.initial_velocity_max = 0.2
-	p.gravity = Vector3.ZERO
 	var ramp := Gradient.new()
 	ramp.set_color(0, Color(0.8, 1.0, 0.4, 0.0))
 	ramp.set_color(1, Color(0.8, 1.0, 0.4, 0.0))
@@ -517,7 +577,104 @@ static func fireflies(parent: Node3D, center: Vector3, size: float) -> void:
 	ramp.add_point(0.55, Color(0.85, 1.0, 0.45, 0.1))
 	ramp.add_point(0.75, Color(0.85, 1.0, 0.45, 0.9))
 	p.color_ramp = ramp
-	parent.add_child(p)
+
+
+# ---------- the comforts of a lived-in house ----------
+
+## A clay storage jar, leaning a little if asked.
+static func amphora(parent: Node3D, at: Vector3, lean: float = 0.0) -> void:
+	var g := group(parent, at, at.x + at.z)
+	g.set_meta("prop", "amphora")
+	g.rotation.z = lean
+	cylinder(g, Vector3(0, 0.05, 0), 0.1, 0.12, "clay", false, 8, 0.2)  # foot
+	cylinder(g, Vector3(0, 0.17, 0), 0.2, 0.42, "clay", false, 8, 0.24)  # belly
+	cylinder(g, Vector3(0, 0.59, 0), 0.24, 0.22, "clay", false, 8, 0.11)  # shoulder
+	cylinder(g, Vector3(0, 0.81, 0), 0.11, 0.16, "clay", false, 8, 0.14)  # neck and lip
+	for side in [-1.0, 1.0]:
+		box(g, Vector3(0.24 * side, 0.74, 0), Vector3(0.06, 0.22, 0.06), "clay", false, Vector3(0, 0, 0.35 * side))
+	var body := CylinderShape3D.new()
+	body.radius = 0.24
+	body.height = 0.9
+	solid(g, body, Vector3(0, 0.45, 0))
+
+
+## A tall bronze lamp stand with a small flame; returns its light for the Hall to flicker.
+static func lamp_stand(parent: Node3D, at: Vector3) -> OmniLight3D:
+	var g := group(parent, at)
+	g.set_meta("prop", "lamp")
+	cylinder(g, Vector3.ZERO, 0.16, 0.05, "bronze", false, 8)
+	cylinder(g, Vector3(0, 0.05, 0), 0.03, 1.25, "bronze", false, 6)
+	cylinder(g, Vector3(0, 1.3, 0), 0.05, 0.08, "bronze", false, 8, 0.12)  # the oil dish
+	blob(g, Vector3(0, 1.44, 0), 0.05, "fire", Vector3(1.0, 1.7, 1.0), 5)
+	var l := OmniLight3D.new()
+	l.position = Vector3(0, 1.6, 0)
+	l.light_color = Color("ffb060")
+	l.light_energy = 0.7
+	l.omni_range = 4.0
+	g.add_child(l)
+	var body := CylinderShape3D.new()
+	body.radius = 0.16
+	body.height = 1.4
+	solid(g, body, Vector3(0, 0.7, 0))
+	return l
+
+
+## A low table laid with bread, a jug of wine and two cups.
+static func table(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	g.set_meta("prop", "table")
+	box(g, Vector3(0, 0.6, 0), Vector3(1.1, 0.06, 0.7), "wood", false)
+	for p in [Vector3(-0.48, 0.29, -0.28), Vector3(0.48, 0.29, -0.28), Vector3(-0.48, 0.29, 0.28), Vector3(0.48, 0.29, 0.28)]:
+		box(g, p, Vector3(0.06, 0.58, 0.06), "wood", false)
+	var body := BoxShape3D.new()
+	body.size = Vector3(1.1, 0.65, 0.7)
+	solid(g, body, Vector3(0, 0.32, 0))
+	blob(g, Vector3(-0.28, 0.68, 0.05), 0.12, "#c8a060", Vector3(1.3, 0.7, 1.0), 6)  # a round loaf
+	blob(g, Vector3(-0.1, 0.66, -0.16), 0.07, "#b89050", Vector3(1.2, 0.6, 1.0), 5)  # a torn piece
+	cylinder(g, Vector3(0.28, 0.63, -0.12), 0.09, 0.26, "clay", false, 8, 0.05)  # the jug
+	cylinder(g, Vector3(0.28, 0.89, -0.12), 0.05, 0.05, "clay", false, 8, 0.06)
+	for p in [Vector3(0.15, 0.63, 0.2), Vector3(0.42, 0.63, 0.18)]:
+		cylinder(g, p, 0.045, 0.09, "clay", false, 8, 0.06)
+		cylinder(g, p + Vector3(0, 0.07, 0), 0.04, 0.02, "#4a1e2c", false, 8)  # wine
+
+
+## A woollen rug on the floor (a plane the size given, wearing the rug's own weave).
+static func rug(parent: Node3D, at: Vector3, size: Vector2, yaw: float = 0.0) -> void:
+	var g := group(parent, at, yaw)
+	g.set_meta("prop", "rug")
+	var pm := PlaneMesh.new()
+	pm.size = size
+	mesh(g, pm, "rug", Vector3(0, 0.025, 0))
+
+
+## A lyre hung on a wall, facing +Z of its group.
+static func lyre(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	g.set_meta("prop", "lyre")
+	blob(g, Vector3(0, -0.22, 0), 0.14, "wood", Vector3(1.2, 0.9, 0.5), 6)  # the tortoise-shell sound box
+	for side in [-1.0, 1.0]:  # the two curving arms
+		box(g, Vector3(0.14 * side, 0.02, 0), Vector3(0.04, 0.3, 0.04), "wood", false, Vector3(0, 0, -0.25 * side))
+		box(g, Vector3(0.2 * side, 0.26, 0), Vector3(0.04, 0.2, 0.04), "wood", false, Vector3(0, 0, 0.3 * side))
+	box(g, Vector3(0, 0.36, 0), Vector3(0.5, 0.04, 0.04), "wood", false)  # the crossbar
+	for k in 7:
+		box(g, Vector3(-0.15 + k * 0.05, 0.08, 0.02), Vector3(0.008, 0.55, 0.008), "#e8e0c8", false)
+
+
+## A potted plant: a clay pot with a green head of leaves.
+static func plant(parent: Node3D, at: Vector3) -> Node3D:
+	var g := group(parent, at, at.x * 2.0 + at.z)
+	g.set_meta("prop", "plant")
+	cylinder(g, Vector3.ZERO, 0.16, 0.34, "clay", false, 8, 0.22)
+	var crown := group(g, Vector3(0, 0.48, 0))
+	blob(crown, Vector3.ZERO, 0.24, "olive", Vector3(1.0, 0.9, 1.0), 6)
+	for k in 5:
+		var a := k * 1.26
+		box(crown, Vector3(cos(a) * 0.22, 0.05 + (k % 2) * 0.06, sin(a) * 0.22), Vector3(0.22, 0.02, 0.07), "olive", false, Vector3(0.3, -a, 0))
+	var body := CylinderShape3D.new()
+	body.radius = 0.24
+	body.height = 0.8
+	solid(g, body, Vector3(0, 0.4, 0))
+	return crown
 
 
 ## A marble bench facing +Z of its group; returns where a sitter's feet go.
@@ -559,20 +716,8 @@ static func brazier(parent: Node3D, at: Vector3) -> OmniLight3D:
 	cylinder(parent, at + Vector3(0, 0.9, 0), 0.4, 0.25, "bronze", false, 8, 0.65)
 	for p in [Vector3(0, 1.3, 0), Vector3(0.15, 1.2, 0.1), Vector3(-0.12, 1.22, -0.08)]:
 		blob(parent, at + p, 0.22, "fire", Vector3(1.0, 1.6, 1.0), 5)
-	var embers := CPUParticles3D.new()
-	embers.position = at + Vector3(0, 1.3, 0)
-	embers.amount = 12
-	embers.lifetime = 2.5
-	var q := QuadMesh.new()
-	q.size = Vector2(0.06, 0.06)
-	embers.mesh = q
-	embers.material_override = Tex.material("fire")
-	embers.direction = Vector3.UP
-	embers.spread = 25.0
-	embers.initial_velocity_min = 0.6
-	embers.initial_velocity_max = 1.2
-	embers.gravity = Vector3(0.3, 0.1, 0)
-	parent.add_child(embers)
+	var embers := _drift(parent, at + Vector3(0, 1.3, 0), 12, 2.5, 0.06, "fire", Vector3.UP, 25.0, Vector2(0.6, 1.2))
+	embers.gravity = Vector3(0.3, 0.1, 0)  # the draught carries them a little
 	var l := OmniLight3D.new()
 	l.position = at + Vector3(0, 1.8, 0)
 	l.light_color = Color("ff9a48")

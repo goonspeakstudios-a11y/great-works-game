@@ -53,7 +53,7 @@ MAPS = {
              "poly": [(35.6, 36.9), (38.0, 37.1), (40.5, 37.4), (42.0, 36.5), (40.5, 34.5), (38.8, 32.0),
                       (37.0, 29.0), (35.0, 27.8), (33.6, 26.5), (33.0, 24.0), (29.0, 24.0), (25.0, 29.5),
                       (25.1, 31.8), (29.0, 31.3), (34.2, 31.4), (35.2, 34.0)]},
-            {"name": "Sasanian Persia", "sub": "King Hormizd I", "color": [84, 118, 70], "label": [51.0, 33.0],
+            {"name": "Sasanian Persia", "sub": "King Hormizd I", "color": [84, 118, 70], "label": [50.5, 31.0],
              "poly": [(42.0, 38.8), (46.0, 40.2), (50.0, 39.0), (54.0, 38.3), (58.5, 38.0), (58.5, 24.5),
                       (56.5, 24.0), (51.5, 27.0), (48.5, 29.8), (47.5, 30.5), (44.5, 31.2), (42.0, 33.5),
                       (41.5, 35.5), (42.3, 36.8), (42.0, 36.5)]},
@@ -67,8 +67,8 @@ MAPS = {
         "pins": [
             {"name": "Lilybaeum, Sicily", "note": "Porphyry writes the Isagoge here", "at": [12.44, 37.80], "main": True},
             {"name": "Rome", "note": "Plotinus's school", "at": [12.49, 41.90]},
-            {"name": "Tyre", "note": "Porphyry's birthplace", "at": [35.20, 33.27]},
-            {"name": "Athens", "note": "where he studied", "at": [23.73, 37.98]},
+            {"name": "Tyre", "note": "Porphyry's birthplace", "at": [35.20, 33.27], "side": "below"},
+            {"name": "Athens", "note": "where he studied", "at": [23.73, 37.98], "side": "above"},
             {"name": "Palmyra", "note": "Zenobia's city", "at": [38.27, 34.55]},
         ],
     },
@@ -190,7 +190,8 @@ def build(map_id: str) -> None:
         "regions": [{"name": r["name"], "sub": r["sub"], "color": r["color"], "label": px(r["label"])}
                     for r in spec["regions"]],
         "others": [{"name": o["name"], "label": px(o["at"])} for o in spec["others"]],
-        "pins": [{"name": p["name"], "note": p["note"], "at": px(p["at"]), "main": p.get("main", False)}
+        "pins": [{"name": p["name"], "note": p["note"], "at": px(p["at"]), "main": p.get("main", False),
+                  "side": p.get("side", "right")}  # which side of the pin its name sits on
                  for p in spec["pins"]],
         "credit": "Coastlines: Natural Earth (public domain). Borders approximate.",
     }

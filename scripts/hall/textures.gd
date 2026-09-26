@@ -101,6 +101,10 @@ static func material(kind: String) -> Material:
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"dark":
 			m.albedo_color = Color("1a1612")
+		"clay":
+			world_tex.call(_noise(Color("a86a48"), Color("8e5638"), Color("b87c58"), 13), 0.5)
+		"rug":
+			m.albedo_texture = _rug()  # spans the rug's own surface, not the world
 		"plaque":
 			m.albedo_texture = _plaque()
 	_cache[kind] = m
@@ -157,6 +161,37 @@ static func _grain(a: Color, b: Color) -> ImageTexture:
 	for y in 16:
 		for x in 16:
 			img.set_pixel(x, y, b if (y + (x / 5)) % 4 == 0 else a)
+	return ImageTexture.create_from_image(img)
+
+
+## A woollen rug: a crimson field with a small diamond weave, framed by a Greek key.
+static func _rug() -> ImageTexture:
+	const W := 64
+	const H := 40
+	const UNIT := ["########", ".......#", "#####..#", "#...#..#", "#.###..#", "#......#"]
+	var img := Image.create(W, H, false, Image.FORMAT_RGBA8)
+	var field := Color("7a2a2a")
+	var weave := Color("6a2424")
+	var cream := Color("e0cfa8")
+	for y in H:
+		for x in W:
+			img.set_pixel(x, y, weave if (x + y) % 8 == 0 or (x - y) % 8 == 0 else field)
+	for y in 6:  # the key runs along the top and bottom edges
+		for x in W:
+			if UNIT[y][x % 8] == "#":
+				img.set_pixel(x, y + 1, cream)
+				img.set_pixel(x, H - 2 - y, cream)
+	for x in 6:  # and, turned on its side, up the two ends
+		for y in H:
+			if UNIT[x][y % 8] == "#":
+				img.set_pixel(x + 1, y, cream)
+				img.set_pixel(W - 2 - x, y, cream)
+	for x in W:
+		img.set_pixel(x, 0, cream)
+		img.set_pixel(x, H - 1, cream)
+	for y in H:
+		img.set_pixel(0, y, cream)
+		img.set_pixel(W - 1, y, cream)
 	return ImageTexture.create_from_image(img)
 
 

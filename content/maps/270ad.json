@@ -53,8 +53,8 @@
     70
    ],
    "label": [
-    194,
-    96
+    193,
+    104
    ]
   }
  ],
@@ -96,7 +96,8 @@
     73,
     77
    ],
-   "main": true
+   "main": true,
+   "side": "right"
   },
   {
    "name": "Rome",
@@ -105,7 +106,8 @@
     74,
     60
    ],
-   "main": false
+   "main": false,
+   "side": "right"
   },
   {
    "name": "Tyre",
@@ -114,7 +116,8 @@
     145,
     95
    ],
-   "main": false
+   "main": false,
+   "side": "below"
   },
   {
    "name": "Athens",
@@ -123,7 +126,8 @@
     109,
     76
    ],
-   "main": false
+   "main": false,
+   "side": "above"
   },
   {
    "name": "Palmyra",
@@ -132,7 +136,8 @@
     154,
     90
    ],
-   "main": false
+   "main": false,
+   "side": "right"
   }
  ],
  "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
