@@ -89,18 +89,6 @@ func test_asking_without_a_book_does_not_jam_the_author() -> void:
 	a.free()
 
 
-func test_rooms_never_overlap() -> void:
-	check(Hall.SECTION >= 2.0 * (Hall.ROOM_HALF + Hall.WALL), "neighbouring rooms fit side by side")
-
-
-func test_every_fact_gets_its_own_plaque() -> void:
-	var spots: Array = Hall.fact_spots(8, -10.0, 7.6, -5.0)
-	var seen := {}
-	for s in spots:
-		seen[str(s)] = true
-	check_eq(seen.size(), 8, "eight facts, eight places")
-
-
 func test_book_pages_fit_the_screen() -> void:
 	var book := Library.load_book("porphyry-isagoge")
 	for c in book.chunks:
@@ -128,10 +116,72 @@ func test_rooms_follow_the_reading_list() -> void:
 		check(str(f).length() <= 140, "fact is short: %s" % f)
 
 
-func test_hall_builds_without_errors() -> void:
+func test_the_shore_has_a_gateway_per_book() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	check(hall.interactables.size() >= 7, "the room has things to read and someone to ask")
-	check(hall.interactables.any(func(i): return i["kind"] == "author"), "the author can be asked")
+	check_eq(hall.here, "hub", "you start on the Shore")
+	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate")
+	check_eq(gates.size(), 17, "one gateway for every Greek work")
+	check_eq(gates.map(func(g): return g["to"]), Rooms.doors().map(func(d): return d["work"]), "gateways follow the reading list")
+	check(gates[0]["open"] and not gates[1]["open"], "the Isagoge is open, the rest not yet")
+	hall.free()
+
+
+func test_porphyrys_villa_has_everything() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.activate(hall.interactables[0])
+	check_eq(hall.here, "porphyry-isagoge", "the first gateway leads to Porphyry's place")
+	var kinds := {}
+	for i in hall.interactables:
+		kinds[i["kind"]] = kinds.get(i["kind"], 0) + 1
+	for k in ["author", "book", "map", "tree", "gate"]:
+		check(kinds.has(k), "the villa has a %s" % k)
+	check_eq(kinds.get("statue", 0), 2, "busts of Aristotle and Plotinus")
+	check_eq(kinds.get("fact", 0), Rooms.room("porphyry-isagoge")["facts"].size(), "a stone for every fact")
+	var back: Array = hall.interactables.filter(func(i): return i["kind"] == "gate")
+	hall.activate(back[0])
+	check_eq(hall.here, "hub", "the gateway leads back to the Shore")
+	hall.free()
+
+
+func test_the_map_of_270_ad_is_ready() -> void:
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/maps/270ad.json"))
+	check(data is Dictionary, "map data loads")
+	var tex := load("res://assets/maps/270ad.png") as Texture2D
+	check(tex != null, "map image loads")
+	check(data["regions"].size() >= 4, "Rome, the Gallic and Palmyrene empires, Persia")
+	for p in data["pins"]:
+		check(p["at"][0] >= 0 and p["at"][0] < data["size"][0] and p["at"][1] >= 0 and p["at"][1] < data["size"][1],
+			"%s is on the map" % p["name"])
+
+
+func test_the_test_run_script_compiles() -> void:
+	var demo := load("res://scripts/hall/demo.gd") as GDScript
+	check(demo != null and demo.can_instantiate(), "the self-playing test run loads")
+
+
+func test_controls_match_the_players_layout() -> void:
+	Hall.ensure_actions()
+	var keys := func(action: String) -> Array:
+		return InputMap.action_get_events(action).filter(func(e): return e is InputEventKey).map(func(e): return e.physical_keycode)
+	check(keys.call("interact").has(KEY_F), "F is use")
+	check(not keys.call("interact").has(KEY_E), "E is no longer use")
+	check(keys.call("turn_left").has(KEY_Q) and keys.call("turn_right").has(KEY_E), "Q and E turn left and right")
+	check(keys.call("sprint").has(KEY_SHIFT), "Shift sprints")
+
+
+func test_nothing_steals_the_mouse_while_walking() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	var centre := Vector2(Hall.RES) / 2.0
+	var stack: Array = [hall]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		stack.append_array(n.get_children())
+		if n is Control and n.is_visible_in_tree() and n.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+			check(not n.get_global_rect().grow(0.5).has_point(centre), "%s would catch mouse look at the centre" % n.name)
 	hall.free()

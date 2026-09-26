@@ -1,0 +1,139 @@
+{
+ "title": "The world in 270 AD",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Roman Empire",
+   "sub": "Emperor Aurelian",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    91,
+    50
+   ]
+  },
+  {
+   "name": "Gallic Empire",
+   "sub": "breakaway west",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    39,
+    38
+   ]
+  },
+  {
+   "name": "Palmyrene Empire",
+   "sub": "Queen Zenobia",
+   "color": [
+    196,
+    146,
+    48
+   ],
+   "label": [
+    147,
+    108
+   ]
+  },
+  {
+   "name": "Sasanian Persia",
+   "sub": "King Hormizd I",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    194,
+    96
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Germanic peoples",
+   "label": [
+    72,
+    18
+   ]
+  },
+  {
+   "name": "Goths",
+   "label": [
+    131,
+    34
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  },
+  {
+   "name": "Sahara",
+   "label": [
+    66,
+    128
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Lilybaeum, Sicily",
+   "note": "Porphyry writes the Isagoge here",
+   "at": [
+    73,
+    77
+   ],
+   "main": true
+  },
+  {
+   "name": "Rome",
+   "note": "Plotinus's school",
+   "at": [
+    74,
+    60
+   ],
+   "main": false
+  },
+  {
+   "name": "Tyre",
+   "note": "Porphyry's birthplace",
+   "at": [
+    145,
+    95
+   ],
+   "main": false
+  },
+  {
+   "name": "Athens",
+   "note": "where he studied",
+   "at": [
+    109,
+    76
+   ],
+   "main": false
+  },
+  {
+   "name": "Palmyra",
+   "note": "Zenobia's city",
+   "at": [
+    154,
+    90
+   ],
+   "main": false
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

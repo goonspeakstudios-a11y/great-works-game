@@ -11,7 +11,7 @@ the reading-list map: `docs/greek-game-map.md`. The earlier 3D card slice is kep
 
 ## Run it
 - Game: `Desktop\Tools\godot\Godot_v4.7.2-stable_win64.exe --path .`
-- Controls: WASD/arrows walk, left/right arrows or mouse turn (click to capture the mouse), E to read or ask, Esc to close / free the mouse / quit.
+- Controls: WASD/arrows walk, Shift sprints, Q/E (or left/right arrows) turn, mouse looks all around, F to use (read, ask, enter a gateway), Esc closes / frees the mouse / twice to quit.
 - Tests: `Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/run_tests.gd`
 - Screenshot a view: `godot --path . -- --shot=out.png --view=hall|door|room|read|ask`
 

@@ -1,0 +1,366 @@
+extends RefCounted
+## Building blocks for the Greek places: low-poly shapes with pixel textures. Ground,
+## cliffs, sea and a sunset sky; columns, temple ruins, olive and cypress trees, rocks;
+## steles, gateways, marble busts, a writing desk, a fire, a far mountain.
+## A "group" is a Node3D placed at a spot and turned by yaw; its front faces local +Z,
+## so yaw = atan2(dx, dz) turns it to face a point (dx, dz) away.
+
+const Tex := preload("res://scripts/hall/textures.gd")
+
+
+static func face_yaw(from: Vector3, to: Vector3) -> float:
+	return atan2(to.x - from.x, to.z - from.z)
+
+
+static func group(parent: Node3D, at: Vector3, yaw: float = 0.0) -> Node3D:
+	var g := Node3D.new()
+	g.position = at
+	g.rotation.y = yaw
+	parent.add_child(g)
+	return g
+
+
+static func mesh(parent: Node3D, m: Mesh, mat: String, at: Vector3, rot: Vector3 = Vector3.ZERO,
+		scale: Vector3 = Vector3.ONE) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	mi.mesh = m
+	mi.material_override = Tex.material(mat)
+	mi.position = at
+	mi.rotation = rot
+	mi.scale = scale
+	parent.add_child(mi)
+	return mi
+
+
+static func solid(parent: Node3D, shape: Shape3D, at: Vector3, rot: Vector3 = Vector3.ZERO) -> void:
+	var body := StaticBody3D.new()
+	var cs := CollisionShape3D.new()
+	cs.shape = shape
+	body.add_child(cs)
+	body.position = at
+	body.rotation = rot
+	parent.add_child(body)
+
+
+static func box(parent: Node3D, center: Vector3, size: Vector3, mat: String, is_solid: bool = true,
+		rot: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+	var bm := BoxMesh.new()
+	bm.size = size
+	var mi := mesh(parent, bm, mat, center, rot)
+	if is_solid:
+		var s := BoxShape3D.new()
+		s.size = size
+		solid(parent, s, center, rot)
+	return mi
+
+
+## A cylinder standing on base (its bottom centre). top_radius < 0 means same as radius.
+static func cylinder(parent: Node3D, base: Vector3, radius: float, height: float, mat: String,
+		is_solid: bool = true, sides: int = 8, top_radius: float = -1.0) -> MeshInstance3D:
+	var cm := CylinderMesh.new()
+	cm.bottom_radius = radius
+	cm.top_radius = radius if top_radius < 0.0 else top_radius
+	cm.height = height
+	cm.radial_segments = sides
+	cm.rings = 1
+	var mi := mesh(parent, cm, mat, base + Vector3(0, height / 2.0, 0))
+	if is_solid:
+		var s := CylinderShape3D.new()
+		s.radius = maxf(radius, cm.top_radius)
+		s.height = height
+		solid(parent, s, base + Vector3(0, height / 2.0, 0))
+	return mi
+
+
+static func blob(parent: Node3D, center: Vector3, radius: float, mat: String, squash: Vector3 = Vector3.ONE,
+		sides: int = 6) -> MeshInstance3D:
+	var sm := SphereMesh.new()
+	sm.radius = radius
+	sm.height = radius * 2.0
+	sm.radial_segments = sides
+	sm.rings = maxi(3, sides / 2)
+	return mesh(parent, sm, mat, center, Vector3.ZERO, squash)
+
+
+# ---------- land, sea and sky ----------
+
+## Evening light over the sea: a warm low sun in the west, a violet-to-amber sky, haze.
+static func sunset(parent: Node3D) -> DirectionalLight3D:
+	var sky_mat := ProceduralSkyMaterial.new()
+	sky_mat.sky_top_color = Color("2a3a6e")
+	sky_mat.sky_horizon_color = Color("f0aa74")
+	sky_mat.sky_curve = 0.12
+	sky_mat.ground_horizon_color = Color("b8765a")
+	sky_mat.ground_bottom_color = Color("1a2230")
+	sky_mat.sun_angle_max = 12.0
+	var sky := Sky.new()
+	sky.sky_material = sky_mat
+	var env := Environment.new()
+	env.background_mode = Environment.BG_SKY
+	env.sky = sky
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color("7c7a92")
+	env.ambient_light_energy = 0.65
+	env.fog_enabled = true
+	env.fog_light_color = Color("c89a84")
+	env.fog_density = 0.0022
+	env.fog_sky_affect = 0.15
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	var we := WorldEnvironment.new()
+	we.environment = env
+	parent.add_child(we)
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-9.0, -100.0, 0.0)  # low in the west, shining east
+	sun.light_color = Color("ffc896")
+	sun.light_energy = 1.15
+	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 60.0
+	parent.add_child(sun)
+	return sun
+
+
+static func sea(parent: Node3D, y: float) -> void:
+	var pm := PlaneMesh.new()
+	pm.size = Vector2(1600, 1600)
+	mesh(parent, pm, "sea", Vector3(0, y, 0))
+
+
+## A round clifftop to walk on, with rocky tiers below it and a low wall round the edge.
+static func plateau(parent: Node3D, radius: float, top: String = "earth", wall: bool = true) -> void:
+	cylinder(parent, Vector3(0, -40, 0), radius, 40.0, "rock", true, 14)
+	cylinder(parent, Vector3(0, -0.05, 0), radius - 0.4, 0.1, top, false, 14)
+	cylinder(parent, Vector3(0, -46, 0), radius + 7.0, 40.0, "rock", false, 11)
+	cylinder(parent, Vector3(0, -56, 0), radius + 16.0, 40.0, "rock", false, 9)
+	if wall:
+		var n := 28
+		for i in n:
+			var a := TAU * i / n
+			var at := Vector3(cos(a), 0, sin(a)) * (radius - 1.0)
+			var seg := 2.0 * PI * (radius - 1.0) / n + 0.1
+			box(parent, at + Vector3(0, 0.45, 0), Vector3(seg, 0.9, 0.5), "stone", true, Vector3(0, -a + PI / 2.0, 0))
+
+
+static func mountain(parent: Node3D, at: Vector3, radius: float, height: float, smoke: bool) -> void:
+	cylinder(parent, at, radius, height, "rock", false, 10, radius * 0.08)
+	cylinder(parent, at + Vector3(0, height * 0.78, 0), radius * 0.3, height * 0.22, "snow", false, 10, radius * 0.08)
+	if smoke:
+		var p := CPUParticles3D.new()
+		p.position = at + Vector3(0, height + 2.0, 0)
+		p.amount = 14
+		p.lifetime = 14.0
+		p.preprocess = 14.0
+		var q := QuadMesh.new()
+		q.size = Vector2(14, 14)
+		p.mesh = q
+		p.material_override = Tex.material("smoke")
+		p.direction = Vector3(0.6, 1, 0)
+		p.spread = 12.0
+		p.initial_velocity_min = 2.0
+		p.initial_velocity_max = 3.5
+		p.gravity = Vector3.ZERO
+		p.scale_amount_min = 1.0
+		p.scale_amount_max = 2.5
+		parent.add_child(p)
+
+
+# ---------- architecture ----------
+
+static func column(parent: Node3D, base: Vector3, height: float = 4.0, broken: bool = false) -> void:
+	box(parent, base + Vector3(0, 0.12, 0), Vector3(0.9, 0.24, 0.9), "marble")
+	var shaft := height * (0.45 if broken else 1.0) - 0.6
+	cylinder(parent, base + Vector3(0, 0.24, 0), 0.32, shaft, "marble", true, 8, 0.28)
+	if not broken:
+		box(parent, base + Vector3(0, 0.24 + shaft + 0.18, 0), Vector3(0.95, 0.36, 0.95), "marble", false)
+
+
+static func fallen_column(parent: Node3D, at: Vector3, yaw: float, length: float = 2.6) -> void:
+	var g := group(parent, at, yaw)
+	for k in 3:
+		var drum := CylinderMesh.new()
+		drum.top_radius = 0.3
+		drum.bottom_radius = 0.3
+		drum.height = length / 3.0 - 0.08
+		drum.radial_segments = 8
+		mesh(g, drum, "marble", Vector3(0, 0.3, (k - 1) * length / 3.0), Vector3(PI / 2.0, 0, 0.2 * k))
+	var s := BoxShape3D.new()
+	s.size = Vector3(0.6, 0.6, length)
+	solid(g, s, Vector3(0, 0.3, 0))
+
+
+## A temple left standing in pieces: three steps, a ring of columns, some broken or fallen.
+static func temple_ruin(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	for k in 3:
+		box(g, Vector3(0, 0.15 + k * 0.3, 0), Vector3(12.0 - k * 0.8, 0.3, 8.0 - k * 0.8), "marble")
+	var top := Vector3(0, 0.9, 0)
+	var broken := [2, 5, 7, 9]
+	var spots: Array = []
+	for x in [-4.5, -2.7, -0.9, 0.9, 2.7, 4.5]:
+		spots.append(Vector3(x, 0, -2.8))
+		spots.append(Vector3(x, 0, 2.8))
+	spots.append(Vector3(-4.5, 0, 0))
+	spots.append(Vector3(4.5, 0, 0))
+	for i in spots.size():
+		column(g, top + spots[i], 4.2, i in broken)
+	box(g, top + Vector3(-1.8, 4.3, -2.8), Vector3(6.4, 0.5, 0.9), "marble", false)
+	box(g, top + Vector3(3.6, 4.3, 2.8), Vector3(2.8, 0.5, 0.9), "marble", false)
+	fallen_column(g, Vector3(1.5, 0, 5.4), 1.2)
+	fallen_column(g, Vector3(-6.8, 0, 1.0), 0.3)
+
+
+static func olive(parent: Node3D, at: Vector3, size: float = 1.0) -> void:
+	var g := group(parent, at, at.x * 1.7 + at.z)
+	cylinder(g, Vector3.ZERO, 0.2 * size, 1.1 * size, "trunk", true, 6, 0.15 * size)
+	var lean := mesh(g, _cyl(0.14 * size, 1.0 * size), "trunk", Vector3(0.18, 1.45, 0) * size, Vector3(0, 0, -0.5))
+	lean.name = "limb"
+	for p in [Vector3(0.5, 2.3, 0.1), Vector3(-0.4, 2.1, 0.3), Vector3(0.1, 2.6, -0.4), Vector3(0.7, 1.9, -0.5)]:
+		blob(g, p * size, 0.85 * size, "olive", Vector3(1.2, 0.75, 1.1))
+
+
+static func cypress(parent: Node3D, at: Vector3, height: float = 7.0) -> void:
+	cylinder(parent, at, 0.16, 0.8, "trunk", true, 5)
+	cylinder(parent, at + Vector3(0, 0.6, 0), 0.8, height, "cypress", false, 6, 0.05)
+
+
+static func rock(parent: Node3D, at: Vector3, size: float) -> void:
+	blob(parent, at + Vector3(0, size * 0.3, 0), size, "rock", Vector3(1.3, 0.7, 1.0), 5)
+	var s := SphereShape3D.new()
+	s.radius = size * 0.8
+	solid(parent, s, at + Vector3(0, size * 0.3, 0))
+
+
+## A standing stone with a bronze plaque; returns where a reader stands.
+static func stele(parent: Node3D, at: Vector3, yaw: float) -> Vector3:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.1, 0), Vector3(1.0, 0.2, 0.5), "stone")
+	box(g, Vector3(0, 1.0, 0), Vector3(0.75, 1.7, 0.22), "marble")
+	box(g, Vector3(0, 1.2, 0.12), Vector3(0.5, 0.36, 0.03), "plaque", false)
+	return g.to_global(Vector3(0, 0, 1.1)) if g.is_inside_tree() else at + Vector3(sin(yaw), 0, cos(yaw)) * 1.1
+
+
+## A stone gateway. Open ones glow with the light of the place beyond.
+static func gateway(parent: Node3D, at: Vector3, yaw: float, open: bool) -> OmniLight3D:
+	var g := group(parent, at, yaw)
+	for x in [-1.5, 1.5]:
+		box(g, Vector3(x, 1.8, 0), Vector3(0.6, 3.6, 0.6), "marble")
+	box(g, Vector3(0, 3.85, 0), Vector3(3.9, 0.5, 0.75), "marble", false)
+	box(g, Vector3(0, 0.08, 0), Vector3(3.8, 0.16, 1.2), "stone", false)
+	if open:
+		var q := QuadMesh.new()
+		q.size = Vector2(2.4, 3.4)
+		mesh(g, q, "glow", Vector3(0, 1.75, 0))
+		var l := OmniLight3D.new()
+		l.position = Vector3(0, 2.0, 1.0)
+		l.light_color = Color("ffd49a")
+		l.light_energy = 1.4
+		l.omni_range = 7.0
+		g.add_child(l)
+		return l
+	for s in [[Vector3(-0.5, 0.35, 0), 0.7], [Vector3(0.45, 0.3, 0.1), 0.6], [Vector3(0.0, 0.9, -0.05), 0.5]]:
+		box(g, s[0], Vector3(s[1], s[1], s[1]), "stone", true, Vector3(0.3, s[1] * 2.0, 0.2))
+	var bar := BoxShape3D.new()
+	bar.size = Vector3(2.4, 3.4, 0.3)
+	solid(g, bar, Vector3(0, 1.7, 0))
+	return null
+
+
+## A marble bust on a pedestal, shaped by a few settings (beard, bald).
+static func bust(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -> void:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.55, 0), Vector3(0.6, 1.1, 0.6), "marble")
+	box(g, Vector3(0, 1.13, 0), Vector3(0.72, 0.06, 0.72), "marble", false)
+	blob(g, Vector3(0, 1.36, 0), 0.34, "marble", Vector3(1.4, 0.6, 0.85), 8)
+	mesh(g, _cyl(0.1, 0.24), "marble", Vector3(0, 1.58, 0))
+	blob(g, Vector3(0, 1.82, 0), 0.19, "marble", Vector3(1.0, 1.2, 1.1), 8)
+	if not look.get("bald", false):
+		blob(g, Vector3(0, 1.93, -0.03), 0.2, "marble", Vector3(1.05, 0.8, 1.1), 8)
+	match look.get("beard", "none"):
+		"long":
+			blob(g, Vector3(0, 1.63, 0.1), 0.16, "marble", Vector3(1.0, 1.5, 0.7), 6)
+		"short":
+			blob(g, Vector3(0, 1.7, 0.1), 0.14, "marble", Vector3(1.1, 0.8, 0.7), 6)
+	box(g, Vector3(0, 1.8, 0.2), Vector3(0.05, 0.1, 0.06), "marble", false)
+
+
+## A writing desk with scrolls, an open scroll, an oil lamp and a stool.
+static func desk(parent: Node3D, at: Vector3, yaw: float) -> OmniLight3D:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.78, 0), Vector3(1.7, 0.08, 0.85), "wood")
+	for p in [Vector3(-0.75, 0.37, -0.35), Vector3(0.75, 0.37, -0.35), Vector3(-0.75, 0.37, 0.35), Vector3(0.75, 0.37, 0.35)]:
+		box(g, p, Vector3(0.08, 0.74, 0.08), "wood", false)
+	var body := BoxShape3D.new()
+	body.size = Vector3(1.7, 0.85, 0.85)
+	solid(g, body, Vector3(0, 0.42, 0))
+	for k in 4:
+		mesh(g, _cyl(0.05, 0.42), "parchment", Vector3(-0.55 + k * 0.12, 0.87, -0.2), Vector3(0, 0, PI / 2.0))
+	box(g, Vector3(0.25, 0.83, 0.1), Vector3(0.55, 0.01, 0.34), "parchment", false)
+	box(g, Vector3(0.62, 0.86, -0.2), Vector3(0.12, 0.08, 0.08), "bronze", false)
+	box(g, Vector3(0, 0.25, 0.75), Vector3(0.45, 0.5, 0.45), "wood", false)
+	var lamp := OmniLight3D.new()
+	lamp.position = Vector3(0.62, 1.05, -0.2)
+	lamp.light_color = Color("ffb060")
+	lamp.light_energy = 0.9
+	lamp.omni_range = 4.0
+	g.add_child(lamp)
+	return lamp
+
+
+## A stone brazier with a fire that the Hall flickers.
+static func brazier(parent: Node3D, at: Vector3) -> OmniLight3D:
+	cylinder(parent, at, 0.5, 0.9, "stone", true, 8)
+	cylinder(parent, at + Vector3(0, 0.9, 0), 0.4, 0.25, "bronze", false, 8, 0.65)
+	for p in [Vector3(0, 1.3, 0), Vector3(0.15, 1.2, 0.1), Vector3(-0.12, 1.22, -0.08)]:
+		blob(parent, at + p, 0.22, "fire", Vector3(1.0, 1.6, 1.0), 5)
+	var embers := CPUParticles3D.new()
+	embers.position = at + Vector3(0, 1.3, 0)
+	embers.amount = 12
+	embers.lifetime = 2.5
+	var q := QuadMesh.new()
+	q.size = Vector2(0.06, 0.06)
+	embers.mesh = q
+	embers.material_override = Tex.material("fire")
+	embers.direction = Vector3.UP
+	embers.spread = 25.0
+	embers.initial_velocity_min = 0.6
+	embers.initial_velocity_max = 1.2
+	embers.gravity = Vector3(0.3, 0.1, 0)
+	parent.add_child(embers)
+	var l := OmniLight3D.new()
+	l.position = at + Vector3(0, 1.8, 0)
+	l.light_color = Color("ff9a48")
+	l.light_energy = 2.0
+	l.omni_range = 9.0
+	parent.add_child(l)
+	return l
+
+
+## A framed picture or map hung facing +Z of its group.
+static func board(parent: Node3D, at: Vector3, yaw: float, size: Vector2, tex: Texture2D) -> void:
+	var g := group(parent, at, yaw)
+	var q := QuadMesh.new()
+	q.size = size
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = tex
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	m.emission_enabled = true
+	m.emission_texture = tex
+	m.emission_energy_multiplier = 0.3
+	var mi := MeshInstance3D.new()
+	mi.mesh = q
+	mi.material_override = m
+	g.add_child(mi)
+	for f in [[Vector3(0, size.y / 2.0 + 0.05, 0), Vector3(size.x + 0.2, 0.1, 0.08)],
+			[Vector3(0, -size.y / 2.0 - 0.05, 0), Vector3(size.x + 0.2, 0.1, 0.08)],
+			[Vector3(size.x / 2.0 + 0.05, 0, 0), Vector3(0.1, size.y + 0.2, 0.08)],
+			[Vector3(-size.x / 2.0 - 0.05, 0, 0), Vector3(0.1, size.y + 0.2, 0.08)]]:
+		box(g, f[0], f[1], "gold", false)
+
+
+static func _cyl(radius: float, height: float) -> CylinderMesh:
+	var c := CylinderMesh.new()
+	c.top_radius = radius
+	c.bottom_radius = radius
+	c.height = height
+	c.radial_segments = 6
+	c.rings = 1
+	return c

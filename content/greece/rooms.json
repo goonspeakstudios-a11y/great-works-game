@@ -1,6 +1,16 @@
 {
   "porphyry-isagoge": {
     "open": true,
+    "place": "villa",
+    "where": "Lilybaeum, Sicily",
+    "when": "270 AD",
+    "map": "270ad",
+    "map_note": "In 270 AD the Roman Empire had split in three. Rebels held Gaul and Britain, Queen Zenobia of Palmyra took Syria and Egypt, and Rome kept the middle. Porphyry wrote in Sicily, in the quiet centre of the storm.",
+    "statues": [
+      {"name": "Aristotle", "beard": "short", "note": "Aristotle (384 - 322 BC). Porphyry's little book is a doorway into Aristotle's Categories, and for a thousand years students walked through it first."},
+      {"name": "Plotinus", "beard": "long", "bald": true, "note": "Plotinus (about 204 - 270 AD), Porphyry's teacher in Rome. When Porphyry fell into a deep sadness, Plotinus sent him away to Sicily to recover. Plotinus died in 270, while Porphyry was still here."}
+    ],
+    "tree": true,
     "author": "Porphyry",
     "life": "about 234 - 305 AD",
     "book": "Isagoge",

@@ -4,3 +4,4 @@ export/
 .env
 cookies.json
 __pycache__/
+tools/data/
