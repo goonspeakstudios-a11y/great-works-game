@@ -226,5 +226,203 @@
         "line": "Alexander's men are men."
       }
     ]
+  },
+  "aristotle-the-rest-of-the-organon": {
+    "open": true,
+    "place": "lyceum",
+    "area_of": "aristotle-categories",
+    "zone": "athens",
+    "where": "The hill of the Organon, above the Lyceum",
+    "when": "about 350 BC",
+    "greeting": "Up here the ground is bare and the air is clear. Good for proof. You know the ten kinds; now how one thing follows from another. Sit, or stand, but follow.",
+    "greeting_lost": "You found the hill. I was young when I worked this out. It is grey up here now. Follow the steps if you like.",
+    "lesson": [
+      {
+        "id": "premise",
+        "label": "What a premise is",
+        "point": "A premise says one thing of another: it affirms or denies, of all, of some, or of none. 'Every man is an animal.' 'No horse is a man.' 'Some animal is white.'"
+      },
+      {
+        "id": "syllogism",
+        "label": "What follows of necessity",
+        "point": "A syllogism is speech in which, certain things being laid down, something else follows of necessity from their being so. Every man is mortal; every Greek is a man; so every Greek is mortal."
+      },
+      {
+        "id": "middle",
+        "label": "The middle term",
+        "point": "Every syllogism has three terms. The middle term appears in both premises and joins the other two, then drops out of the conclusion. Find the middle and you have found the proof."
+      },
+      {
+        "id": "figures",
+        "label": "The three figures",
+        "point": "Where the middle term stands makes three figures. In the first it is subject of one premise and predicate of the other, and the conclusion is plain at once: that figure is perfect. The others are made plain by turning them into it."
+      },
+      {
+        "id": "conversion",
+        "label": "Turning a premise round",
+        "point": "'No A is B' turns round to 'no B is A'. 'Some A is B' turns to 'some B is A'. But 'every A is B' only gives 'some B is A': every man is an animal, not every animal a man."
+      },
+      {
+        "id": "fallacies",
+        "label": "Arguments that only seem",
+        "point": "Some refutations only look like refutations. Six tricks lie in the words: one word, two meanings; a phrase that parses two ways; joining; dividing; accent; the form of an expression. Seven lie outside the words, such as begging the question and false cause."
+      }
+    ],
+    "gift": "Young Aristotle scratches a triangle of three letters in the dust and leaves it there. \"That is all of it,\" he says, and walks on.",
+    "author": "Aristotle",
+    "life": "384 - 322 BC",
+    "book": "Prior Analytics and Sophistical Refutations",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "2e2418",
+      "beard": "short",
+      "beard_color": "2e2418",
+      "robe": "4a5a7a",
+      "trim": "a8b8d0",
+      "old": false
+    },
+    "persona": "You are Aristotle as a young man, about thirty-four, around 350 BC, still at Plato's Academy, working out logic for the first time. You are quick, a little proud of it, fond of letters for terms (A, B, C) and of plain examples (man, animal, horse, white). You teach the syllogism from the Prior Analytics and the false refutations of the Sophistical Refutations.",
+    "summary": "The heart of Aristotle's logic. The Prior Analytics defines the premise and the syllogism (an argument whose conclusion follows of necessity), shows how the middle term joins the two others, sorts syllogisms into three figures, and shows how premises convert. The Sophistical Refutations lists the ways an argument can merely seem to refute: six that lie in language and seven that do not.",
+    "facts": [
+      "The Organon ('the tool') is the name later given to Aristotle's six books on logic: Categories, On Interpretation, Prior Analytics, Posterior Analytics, Topics and Sophistical Refutations.",
+      "Aristotle claimed that before him there was nothing at all on reasoning to build on; he worked it out alone.",
+      "He wrote his terms as letters, A, B and C, the first time anyone used letters as variables.",
+      "His logic was the logic taught in Europe and the Islamic world for about two thousand years.",
+      "The Sophistical Refutations was written against the paid debaters of his day, who won by tricks."
+    ],
+    "questions": [
+      "What is a syllogism?",
+      "What is the middle term for?",
+      "Why is the first figure perfect?",
+      "What is begging the question?"
+    ],
+    "home": "hill",
+    "props": "the stone terraces, the three standing figures of stones, the spring",
+    "restores": [
+      {
+        "what": "water",
+        "line": "The spring on the hill runs."
+      },
+      {
+        "what": "leaves",
+        "line": "The oaks on the hill are in leaf."
+      },
+      {
+        "what": "walkway",
+        "line": "The terraces stand, each on the one below."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is on the hill."
+      },
+      {
+        "what": "teacher",
+        "line": "Aristotle is young, and himself."
+      },
+      {
+        "what": "soldiers",
+        "line": "The three figures stand in their stones."
+      }
+    ]
+  },
+  "aristotle-nicomachean-ethics": {
+    "open": true,
+    "place": "lyceum",
+    "area_of": "aristotle-categories",
+    "zone": "athens",
+    "where": "The grove of Apollo Lyceus",
+    "when": "323 BC",
+    "greeting": "Sit with me. My legs are not what they were. You have learned how to say what a thing is, and how one thing follows from another. Now: what is a man for?",
+    "greeting_lost": "An old man in a dead grove. That is what there is. Sit, if you want to hear about living well.",
+    "lesson": [
+      {
+        "id": "highest_good",
+        "label": "The highest good",
+        "point": "Every art and every action aims at some good. The good we want for its own sake, and everything else for its sake, is happiness (eudaimonia): not a feeling, but living well and doing well."
+      },
+      {
+        "id": "function",
+        "label": "Happiness is an activity",
+        "point": "A man's work is the life of reason. So happiness is activity of the soul in keeping with virtue, over a complete life. One swallow does not make a spring, nor one fine day a happy man."
+      },
+      {
+        "id": "habit",
+        "label": "Virtue comes by habit",
+        "point": "Virtue of character is not in us by nature. We become just by doing just things, brave by doing brave things, as a man becomes a builder by building."
+      },
+      {
+        "id": "mean",
+        "label": "The mean",
+        "point": "Virtue is a mean between two vices, one of too much and one of too little: courage between rashness and cowardice, generosity between waste and meanness. The mean is relative to us, as the man of practical wisdom would fix it."
+      },
+      {
+        "id": "pleasure_pain",
+        "label": "Pleasure as the test",
+        "point": "You can tell a man's character by what he enjoys. The brave man is glad to stand firm, or at least not pained by it; the man who hates doing the right thing is not yet good."
+      },
+      {
+        "id": "contemplation",
+        "label": "The best life",
+        "point": "The happiest life is contemplation, the activity of the best thing in us. It is the most continuous, the most self-sufficient, loved for itself alone. In it a man lives by what is divine in him."
+      }
+    ],
+    "gift": "The old man takes your hand in both of his and says nothing for a while. Then: \"That is enough. Go and do it.\"",
+    "author": "Aristotle",
+    "life": "384 - 322 BC",
+    "book": "Nicomachean Ethics",
+    "portrait": {
+      "skin": "c0a080",
+      "hair": "short",
+      "hair_color": "c8c0b0",
+      "beard": "long",
+      "beard_color": "d0c8b8",
+      "robe": "5a6a4a",
+      "trim": "b8b080",
+      "old": true
+    },
+    "persona": "You are Aristotle, an old man of sixty-one, in 323 BC. Alexander has just died and Athens has turned on everything Macedonian; you will soon leave, 'lest Athens sin twice against philosophy', and you will die at Chalcis within the year. You sit in the grove where your school began. You are gentle now, slow, still exact, fond of examples from ordinary life (the builder, the lyre player, the swallow), and you teach the Nicomachean Ethics.",
+    "summary": "Aristotle's book on how to live. Every action aims at some good; the highest good is happiness, understood as activity of the soul in keeping with virtue over a whole life. Virtue of character comes by habit and is a mean between two vices, fixed as the practically wise man would fix it. The best and happiest life is contemplation.",
+    "facts": [
+      "The Nicomachean Ethics is named for Nicomachus, Aristotle's son (or his father, who had the same name), who may have edited it.",
+      "In 323 BC Alexander died in Babylon. Athens rose against Macedon, and Aristotle, Macedon's friend, was charged with impiety.",
+      "He left Athens, saying he would not let the city sin twice against philosophy, meaning the death of Socrates.",
+      "He died at Chalcis on Euboea the next year, aged about sixty-two.",
+      "His will freed several of his slaves and asked that his wife's bones be laid with his."
+    ],
+    "questions": [
+      "What is happiness?",
+      "What is the mean?",
+      "How does a man become good?",
+      "Why is contemplation the best life?"
+    ],
+    "home": "grove",
+    "props": "the altar of Apollo, the olives, the spring, the swallows",
+    "restores": [
+      {
+        "what": "water",
+        "line": "The spring in the grove runs."
+      },
+      {
+        "what": "leaves",
+        "line": "The olives are green."
+      },
+      {
+        "what": "walkway",
+        "line": "The altar of Apollo stands whole."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is low and gold over the grove."
+      },
+      {
+        "what": "teacher",
+        "line": "Aristotle is old, and himself."
+      },
+      {
+        "what": "soldiers",
+        "line": "There are swallows."
+      }
+    ]
   }
 }

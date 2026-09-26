@@ -12,6 +12,7 @@ extends RefCounted
 ## A builder may add "arrivals": {from: [spot, yaw]}, where you appear coming from that place.
 
 const Kit := preload("res://scripts/hall/kit.gd")
+const Rooms := preload("res://scripts/hall/rooms.gd")
 
 const GATE_RADIUS := 25.0
 const GATE_START_DEG := -26.0
@@ -51,9 +52,10 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 	Kit.temple_ruin(world, Vector3(0, 0, -19), 0.0, restored)
 	var out: Array = []
 	var spots := {}
-	for i in doors.size():
+	var shown: Array = doors.filter(func(d: Dictionary) -> bool: return Rooms.room(d["work"]).get("area_of", "") == "")
+	for i in shown.size():
 		var at := gate_spot(i)
-		var d: Dictionary = doors[i]
+		var d: Dictionary = shown[i]
 		var mastered: bool = progress != null and progress.is_mastered(d["work"])
 		var light := Kit.gateway(world, at, Kit.face_yaw(at, Vector3.ZERO), d["open"], mastered)
 		if light:
@@ -63,7 +65,7 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 		out.append({"kind": "gate", "pos": stand, "to": d["work"], "open": d["open"], "mastered": mastered,
 			"text": "%d. %s%s" % [d["number"], d["name"], " (mastered)" if mastered else ""]})
 		var between := deg_to_rad(GATE_START_DEG + GATE_STEP_DEG * (i + 0.5))
-		if i < doors.size() - 1:
+		if i < shown.size() - 1:
 			sway.append(Kit.cypress(world, Vector3(cos(between), 0, sin(between)) * 29.5, 6.0 + (i % 3)))
 	for p in [Vector3(8, 0, 4), Vector3(-10, 0, 6), Vector3(5, 0, 15), Vector3(-7, 0, 15),
 			Vector3(13, 0, -4), Vector3(-17, 0, 1), Vector3(-1, 0, 19)]:
@@ -170,12 +172,12 @@ static func _haunt(person: Dictionary, stage: int) -> void:
 	person["shade"] = true
 
 
-static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0, stages: Dictionary = {}) -> Dictionary:
 	match room.get("place", ""):
 		"villa":
 			return villa(world, work, room, stage)
 		"lyceum":
-			return lyceum(world, work, room, stage)
+			return lyceum(world, work, room, stage, stages)
 	push_error("No place built for %s" % work)
 	return hub(world, [])
 
@@ -331,10 +333,10 @@ static func villa(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 ## the sacred grove for later lessons, and Alexander's men drilling on the meadow. It starts
 ## lost, grey and dead, and comes back a piece at a time: the stream runs, the trees leaf, the
 ## walkway stands whole, the morning returns, Aristotle is himself, the soldiers are men again.
-static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0, stages: Dictionary = {}) -> Dictionary:
 	var b := _sky(world, room, stage, "morning", Vector3(0, 0, -4), 26.0)
 	var leaves := b.has("leaves")
-	Kit.plateau(world, 48.0, "earth", false)
+	Kit.plateau(world, 112.0, "earth", false)
 	Kit.acropolis(world, Vector3(-150, -10, -230))
 	Kit.mountain(world, Vector3(280, -10, -160), 130.0, 75.0, false)  # Hymettus
 	Kit.mountain(world, Vector3(-40, -10, -330), 40.0, 60.0, false)  # Lycabettus
@@ -387,6 +389,7 @@ static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	var aristotle := Kit.walker(world, Vector3(-6.5, 0, 6.0), PI, room.get("portrait", {}))
 	aristotle["path"] = [Vector3(-6.5, 0, -18.0), Vector3(-6.5, 0, 8.0)]
 	aristotle["speed"] = 1.1
+	aristotle["area"] = work
 	if not b.has("teacher"):
 		_haunt(aristotle, stage)
 	var who := _who(room, b)
@@ -399,13 +402,13 @@ static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	Kit.box(world, Vector3(-2, 1.5, -25.9), Vector3(1.8, 3.0, 0.16), "wood", false)
 	for x in [-6.0, 2.0]:
 		Kit.column(world, Vector3(x, 0, -25.4), 4.6)
-	out.append({"kind": "gate", "pos": Vector3(-2, 0, -24.4), "to": "aristotle-the-rest-of-the-organon", "open": false,
-		"text": "The library of the Lyceum"})
+	out.append({"kind": "look", "pos": Vector3(-2, 0, -24.4), "text": "Look at the library",
+		"note": "The library of the Lyceum, the first great library in Greece. The logic is taught on the hill to the west; the ethics in the grove to the east."})
 	for p in [Vector3(17, 0, -1), Vector3(20, 0, -8), Vector3(24, 0, -3), Vector3(19, 0, 6), Vector3(27, 0, 3), Vector3(23, 0, -12)]:
 		sway.append(Kit.olive(world, p, 1.2, leaves))
 	Kit.bust(world, Vector3(15.0, 0, -4), -PI / 2.0, {"beard": "long"})  # a herm of the god of the grove
-	out.append({"kind": "gate", "pos": Vector3(13.4, 0, -4), "to": "aristotle-nicomachean-ethics", "open": false,
-		"text": "The sacred grove of Apollo Lyceus"})
+	out.append({"kind": "look", "pos": Vector3(13.4, 0, -4), "text": "Look at the herm",
+		"note": "A herm of Apollo Lyceus, the wolf-god the school is named for. His grove lies east, past the meadow."})
 	out.append(seat(world, Vector3(4.8, 0, 8.0), Vector3(1, 0, 0), "Sit by the stream"))
 	# on the meadow beyond the grove, Alexander's men drill: a block of pikemen marching a
 	# circuit of the road, the sun of Macedon on every shield. Until the place is whole they
@@ -423,10 +426,160 @@ static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 		"text": "Watch the Macedonians" if living else "Watch the dead march", "note": note})
 	spots["walk"] = Vector3(-6.5, 0, 2.0)
 	spots["march"] = Vector3(22, 0, 12)
+	var people: Array = [aristotle]
+	var backs := {work: b}
+	var areas: Array = []
+	for area in [[ORGANON, ORGANON_AT, 30.0], [ETHICS, ETHICS_AT, 28.0]]:
+		var aroom := Rooms.room(area[0])
+		if aroom.is_empty():
+			continue
+		var ab := back(aroom, int(stages.get(area[0], 0)))
+		backs[area[0]] = ab
+		areas.append({"work": area[0], "c": Vector2(area[1].x, area[1].z), "r": area[2], "name": "%s - %s" % [aroom.get("where", ""), aroom.get("when", "")]})
+		var built: Dictionary = _organon_hill(world, aroom, ab, stages.get(area[0], 0)) if area[0] == ORGANON \
+			else _ethics_grove(world, aroom, ab, stages.get(area[0], 0))
+		out.append_array(built["out"])
+		people.append(built["teacher"])
+		sway.append_array(built["sway"])
+		flicker.append_array(built["flicker"])
+		birds.append_array(built["birds"])
+	# paths from the Lyceum out to the hill and the grove
+	Kit.box(world, Vector3(-30, 0.01, -18), Vector3(44.0, 0.02, 2.4), "path", false, Vector3(0, -0.12, 0))
+	Kit.box(world, Vector3(58, 0.01, -14), Vector3(34.0, 0.02, 2.4), "path", false, Vector3(0, 0.3, 0))
 	var spawn := Vector3(0, 0.05, 23.5)
 	return {"name": "%s - %s" % [room.get("where", ""), room.get("when", "")], "interactables": out, "spawn": spawn,
-		"yaw": 0.0, "spots": spots, "flicker": flicker, "people": [aristotle], "restored": 0,
-		"sway": sway, "birds": birds, "squads": [squad], "back": b}
+		"yaw": 0.0, "spots": spots, "flicker": flicker, "people": people, "restored": 0,
+		"sway": sway, "birds": birds, "squads": [squad], "back": b, "backs": backs, "areas": areas}
+
+
+const ORGANON := "aristotle-the-rest-of-the-organon"
+const ETHICS := "aristotle-nicomachean-ethics"
+const ORGANON_AT := Vector3(-72, 0, -26)  # a bare hill west of the Lyceum
+const ETHICS_AT := Vector3(76, 0, -24)  # the grove of Apollo, east past the meadow
+const HILL_TOP := 5.0
+
+
+## A tall pole with a cloth hanging from it, and a stone beside the way in naming the book, so you
+## know where one book ends and the next begins.
+static func _marker(world: Node3D, at: Vector3, facing: Vector3, cloth: String, title: String, note: String) -> Dictionary:
+	Kit.cylinder(world, at, 0.08, 6.0, "wood", false, 6)
+	Kit.box(world, at + Vector3(0.6, 4.9, 0), Vector3(1.1, 1.8, 0.05), cloth, false)
+	var stone := at + facing.normalized() * 1.2
+	var reader := Kit.stele(world, stone, Kit.face_yaw(stone, stone + facing))
+	return {"kind": "look", "pos": reader, "text": title, "note": note}
+
+
+## The hill of the Organon: a bare, clear hill of pale stone, ringed with columns, three figures of
+## standing stones on top, where the young Aristotle works out how one thing follows from another.
+static func _organon_hill(world: Node3D, room: Dictionary, b: Array, stage: int) -> Dictionary:
+	var c := ORGANON_AT
+	var top := c + Vector3(0, HILL_TOP, 0)
+	var out: Array = []
+	var sway: Array = []
+	var flicker: Array = []
+	Kit.cylinder(world, c, 26.0, HILL_TOP, "stone" if b.has("sun") else "ashbed", false, 16, 12.0)
+	var slope := CylinderMesh.new()
+	slope.top_radius = 12.0
+	slope.bottom_radius = 26.0
+	slope.height = HILL_TOP
+	Kit.solid(world, slope.create_convex_shape(), c + Vector3(0, HILL_TOP / 2.0, 0))
+	Kit.cylinder(world, top + Vector3(0, -0.04, 0), 11.6, 0.08, "paving", false, 16)
+	for k in 10:  # the ring of columns: the terraces of the proof
+		var a := TAU * k / 10.0
+		Kit.column(world, top + Vector3(cos(a), 0, sin(a)) * 10.4, 3.6, not b.has("walkway"))
+	for k in 3:  # the three figures, three standing stones each
+		var a := TAU * k / 3.0 + 0.5
+		var fc := top + Vector3(cos(a), 0, sin(a)) * 5.0
+		for j in 3:
+			var s := fc + Vector3(cos(a + TAU * j / 3.0), 0, sin(a + TAU * j / 3.0)) * 1.1
+			if b.has("soldiers"):
+				Kit.box(world, s + Vector3(0, 1.0, 0), Vector3(0.6, 2.0, 0.4), "stone", false)
+			else:
+				Kit.box(world, s + Vector3(0, 0.2, 0), Vector3(2.0, 0.4, 0.6), "stone", false, Vector3(0, a + j, 0))
+	for p in [Vector3(-20, 0, -14), Vector3(-24, 0, 4), Vector3(-12, 0, 20), Vector3(10, 0, 22), Vector3(22, 0, -12), Vector3(4, 0, -24)]:
+		sway.append(Kit.plane_tree(world, c + p, 0.9, b.has("leaves")))
+	Kit.stream(world, c + Vector3(20, 0, 8), c + Vector3(34, 0, 20), 1.6, b.has("water"))
+	if b.has("sun"):
+		var light := OmniLight3D.new()
+		light.position = top + Vector3(0, 6, 0)
+		light.light_color = Color("fff0d8")
+		light.light_energy = 1.2
+		light.omni_range = 24.0
+		world.add_child(light)
+	else:
+		Kit.ash(world, top, 20.0)
+	var facts: Array = room.get("facts", [])
+	for k in facts.size():
+		var a := PI + (k - (facts.size() - 1) / 2.0) * 0.42
+		var at := top + Vector3(cos(a), 0, sin(a)) * 8.4
+		var reader := top + Vector3(cos(a), 0, sin(a)) * 7.2
+		Kit.stele(world, at, Kit.face_yaw(at, reader))
+		out.append({"kind": "fact", "pos": reader, "text": facts[k], "work": ORGANON})
+	Kit.box(world, top + Vector3(2.5, 0.5, 0), Vector3(0.5, 1.0, 0.5), "wood")
+	Kit.box(world, top + Vector3(2.5, 1.05, 0), Vector3(0.45, 0.06, 0.6), "parchment", false)
+	out.append({"kind": "book", "pos": top + Vector3(3.8, 0, 0), "text": "Read a page of the %s" % room["book"], "work": ORGANON})
+	var young := Kit.walker(world, top + Vector3(0, 0, 3), 0.0, room.get("portrait", {}))
+	young["path"] = [top + Vector3(-3.5, 0, 3.5), top + Vector3(3.5, 0, 3.5), top + Vector3(3.5, 0, -3.5), top + Vector3(-3.5, 0, -3.5)]
+	young["speed"] = 1.4
+	young["area"] = ORGANON
+	if not b.has("teacher"):
+		_haunt(young, stage)
+	out.append({"kind": "author", "pos": top, "follow": young["root"], "text": "Talk with %s" % _who(room, b), "work": ORGANON})
+	out.append(_marker(world, c + Vector3(30, 0, 6), Vector3(1, 0, 0.2), "#4a5a7a", "Read the stone: The Organon",
+		"THE ORGANON. The tool for thinking: how one thing follows from another. Prior Analytics and Sophistical Refutations. Aristotle is young here."))
+	return {"out": out, "teacher": young, "sway": sway, "flicker": flicker, "birds": []}
+
+
+## The grove of Apollo Lyceus: old olives round an altar and a spring, and the old Aristotle
+## sitting and walking a little, near the end of his life.
+static func _ethics_grove(world: Node3D, room: Dictionary, b: Array, stage: int) -> Dictionary:
+	var c := ETHICS_AT
+	var out: Array = []
+	var sway: Array = []
+	var flicker: Array = []
+	Kit.cylinder(world, c + Vector3(0, -0.03, 0), 24.0, 0.06, "earth" if b.has("leaves") else "ashbed", false, 16)
+	for k in 12:
+		var a := TAU * k / 12.0 + 0.2
+		sway.append(Kit.olive(world, c + Vector3(cos(a), 0, sin(a)) * (16.0 + fmod(k * 1.7, 4.0)), 1.4, b.has("leaves")))
+	if b.has("walkway"):  # the altar of Apollo
+		Kit.box(world, c + Vector3(0, 0.6, -6), Vector3(3.0, 1.2, 1.6), "marble")
+		Kit.box(world, c + Vector3(0, 1.25, -6), Vector3(3.3, 0.15, 1.9), "marble", false)
+	else:
+		Kit.box(world, c + Vector3(0, 0.3, -6), Vector3(2.0, 0.6, 1.4), "marble")
+		Kit.box(world, c + Vector3(1.8, 0.2, -5.2), Vector3(1.2, 0.4, 0.8), "marble", false, Vector3(0, 0.6, 0.2))
+	Kit.stream(world, c + Vector3(-12, 0, 6), c + Vector3(-4, 0, 14), 1.4, b.has("water"))
+	var birds: Array = Kit.flock(world, c, 5, 10.0, 8.0) if b.has("soldiers") else []
+	if b.has("sun"):
+		var light := OmniLight3D.new()
+		light.position = c + Vector3(0, 7, 0)
+		light.light_color = Color("ffc890")
+		light.light_energy = 1.3
+		light.omni_range = 24.0
+		world.add_child(light)
+		flicker.append(light)
+	else:
+		Kit.ash(world, c, 20.0)
+	var facts: Array = room.get("facts", [])
+	for k in facts.size():
+		var a := PI * 0.5 + (k - (facts.size() - 1) / 2.0) * 0.36
+		var at := c + Vector3(cos(a), 0, sin(a)) * 11.0
+		var reader := c + Vector3(cos(a), 0, sin(a)) * 9.8
+		Kit.stele(world, at, Kit.face_yaw(at, reader))
+		out.append({"kind": "fact", "pos": reader, "text": facts[k], "work": ETHICS})
+	Kit.box(world, c + Vector3(-4, 0.5, -3), Vector3(0.5, 1.0, 0.5), "wood")
+	Kit.box(world, c + Vector3(-4, 1.05, -3), Vector3(0.45, 0.06, 0.6), "parchment", false)
+	out.append({"kind": "book", "pos": c + Vector3(-4, 0, -1.7), "text": "Read a page of the %s" % room["book"], "work": ETHICS})
+	var old := Kit.walker(world, c + Vector3(2, 0, -2), PI, room.get("portrait", {}))
+	old["path"] = [c + Vector3(2, 0, -3), c + Vector3(2, 0, 3)]
+	old["speed"] = 0.5
+	old["area"] = ETHICS
+	if not b.has("teacher"):
+		_haunt(old, stage)
+	out.append({"kind": "author", "pos": c + Vector3(2, 0, 0), "follow": old["root"], "text": "Sit with %s" % _who(room, b), "work": ETHICS})
+	out.append(seat(world, c + Vector3(5, 0, 2), Vector3(0, 0, 1), "Sit in the grove"))
+	out.append(_marker(world, c + Vector3(-26, 0, 6), Vector3(-1, 0, 0.2), "#5a6a4a", "Read the stone: The Ethics",
+		"THE ETHICS. How to live: what happiness is, how virtue is made, the mean. The Nicomachean Ethics. Aristotle is old here."))
+	return {"out": out, "teacher": old, "sway": sway, "flicker": flicker, "birds": birds}
 
 
 ## Porphyry's Tree carved in marble: a trunk of kinds with a branch off each level.

@@ -43,6 +43,25 @@ BOOKS = {
         "end": r"THE END",
         "chapter": r"^\s*Part (\d+)\s*$",
     },
+    "aristotle-the-rest-of-the-organon": {  # two books in one corpus, each passage labelled with its own
+        "title": "the Organon",
+        "translation": "Prior Analytics tr. A. J. Jenkinson, Sophistical Refutations tr. W. A. Pickard-Cambridge, public domain",
+        "parts": [
+            {"file": "Aristotle - Prior Analytics (tr. Jenkinson).txt", "title": "Prior Analytics",
+             "start": r"BOOK I", "end": r"THE END", "chapter": r"^\s*Part (\d+)\s*$", "book": r"^\s*BOOK ([IVX]+)\s*$"},
+            {"file": "Aristotle - Sophistical Refutations (tr. Pickard-Cambridge).txt", "title": "Sophistical Refutations",
+             "start": r"SECTION 1", "end": r"THE END", "chapter": r"^\s*Part (\d+)\s*$"},
+        ],
+    },
+    "aristotle-nicomachean-ethics": {
+        "file": "Aristotle - Nicomachean Ethics (tr. Chase).txt",
+        "title": "Nicomachean Ethics",
+        "translation": "tr. D. P. Chase (1847), public domain",
+        "start": r"(?m)^BOOK I\s*$",
+        "end": r"(?m)^\s*NOTES\s*$|\*\*\* ?END OF",
+        "chapter": r"^\s*Chapter ([IVXL]+)\.\s*$",
+        "book": r"^\s*BOOK ([IVX]+)\s*$",
+    },
 }
 
 
@@ -100,17 +119,23 @@ def clean(paragraph: str) -> str:
 def chunk(body: str, spec: dict, title: str) -> list[dict]:
     chunks: list[dict] = []
     chapter = ""
+    book = ""
     words: list[str] = []
 
     def flush(final: bool = False) -> None:
         if len(words) < 25 and not final:
             return  # a lone heading joins the passage that follows it
         if words:
-            where = f"{title}, Chap. {chapter}" if chapter else title
+            where = title + (f", Book {book}" if book else "") + (f", Chap. {chapter}" if chapter else "")
             chunks.append({"id": len(chunks), "where": where, "text": " ".join(words)})
             words.clear()
 
     for para in body.split("\n\n"):
+        b = re.match(spec["book"], para, re.M) if spec.get("book") else None
+        if b:
+            flush(final=bool(chapter))
+            book, chapter = b.group(1), ""
+            continue
         m = re.match(spec["chapter"], para, re.M)
         if m:
             # a chapter's last lines stay with that chapter; only text before the
@@ -136,8 +161,12 @@ def chunk(body: str, spec: dict, title: str) -> list[dict]:
 
 def build(work_id: str) -> Path:
     spec = BOOKS[work_id]
-    text = read_text(LIBRARY / spec["file"], spec.get("encoding", "utf-8"))
-    chunks = chunk(body_of(text, spec), spec, spec["title"])
+    chunks: list[dict] = []
+    for part in spec.get("parts", [spec]):
+        text = read_text(LIBRARY / part["file"], part.get("encoding", "utf-8"))
+        for c in chunk(body_of(text, part), part, part["title"]):
+            c["id"] = len(chunks)
+            chunks.append(c)
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / f"{work_id}.json"
     data = {"work": work_id, "title": spec["title"], "translation": spec["translation"], "chunks": chunks}

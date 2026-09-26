@@ -5,6 +5,8 @@ extends CharacterBody3D
 
 const SPEED := 2.5
 const SPRINT := 4.6
+const SPRINT_MAX := 7.5  # holding Shift builds up to this
+const SPRINT_BUILD := 4.0  # seconds of holding to get there
 const TURN := 2.0
 const MOUSE := 0.0025
 const EYE := 1.55
@@ -15,6 +17,7 @@ var frozen := false
 var seated := false  # sitting on a bench: look around, no walking
 var speed_scale := 1.0  # the Esc menu's walking speed
 var look_scale := 1.0  # and its mouse speed
+var _sprint_held := 0.0
 var _pitch := 0.0
 var _bob := 0.0
 var _shape: CollisionShape3D
@@ -85,7 +88,10 @@ func _physics_process(delta: float) -> void:
 	dir.y = 0.0
 	if dir.length() > 1.0:
 		dir = dir.normalized()
-	var speed := (SPRINT if Input.is_action_pressed("sprint") else SPEED) * speed_scale
+	var sprinting := Input.is_action_pressed("sprint") and dir.length() > 0.1
+	_sprint_held = _sprint_held + delta if sprinting else 0.0
+	var run := lerpf(SPRINT, SPRINT_MAX, smoothstep(0.0, SPRINT_BUILD, _sprint_held))
+	var speed := (run if sprinting else SPEED) * speed_scale
 	if InputMap.has_action("jump") and Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP
 	velocity.x = dir.x * speed

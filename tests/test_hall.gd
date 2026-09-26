@@ -109,7 +109,7 @@ func test_rooms_follow_the_reading_list() -> void:
 	check_eq(doors.size(), 17, "one door for every Greek work")
 	check_eq(doors[0]["work"], "porphyry-isagoge", "the first door is the Isagoge")
 	check(doors[0]["open"] and doors[1]["open"], "the Isagoge and the Categories have their places")
-	check(not doors[2]["open"], "the rest are sealed for now")
+	check(doors[2]["open"] and not doors[3]["open"], "the rest of the Organon has its ground; the rest are sealed for now")
 	var room := Rooms.room("porphyry-isagoge")
 	check(room["facts"].size() >= 4, "the room has facts on its walls")
 	for f in room["facts"]:
@@ -123,8 +123,9 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	hall.travel("hub")
 	check_eq(hall.here, "hub", "Greece's hub is the Shore")
 	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and i["to"] != "nexus")
-	check_eq(gates.size(), 17, "one gateway for every Greek work")
-	check_eq(gates.map(func(g): return g["to"]), Rooms.doors().map(func(d): return d["work"]), "gateways follow the reading list")
+	var places: Array = Rooms.doors().filter(func(d): return Rooms.room(d["work"]).get("area_of", "") == "")
+	check_eq(gates.size(), 15, "one gateway for every place (Aristotle's three books share one)")
+	check_eq(gates.map(func(g): return g["to"]), places.map(func(d): return d["work"]), "gateways follow the reading list")
 	check(gates[0]["open"] and gates[1]["open"] and not gates[2]["open"], "the first two are open, the rest not yet")
 	hall.free()
 
@@ -431,10 +432,10 @@ func test_aristotle_walks_his_walkway() -> void:
 	hall.travel("aristotle-categories")
 	check(hall.here_name.contains("Lyceum"), "you are at the Lyceum")
 	check(not hall.people.is_empty() and hall.people[0].has("path"), "Aristotle is there, and he walks")
-	var author: Array = hall.interactables.filter(func(i): return i["kind"] == "author")
+	var author: Array = hall.interactables.filter(func(i): return i["kind"] == "author" and not i.has("work"))
 	check(author.size() == 1 and author[0].has("follow"), "you talk to him wherever he is")
-	var closed: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and not i["open"])
-	check(closed.size() >= 2, "the library and the grove wait for later lessons")
+	check_eq(hall.areas.map(func(a): return a["work"]), ["aristotle-the-rest-of-the-organon", "aristotle-nicomachean-ethics"],
+		"the Organon has its hill and the Ethics its grove")
 	var root: Node3D = hall.people[0]["root"]
 	hall.player.position = Vector3(0, 0.05, 40)  # far away: he keeps walking
 	var before := root.position
@@ -499,7 +500,7 @@ func test_every_place_starts_lost() -> void:
 		hall.travel(work)
 		check_eq(hall.restored_here, [], "%s starts lost to the world" % work)
 		check(hall.teacher.get("shade", false), "%s is only a pale shade" % Rooms.room(work)["author"])
-		var author: Array = hall.interactables.filter(func(i): return i["kind"] == "author")
+		var author: Array = hall.interactables.filter(func(i): return i["kind"] == "author" and not i.has("work"))
 		check(author.size() == 1 and author[0]["text"].contains("shade"), "you speak with his shade")
 	check(hall.squads[0].get("undead", false), "Alexander's men march on, undead")
 	check(hall.interactables.any(func(i): return i.get("note", "").contains("sarissa") and i["note"].contains("forgotten")), "the dead soldiers are explained")
@@ -692,3 +693,18 @@ func test_music_layers_say_when_they_are_loud() -> void:
 		for layer in Music.ZONES[z]["layers"]:
 			check(not layer.has("lost_db"), "%s/%s: no hidden rule about the sun" % [z, layer["file"]])
 			check(layer.has("loud_db") == layer.has("loud_until"), "%s/%s: loud_db and loud_until go together" % [z, layer["file"]])
+
+
+func test_each_book_has_its_own_ground_and_its_own_aristotle() -> void:
+	var hall := _lyceum_hall()
+	hall._check_area()
+	check_eq(hall.area, "aristotle-categories", "at the Lyceum you are in the Categories")
+	for w in ["aristotle-the-rest-of-the-organon", "aristotle-nicomachean-ethics"]:
+		var a: Dictionary = hall.areas.filter(func(x): return x["work"] == w)[0]
+		hall.player.position = Vector3(a["c"].x, 5.1, a["c"].y)
+		hall._check_area()
+		check_eq(hall.area, w, "standing on its ground puts you in %s" % w)
+		var seen: Array = hall.people.filter(func(p): return p.has("area") and p["root"].visible)
+		check(seen.size() == 1 and seen[0]["area"] == w, "and only that book's Aristotle is there")
+		check_eq(hall._tablet_text().contains(Rooms.room(w)["book"]), true, "the tablet is that book's")
+	hall.free()

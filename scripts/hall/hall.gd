@@ -49,6 +49,9 @@ const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give
 var offline := false  # tests: no music, no mouse capture, instant travel
 var doors: Array = []
 var here := ""  # "nexus", "hub" or a work id
+var areas: Array = []  # other books with ground in this place: {work, c: Vector2, r, name}
+var backs := {}  # work -> the pieces of its part of this place that are back
+var area := ""  # the book whose ground you stand on (here, or one of the areas)
 var here_name := ""
 var interactables: Array = []
 var spots := {}
@@ -317,6 +320,10 @@ func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> 
 
 func _load_place(to: String, keep: bool = false) -> void:
 	var held := _where_everyone_is() if keep else {}
+	var area_target := ""
+	if not to in ["hub", "nexus"] and Rooms.room(to).get("area_of", "") != "":
+		area_target = to  # a book that is part of another's place: go there, to its ground
+		to = Rooms.room(to)["area_of"]
 	var from := here
 	if not keep:
 		_restore_pending = ""  # a piece of the place you are leaving waits for your return
@@ -338,12 +345,19 @@ func _load_place(to: String, keep: bool = false) -> void:
 	elif to == "hub":
 		built = Places.hub(world, doors, progress)
 	else:
-		built = Places.place(world, to, Rooms.room(to), _stage(to))
+		var stages := {}
+		for d in doors:
+			if Rooms.room(d["work"]).get("area_of", "") == to:
+				stages[d["work"]] = _stage(d["work"])
+		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
 	if not to in ["hub", "nexus"] and not keep:
 		progress.visit(to)
 		progress.save()
 	here = to
 	restored_here = built.get("back", [])
+	areas = built.get("areas", [])
+	backs = built.get("backs", {})
+	area = ""  # worked out again on the next frame
 	if music:
 		music.play(_zone(to), restored_here)
 	people = built.get("people", [])
@@ -372,6 +386,9 @@ func _load_place(to: String, keep: bool = false) -> void:
 		_arrival = built.get("arrivals", {}).get(from, [built["spawn"], built["yaw"]])
 		player.position = _arrival[0]
 		player.rotation.y = _arrival[1]
+		for a in areas:
+			if a["work"] == area_target:
+				player.position = Vector3(a["c"].x, 0.05, a["c"].y + a["r"] - 3.0)
 		_toad_to_heel()
 	player.velocity = Vector3.ZERO
 	target = {}
@@ -379,6 +396,35 @@ func _load_place(to: String, keep: bool = false) -> void:
 		_where.text = here_name
 	if to == "nexus" and not keep:
 		_arrive_in_nexus()
+
+
+## The book whose ground you are standing on: one of this place's areas, or the place's own book.
+func _work_here() -> String:
+	var at := Vector2(player.position.x, player.position.z)
+	for a in areas:
+		if at.distance_to(a["c"]) <= a["r"]:
+			return a["work"]
+	return here
+
+
+## Crossing from one book's ground to another's: its name in the corner, its teacher at his age,
+## and its music as far as its part of the place is back.
+func _check_area() -> void:
+	var now := _work_here()
+	if now == area:
+		return
+	area = now
+	for p in people:
+		if p.has("area") and is_instance_valid(p["root"]):
+			p["root"].visible = p["area"] == area
+	var name := here_name
+	for a in areas:
+		if a["work"] == area:
+			name = a["name"]
+	if _where:
+		_where.text = name
+	if music and not here in ["hub", "nexus"]:
+		music.play(_zone(area), backs.get(area, restored_here))
 
 
 func _zone(place: String) -> String:
@@ -643,15 +689,19 @@ func _restore() -> void:
 	if travelling:
 		_restore_pending = here  # after the fade that is running
 		return
-	var before := restored_here.duplicate()
+	var before := backs.duplicate(true)
+	if before.is_empty():
+		before = {here: restored_here.duplicate()}
 	if offline:
 		_load_place(here, true)
 	else:
 		await _fade_through(Color(1.0, 0.94, 0.8, 0.85), 0.6, 1.8, _load_place.bind(here, true))
+	var after := backs if not backs.is_empty() else {here: restored_here}
 	var lines: Array = []
-	for r in Rooms.room(here).get("restores", []):
-		if restored_here.has(r["what"]) and not before.has(r["what"]):
-			lines.append(r["line"])
+	for w in after:
+		for r in Rooms.room(w).get("restores", []):
+			if after[w].has(r["what"]) and not before.get(w, []).has(r["what"]):
+				lines.append(r["line"])
 	if not lines.is_empty():
 		_quip = "\n".join(lines)
 		_quip_until = _t + 6.0
@@ -1026,9 +1076,9 @@ func _on_judged(work: String, ids: Array) -> void:
 	var room := Rooms.room(work)
 	var names: Array = room.get("lesson", []).filter(func(p): return fresh.has(p["id"])).map(func(p): return p["label"])
 	var note := "\n\n[color=#a6c8cc]On your tablet: %s[/color]" % ", ".join(names)
-	if work == here and not Rooms.room(work).get("restores", []).is_empty():
+	if (work == here or Rooms.room(work).get("area_of", "") == here) and not Rooms.room(work).get("restores", []).is_empty():
 		note += "\n[i][color=#a6c8cc]Something in this place stirs.[/color][/i]"
-		_restore_pending = work  # it comes back when you turn from the talk
+		_restore_pending = here  # it comes back when you turn from the talk
 		if not _any_panel():
 			_restore()  # the check came back after you had already walked away
 	if progress.check_mastery(work, room.get("lesson", [])):
@@ -1049,8 +1099,9 @@ func _tablet_text() -> String:
 		var now := Nexus.now(progress, doors)
 		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nIdeas understood: %d\nBooks mastered: %d of %d" % [
 			here_name, Nexus.content().get("rule", ""), now["points"], (now["mastered"] as Array).size(), Nexus.SLOTS]
-	var room := Rooms.room(here)
-	var have: Array = progress.understood(here)
+	var w := _work_here()
+	var room := Rooms.room(w)
+	var have: Array = progress.understood(w)
 	var lines: Array = ["[color=#e0b660]Your tablet: %s[/color]" % room.get("book", "")]
 	for p in room.get("lesson", []):
 		lines.append(("+ %s" % p["point"]) if have.has(p["id"]) else ("[color=#8a8074]- %s: not yet[/color]" % p["label"]))
@@ -1156,6 +1207,7 @@ func _process(delta: float) -> void:
 	for f in flicker:
 		if is_instance_valid(f["light"]):
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
+	_check_area()
 	_animate_people(delta)
 	_animate_life(delta)
 	_catch_fall()
@@ -1391,12 +1443,12 @@ func activate(it: Dictionary) -> void:
 		"tree":
 			_show_panel(_tree_panel)
 		"book":
-			var book := _book(here)
+			var book := _book(it.get("work", here))
 			if book:
 				var p: Dictionary = book.random_passage()
 				_show_read("[i]%s, %s[/i]\n\n%s" % [p["where"], book.translation, _esc(excerpt(p["text"], 360))])
 		"author":
-			_open_ask(here)
+			_open_ask(it.get("work", here))
 		"gate":
 			if it["open"]:
 				travel(it["to"])
