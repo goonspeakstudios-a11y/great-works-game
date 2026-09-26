@@ -32,6 +32,11 @@ static func open(at: String = PATH) -> RefCounted:
 					if entry.get("mastered") is bool:
 						fixed["mastered"] = entry["mastered"]
 				p.data["works"][work] = fixed
+			if d.get("modes") is Dictionary:
+				p.data["modes"] = {}
+				for w in d["modes"]:
+					if d["modes"][w] in ["zen", "student"]:
+						p.data["modes"][w] = d["modes"][w]
 			var nx: Variant = d.get("nexus")
 			if nx is Dictionary:
 				var fixed_nx: Dictionary = NEXUS.duplicate(true)
@@ -122,3 +127,15 @@ func nexus() -> Dictionary:
 	if not data.get("nexus") is Dictionary:
 		data["nexus"] = NEXUS.duplicate(true)
 	return data["nexus"]
+
+
+## How you chose to walk a world: "zen", "student", or "" if it has not asked you yet.
+func mode(world: String) -> String:
+	var modes: Variant = data.get("modes", {})
+	return str(modes.get(world, "")) if modes is Dictionary else ""
+
+
+func set_mode(world: String, value: String) -> void:
+	if not data.get("modes") is Dictionary:
+		data["modes"] = {}
+	data["modes"][world] = value

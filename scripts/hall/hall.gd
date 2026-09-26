@@ -13,6 +13,7 @@ const Rooms := preload("res://scripts/hall/rooms.gd")
 const Places := preload("res://scripts/hall/places.gd")
 const Nexus := preload("res://scripts/hall/nexus.gd")
 const Menu := preload("res://scripts/hall/menu.gd")
+const Choice := preload("res://scripts/hall/choice.gd")
 const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
@@ -120,6 +121,7 @@ var _map_title: Label
 var _map_note: Label
 var _tree_panel: Panel
 var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
+var _choice: PanelContainer  # a world asks who you are there (Choice)
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -182,6 +184,10 @@ func _ready() -> void:
 	_menu.resume = _close_panels
 	_root.add_child(_menu)
 	_menu.load_settings()
+	_menu.switch_mode = _switch_mode
+	_choice = Choice.new()
+	_choice.chosen.connect(_on_chosen)
+	_root.add_child(_choice)
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
@@ -396,6 +402,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 		_where.text = here_name
 	if to == "nexus" and not keep:
 		_arrive_in_nexus()
+	if not keep:
+		_ask_mode()
 
 
 ## The book whose ground you are standing on: one of this place's areas, or the place's own book.
@@ -425,6 +433,58 @@ func _check_area() -> void:
 		_where.text = name
 	if music and not here in ["hub", "nexus"]:
 		music.play(_zone(area), backs.get(area, restored_here))
+
+
+## The world a place belongs to ("" for the Nexus, which is above them all).
+func _world_of(place: String) -> String:
+	if place == "nexus":
+		return ""
+	if place == "hub":
+		return "greece"
+	return str(Rooms.room(place).get("world", "greece"))
+
+
+## The first time you enter a world, it asks who you are there, in its own words.
+func _ask_mode() -> void:
+	var w := _world_of(here)
+	if w == "" or progress.mode(w) != "" or offline or _args.has("demo"):
+		return
+	var modes: Dictionary = Worlds.settings(w).get("modes", {})
+	if modes.is_empty():
+		return
+	_choice.ask(modes)
+	_show_panel(_choice)
+
+
+func _on_chosen(mode: String) -> void:
+	progress.set_mode(_world_of(here), mode)
+	progress.save()
+	_choice.hide()
+	_close_panels()
+
+
+## The name of the way you walk this world, in its own words: "Theoros", "Mathetes".
+func _mode_name(w: String, mode: String) -> String:
+	return str(Worlds.settings(w).get("modes", {}).get(mode, {}).get("name", mode.capitalize()))
+
+
+func _mode_line() -> String:
+	var w := _world_of(here)
+	var mode: String = progress.mode(w) if w != "" else ""
+	if mode == "":
+		return ""
+	var other := "student" if mode == "zen" else "zen"
+	return "You are %s. Be %s instead" % [_mode_name(w, mode), _mode_name(w, other)]
+
+
+## From the Esc menu: the other way, for this world, from now on. Nothing mended is undone.
+func _switch_mode() -> void:
+	var w := _world_of(here)
+	if w == "" or progress.mode(w) == "":
+		return
+	progress.set_mode(w, "student" if progress.mode(w) == "zen" else "zen")
+	progress.save()
+	_menu.show_mode(_mode_line())
 
 
 func _zone(place: String) -> String:
@@ -1173,7 +1233,7 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible
+	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
@@ -1488,9 +1548,12 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if not _ok:
 			get_tree().quit()
+		elif _choice.visible:
+			pass  # a world's question has to be answered
 		elif _any_panel():
 			_close_panels()
 		else:
+			_menu.show_mode(_mode_line())
 			_show_panel(_menu)
 
 
@@ -1507,7 +1570,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_show_read(_tablet_text())
 		return
-	if _ask_panel.visible or _menu.visible:
+	if _ask_panel.visible or _menu.visible or _choice.visible:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()

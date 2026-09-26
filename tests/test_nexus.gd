@@ -330,3 +330,24 @@ func test_live_mode_rebuilds_where_you_stand() -> void:
 	check(hall._quip.begins_with("Live: rebuilt"), "and told it was rebuilt")
 	live.free()
 	hall.free()
+
+
+func test_greece_asks_who_you_are_once_and_you_can_change_it() -> void:
+	var hall := _hall()
+	hall.offline = false  # the question is skipped in quiet test runs; ask it here
+	hall.progress.path = ""
+	hall._load_place("hub")
+	check(hall._choice.visible, "entering Greece asks who you are")
+	check_eq(hall._choice._buttons["zen"].text, "Theoros", "in Greek words: Theoros")
+	check_eq(hall._choice._buttons["student"].text, "Mathetes", "or Mathetes")
+	hall._on_chosen("zen")
+	check_eq(hall.progress.mode("greece"), "zen", "the choice is kept")
+	check(not hall._choice.visible, "and the question goes away")
+	hall._load_place("nexus")
+	hall._load_place("hub")
+	check(not hall._choice.visible, "it is asked only once")
+	check(hall._mode_line().begins_with("You are Theoros"), "the menu says who you are")
+	hall._switch_mode()
+	check_eq(hall.progress.mode("greece"), "student", "and can change it")
+	hall.offline = true
+	hall.free()

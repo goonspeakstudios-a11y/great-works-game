@@ -6,6 +6,8 @@ const PATH := "user://settings.cfg"
 
 var player: CharacterBody3D
 var resume := Callable()  # what "Back to the game" does
+var switch_mode := Callable()  # changes the way you walk this world
+var _mode_button: Button
 var _sliders := {}
 
 
@@ -23,11 +25,21 @@ func _init() -> void:
 	_slider(box, "volume", "Volume", 0.0, 1.0, 0.8)
 	_slider(box, "walk", "Walking speed", 0.5, 2.0, 1.0)
 	_slider(box, "look", "Mouse speed", 0.25, 3.0, 1.0)
+	_mode_button = Button.new()
+	_mode_button.pressed.connect(func() -> void: if switch_mode.is_valid(): switch_mode.call())
+	_mode_button.hide()
+	box.add_child(_mode_button)
 	for b in [["Back to the game", _on_resume], ["Quit", _on_quit]]:
 		var btn := Button.new()
 		btn.text = b[0]
 		btn.pressed.connect(b[1])
 		box.add_child(btn)
+
+
+## The line for the way you walk this world ("" hides it, as in the Nexus).
+func show_mode(text: String) -> void:
+	_mode_button.text = text
+	_mode_button.visible = text != ""
 
 
 func _slider(box: VBoxContainer, key: String, text: String, lo: float, hi: float, start: float) -> void:
