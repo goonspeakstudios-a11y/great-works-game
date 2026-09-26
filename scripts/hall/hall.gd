@@ -12,6 +12,7 @@ extends Node
 const Rooms := preload("res://scripts/hall/rooms.gd")
 const Places := preload("res://scripts/hall/places.gd")
 const Nexus := preload("res://scripts/hall/nexus.gd")
+const Menu := preload("res://scripts/hall/menu.gd")
 const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
@@ -101,6 +102,7 @@ var _map_marks: Control
 var _map_title: Label
 var _map_note: Label
 var _tree_panel: Panel
+var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -119,6 +121,7 @@ static func ensure_actions() -> void:
 		"interact": [KEY_F, KEY_ENTER],
 		"sprint": [KEY_SHIFT],
 		"tablet": [KEY_T, KEY_TAB],
+		"jump": [KEY_SPACE],
 	}
 	var pad_axes := {"move_forward": [JOY_AXIS_LEFT_Y, -1.0], "move_back": [JOY_AXIS_LEFT_Y, 1.0],
 		"strafe_left": [JOY_AXIS_LEFT_X, -1.0], "strafe_right": [JOY_AXIS_LEFT_X, 1.0],
@@ -157,6 +160,11 @@ func _ready() -> void:
 	progress = Progress.open("" if offline else Progress.PATH)
 	_build_view()
 	_build_ui()
+	_menu = Menu.new()
+	_menu.player = player
+	_menu.resume = _close_panels
+	_root.add_child(_menu)
+	_menu.load_settings()
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
@@ -997,12 +1005,14 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible
+	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel]:
+	if _menu.visible:
+		_menu.save_settings()
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
@@ -1296,12 +1306,8 @@ func _input(event: InputEvent) -> void:
 			get_tree().quit()
 		elif _any_panel():
 			_close_panels()
-		elif _t - _quit_armed < QUIT_WINDOW:
-			get_tree().quit()
-		elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:
-			_quit_armed = _t
+			_show_panel(_menu)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -1317,7 +1323,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_show_read(_tablet_text())
 		return
-	if _ask_panel.visible:
+	if _ask_panel.visible or _menu.visible:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()

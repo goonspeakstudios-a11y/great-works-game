@@ -1,5 +1,5 @@
 extends CharacterBody3D
-## First-person walker. WASD or the arrow keys to move, Shift to sprint, Q/E or the
+## First-person walker. WASD or the arrow keys to move, Shift to sprint, Space to jump, Q/E or the
 ## left/right arrows to turn, and the mouse to look all the way around. Frozen while a
 ## panel is open.
 
@@ -8,10 +8,13 @@ const SPRINT := 4.6
 const TURN := 2.0
 const MOUSE := 0.0025
 const EYE := 1.55
+const JUMP := 4.2  # about half a metre up
 
 var camera: Camera3D
 var frozen := false
 var seated := false  # sitting on a bench: look around, no walking
+var speed_scale := 1.0  # the Esc menu's walking speed
+var look_scale := 1.0  # and its mouse speed
 var _pitch := 0.0
 var _bob := 0.0
 var _shape: CollisionShape3D
@@ -34,8 +37,8 @@ func _init() -> void:
 
 
 func look(delta: Vector2) -> void:
-	rotation.y -= delta.x * MOUSE
-	_pitch = clampf(_pitch - delta.y * MOUSE, -1.35, 1.35)
+	rotation.y -= delta.x * MOUSE * look_scale
+	_pitch = clampf(_pitch - delta.y * MOUSE * look_scale, -1.35, 1.35)
 	camera.rotation.x = _pitch
 
 
@@ -82,7 +85,9 @@ func _physics_process(delta: float) -> void:
 	dir.y = 0.0
 	if dir.length() > 1.0:
 		dir = dir.normalized()
-	var speed := SPRINT if Input.is_action_pressed("sprint") else SPEED
+	var speed := (SPRINT if Input.is_action_pressed("sprint") else SPEED) * speed_scale
+	if InputMap.has_action("jump") and Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP
 	velocity.x = dir.x * speed
 	velocity.z = dir.z * speed
 	move_and_slide()
