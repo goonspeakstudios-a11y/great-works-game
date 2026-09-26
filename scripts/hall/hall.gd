@@ -42,6 +42,7 @@ var travelling := false
 var progress: RefCounted  # what the player has learned (Progress)
 var teacher := {}  # the author in person, if this place has one: {root, head, hand}
 var restored_columns := 0
+var music: Node  # the zone's music and sounds (none in tests)
 
 var _view: SubViewport
 var _ui: CanvasLayer
@@ -124,10 +125,11 @@ func _ready() -> void:
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
 	add_child(author)
-	_load_place("hub")
 	if not offline:
-		add_child(Music.new())
+		music = Music.new()
+		add_child(music)
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # look around straight away
+	_load_place("hub")
 	_ok = true
 	if _args.has("shot"):
 		_stage_shot(_args.get("view", "hub"))
@@ -221,6 +223,8 @@ func _load_place(to: String) -> void:
 		progress.visit(to)
 		progress.save()
 	here = to
+	if music:
+		music.play("shore" if to == "hub" else Rooms.room(to).get("zone", "shore"))
 	teacher = built.get("teacher", {})
 	restored_columns = built.get("restored", 0)
 	here_name = built["name"]

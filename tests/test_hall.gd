@@ -284,3 +284,15 @@ func test_the_world_sharpens_as_history_moves_on() -> void:
 	Kit.detail = 1
 	holder.free()
 	hall.free()
+
+
+func test_every_zone_has_its_own_music_and_sounds() -> void:
+	var music := preload("res://scripts/pixel/music.gd")
+	check(music.ZONES.has("shore"), "the Shore has its sound")
+	var zone: String = Rooms.room("porphyry-isagoge").get("zone", "")
+	check(music.ZONES.has(zone), "Porphyry's place has a zone with its own sound")
+	check(music.ZONES["shore"]["music"][0] != music.ZONES[zone]["music"][0], "Sicily's track is not the Shore's")
+	for z in music.ZONES:
+		var names: Array = [music.ZONES[z]["music"][0]] + music.ZONES[z]["sounds"].keys()
+		for n in names:
+			check(ResourceLoader.exists(music.file_for(n)), "%s has its sound file %s" % [z, n])

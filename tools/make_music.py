@@ -1,9 +1,12 @@
-"""Render the game's music from code into assets/music/*.wav (no samples, no downloads).
+"""Render the game's music and sounds from code into assets/music/*.wav (no samples, no downloads).
 
-The mood is slow, dark and grand: a low drone, slow minor chords, wind, and distant
-bells (the bells are triggered in-game with random pitch). Reverb is added in-game on
-the Music bus, so these files are dry. Loops are seamless: every drone partial fits the
-loop length exactly, and chord tails that run past the end are folded back to the start.
+Every zone has its own track: the Shore's is slow, dark and grand (a low drone, slow
+minor chords, distant bells triggered in-game); Porphyry's Sicily is warmer, a plucked
+lyre (a simulated string, Karplus-Strong) over a soft drone in the Dorian mode.
+Ambient loops give each place its sound: waves, wind, fire, cicadas, a fountain.
+Reverb is added in-game on the Music bus, so these files are dry. Loops are seamless:
+drone partials fit the loop exactly, tails past the end fold back to the start, and
+noise loops crossfade their seam.
 
 Usage: C:\\Python314\\python.exe tools/make_music.py
 """
@@ -96,6 +99,124 @@ def render_loop(spec: dict) -> list[float]:
     return out
 
 
+def pluck(buf: list[float], freq: float, level: float, start: int, seconds: float, rng: random.Random,
+          brightness: float = 0.5, decay: float = 0.996) -> None:
+    """A plucked string (Karplus-Strong): a burst of noise that rings at freq and fades."""
+    period = max(2, int(RATE / freq))
+    string = [rng.uniform(-1, 1) for _ in range(period)]
+    for _ in range(int(2 + (1 - brightness) * 4)):  # softer attack: smooth the burst first
+        string = [(string[i] + string[i - 1]) * 0.5 for i in range(period)]
+    for n in range(int(seconds * RATE)):
+        i = n % period
+        out = string[i]
+        string[i] = decay * 0.5 * (string[i] + string[(i + 1) % period])
+        if start + n < len(buf):
+            buf[start + n] += out * level
+
+
+# Porphyry's Sicily: a lyre in A Dorian over a soft drone, phrases with rests between.
+SICILY_SCALE = [220.0, 246.94, 261.63, 293.66, 329.63, 369.99, 392.0, 440.0, 493.88, 523.25]
+
+
+def render_lyre(seconds: int = 48, seed: int = 11) -> list[float]:
+    rng = random.Random(seed)
+    total = seconds * RATE
+    buf = [0.0] * (total + 4 * RATE)
+    for freq, level in ((110.0, 0.05), (164.81, 0.03), (220.0, 0.012)):
+        f = fit(freq, seconds)
+        osc(buf, f, level, 0, lambda n: 1.0 if n < total else -1)
+        osc(buf, fit(f * 2, seconds), level * 0.25, 0, lambda n: 1.0 if n < total else -1)
+    t = 0.6
+    step = 4
+    while t < seconds - 3.0:
+        for k in range(rng.randint(4, 7)):  # a phrase: a gentle walk up and down the mode
+            step = max(0, min(len(SICILY_SCALE) - 1, step + rng.choice([-2, -1, -1, 1, 1, 2])))
+            last = k == 6 or rng.random() < 0.15
+            pluck(buf, SICILY_SCALE[step], 0.2 if not last else 0.24, int(t * RATE), 3.0, rng)
+            if rng.random() < 0.25:  # sometimes a low note under it
+                pluck(buf, SICILY_SCALE[step] / 2, 0.12, int(t * RATE), 3.0, rng, 0.3)
+            t += rng.choice([0.45, 0.6, 0.6, 0.9]) + (0.8 if last else 0.0)
+            if last:
+                break
+        t += rng.uniform(1.4, 2.6)  # rest between phrases
+    out = buf[:total]
+    for n in range(total, len(buf)):
+        out[n - total] += buf[n]
+    return out
+
+
+def _seam(out: list[float], total: int, fade: int) -> list[float]:
+    """Crossfade the extra tail onto the start so a noise loop has no seam."""
+    for n in range(fade):
+        t = n / fade
+        out[n] = out[n] * t + out[total + n] * (1 - t)
+    return out[:total]
+
+
+def render_waves(seconds: int = 16, seed: int = 5) -> list[float]:
+    """Surf far below the cliff: low rumble and hiss that swell and fall back."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE
+    out, lo, hi = [], 0.0, 0.0
+    for n in range(total + fade):
+        x = rng.uniform(-1, 1)
+        lo += (x - lo) * 0.02
+        hi += (x - hi) * 0.25
+        swell = math.sin(math.pi * ((n / RATE) % 8.0) / 8.0) ** 3  # one wave every 8 s
+        out.append(lo * (0.5 + 0.9 * swell) + (x - hi) * 0.12 * swell)
+    return _seam(out, total, fade)
+
+
+def render_cicadas(seconds: int = 12, seed: int = 7) -> list[float]:
+    """High buzzing pulses in bursts, three insects at different rates."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE // 2
+    out = [0.0] * (total + fade)
+    for rate, level, offset in ((42.0, 0.6, 0.0), (36.0, 0.45, 3.1), (47.0, 0.35, 6.4)):
+        a = b = 0.0
+        for n in range(total + fade):
+            t = n / RATE
+            x = rng.uniform(-1, 1)
+            a += (x - a) * 0.75
+            b += (a - b) * 0.18
+            band = a - b  # roughly 4-6 kHz
+            burst = max(0.0, math.sin(TAU * (t + offset) / 5.5)) ** 0.5
+            pulse = max(0.0, math.sin(TAU * rate * t)) ** 6
+            out[n] += band * pulse * burst * level
+    return _seam(out, total, fade)
+
+
+def render_fire(seconds: int = 10, seed: int = 9) -> list[float]:
+    """A soft roar with crackles and pops."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE // 2
+    out, lo = [], 0.0
+    pop = 0.0
+    for n in range(total + fade):
+        x = rng.uniform(-1, 1)
+        lo += (x - lo) * 0.05
+        if rng.random() < 0.0009:
+            pop = rng.uniform(0.4, 1.0)
+        pop *= 0.93
+        out.append(lo * 0.5 + x * pop)
+    return _seam(out, total, fade)
+
+
+def render_fountain(seconds: int = 10, seed: int = 13) -> list[float]:
+    """Water trickling into a basin: bubbling, fluttering noise."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE // 2
+    out, a, b, flutter = [], 0.0, 0.0, 0.5
+    for n in range(total + fade):
+        x = rng.uniform(-1, 1)
+        a += (x - a) * 0.3
+        b += (a - b) * 0.06
+        if n % 180 == 0:
+            flutter = rng.uniform(0.2, 1.0)
+        out.append((a - b) * flutter)
+    return _seam(out, total, fade)
+
+
 def render_wind(seconds: int, seed: int = 3) -> list[float]:
     rng = random.Random(seed)
     total, fade = seconds * RATE, RATE
@@ -136,9 +257,14 @@ def write_wav(path: Path, samples: list[float], peak: float) -> None:
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     OUT.mkdir(parents=True, exist_ok=True)
-    write_wav(OUT / "e1_loop.wav", render_loop(E1), 0.7)
+    write_wav(OUT / "shore.wav", render_loop(E1), 0.7)
+    write_wav(OUT / "sicily.wav", render_lyre(), 0.7)
     write_wav(OUT / "wind.wav", render_wind(12), 0.35)
     write_wav(OUT / "bell.wav", render_bell(), 0.6)
+    write_wav(OUT / "waves.wav", render_waves(), 0.5)
+    write_wav(OUT / "cicadas.wav", render_cicadas(), 0.35)
+    write_wav(OUT / "fire.wav", render_fire(), 0.4)
+    write_wav(OUT / "fountain.wav", render_fountain(), 0.3)
     return 0
 
 
