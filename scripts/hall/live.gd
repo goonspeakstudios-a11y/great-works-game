@@ -3,6 +3,7 @@ extends Node
 ## changes, the changed scripts are reloaded in place, the cached content is dropped, and the
 ## place you are standing in is rebuilt round you, so a change shows up without restarting.
 ## F5 reloads everything: every script afresh and the whole scene, back in the place you were in.
+## F6 restarts the whole program by itself (taking in any new sounds first), back in the same place.
 
 const Rooms := preload("res://scripts/hall/rooms.gd")
 const Worlds := preload("res://scripts/hall/worlds.gd")
@@ -34,8 +35,11 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F5:
-		refresh()
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.physical_keycode == KEY_F5:
+			refresh()
+		elif event.physical_keycode == KEY_F6:
+			restart()
 
 
 ## The files that changed since the last look.
@@ -62,6 +66,20 @@ func refresh() -> void:
 				_reload(dir.path_join(f))
 	resume = hall.here if hall else ""
 	get_tree().reload_current_scene()
+
+
+## A full restart without touching anything: new sound and picture files are taken in, a fresh
+## copy of the game is started (in the same place) and this one closes.
+func restart() -> void:
+	var exe := OS.get_executable_path()
+	var engine_args := Array(OS.get_cmdline_args())
+	var project := ProjectSettings.globalize_path("res://")
+	OS.execute(exe, ["--headless", "--path", project, "--import"])
+	var user_args := Array(OS.get_cmdline_user_args()).filter(func(a: String) -> bool: return not a.begins_with("--resume="))
+	if hall:
+		user_args.append("--resume=" + hall.here)
+	OS.create_process(exe, engine_args + ["--"] + user_args)
+	get_tree().quit()
 
 
 func _reload(path: String) -> void:
