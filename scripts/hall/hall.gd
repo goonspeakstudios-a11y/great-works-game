@@ -59,6 +59,7 @@ var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, pha
 var sway: Array = []  # tree crowns the breeze stirs
 var toad := {}  # your companion through every world: {root, body, throat}
 var _toad_hop := 0.0
+var _toad_moving := false  # lazy follow: sits until you get well ahead, then hops to its spot
 var toad_hold := false  # screenshots: keep the toad where it was put
 var _toad_puff := 0.0
 var _quip := ""
@@ -952,7 +953,7 @@ func _walk(person: Dictionary, to: Vector3, delta: float, t: float) -> void:
 		legs[j].rotation.x = sin(t * 6.0 + j * PI) * 0.45
 
 
-## The toad stays a little behind you and to the right, hops to catch up, and faces you when
+## The toad keeps a couple of paces behind you and to the right; it sits until you get well ahead, then hops to catch up, and faces you when
 ## you stop. After a gateway it is simply there with you.
 func _animate_toad(delta: float) -> void:
 	if toad.is_empty():
@@ -963,12 +964,16 @@ func _animate_toad(delta: float) -> void:
 		toad["throat"].scale = THROAT * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)))
 		return
 	var basis := player.global_transform.basis
-	var want := player.global_position + basis.x * 0.9 + basis.z * (0.2 if player.seated else 1.1)
+	var want := player.global_position + basis.x * 1.5 + basis.z * (0.6 if player.seated else 2.4)
 	var flat := Vector3(want.x - root.position.x, 0, want.z - root.position.z)
 	var d := flat.length()
+	if d > 1.8:
+		_toad_moving = true
+	elif d < 0.4:
+		_toad_moving = false
 	if d > 14.0:
 		root.position = Vector3(want.x, 0.02, want.z)
-	elif d > 0.35:
+	elif _toad_moving:
 		var speed := 2.6 if d < 4.0 else 5.2
 		root.position += flat.normalized() * minf(d, speed * delta)
 		root.position.y = 0.02
