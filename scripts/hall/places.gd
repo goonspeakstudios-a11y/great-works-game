@@ -79,11 +79,13 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 
 
 
-## A toad the size of a hill, sunk in the sea far out, only its two eyes above the water and
+## A toad the size of a hill, sunk in the sea far out, only the crown of its head and its two eyes
+## above the water,
 ## turned toward the Shore; the haze nearly hides it. Returns the eyes, which the Hall blinks.
 static func far_toad(world: Node3D, at: Vector3) -> Array:
 	var g := Kit.group(world, at, Kit.face_yaw(at, Vector3(0, at.y, 0)))
 	g.scale = Vector3.ONE * 1.3
+	Kit.blob(g, Vector3(0, -3.0, -5.0), 30.0, "#3b3a2c", Vector3(1.25, 0.28, 1.0), 12)  # the low crown of its head
 	var eyes: Array = []
 	for side in [-17.0, 17.0]:
 		var eye := Kit.group(g, Vector3(side, 0, 0))
