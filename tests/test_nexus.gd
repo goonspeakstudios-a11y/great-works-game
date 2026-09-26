@@ -202,6 +202,12 @@ func test_the_void_gives_you_back() -> void:
 	var hall := _hall()
 	hall.player.position = Vector3(40, -25, 40)
 	hall._catch_fall()
+	check(hall._falling_since >= 0.0, "you fall")
+	check(not hall._ready_to_land(), "and are not asked straight away")
+	hall._t += 10.5
+	check(hall._ready_to_land(), "after ten seconds you are asked if you are ready to stop")
+	hall._stop_falling()
+	check(hall._falling_since < 0.0, "you stop")
 	check(hall.player.position.distance_to(hall._arrival[0]) < 0.1, "you are put back where you arrived")
 	check_eq(hall.here, "nexus", "still in the Nexus")
 	hall.free()
@@ -235,11 +241,11 @@ func test_progress_keeps_what_the_nexus_has_shown() -> void:
 	p.nexus()["entered"] = true
 	p.save()
 	var again: RefCounted = Progress.open(path)
-	check_eq(again.nexus(), {"points": 5, "mastered": ["porphyry-isagoge"], "entered": true}, "what the Nexus showed survives a restart")
+	check_eq(again.nexus(), {"points": 5, "mastered": ["porphyry-isagoge"], "entered": true, "seconds": 0.0}, "what the Nexus showed survives a restart")
 	var f := FileAccess.open(path, FileAccess.WRITE)
 	f.store_string(JSON.stringify({"works": {}, "nexus": "garbage"}))
 	f.close()
-	check_eq(Progress.open(path).nexus(), {"points": 0, "mastered": [], "entered": false}, "a damaged entry starts fresh")
+	check_eq(Progress.open(path).nexus(), {"points": 0, "mastered": [], "entered": false, "seconds": 0.0}, "a damaged entry starts fresh")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 
 

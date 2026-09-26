@@ -6,7 +6,7 @@ extends RefCounted
 
 const PATH := "user://progress.json"
 const FRESH := {"understood": [], "visits": 0, "mastered": false}
-const NEXUS := {"points": 0, "mastered": [], "entered": false}
+const NEXUS := {"points": 0, "mastered": [], "entered": false, "seconds": 0.0}
 
 var data := {"works": {}}  # and "nexus" (NEXUS), once there is something to keep
 var path := PATH  # "" keeps progress in memory only (tests)
@@ -42,6 +42,9 @@ static func open(at: String = PATH) -> RefCounted:
 					fixed_nx["mastered"] = nx["mastered"]
 				if nx.get("entered") is bool:
 					fixed_nx["entered"] = nx["entered"]
+				var secs: Variant = nx.get("seconds")
+				if secs is float or secs is int:
+					fixed_nx["seconds"] = float(secs)
 				p.data["nexus"] = fixed_nx
 		else:
 			push_warning("Progress file %s is damaged; starting fresh" % at)

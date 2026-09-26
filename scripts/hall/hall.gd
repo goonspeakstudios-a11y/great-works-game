@@ -34,7 +34,12 @@ const REACH := 1.8
 const GATE_REACH := 2.4
 const QUIT_WINDOW := 2.0
 const FADE := 0.9
-const FALL_Y := -20.0  # below this you have fallen into the void and are put back
+const FALL_Y := -20.0  # below this you are falling through the void, for as long as you like
+const FALL_ASK := 10.0  # seconds of falling before you are asked if you are ready to stop
+const FALL_MAX := 30.0  # how fast you fall, at most (m/s)
+const GRAIL_AFTER := 1800.0  # seconds spent in the Nexus, all visits together, before the voice speaks
+const GRAIL_FILE := "res://assets/music/grail_voice.wav"  # "What is the secret of the grail? Who does it serve?"
+const GRAIL_GAP := 12.0  # seconds of quiet between each time it asks
 const NEWS_DELAY := 1.5  # seconds in the Nexus before what you mended elsewhere comes back
 const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give me an example", "Why does this matter?"]
 
@@ -64,6 +69,10 @@ var sway: Array = []  # tree crowns the breeze stirs
 var drift: Array = []  # things hanging in the void that bob and turn (Kit.drifting)
 var ground: Array = []  # where you can stand, if the place says (the Nexus): discs and rects in x/z
 var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which way
+var _falling_since := -1.0  # when you went over the edge (-1: on solid ground)
+var _fall_fx: Node3D  # the stars rushing past while you fall
+var _grail: AudioStreamPlayer  # the voice in the Nexus, once it has begun
+var _grail_next := 0.0
 var _hint := ""  # the one goal, shown when nothing else is
 var _nexus_due := -1.0  # when what you mended elsewhere comes back in the Nexus (-1: nothing waiting)
 var toad := {}  # your companion through every world: {root, body, throat}
@@ -399,8 +408,32 @@ func _arrive_in_nexus() -> void:
 		_remember_nexus(now)
 
 
+## Time in the Nexus adds up across visits. After half an hour a voice begins asking, over the
+## music, again and again while you stay.
+func _nexus_clock(delta: float) -> void:
+	if here != "nexus" or offline:
+		return
+	var seen: Dictionary = progress.nexus()
+	seen["seconds"] = float(seen["seconds"]) + delta
+	if seen["seconds"] < GRAIL_AFTER or not ResourceLoader.exists(GRAIL_FILE):
+		return
+	if _grail == null:
+		_grail = AudioStreamPlayer.new()
+		_grail.stream = load(GRAIL_FILE)
+		_grail.volume_db = -4.0
+		add_child(_grail)
+		_grail_next = _t
+	if not _grail.playing and _t >= _grail_next:
+		_grail.play()
+		_grail_next = _t + _grail.stream.get_length() + GRAIL_GAP
+
+
 ## Out through a door: you have found the way, so the hint is done with.
 func _leave_nexus() -> void:
+	if _grail:
+		_grail.stop()
+		_grail_next = _t + 3.0
+	progress.save()  # keeps the time spent here
 	_nexus_due = -1.0
 	_hint = ""
 	if not progress.nexus()["entered"]:
@@ -452,13 +485,43 @@ func _nexus_catch_up() -> void:
 	_remember_nexus(now)
 
 
-## Fell off the edge into the void: you are put back where you came in.
+## Over the edge: you fall through endless dark, stars rushing past, until you say you are
+## ready to stop. The world wraps round you far below so the fall never ends.
 func _catch_fall() -> void:
-	if player.position.y > FALL_Y:
-		return
-	player.position = _arrival[0]
-	player.rotation.y = _arrival[1]
-	player.velocity = Vector3.ZERO
+	if _falling_since < 0.0:
+		if player.position.y > FALL_Y:
+			return
+		_falling_since = _t
+		_fall_fx = Node3D.new()
+		player.add_child(_fall_fx)
+		for layer in [["mote", 160, 0.08], ["mote_gold", 40, 0.14], ["ash", 60, 0.5]]:
+			var p := Kit._drift(_fall_fx, Vector3(0, -30, 0), layer[1], 2.2, layer[2], layer[0], Vector3.UP, 4.0, Vector2(24.0, 34.0))
+			p.local_coords = true
+			p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+			p.emission_box_extents = Vector3(14, 2, 14)
+			p.preprocess = 2.0
+	player.velocity.y = maxf(player.velocity.y, -FALL_MAX)
+	if player.position.y < -400.0:
+		player.position.y += 380.0
+
+
+func _ready_to_land() -> bool:
+	return _falling_since >= 0.0 and _t - _falling_since >= FALL_ASK
+
+
+## You said you were ready: back on the ground where you came in.
+func _stop_falling() -> void:
+	var land := func() -> void:
+		_falling_since = -1.0
+		if is_instance_valid(_fall_fx):
+			_fall_fx.queue_free()
+		player.position = _arrival[0]
+		player.rotation.y = _arrival[1]
+		player.velocity = Vector3.ZERO
+	if offline:
+		land.call()
+	else:
+		await _fade_through(Color.BLACK, 1.2, 1.5, land)
 
 
 static func _on_ground(shapes: Array, p: Vector2) -> bool:
@@ -1042,6 +1105,7 @@ func _process(delta: float) -> void:
 	_animate_people(delta)
 	_animate_life(delta)
 	_catch_fall()
+	_nexus_clock(delta)
 	if _nexus_due > 0.0 and _t >= _nexus_due and not travelling and not _any_panel():
 		_nexus_catch_up()
 	if player.frozen:
@@ -1049,6 +1113,10 @@ func _process(delta: float) -> void:
 		return
 	if player.seated:
 		_prompt.text = "F: Stand up"
+		return
+	if _falling_since >= 0.0:
+		_prompt.text = "Are you ready to stop falling?
+F: Yes" if _ready_to_land() else ""
 		return
 	target = _nearest()
 	if _t < _quip_until:
@@ -1331,5 +1399,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			_close_panels()
 		elif player.seated:
 			stand_up()
+		elif _falling_since >= 0.0:
+			if _ready_to_land():
+				_stop_falling()
 		elif not target.is_empty() and not travelling:
 			activate(target)
+
+
+## Quitting keeps what the save has gathered since the last door (the time spent in the Nexus).
+func _exit_tree() -> void:
+	if progress and not offline:
+		progress.save()
