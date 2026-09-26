@@ -425,6 +425,15 @@ static func scroll_shelf(parent: Node3D, at: Vector3, yaw: float) -> void:
 		box(g, Vector3(x, 1.25, 0), Vector3(0.06, 2.5, 0.35), "wood", false)
 
 
+## A marble bench facing +Z of its group; returns where a sitter's feet go.
+static func bench(parent: Node3D, at: Vector3, yaw: float) -> Vector3:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.46, 0), Vector3(1.9, 0.12, 0.55), "marble")
+	for x in [-0.72, 0.72]:
+		box(g, Vector3(x, 0.2, 0), Vector3(0.3, 0.4, 0.45), "marble", false)
+	return at
+
+
 ## A writing desk with scrolls, an open scroll, an oil lamp and a stool.
 static func desk(parent: Node3D, at: Vector3, yaw: float, with_stool: bool = true) -> OmniLight3D:
 	var g := group(parent, at, yaw)

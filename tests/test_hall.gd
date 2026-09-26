@@ -296,3 +296,21 @@ func test_every_zone_has_its_own_music_and_sounds() -> void:
 		var names: Array = [music.ZONES[z]["music"][0]] + music.ZONES[z]["sounds"].keys()
 		for n in names:
 			check(ResourceLoader.exists(music.file_for(n)), "%s has its sound file %s" % [z, n])
+
+
+func test_you_can_sit_and_watch_the_sunset() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for place in ["hub", "porphyry-isagoge"]:
+		hall.travel(place)
+		var seats: Array = hall.interactables.filter(func(i): return i["kind"] == "seat")
+		check(seats.size() >= 1, "%s has somewhere to sit" % place)
+		if seats.is_empty():
+			continue
+		hall.activate(seats[0])
+		check(hall.player.seated, "sitting down on the %s bench" % place)
+		check(hall.player.position.distance_to(seats[0]["seat"]) < 0.5, "you sit on the bench itself")
+		hall.stand_up()
+		check(not hall.player.seated, "standing up again")
+	hall.free()

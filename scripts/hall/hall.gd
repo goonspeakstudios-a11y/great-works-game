@@ -238,6 +238,7 @@ func _load_place(to: String) -> void:
 	for l in built["flicker"]:
 		if l:
 			flicker.append({"light": l, "base": l.light_energy, "seed": randf() * 10.0})
+	player.seated = false
 	player.position = built["spawn"]
 	player.rotation.y = built["yaw"]
 	player.velocity = Vector3.ZERO
@@ -679,6 +680,9 @@ func _process(delta: float) -> void:
 	if player.frozen:
 		_prompt.text = ""
 		return
+	if player.seated:
+		_prompt.text = "F: Stand up"
+		return
 	target = _nearest()
 	if _t - _quit_armed < QUIT_WINDOW:
 		_prompt.text = "Press Esc again to leave."
@@ -747,6 +751,25 @@ func activate(it: Dictionary) -> void:
 		"gate":
 			if it["open"]:
 				travel(it["to"])
+		"seat":
+			sit(it)
+
+
+## Sit on a bench: the view settles on the sea, the music rises a little.
+func sit(it: Dictionary) -> void:
+	player.seated = true
+	player.position = Vector3(it["seat"].x, player.position.y, it["seat"].z)
+	player.rotation.y = Places.look_yaw(it["look"] - it["seat"])
+	player.velocity = Vector3.ZERO
+	if music:
+		music.swell(true)
+
+
+func stand_up() -> void:
+	player.seated = false
+	player.position += player.global_transform.basis.z * 0.9  # step back off the bench
+	if music:
+		music.swell(false)
 
 
 ## Mouse look and Esc are handled here, before anything on screen can swallow them.
@@ -786,5 +809,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if _read_panel.visible or _map_panel.visible or _tree_panel.visible:
 			_close_panels()
+		elif player.seated:
+			stand_up()
 		elif not target.is_empty() and not travelling:
 			activate(target)

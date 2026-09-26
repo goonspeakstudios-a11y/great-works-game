@@ -11,6 +11,7 @@ const EYE := 1.55
 
 var camera: Camera3D
 var frozen := false
+var seated := false  # sitting on a bench: look around, no walking
 var _pitch := 0.0
 var _bob := 0.0
 
@@ -45,7 +46,9 @@ func facing() -> Vector3:
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= 9.8 * delta
-	if frozen:
+	if seated:
+		camera.position.y = lerpf(camera.position.y, EYE - 0.45, delta * 3.0)
+	if frozen or seated:
 		velocity.x = 0.0
 		velocity.z = 0.0
 		move_and_slide()

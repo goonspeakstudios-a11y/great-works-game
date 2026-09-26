@@ -60,9 +60,17 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 		Kit.olive(world, p, 1.0 + fmod(p.x * 0.37, 0.4))
 	for p in [Vector3(20, 0, 12), Vector3(-19, 0, 13), Vector3(8, 0, -27), Vector3(-9, 0, -27), Vector3(16, 0, 19)]:
 		Kit.rock(world, p, 0.9)
+	out.append(seat(world, Vector3(-29.5, 0, 3.0), Vector3(-1, 0, 0)))
 	var spawn := Vector3(0, 0.05, 5.0)
 	return {"name": "The Shore of the Great Works", "interactables": out, "spawn": spawn,
 		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "teacher": {}, "restored": restored}
+
+
+## A bench looking out in direction `facing`, and its interactable: you stand behind it and sit.
+static func seat(world: Node3D, at: Vector3, facing: Vector3) -> Dictionary:
+	Kit.bench(world, at, Kit.face_yaw(at, at + facing))
+	return {"kind": "seat", "pos": at - facing * 1.6, "seat": at, "look": at + facing * 100.0,
+		"text": "Sit and watch the sunset"}
 
 
 static func place(world: Node3D, work: String, room: Dictionary) -> Dictionary:
@@ -160,6 +168,7 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 		lamp.light_energy = 0.8
 		lamp.omni_range = 5.0
 		world.add_child(lamp)
+	out.append(seat(world, Vector3(-12.0, 0, -1.0), Vector3(-1, 0, 0)))
 	spots["study"] = Vector3(0, 0, -11.0)
 	var spawn := Vector3(0, 0.05, 23.5)
 	return {"name": "%s - %s" % [room.get("where", ""), room.get("when", "")], "interactables": out, "spawn": spawn,
