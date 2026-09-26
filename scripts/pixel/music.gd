@@ -13,6 +13,7 @@ const BUS := "Music"
 const FADE := 2.5
 const SILENT := -60.0
 const SWELL := 4.0
+const DUCK := 3.0  # dB the music gives way to a voice
 const BELL_NOTES := [1.0, 1.1892, 1.3348, 1.4983, 1.7818]  # D minor pentatonic above D5
 ## zone -> its layers. Each is a loop: its "file", its volume "db", whether it is "music" (music
 ## layers start in step and swell when you sit), "needs" (the piece of the place that must be
@@ -165,6 +166,18 @@ func _fade(entry: Dictionary, to_db: float, secs: float) -> Tween:
 	tw.tween_property(entry["player"], "volume_db", to_db, secs)
 	entry["tween"] = tw
 	return tw
+
+
+## Something is speaking over the music (the grail voice): it dips a little to make room.
+func duck(on: bool) -> void:
+	for p in _players:
+		if p["music"] and is_instance_valid(p["player"]):
+			_fade(p, p["db"] + _swell - (DUCK if on else 0.0), 2.0 if on else 3.5)
+
+
+## Where the zone's music has got to in its loop, in seconds (0 when none is playing).
+func position() -> float:
+	return _music_position()
 
 
 ## Sitting down lets the music rise a little over the sounds of the place.

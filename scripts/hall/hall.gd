@@ -37,9 +37,9 @@ const FADE := 0.9
 const FALL_Y := -20.0  # below this you are falling through the void, for as long as you like
 const FALL_ASK := 10.0  # seconds of falling before you are asked if you are ready to stop
 const FALL_MAX := 30.0  # how fast you fall, at most (m/s)
-const GRAIL_AFTER := 1800.0  # seconds spent in the Nexus, all visits together, before the voice speaks
+const GRAIL_AFTER := 60.0  # AUDITION (BB1 is listening): back to 1800.0, half an hour in the Nexus, all visits together
 const GRAIL_FILE := "res://assets/music/grail_voice.wav"  # "What is the secret of the grail? Who does it serve?"
-const GRAIL_GAP := 12.0  # seconds of quiet between each time it asks
+const GRAIL_SLOTS := [0.0, 24.0]  # it speaks only as the prelude's loop (48 s) turns to C minor or D flat
 const NEWS_DELAY := 1.5  # seconds in the Nexus before what you mended elsewhere comes back
 const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give me an example", "Why does this matter?"]
 
@@ -72,7 +72,7 @@ var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which
 var _falling_since := -1.0  # when you went over the edge (-1: on solid ground)
 var _fall_fx: Node3D  # the stars rushing past while you fall
 var _grail: AudioStreamPlayer  # the voice in the Nexus, once it has begun
-var _grail_next := 0.0
+var _grail_last_pos := -1.0  # where the music was last frame, to catch it crossing a slot
 var _hint := ""  # the one goal, shown when nothing else is
 var _nexus_due := -1.0  # when what you mended elsewhere comes back in the Nexus (-1: nothing waiting)
 var toad := {}  # your companion through every world: {root, body, throat}
@@ -420,19 +420,29 @@ func _nexus_clock(delta: float) -> void:
 	if _grail == null:
 		_grail = AudioStreamPlayer.new()
 		_grail.stream = load(GRAIL_FILE)
-		_grail.volume_db = -4.0
+		_grail.volume_db = -3.0
+		_grail.bus = Music.BUS  # in the same echoing space as the prelude
+		_grail.finished.connect(func() -> void: if music: music.duck(false))
 		add_child(_grail)
-		_grail_next = _t
-	if not _grail.playing and _t >= _grail_next:
+	var pos: float = music.position() if music else 0.0
+	var crossed := false
+	for slot in GRAIL_SLOTS:
+		if _grail_last_pos >= 0.0 and ((_grail_last_pos < slot and pos >= slot) or (slot == 0.0 and pos < _grail_last_pos)):
+			crossed = true
+	_grail_last_pos = pos
+	if crossed and not _grail.playing:
 		_grail.play()
-		_grail_next = _t + _grail.stream.get_length() + GRAIL_GAP
+		if music:
+			music.duck(true)
 
 
 ## Out through a door: you have found the way, so the hint is done with.
 func _leave_nexus() -> void:
 	if _grail:
 		_grail.stop()
-		_grail_next = _t + 3.0
+		_grail_last_pos = -1.0
+		if music:
+			music.duck(false)
 	progress.save()  # keeps the time spent here
 	_nexus_due = -1.0
 	_hint = ""
