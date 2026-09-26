@@ -86,16 +86,41 @@ static func far_toad(world: Node3D, at: Vector3) -> Array:
 	var g := Kit.group(world, at, Kit.face_yaw(at, Vector3(0, at.y, 0)))
 	g.scale = Vector3.ONE * 1.3
 	const SKIN := "#3b3a2c"
-	Kit.blob(g, Vector3(0, 14, 0), 40.0, SKIN, Vector3(1.3, 0.8, 1.1), 12)  # the body, a quarter under water
-	Kit.blob(g, Vector3(0, 30, 34), 26.0, SKIN, Vector3(1.3, 0.7, 1.0), 12)  # the broad flat head
-	for side in [-30.0, 30.0]:
-		Kit.blob(g, Vector3(side, 2, 42), 10.0, SKIN, Vector3(0.8, 1.4, 0.8), 8)  # the front legs
+	const DARK := "#2a2a1f"
+	const PALE := "#6a6448"
+	const WART := "#4a4632"
+	Kit.blob(g, Vector3(0, 14, 0), 40.0, SKIN, Vector3(1.3, 0.8, 1.1), 14)  # the body, a quarter under water
+	Kit.blob(g, Vector3(0, 6, 22), 34.0, PALE, Vector3(1.15, 0.55, 0.8), 12)  # the pale throat and belly
+	Kit.blob(g, Vector3(0, 30, 34), 26.0, SKIN, Vector3(1.3, 0.7, 1.0), 14)  # the broad flat head
+	Kit.box(g, Vector3(0, 24, 58), Vector3(52, 1.4, 3), DARK, false, Vector3(0.25, 0, 0))  # the long closed mouth
+	for side in [-1.0, 1.0]:
+		Kit.blob(g, Vector3(side * 26, 1, 44), 10.0, SKIN, Vector3(0.8, 1.5, 0.8), 10)  # a front leg
+		for toe in [-1.0, 0.0, 1.0]:  # its splayed toes, just at the waterline
+			Kit.blob(g, Vector3(side * 26 + toe * 5.5, -8, 51 + absf(toe) * -1.5), 2.6, SKIN, Vector3(0.7, 0.5, 1.8), 6)
+		Kit.blob(g, Vector3(side * 44, 8, -10), 20.0, SKIN, Vector3(0.9, 0.9, 1.3), 10)  # a folded hind haunch
+		Kit.blob(g, Vector3(side * 26, 38, 18), 9.0, WART, Vector3(0.9, 0.55, 1.8), 8)  # the swollen gland behind the eye
+		Kit.blob(g, Vector3(side * 5, 33, 58), 1.4, DARK, Vector3.ONE, 5)  # a nostril
+		Kit.box(g, Vector3(side * 30, 42, 26), Vector3(3, 1.2, 10), DARK, false)  # a dark stripe over the eye
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	for k in 70:  # warts over the back and head
+		var a := rng.randf_range(-PI * 0.8, PI * 0.8)
+		var up := rng.randf_range(0.25, 1.0)
+		var on_head := k % 4 == 0
+		var p := Vector3(sin(a) * 50.0 * (1.0 - up * 0.45), 14 + up * 31.0, -cos(a) * 42.0 * (1.0 - up * 0.3)) if not on_head 			else Vector3(rng.randf_range(-26, 26), 38 + rng.randf_range(-3, 3), rng.randf_range(24, 48))
+		Kit.blob(g, p, rng.randf_range(1.5, 3.8), WART if k % 3 else DARK, Vector3(1, 0.6, 1), 5)
+	for k in 8:  # dark mottling on the flanks
+		Kit.blob(g, Vector3((1 if k % 2 else -1) * rng.randf_range(38, 48), rng.randf_range(10, 30), rng.randf_range(-24, 20)),
+			rng.randf_range(6, 10), DARK, Vector3(0.35, 0.8, 1.2), 6)
 	var eyes: Array = []
 	for side in [-17.0, 17.0]:
 		var eye := Kit.group(g, Vector3(side, 40, 40))
-		Kit.blob(eye, Vector3(0, 1.5, 0), 9.0, SKIN, Vector3(1.0, 0.75, 0.95), 10)  # the lump of the eye
-		Kit.blob(eye, Vector3(0, 3.2, 5.2), 4.6, "#9a7a34", Vector3(1.0, 0.8, 0.5), 8)  # the dull gold iris
+		Kit.blob(eye, Vector3(0, 1.5, 0), 9.0, SKIN, Vector3(1.0, 0.75, 0.95), 12)  # the lump of the eye
+		Kit.blob(eye, Vector3(0, 3.2, 5.2), 4.6, "#9a7a34", Vector3(1.0, 0.8, 0.5), 10)  # the dull gold iris
+		Kit.blob(eye, Vector3(0, 3.2, 5.9), 3.6, "#b8963e", Vector3(1.0, 0.8, 0.4), 8)  # a lighter ring inside it
 		Kit.box(eye, Vector3(0, 3.2, 7.4), Vector3(5.0, 1.1, 0.4), "#0b0a08", false)  # the flat pupil
+		Kit.blob(eye, Vector3(1.2, 4.6, 7.3), 0.5, "#d8c890", Vector3.ONE, 4)  # a glint
+		Kit.box(eye, Vector3(0, 7.4, 1.5), Vector3(12, 1.2, 6), DARK, false)  # the heavy brow
 		eyes.append(eye)
 	return eyes
 

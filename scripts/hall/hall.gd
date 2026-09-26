@@ -511,6 +511,11 @@ func _catch_fall() -> void:
 	if _falling_since < 0.0:
 		if player.position.y > FALL_Y:
 			return
+		if here != "nexus":  # only the Nexus opens onto the void; anywhere else, straight back
+			player.position = _arrival[0]
+			player.rotation.y = _arrival[1]
+			player.velocity = Vector3.ZERO
+			return
 		_falling_since = _t
 		_fall_sky = world.find_children("*", "MultiMeshInstance3D", true, false)
 		_fall_fx = Node3D.new()

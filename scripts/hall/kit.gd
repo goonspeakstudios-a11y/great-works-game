@@ -188,13 +188,16 @@ static func plateau(parent: Node3D, radius: float, top: String = "earth", wall: 
 	cylinder(parent, Vector3(0, -0.05, 0), radius - 0.4, 0.1, top, false, 14)
 	cylinder(parent, Vector3(0, -46, 0), radius + 7.0, 40.0, "rock", false, 11)
 	cylinder(parent, Vector3(0, -56, 0), radius + 16.0, 40.0, "rock", false, 9)
-	if wall:
-		var n := 28
-		for i in n:
-			var a := TAU * i / n
-			var at := Vector3(cos(a), 0, sin(a)) * (radius - 1.0)
-			var seg := 2.0 * PI * (radius - 1.0) / n + 0.1
-			box(parent, at + Vector3(0, 0.45, 0), Vector3(seg, 0.9, 0.5), "stone", true, Vector3(0, -a + PI / 2.0, 0))
+	var n := 28
+	for i in n:  # the low wall, if any, and always an unseen fence too high to jump
+		var a := TAU * i / n
+		var at := Vector3(cos(a), 0, sin(a)) * (radius - 1.0)
+		var seg := 2.0 * PI * (radius - 1.0) / n + 0.1
+		if wall:
+			box(parent, at + Vector3(0, 0.45, 0), Vector3(seg, 0.9, 0.5), "stone", false, Vector3(0, -a + PI / 2.0, 0))
+		var fence := BoxShape3D.new()
+		fence.size = Vector3(seg, 8.0, 0.5)
+		solid(parent, fence, at + Vector3(0, 4.0, 0), Vector3(0, -a + PI / 2.0, 0))
 
 
 static func mountain(parent: Node3D, at: Vector3, radius: float, height: float, smoke: bool) -> void:
