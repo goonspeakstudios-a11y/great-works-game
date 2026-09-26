@@ -25,7 +25,7 @@ static func detail(world: String) -> int:
 	return int(settings(world).get("detail", 1))
 
 
-## TEMP (world builder, not committed)
+## Every world, in ring order: name, sharpness, door style and (Greece only, so far) its hub.
 static func all() -> Dictionary:
 	settings("greece")
 	return _worlds

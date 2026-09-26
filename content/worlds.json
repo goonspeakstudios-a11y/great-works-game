@@ -1,12 +1,12 @@
 {
-  "greece": {"name": "Greece", "render": [320, 180], "detail": 1, "like": "PS1"},
-  "rome": {"name": "Rome", "render": [640, 360], "detail": 2, "like": "PS2"},
-  "bible": {"name": "The Bible", "render": [720, 405], "detail": 2},
-  "late_antiquity": {"name": "Late Antiquity", "render": [854, 480], "detail": 3, "like": "GameCube"},
-  "medieval": {"name": "The Medieval World", "render": [960, 540], "detail": 3},
-  "judaism_islam": {"name": "Judaism and Islam", "render": [1280, 720], "detail": 4, "like": "PS3"},
-  "asia": {"name": "India, China and Japan", "render": [1600, 900], "detail": 5, "like": "PS4"},
-  "renaissance": {"name": "Renaissance", "render": [1920, 1080], "detail": 6},
-  "modern_mind": {"name": "The Modern Mind", "render": [2560, 1440], "detail": 7, "like": "PS5"},
-  "modern_imagination": {"name": "The Modern Imagination", "render": [0, 0], "detail": 8, "like": "native"}
+  "greece": {"name": "Greece", "render": [320, 180], "detail": 1, "like": "PS1", "door": "greek", "hub": "hub"},
+  "rome": {"name": "Rome", "render": [640, 360], "detail": 2, "like": "PS2", "door": "roman"},
+  "bible": {"name": "The Bible", "render": [720, 405], "detail": 2, "door": "israelite"},
+  "late_antiquity": {"name": "Late Antiquity", "render": [854, 480], "detail": 3, "like": "GameCube", "door": "byzantine"},
+  "medieval": {"name": "The Medieval World", "render": [960, 540], "detail": 3, "door": "gothic"},
+  "judaism_islam": {"name": "Judaism and Islam", "render": [1280, 720], "detail": 4, "like": "PS3", "door": "moorish"},
+  "asia": {"name": "India, China and Japan", "render": [1600, 900], "detail": 5, "like": "PS4", "door": "torii"},
+  "renaissance": {"name": "Renaissance", "render": [1920, 1080], "detail": 6, "door": "palladian"},
+  "modern_mind": {"name": "The Modern Mind", "render": [2560, 1440], "detail": 7, "like": "PS5", "door": "modern"},
+  "modern_imagination": {"name": "The Modern Imagination", "render": [0, 0], "detail": 8, "like": "native", "door": "surreal"}
 }

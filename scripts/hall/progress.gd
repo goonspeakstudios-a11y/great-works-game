@@ -1,12 +1,14 @@
 extends RefCounted
 ## What the player has learned, kept between visits in user://progress.json:
 ## for each work, which lesson points they have shown they understand, how many times
-## they have visited, and whether the work is mastered (every point understood).
+## they have visited, and whether the work is mastered (every point understood). "nexus" keeps
+## what the Nexus last showed you, so news of what came back is told once, on your return.
 
 const PATH := "user://progress.json"
 const FRESH := {"understood": [], "visits": 0, "mastered": false}
+const NEXUS := {"points": 0, "mastered": [], "entered": false}
 
-var data := {"works": {}}
+var data := {"works": {}}  # and "nexus" (NEXUS), once there is something to keep
 var path := PATH  # "" keeps progress in memory only (tests)
 
 
@@ -30,6 +32,17 @@ static func open(at: String = PATH) -> RefCounted:
 					if entry.get("mastered") is bool:
 						fixed["mastered"] = entry["mastered"]
 				p.data["works"][work] = fixed
+			var nx: Variant = d.get("nexus")
+			if nx is Dictionary:
+				var fixed_nx: Dictionary = NEXUS.duplicate(true)
+				var pts: Variant = nx.get("points")
+				if pts is float or pts is int:
+					fixed_nx["points"] = int(pts)
+				if nx.get("mastered") is Array:
+					fixed_nx["mastered"] = nx["mastered"]
+				if nx.get("entered") is bool:
+					fixed_nx["entered"] = nx["entered"]
+				p.data["nexus"] = fixed_nx
 		else:
 			push_warning("Progress file %s is damaged; starting fresh" % at)
 	return p
@@ -98,3 +111,11 @@ func check_mastery(work: String, lesson: Array) -> bool:
 
 func mastered_count() -> int:
 	return data["works"].values().filter(func(w): return w.get("mastered", false)).size()
+
+
+## What the Nexus last showed you: {"points", "mastered", "entered"}. A missing or damaged entry
+## starts fresh.
+func nexus() -> Dictionary:
+	if not data.get("nexus") is Dictionary:
+		data["nexus"] = NEXUS.duplicate(true)
+	return data["nexus"]

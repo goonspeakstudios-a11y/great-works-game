@@ -11,6 +11,7 @@ extends Node
 
 const Rooms := preload("res://scripts/hall/rooms.gd")
 const Places := preload("res://scripts/hall/places.gd")
+const Nexus := preload("res://scripts/hall/nexus.gd")
 const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
@@ -32,11 +33,13 @@ const REACH := 1.8
 const GATE_REACH := 2.4
 const QUIT_WINDOW := 2.0
 const FADE := 0.9
+const FALL_Y := -20.0  # below this you have fallen into the void and are put back
+const NEWS_DELAY := 1.5  # seconds in the Nexus before what you mended elsewhere comes back
 const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give me an example", "Why does this matter?"]
 
 var offline := false  # tests: no music, no mouse capture, instant travel
 var doors: Array = []
-var here := ""  # "hub" or a work id
+var here := ""  # "nexus", "hub" or a work id
 var here_name := ""
 var interactables: Array = []
 var spots := {}
@@ -57,6 +60,11 @@ var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
 var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
 var sway: Array = []  # tree crowns the breeze stirs
+var drift: Array = []  # things hanging in the void that bob and turn (Kit.drifting)
+var ground: Array = []  # where you can stand, if the place says (the Nexus): discs and rects in x/z
+var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which way
+var _hint := ""  # the one goal, shown when nothing else is
+var _nexus_due := -1.0  # when what you mended elsewhere comes back in the Nexus (-1: nothing waiting)
 var toad := {}  # your companion through every world: {root, body, throat}
 var _toad_hop := 0.0
 var _toad_moving := false  # lazy follow: sits until you get well ahead, then hops to its spot
@@ -157,7 +165,7 @@ func _ready() -> void:
 		music = Music.new()
 		add_child(music)
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # look around straight away
-	_load_place("hub")
+	_load_place("hub" if _args.has("demo") else "nexus")
 	_ok = true
 	if _args.has("shot"):
 		_stage_shot(_args.get("view", "hub"))
@@ -172,14 +180,16 @@ func _ready() -> void:
 
 
 ## Screenshot mode for checking the look without playing:
-##   godot --path . -- --shot=C:/out.png --view=hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map [--stage=0-6]
+##   godot --path . -- --shot=C:/out.png --view=nexus|hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map [--stage=0-6]
 func _stage_shot(view: String) -> void:
 	if _args.has("stage"):  # --stage=N: see the places with N pieces brought back
 		for d in doors.slice(0, 2):
 			progress.learn(d["work"], Rooms.room(d["work"]).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
 	if view in ["lyceum", "walk", "lyceum_map", "march"]:
 		_load_place(doors[1]["work"])
-	elif not view in ["hub", "gate", "ruins", "head", "toad"]:
+	elif view in ["hub", "gate", "ruins", "head", "toad"]:
+		_load_place("hub")
+	elif view != "nexus":  # the Nexus is where the game starts
 		_load_place(doors[0]["work"])
 	match view:
 		"lyceum":
@@ -278,22 +288,35 @@ func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> 
 
 func _load_place(to: String, keep: bool = false) -> void:
 	var held := _where_everyone_is() if keep else {}
+	var from := here
 	if not keep:
 		_restore_pending = ""  # a piece of the place you are leaving waits for your return
+		if from == "nexus" and to != "nexus":
+			_leave_nexus()
 	for c in world.get_children():
 		world.remove_child(c)
 		c.queue_free()
-	var world_id: String = "greece" if to == "hub" else Rooms.room(to).get("world", "greece")
+	var world_id: String = "greece"
+	if to == "nexus":
+		world_id = Nexus.world_reached(progress)
+	elif to != "hub":
+		world_id = Rooms.room(to).get("world", "greece")
 	_view.size = Worlds.render_size(world_id, DisplayServer.window_get_size())
 	Kit.detail = Worlds.detail(world_id)
-	var built: Dictionary = Places.hub(world, doors, progress) if to == "hub" else Places.place(world, to, Rooms.room(to), _stage(to))
-	if to != "hub" and not keep:
+	var built: Dictionary
+	if to == "nexus":
+		built = Nexus.build(world, Worlds.all(), doors, _nexus_shown(keep))
+	elif to == "hub":
+		built = Places.hub(world, doors, progress)
+	else:
+		built = Places.place(world, to, Rooms.room(to), _stage(to))
+	if not to in ["hub", "nexus"] and not keep:
 		progress.visit(to)
 		progress.save()
 	here = to
 	restored_here = built.get("back", [])
 	if music:
-		music.play("shore" if to == "hub" else Rooms.room(to).get("zone", "shore"), restored_here)
+		music.play(_zone(to), restored_here)
 	people = built.get("people", [])
 	squads = built.get("squads", [])
 	teacher = people[0] if not people.is_empty() else {}
@@ -303,6 +326,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 	spots = built["spots"]
 	birds = built.get("birds", [])
 	sway = built.get("sway", [])
+	drift = built.get("drift", [])
+	ground = built.get("ground", [])
 	flicker.clear()
 	for l in built["flicker"]:
 		if l:
@@ -314,12 +339,148 @@ func _load_place(to: String, keep: bool = false) -> void:
 	if keep:
 		_put_back(held)
 	else:
-		player.position = built["spawn"]
-		player.rotation.y = built["yaw"]
+		_arrival = built.get("arrivals", {}).get(from, [built["spawn"], built["yaw"]])
+		player.position = _arrival[0]
+		player.rotation.y = _arrival[1]
+		_toad_to_heel()
 	player.velocity = Vector3.ZERO
 	target = {}
 	if _where:
 		_where.text = here_name
+	if to == "nexus" and not keep:
+		_arrive_in_nexus()
+
+
+func _zone(place: String) -> String:
+	if place == "hub":
+		return "shore"
+	if place == "nexus":
+		return "nexus"
+	return Rooms.room(place).get("zone", "shore")
+
+
+# ---------- the Nexus ----------
+
+## What the Nexus shows as you step in: what it showed you last time, so what you mended elsewhere
+## comes back before your eyes; or all of it, once that has been shown (keep).
+func _nexus_shown(keep: bool) -> Dictionary:
+	var now := Nexus.now(progress, doors)
+	if keep or not _behind(now):
+		return now
+	var seen: Dictionary = progress.nexus()
+	return {"points": seen["points"], "mastered": seen["mastered"]}
+
+
+## True when you have mended more than the Nexus has shown you yet.
+func _behind(now: Dictionary) -> bool:
+	var seen: Dictionary = progress.nexus()
+	return int(seen["points"]) < int(now["points"]) or (seen["mastered"] as Array).size() < (now["mastered"] as Array).size()
+
+
+func _arrive_in_nexus() -> void:
+	var c := Nexus.content()
+	_hint = "" if progress.nexus()["entered"] else str(c.get("hint", ""))
+	if not progress.nexus()["entered"]:
+		_quip = str(c.get("first", ""))
+		_quip_until = _t + 6.0
+	var now := Nexus.now(progress, doors)
+	if _behind(now):
+		_nexus_due = _t + NEWS_DELAY
+	else:
+		_nexus_due = -1.0
+		_remember_nexus(now)
+
+
+## Out through a door: you have found the way, so the hint is done with.
+func _leave_nexus() -> void:
+	_nexus_due = -1.0
+	_hint = ""
+	if not progress.nexus()["entered"]:
+		progress.nexus()["entered"] = true
+		progress.save()
+
+
+func _remember_nexus(state: Dictionary) -> void:
+	var seen: Dictionary = progress.nexus()
+	if int(seen["points"]) == int(state["points"]) and seen["mastered"] == state["mastered"]:
+		return
+	seen["points"] = int(state["points"])
+	seen["mastered"] = (state["mastered"] as Array).duplicate()
+	progress.save()
+
+
+## What you mended elsewhere comes back now: the Nexus is rebuilt round you as it truly stands,
+## and up to three lines say what returned (the last two pieces, then the stars and columns).
+func _nexus_catch_up() -> void:
+	_nexus_due = -1.0
+	if here != "nexus":
+		return
+	var seen: Dictionary = progress.nexus().duplicate(true)
+	var before := restored_here.duplicate()
+	if offline:
+		_load_place("nexus", true)
+	else:
+		await _fade_through(Color(1.0, 0.94, 0.8, 0.6), 0.5, 1.8, _load_place.bind("nexus", true))
+	var now := Nexus.now(progress, doors)
+	var c := Nexus.content()
+	var pieces: Array = []
+	for r in c.get("restores", []):
+		if restored_here.has(r["what"]) and not before.has(r["what"]):
+			pieces.append(r["line"])
+	var sky: Array = []
+	var stars := int(now["points"]) - int(seen["points"])
+	if stars > 0:
+		sky.append(str(c.get("star", "")) if stars == 1 else str(c.get("stars", "")).format({"n": stars}))
+	var k: int = (now["mastered"] as Array).size()
+	var cols := k - (seen["mastered"] as Array).size()
+	if cols > 0:
+		sky.append((str(c.get("column", "")) if cols == 1 else str(c.get("columns", ""))).format({"n": cols, "k": k}))
+	var lines: Array = pieces.slice(maxi(0, pieces.size() - 2))
+	if not sky.is_empty():
+		lines.append(" ".join(sky))
+	if not lines.is_empty():
+		_quip = "\n".join(lines)
+		_quip_until = _t + 7.0
+	_remember_nexus(now)
+
+
+## Fell off the edge into the void: you are put back where you came in.
+func _catch_fall() -> void:
+	if player.position.y > FALL_Y:
+		return
+	player.position = _arrival[0]
+	player.rotation.y = _arrival[1]
+	player.velocity = Vector3.ZERO
+
+
+static func _on_ground(shapes: Array, p: Vector2) -> bool:
+	for g in shapes:
+		if g.has("rect"):
+			if (g["rect"] as Rect2).has_point(p):
+				return true
+		elif p.distance_to(g["c"]) <= g["r"]:
+			return true
+	return false
+
+
+## The nearest point to `p` that is on the ground, `inset` metres in from its edge (`p` itself
+## when it is on the ground already, or when the place has no edges).
+static func _to_ground(shapes: Array, p: Vector2, inset: float = 0.5) -> Vector2:
+	if shapes.is_empty() or _on_ground(shapes, p):
+		return p
+	var best := p
+	var best_d := INF
+	for g in shapes:
+		var q: Vector2
+		if g.has("rect"):
+			var r: Rect2 = (g["rect"] as Rect2).grow(-inset)
+			q = Vector2(clampf(p.x, r.position.x, r.end.x), clampf(p.y, r.position.y, r.end.y))
+		else:
+			q = g["c"] + (p - g["c"]).limit_length(maxf(0.0, g["r"] - inset))
+		if p.distance_to(q) < best_d:
+			best = q
+			best_d = p.distance_to(q)
+	return best
 
 
 ## How many pieces of a book's place are back: one for each lesson point understood.
@@ -759,6 +920,10 @@ func _on_judged(work: String, ids: Array) -> void:
 func _tablet_text() -> String:
 	if here == "hub":
 		return "[color=#e0b660]Your tablet[/color]\n\nBooks mastered: %d of %d." % [progress.mastered_count(), doors.size()]
+	if here == "nexus":
+		var now := Nexus.now(progress, doors)
+		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nIdeas understood: %d\nBooks mastered: %d of %d" % [
+			here_name, Nexus.content().get("rule", ""), now["points"], (now["mastered"] as Array).size(), Nexus.SLOTS]
 	var room := Rooms.room(here)
 	var have: Array = progress.understood(here)
 	var lines: Array = ["[color=#e0b660]Your tablet: %s[/color]" % room.get("book", "")]
@@ -866,6 +1031,9 @@ func _process(delta: float) -> void:
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
 	_animate_people(delta)
 	_animate_life(delta)
+	_catch_fall()
+	if _nexus_due > 0.0 and _t >= _nexus_due and not travelling and not _any_panel():
+		_nexus_catch_up()
 	if player.frozen:
 		_prompt.text = ""
 		return
@@ -878,7 +1046,7 @@ func _process(delta: float) -> void:
 	elif _t - _quit_armed < QUIT_WINDOW:
 		_prompt.text = "Press Esc again to leave."
 	elif target.is_empty():
-		_prompt.text = ""
+		_prompt.text = _hint
 	elif target["kind"] == "gate" and not target["open"]:
 		_prompt.text = target["text"] + "\n(not open yet)"
 	elif target["kind"] == "gate":
@@ -903,6 +1071,13 @@ func _animate_life(delta: float) -> void:
 		if is_instance_valid(sway[i]):
 			sway[i].rotation.z = sin(_t * 0.9 + i * 1.3) * 0.03
 			sway[i].rotation.x = cos(_t * 0.7 + i * 0.9) * 0.02
+	for d in drift:
+		var node: Node3D = d["node"]
+		if not is_instance_valid(node):
+			continue
+		var w: float = TAU / maxf(d["period"], 0.1)
+		node.position = d["base"] + Vector3(0, sin(_t * w + d["phase"]) * d["bob"], 0)
+		node.rotation = d["rot"] + d["spin"] * _t + Vector3(0, 0, sin(_t * w * 0.5 + d["phase"]) * d["sway"])
 	_animate_squads(delta)
 	_animate_toad(delta)
 
@@ -953,6 +1128,23 @@ func _walk(person: Dictionary, to: Vector3, delta: float, t: float) -> void:
 		legs[j].rotation.x = sin(t * 6.0 + j * PI) * 0.45
 
 
+## Where the toad likes to sit: a couple of paces behind you and to the right (closer when you
+## sit), never out over the void.
+func _toad_spot() -> Vector3:
+	var basis := Basis(Vector3.UP, player.rotation.y)
+	var want := player.position + basis.x * 1.5 + basis.z * (0.6 if player.seated else 2.4)
+	var on := _to_ground(ground, Vector2(want.x, want.z))
+	return Vector3(on.x, 0.02, on.y)
+
+
+## Through a gateway the toad is simply there with you.
+func _toad_to_heel() -> void:
+	if toad.is_empty() or toad_hold:
+		return
+	toad["root"].position = _toad_spot()
+	_toad_moving = false
+
+
 ## The toad keeps a couple of paces behind you and to the right; it sits until you get well ahead, then hops to catch up, and faces you when
 ## you stop. After a gateway it is simply there with you.
 func _animate_toad(delta: float) -> void:
@@ -963,8 +1155,7 @@ func _animate_toad(delta: float) -> void:
 	if toad_hold:
 		toad["throat"].scale = THROAT * (1.0 + 0.15 * maxf(0.0, sin(_t * 2.2)))
 		return
-	var basis := player.global_transform.basis
-	var want := player.global_position + basis.x * 1.5 + basis.z * (0.6 if player.seated else 2.4)
+	var want := _toad_spot()
 	var flat := Vector3(want.x - root.position.x, 0, want.z - root.position.z)
 	var d := flat.length()
 	if d > 1.8:
@@ -976,7 +1167,8 @@ func _animate_toad(delta: float) -> void:
 	elif _toad_moving:
 		var speed := 2.6 if d < 4.0 else 5.2
 		root.position += flat.normalized() * minf(d, speed * delta)
-		root.position.y = 0.02
+		var stay := _to_ground(ground, Vector2(root.position.x, root.position.z))
+		root.position = Vector3(stay.x, 0.02, stay.y)
 		_toad_hop += delta * 7.0
 		body.position.y = absf(sin(_toad_hop)) * 0.18
 		root.rotation.y = lerp_angle(root.rotation.y, atan2(flat.x, flat.z), minf(1.0, delta * 8.0))

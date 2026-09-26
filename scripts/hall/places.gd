@@ -9,12 +9,14 @@ extends RefCounted
 ##    "people": [{root, head, hand, ...}], "restored": columns standing again on the Shore,
 ##    "back": the pieces of the place that are back}
 ## Interactable kinds: gate, fact, statue, person, look, map, tree, book, author, seat.
+## A builder may add "arrivals": {from: [spot, yaw]}, where you appear coming from that place.
 
 const Kit := preload("res://scripts/hall/kit.gd")
 
 const GATE_RADIUS := 25.0
 const GATE_START_DEG := -26.0
 const GATE_STEP_DEG := 14.5
+const RIFT_AT := Vector3(-3.5, 0, 13.0)  # behind you as you arrive, clear of the olives
 
 
 ## Facing a direction d with the player's forward (-Z turned by yaw).
@@ -69,10 +71,35 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 	for p in [Vector3(20, 0, 12), Vector3(-19, 0, 13), Vector3(8, 0, -27), Vector3(-9, 0, -27), Vector3(16, 0, 19)]:
 		Kit.rock(world, p, 0.9)
 	out.append(seat(world, Vector3(-29.5, 0, 3.0), Vector3(-1, 0, 0)))
+	flicker.append(rift(world, RIFT_AT))
+	out.append({"kind": "gate", "pos": RIFT_AT + Vector3(0, 0, -1.4), "to": "nexus", "open": true, "text": "The rift, back to the Nexus"})
+	spots["rift"] = RIFT_AT
 	var spawn := Vector3(0, 0.05, 5.0)
 	return {"name": "The Shore of the Great Works", "interactables": out, "spawn": spawn,
 		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "people": [], "restored": restored,
-		"sway": sway, "birds": birds}
+		"sway": sway, "birds": birds, "arrivals": {"nexus": [RIFT_AT + Vector3(0, 0.05, -2.2), look_yaw(gate_spot(0) - RIFT_AT)]}}
+
+
+## A tear in the air behind where you arrive on the Shore: a sliver of the Nexus's dark, edged in
+## cold light, with a few motes drifting out of it. Returns its light.
+static func rift(world: Node3D, at: Vector3) -> OmniLight3D:
+	var g := Kit.group(world, at)
+	var q := QuadMesh.new()
+	q.size = Vector2(1.1, 3.6)
+	for side in [0.0, PI]:  # seen from either side
+		Kit.mesh(g, q, "void", Vector3(0, 2.1, 0), Vector3(0, side, 0.08))
+	var edge := QuadMesh.new()
+	edge.size = Vector2(1.5, 4.0)
+	for side in [0.0, PI]:
+		Kit.mesh(g, edge, "glow_cold", Vector3(0, 2.1, 0.02 if side == 0.0 else -0.02), Vector3(0, side, 0.08))
+	Kit._drift(g, Vector3(0, 2.1, 0), 12, 3.0, 0.05, "ash", Vector3.UP, 40.0, Vector2(0.1, 0.3))
+	var light := OmniLight3D.new()
+	light.position = Vector3(0, 2.0, 0.6)
+	light.light_color = Color("9aa8d8")
+	light.light_energy = 0.8
+	light.omni_range = 5.0
+	g.add_child(light)
+	return light
 
 
 ## A bench looking out in direction `facing`, and its interactable: you stand behind it and sit.
