@@ -23,3 +23,9 @@ static func render_size(world: String, window: Vector2i) -> Vector2i:
 
 static func detail(world: String) -> int:
 	return int(settings(world).get("detail", 1))
+
+
+## TEMP (world builder, not committed)
+static func all() -> Dictionary:
+	settings("greece")
+	return _worlds

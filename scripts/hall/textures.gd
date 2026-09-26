@@ -138,6 +138,35 @@ static func material(kind: String) -> Material:
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 			m.alpha_scissor_threshold = 0.5
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		# the Nexus
+		"voidstone":  # the dark stone the broken realm of the mind is made of
+			world_tex.call(_blocks(Color("3a3c46"), Color("24252c"), 16, 8), 0.5)
+		"void":  # a door onto nothing: near-black with a few grey specks
+			m.albedo_texture = _void()
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"glow_cold":  # an open door whose world has gone cold
+			m.albedo_color = Color(0.72, 0.78, 0.88, 0.5)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"daysky":  # blue daylight with one cloud, the only blue in the Nexus
+			m.albedo_texture = _daysky()
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"mote", "mote_gold":  # faint drifting light: rivers in the void, the thread to the altar
+			m.albedo_color = Color(0.72, 0.70, 0.82, 0.3) if kind == "mote" else Color(1.0, 0.85, 0.55, 0.6)
+			m.vertex_color_use_as_albedo = true  # lets a particle's colour ramp fade it in and out
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+			m.disable_fog = true
+		"beam_faint":  # the thread of a beam over a cold altar
+			m.albedo_color = Color(1.0, 0.85, 0.6, 0.06)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_cache[kind] = m
 	return m
 
@@ -252,6 +281,76 @@ static func _shield(field := Color("2a3a7a"), rim := Color("8a6a3a"), gold := Co
 			if r <= 1.2:
 				col = boss
 			img.set_pixel(x, y, col)
+	return ImageTexture.create_from_image(img)
+
+
+## Nothing, seen through a sealed door: near-black, with a few grey specks of far stars.
+static func _void() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	img.fill(Color("06060a"))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 61
+	for k in 8:
+		img.set_pixel(rng.randi_range(1, 30), rng.randi_range(1, 30), Color("4a4c58").lightened(rng.randf_range(0.0, 0.3)))
+	return ImageTexture.create_from_image(img)
+
+
+## A patch of blue daylight: deeper blue overhead, paler near the bottom, with one white cloud.
+static func _daysky() -> ImageTexture:
+	const W := 32
+	const H := 48
+	var img := Image.create(W, H, false, Image.FORMAT_RGBA8)
+	var top := Color("4a7cc4")
+	var low := Color("a8c8ec")
+	for y in H:
+		var c := top.lerp(Color("6a9ad8"), clampf(y / 24.0, 0.0, 1.0)).lerp(low, clampf((y - 24.0) / 24.0, 0.0, 1.0))
+		for x in W:
+			img.set_pixel(x, y, c)
+	for puff in [[Vector2(11, 28), 4.0], [Vector2(16, 26), 5.0], [Vector2(21, 28), 3.6], [Vector2(15, 29.5), 4.2]]:
+		var at: Vector2 = puff[0]
+		var r: float = puff[1]
+		for y in range(int(at.y - r), int(at.y + r) + 1):
+			for x in range(int(at.x - r * 1.4), int(at.x + r * 1.4) + 1):
+				if x < 0 or x >= W or y < 0 or y >= H:
+					continue
+				var d := Vector2((x - at.x) / 1.4, y - at.y).length()
+				if d <= r:
+					img.set_pixel(x, y, Color("dfe4ee") if y > at.y + r * 0.45 else Color("f6f8fc"))
+	return ImageTexture.create_from_image(img)
+
+
+## A soft cloud for the nebulae: white value noise in the alpha, fading out toward a round edge.
+## The nebula tints it.
+static func _cloud(seed_value: int) -> ImageTexture:
+	const N := 64
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var coarse: Array = []  # 9x9 lattice (8 px cells) and 17x17 (4 px cells) of random values
+	var fine: Array = []
+	for i in 81:
+		coarse.append(rng.randf())
+	for i in 289:
+		fine.append(rng.randf())
+	var sample := func(grid: Array, side: int, cell: float, x: float, y: float) -> float:
+		var gx := x / cell
+		var gy := y / cell
+		var ix := mini(int(gx), side - 2)
+		var iy := mini(int(gy), side - 2)
+		var fx := smoothstep(0.0, 1.0, gx - ix)
+		var fy := smoothstep(0.0, 1.0, gy - iy)
+		var a: float = lerpf(grid[iy * side + ix], grid[iy * side + ix + 1], fx)
+		var b: float = lerpf(grid[(iy + 1) * side + ix], grid[(iy + 1) * side + ix + 1], fx)
+		return lerpf(a, b, fy)
+	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
+	var c := (N - 1) / 2.0
+	for y in N:
+		for x in N:
+			var n: float = 0.65 * sample.call(coarse, 9, 8.0, x, y) + 0.35 * sample.call(fine, 17, 4.0, x, y)
+			var r := Vector2(x - c, y - c).length() / c
+			var fall := pow(clampf(1.0 - r, 0.0, 1.0), 1.3)
+			var a := clampf((n - 0.2) * 1.7, 0.0, 1.0) * fall
+			var v := 0.75 + 0.25 * n  # a little lighter where it is thickest
+			img.set_pixel(x, y, Color(v, v, v, a))
 	return ImageTexture.create_from_image(img)
 
 
