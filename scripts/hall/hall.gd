@@ -189,6 +189,10 @@ func _ready() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # look around straight away
 	_load_place("hub" if _args.has("demo") else "nexus")
 	_ok = true
+	if _args.has("live"):  # watch the files and rebuild as they change (Live)
+		var live: Node = load("res://scripts/hall/live.gd").new()
+		live.hall = self
+		add_child(live)
 	if _args.has("shot"):
 		_stage_shot(_args.get("view", "hub"))
 	elif _args.has("demo"):

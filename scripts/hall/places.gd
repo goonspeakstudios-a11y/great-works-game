@@ -40,7 +40,7 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 	Kit.far_ruin(world, Vector3(-210, -10, -40), 1.3)
 	Kit.far_ruin(world, Vector3(70, -10, 230), 0.9)
 	Kit.tower_site(world, Vector3(-150, -10, -250))
-	var blink := far_toad(world, Vector3(275, -10, -476))
+	var blink := far_toad(world, Vector3(360, -10, -624))  # 720 m out
 	Kit.cylinder(world, Vector3(0, -0.02, 0), 7.0, 0.1, "paving", false, 12)
 	var flicker: Array = [Kit.brazier(world, Vector3.ZERO)]
 	var sway: Array = []
@@ -79,17 +79,21 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 
 
 
-## A toad the size of a hill, sunk in the sea far out, only the crown of its head and its two eyes
-## above the water,
-## turned toward the Shore; the haze nearly hides it. Returns the eyes, which the Hall blinks.
+## A toad the size of a hill, squatting in the sea at the edge of the world, three quarters of it
+## above the water and turned toward the Shore; the haze nearly hides it. Returns the eyes, which
+## the Hall blinks.
 static func far_toad(world: Node3D, at: Vector3) -> Array:
 	var g := Kit.group(world, at, Kit.face_yaw(at, Vector3(0, at.y, 0)))
 	g.scale = Vector3.ONE * 1.3
-	Kit.blob(g, Vector3(0, -3.0, -5.0), 30.0, "#3b3a2c", Vector3(1.25, 0.28, 1.0), 12)  # the low crown of its head
+	const SKIN := "#3b3a2c"
+	Kit.blob(g, Vector3(0, 14, 0), 40.0, SKIN, Vector3(1.3, 0.8, 1.1), 12)  # the body, a quarter under water
+	Kit.blob(g, Vector3(0, 30, 34), 26.0, SKIN, Vector3(1.3, 0.7, 1.0), 12)  # the broad flat head
+	for side in [-30.0, 30.0]:
+		Kit.blob(g, Vector3(side, 2, 42), 10.0, SKIN, Vector3(0.8, 1.4, 0.8), 8)  # the front legs
 	var eyes: Array = []
 	for side in [-17.0, 17.0]:
-		var eye := Kit.group(g, Vector3(side, 0, 0))
-		Kit.blob(eye, Vector3(0, 1.5, 0), 9.0, "#3b3a2c", Vector3(1.0, 0.75, 0.95), 10)  # the lump of the eye
+		var eye := Kit.group(g, Vector3(side, 40, 40))
+		Kit.blob(eye, Vector3(0, 1.5, 0), 9.0, SKIN, Vector3(1.0, 0.75, 0.95), 10)  # the lump of the eye
 		Kit.blob(eye, Vector3(0, 3.2, 5.2), 4.6, "#9a7a34", Vector3(1.0, 0.8, 0.5), 8)  # the dull gold iris
 		Kit.box(eye, Vector3(0, 3.2, 7.4), Vector3(5.0, 1.1, 0.4), "#0b0a08", false)  # the flat pupil
 		eyes.append(eye)

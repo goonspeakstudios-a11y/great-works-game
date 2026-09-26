@@ -319,3 +319,14 @@ func test_you_can_sit_and_look_into_the_dark() -> void:
 		check(hall.player.seated, "you sit")
 		hall.stand_up()
 	hall.free()
+
+
+func test_live_mode_rebuilds_where_you_stand() -> void:
+	var hall := _hall()
+	var live: Node = load("res://scripts/hall/live.gd").new()
+	live.hall = hall
+	live.apply(["res://scripts/hall/places.gd", "res://content/nexus.json"])
+	check_eq(hall.here, "nexus", "still where you were")
+	check(hall._quip.begins_with("Live: rebuilt"), "and told it was rebuilt")
+	live.free()
+	hall.free()
