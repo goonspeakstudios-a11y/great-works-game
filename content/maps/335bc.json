@@ -1,0 +1,151 @@
+{
+ "title": "The world in 335 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Persian Empire",
+   "sub": "King Darius III",
+   "color": [
+    196,
+    146,
+    48
+   ],
+   "label": [
+    172,
+    90
+   ]
+  },
+  {
+   "name": "Macedon",
+   "sub": "King Alexander, aged 21; Greece under his hand",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    113,
+    54
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "the sea's traders",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    53,
+    96
+   ]
+  },
+  {
+   "name": "Rome",
+   "sub": "a small republic",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    74,
+    60
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Celts",
+   "label": [
+    44,
+    40
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Illyrians",
+   "label": [
+    83,
+    46
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  },
+  {
+   "name": "Libya",
+   "label": [
+    85,
+    124
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Athens",
+   "note": "the Lyceum, his new school",
+   "at": [
+    109,
+    76
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Stagira",
+   "note": "his birthplace",
+   "at": [
+    109,
+    66
+   ],
+   "main": false,
+   "side": "right"
+  },
+  {
+   "name": "Pella",
+   "note": "where he taught the boy Alexander",
+   "at": [
+    105,
+    65
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Mytilene",
+   "note": "where he studied the creatures of the sea",
+   "at": [
+    118,
+    72
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Persepolis",
+   "note": "Darius's capital; Alexander burns it in 330",
+   "at": [
+    200,
+    108
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

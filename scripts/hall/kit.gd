@@ -90,14 +90,29 @@ static func blob(parent: Node3D, center: Vector3, radius: float, mat: String, sq
 ## Evening light over the sea. "golden" (the places you visit, like memories): a warm low sun,
 ## a violet-to-amber sky. "dusk" (the Shore, the lonely present): the sun almost gone, a deeper
 ## sky, the first stars.
+## The sky and light of a place: "golden" (late sun), "dusk" (the last light, first stars) or
+## "morning" (a clear bright day, the sun climbing in the east).
+const MOODS := {
+	"golden": {"top": "2a3a6e", "horizon": "f0aa74", "curve": 0.12, "ground": "b8765a", "bottom": "1a2230",
+		"ambient": "7c7a92", "ambient_energy": 0.65, "fog": "c89a84", "fog_density": 0.0022,
+		"sun": [-9.0, -100.0], "sun_color": "ffc896", "sun_energy": 1.15, "stars": false},
+	"dusk": {"top": "1a2248", "horizon": "d8845e", "curve": 0.09, "ground": "a0604c", "bottom": "141a28",
+		"ambient": "686c8e", "ambient_energy": 0.6, "fog": "8e7488", "fog_density": 0.0022,
+		"sun": [-4.0, -100.0], "sun_color": "ff9a6a", "sun_energy": 0.8, "stars": true},
+	"morning": {"top": "2c5aa8", "horizon": "c8d8e8", "curve": 0.16, "ground": "a8b090", "bottom": "3a4a3a",
+		"ambient": "8a94a0", "ambient_energy": 0.8, "fog": "d0dce8", "fog_density": 0.0011,
+		"sun": [-38.0, 70.0], "sun_color": "fff4e0", "sun_energy": 1.3, "stars": false},
+}
+
+
 static func sunset(parent: Node3D, mood: String = "golden") -> DirectionalLight3D:
-	var dusk := mood == "dusk"
+	var m: Dictionary = MOODS.get(mood, MOODS["golden"])
 	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("1a2248") if dusk else Color("2a3a6e")
-	sky_mat.sky_horizon_color = Color("d8845e") if dusk else Color("f0aa74")
-	sky_mat.sky_curve = 0.09 if dusk else 0.12
-	sky_mat.ground_horizon_color = Color("a0604c") if dusk else Color("b8765a")
-	sky_mat.ground_bottom_color = Color("141a28") if dusk else Color("1a2230")
+	sky_mat.sky_top_color = Color(m["top"])
+	sky_mat.sky_horizon_color = Color(m["horizon"])
+	sky_mat.sky_curve = m["curve"]
+	sky_mat.ground_horizon_color = Color(m["ground"])
+	sky_mat.ground_bottom_color = Color(m["bottom"])
 	sky_mat.sun_angle_max = 12.0
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
@@ -105,21 +120,21 @@ static func sunset(parent: Node3D, mood: String = "golden") -> DirectionalLight3
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("686c8e") if dusk else Color("7c7a92")
-	env.ambient_light_energy = 0.6 if dusk else 0.65
+	env.ambient_light_color = Color(m["ambient"])
+	env.ambient_light_energy = m["ambient_energy"]
 	env.fog_enabled = true
-	env.fog_light_color = Color("8e7488") if dusk else Color("c89a84")
-	env.fog_density = 0.0022
+	env.fog_light_color = Color(m["fog"])
+	env.fog_density = m["fog_density"]
 	env.fog_sky_affect = 0.15
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	var we := WorldEnvironment.new()
 	we.environment = env
 	parent.add_child(we)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-4.0 if dusk else -9.0, -100.0, 0.0)  # low in the west, shining east
-	sun.light_color = Color("ff9a6a") if dusk else Color("ffc896")
-	sun.light_energy = 0.8 if dusk else 1.15
-	if dusk:
+	sun.rotation_degrees = Vector3(m["sun"][0], m["sun"][1], 0.0)
+	sun.light_color = Color(m["sun_color"])
+	sun.light_energy = m["sun_energy"]
+	if m["stars"]:
 		stars(parent)
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 60.0
@@ -577,6 +592,167 @@ static func fireflies(parent: Node3D, center: Vector3, size: float) -> void:
 	ramp.add_point(0.55, Color(0.85, 1.0, 0.45, 0.1))
 	ramp.add_point(0.75, Color(0.85, 1.0, 0.45, 0.9))
 	p.color_ramp = ramp
+
+
+# ---------- Athens: the Lyceum ----------
+
+## A plane tree: tall pale trunk, a broad light-green crown. Returns the crown for the breeze.
+static func plane_tree(parent: Node3D, at: Vector3, size: float = 1.0) -> Node3D:
+	var g := group(parent, at, at.x * 1.3 + at.z * 0.7)
+	cylinder(g, Vector3.ZERO, 0.34 * size, 4.6 * size, "bark", true, 7, 0.26 * size)
+	for a in [0.6, 2.7, 4.6]:
+		box(g, Vector3(cos(a) * 0.9 * size, 4.4 * size, sin(a) * 0.9 * size), Vector3(0.22, 1.6, 0.22) * size, "bark", false, Vector3(0.3 * sin(a), 0, 0.3 * cos(a)))
+	var crown := group(g, Vector3(0, 5.2 * size, 0))
+	blob(crown, Vector3.ZERO, 2.6 * size, "plane", Vector3(1.25, 0.8, 1.15), 7)
+	blob(crown, Vector3(1.4 * size, 0.7 * size, 0.6 * size), 1.7 * size, "plane", Vector3(1.1, 0.8, 1.0), 6)
+	blob(crown, Vector3(-1.3 * size, 0.5 * size, -0.9 * size), 1.6 * size, "plane", Vector3(1.0, 0.75, 1.1), 6)
+	blob(crown, Vector3(0.2 * size, 1.4 * size, 0.0), 1.5 * size, "plane", Vector3(1.1, 0.7, 1.1), 6)
+	return crown
+
+
+## A stoa, the covered walkway: a back wall, a floor, a row of columns along the open side
+## (+Z of its group) and a roof. Runs along X for `length`.
+static func stoa(parent: Node3D, at: Vector3, yaw: float, length: float, depth: float) -> Node3D:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.06, 0), Vector3(length + 0.6, 0.12, depth + 0.6), "paving", false)
+	box(g, Vector3(0, 2.1, -depth / 2.0), Vector3(length + 0.6, 4.2, 0.4), "stone")
+	for x in [-length / 2.0, length / 2.0]:
+		box(g, Vector3(x, 2.1, -0.4), Vector3(0.4, 4.2, depth - 0.8), "stone")
+	var n := int(length / 3.0)
+	for k in n + 1:
+		column(g, Vector3(-length / 2.0 + k * (length / n), 0.12, depth / 2.0 - 0.5), 4.0)
+	box(g, Vector3(0, 4.45, 0), Vector3(length + 1.2, 0.3, depth + 1.0), "roof", false)
+	box(g, Vector3(0, 4.15, depth / 2.0 - 0.5), Vector3(length + 0.6, 0.3, 0.7), "marble", false)  # the beam over the columns
+	return g
+
+
+## The Ilissos: a stream in a shallow bed with rocky banks, from one point to another.
+static func stream(parent: Node3D, from: Vector3, to: Vector3, width: float) -> void:
+	var mid := (from + to) / 2.0
+	var length := from.distance_to(to)
+	var g := group(parent, Vector3(mid.x, 0, mid.z), atan2(to.x - from.x, to.z - from.z))
+	box(g, Vector3(0, 0.03, 0), Vector3(width, 0.06, length), "water", false)
+	for side in [-1.0, 1.0]:
+		box(g, Vector3(side * (width / 2.0 + 0.35), 0.12, 0), Vector3(0.7, 0.24, length), "rock", false)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(length)
+	for k in int(length / 4.0):
+		blob(g, Vector3(rng.randf_range(-width * 0.4, width * 0.4), 0.02, -length / 2.0 + k * 4.0 + rng.randf_range(0, 3)),
+			rng.randf_range(0.12, 0.28), "rock", Vector3(1.4, 0.6, 1.0), 5)
+
+
+## A plank footbridge over the stream, crossing along X of its group.
+static func bridge(parent: Node3D, at: Vector3, yaw: float, length: float) -> void:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.34, 0), Vector3(length, 0.12, 1.5), "wood")
+	for z in [-0.8, 0.8]:
+		box(g, Vector3(0, 0.85, z), Vector3(length, 0.06, 0.06), "wood", false)
+		for x in [-length / 2.0 + 0.2, 0.0, length / 2.0 - 0.2]:
+			box(g, Vector3(x, 0.62, z), Vector3(0.07, 0.55, 0.07), "wood", false)
+	for x in [-length / 2.0 + 0.4, length / 2.0 - 0.4]:
+		box(g, Vector3(x, 0.15, 0), Vector3(0.3, 0.3, 1.5), "stone", false)
+
+
+## Athens itself, far off: the Acropolis rock with the Parthenon on top, and the city below.
+static func acropolis(parent: Node3D, at: Vector3) -> void:
+	cylinder(parent, at, 62.0, 38.0, "rock", false, 9, 46.0)
+	var top := at + Vector3(0, 38.0, 0)
+	box(parent, top + Vector3(0, 0.8, 0), Vector3(36.0, 1.6, 17.0), "marble", false)
+	for k in 8:
+		for z in [-7.0, 7.0]:
+			cylinder(parent, top + Vector3(-15.75 + k * 4.5, 1.6, z), 1.0, 9.0, "marble", false, 6)
+	for z in [-3.5, 0.0, 3.5]:
+		for x in [-15.75, 15.75]:
+			cylinder(parent, top + Vector3(x, 1.6, z), 1.0, 9.0, "marble", false, 6)
+	box(parent, top + Vector3(0, 11.4, 0), Vector3(36.0, 1.6, 17.0), "marble", false)
+	for side in [-1.0, 1.0]:
+		box(parent, top + Vector3(0, 13.6, side * 4.6), Vector3(37.0, 0.5, 10.0), "roof", false, Vector3(-side * 0.42, 0, 0))
+	for p in [Vector3(-22, 0, 6), Vector3(20, 0, -4), Vector3(-8, 0, -12)]:
+		box(parent, top + p + Vector3(0, 3.0, 0), Vector3(9.0, 6.0, 6.0), "marble", false)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	for k in 40:  # the houses of the city around the rock
+		var a := rng.randf() * TAU
+		var r := rng.randf_range(70.0, 130.0)
+		box(parent, at + Vector3(cos(a) * r, 2.0, sin(a) * r), Vector3(rng.randf_range(5, 9), 4.0, rng.randf_range(5, 9)), "plaster", false, Vector3(0, a, 0))
+
+
+## A standing teacher who can walk: legs that swing, a cloak, a hand raised to make a point,
+## a head that turns. Faces +Z of its group. Returns {"root", "head", "hand", "legs"}.
+static func walker(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -> Dictionary:
+	var robe := "#" + str(look.get("robe", "8a6a4a"))
+	var skin := "#" + str(look.get("skin", "c8a078"))
+	var hair := "#" + str(look.get("beard_color", look.get("hair_color", "5a4a3a")))
+	var root := group(parent, at, yaw)
+	var legs: Array = []
+	for side in [-1.0, 1.0]:
+		var hip := group(root, Vector3(0.11 * side, 0.86, 0))
+		mesh(hip, _cyl(0.085, 0.8), robe, Vector3(0, -0.4, 0))
+		box(hip, Vector3(0, -0.83, 0.06), Vector3(0.14, 0.06, 0.26), "#6a4a34", false)  # sandal
+		legs.append(hip)
+	cylinder(root, Vector3(0, 0.8, 0), 0.25, 0.78, robe, false, 8, 0.2)
+	blob(root, Vector3(0, 1.56, 0), 0.26, robe, Vector3(1.3, 0.55, 0.85), 8)
+	box(root, Vector3(0.05, 1.3, 0.2), Vector3(0.44, 0.08, 0.12), robe, false, Vector3(0, 0, 0.55))  # the fold of the cloak
+	mesh(root, _cyl(0.065, 0.55), robe, Vector3(-0.3, 1.2, 0), Vector3(0.15, 0, 0))
+	blob(root, Vector3(-0.3, 0.9, 0.04), 0.06, skin)
+	var hand: Node3D = group(root, Vector3.ZERO)
+	mesh(hand, _cyl(0.065, 0.4), robe, Vector3(0.3, 1.32, 0.16), Vector3(-1.3, 0, 0))
+	blob(hand, Vector3(0.3, 1.38, 0.36), 0.06, skin)
+	var head: Node3D = group(root, Vector3(0, 1.72, 0.02))
+	blob(head, Vector3(0, 0.08, 0), 0.14, skin, Vector3(1.0, 1.15, 1.05), 8)
+	blob(head, Vector3(0, 0.17, -0.04), 0.14, hair, Vector3(1.05, 0.7, 1.05), 8)
+	if look.get("beard", "none") != "none":
+		blob(head, Vector3(0, -0.05, 0.07), 0.11, hair, Vector3(1.0, 1.4 if look.get("beard") == "long" else 0.9, 0.7), 6)
+	box(head, Vector3(0, 0.07, 0.14), Vector3(0.04, 0.07, 0.04), skin, false)
+	var body := BoxShape3D.new()
+	body.size = Vector3(0.6, 1.9, 0.6)
+	solid(root, body, Vector3(0, 0.95, 0))
+	return {"root": root, "head": head, "hand": hand, "legs": legs}
+
+
+## A Macedonian foot soldier of Philip and Alexander: bare legs and greaves, a red tunic under
+## a linen cuirass, a bronze helmet with its peak and crest, the small shield with the sun on
+## his left arm, and the sarissa (a pike near six metres long) upright in his right hand.
+## Faces +Z. Returns his two legs, for marching.
+static func soldier(parent: Node3D, at: Vector3) -> Array:
+	var g := group(parent, at)
+	var skin := "#c8a078"
+	var legs: Array = []
+	for side in [-1.0, 1.0]:
+		var hip := group(g, Vector3(0.1 * side, 0.82, 0))
+		mesh(hip, _cyl(0.075, 0.78), skin, Vector3(0, -0.39, 0))
+		box(hip, Vector3(0, -0.5, 0.0), Vector3(0.14, 0.4, 0.15), "bronze", false)  # greave
+		box(hip, Vector3(0, -0.8, 0.06), Vector3(0.13, 0.05, 0.25), "#6a4a34", false)  # sandal
+		legs.append(hip)
+	cylinder(g, Vector3(0, 0.72, 0), 0.22, 0.32, "#8a2a2a", false, 8, 0.22)  # tunic
+	cylinder(g, Vector3(0, 1.0, 0), 0.23, 0.5, "#e8e0d0", false, 8, 0.2)  # linen cuirass
+	blob(g, Vector3(0, 1.52, 0), 0.24, "#e8e0d0", Vector3(1.25, 0.5, 0.85), 8)
+	mesh(g, _cyl(0.06, 0.5), skin, Vector3(0.28, 1.2, 0))  # right arm down, on the sarissa
+	mesh(g, _cyl(0.06, 0.45), skin, Vector3(-0.28, 1.25, 0.08), Vector3(-1.2, 0, 0))  # left arm behind the shield
+	var shield := group(g, Vector3(-0.42, 1.15, 0.14), -PI / 2.0 + 0.5)  # faces left and a little forward
+	var face := QuadMesh.new()
+	face.size = Vector2(0.72, 0.72)
+	mesh(shield, face, "shield", Vector3.ZERO)
+	mesh(shield, _cyl(0.35, 0.05), "bronze", Vector3(0, 0, -0.03), Vector3(PI / 2.0, 0, 0))
+	box(g, Vector3(0.36, 2.6, 0.05), Vector3(0.04, 5.2, 0.04), "wood", false)  # the sarissa
+	box(g, Vector3(0.36, 5.35, 0.05), Vector3(0.05, 0.35, 0.05), "bronze", false)
+	var head := group(g, Vector3(0, 1.68, 0.02))
+	blob(head, Vector3(0, 0.06, 0), 0.13, skin, Vector3(1.0, 1.1, 1.0), 7)
+	blob(head, Vector3(0, 0.16, -0.02), 0.145, "bronze", Vector3(1.05, 0.9, 1.05), 7)  # the helmet
+	box(head, Vector3(0, 0.3, 0.05), Vector3(0.08, 0.14, 0.1), "bronze", false, Vector3(0.5, 0, 0))  # its forward peak
+	box(head, Vector3(0, 0.28, -0.05), Vector3(0.03, 0.12, 0.3), "#8a2a2a", false)  # the crest
+	return legs
+
+
+## A block of soldiers in rows and files, one metre apart, who march together as one node.
+## Returns {"root", "legs", "leg", "speed", "step"}; give it a "path" and the Hall marches it.
+static func squad(parent: Node3D, at: Vector3, rows: int, files: int) -> Dictionary:
+	var root := group(parent, at)
+	var legs: Array = []
+	for r in rows:
+		for f in files:
+			legs.append_array(soldier(root, Vector3((f - (files - 1) / 2.0) * 1.0, 0, -r * 1.1)))
+	return {"root": root, "legs": legs, "leg": 0, "speed": 1.25, "step": 0.0}
 
 
 # ---------- the comforts of a lived-in house ----------

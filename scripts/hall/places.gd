@@ -72,16 +72,17 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 
 
 ## A bench looking out in direction `facing`, and its interactable: you stand behind it and sit.
-static func seat(world: Node3D, at: Vector3, facing: Vector3) -> Dictionary:
+static func seat(world: Node3D, at: Vector3, facing: Vector3, text: String = "Sit and watch the sunset") -> Dictionary:
 	Kit.bench(world, at, Kit.face_yaw(at, at + facing))
-	return {"kind": "seat", "pos": at - facing * 1.6, "seat": at, "look": at + facing * 100.0,
-		"text": "Sit and watch the sunset"}
+	return {"kind": "seat", "pos": at - facing * 1.6, "seat": at, "look": at + facing * 100.0, "text": text}
 
 
 static func place(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 	match room.get("place", ""):
 		"villa":
 			return villa(world, work, room)
+		"lyceum":
+			return lyceum(world, work, room)
 	push_error("No place built for %s" % work)
 	return hub(world, [])
 
@@ -213,6 +214,99 @@ static func villa(world: Node3D, work: String, room: Dictionary) -> Dictionary:
 	return {"name": "%s - %s" % [room.get("where", ""), room.get("when", "")], "interactables": out, "spawn": spawn,
 		"yaw": 0.0, "spots": spots, "flicker": flicker, "people": [teacher, scribe], "restored": 0,
 		"sway": sway, "birds": birds}
+
+
+## Aristotle's Lyceum outside Athens, 335 BC, on a bright morning: a path up from the gateway
+## between plane trees and the Ilissos stream, the covered walkway where he paces as he
+## teaches (facts on its wall, the map of 335 BC, the busts of Plato and Alexander, the book),
+## and, for later lessons, the closed library and the sacred grove across the footbridge.
+static func lyceum(world: Node3D, work: String, room: Dictionary) -> Dictionary:
+	Kit.sunset(world, "morning")
+	Kit.plateau(world, 48.0, "earth", false)
+	Kit.acropolis(world, Vector3(-150, -10, -230))
+	Kit.mountain(world, Vector3(280, -10, -160), 130.0, 75.0, false)  # Hymettus
+	Kit.mountain(world, Vector3(-40, -10, -330), 40.0, 60.0, false)  # Lycabettus
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var birds := Kit.flock(world, Vector3(0, 0, -6), 6, 14.0, 12.0)
+	# arrival: the gateway back to the Shore, and the path north
+	var gate_at := Vector3(0, 0, 27)
+	flicker.append(Kit.gateway(world, gate_at, Kit.face_yaw(gate_at, Vector3.ZERO), true))
+	out.append({"kind": "gate", "pos": Vector3(0, 0, 25.3), "to": "hub", "open": true, "text": "Back to the Shore"})
+	Kit.box(world, Vector3(0, 0.01, 2.0), Vector3(3.0, 0.02, 46.0), "path", false)
+	# the Ilissos along the east side, with its footbridge and plane trees
+	Kit.stream(world, Vector3(8, 0, 34), Vector3(8, 0, -36), 2.4)
+	Kit.bridge(world, Vector3(8, 0, -4), PI / 2.0, 4.6)
+	for z in [24.0, 15.0, 6.0, -3.0, -12.0, -21.0, -30.0]:
+		sway.append(Kit.plane_tree(world, Vector3(12.0 + fmod(absf(z), 3.0), 0, z), 1.0 + fmod(absf(z), 5.0) * 0.06))
+	for p in [Vector3(-13, 0, 20), Vector3(-15, 0, 4), Vector3(-14, 0, -10), Vector3(5, 0, 30)]:
+		sway.append(Kit.plane_tree(world, p, 1.1))
+	# the walkway: a stoa on the west side, open toward the path, where he paces
+	var stoa_at := Vector3(-6.5, 0, -5)
+	Kit.stoa(world, stoa_at, PI / 2.0, 34.0, 5.0)
+	var facts: Array = room.get("facts", [])
+	for k in facts.size():
+		var at := Vector3(-8.55, 0, 9.0 - k * 3.6)
+		var reader := Vector3(-7.3, 0, at.z)
+		Kit.stele(world, at, Kit.face_yaw(at, reader))
+		spots["fact%d" % k] = reader
+		out.append({"kind": "fact", "pos": reader, "text": facts[k]})
+	var statues: Array = room.get("statues", [])
+	for k in statues.size():
+		var sz := 11.2 if k == 0 else -21.2
+		Kit.bust(world, Vector3(-6.5, 0, sz), 0.0 if k == 0 else PI, statues[k])
+		var stand := Vector3(-6.5, 0, sz + (-1.6 if k == 0 else 1.6))
+		out.append({"kind": "statue", "pos": stand, "text": "Look at the bust of %s" % statues[k]["name"], "note": statues[k]["note"]})
+		spots["statue%d" % k] = stand
+	if room.has("map"):
+		var tex := load("res://assets/maps/%s.png" % room["map"]) as Texture2D
+		if tex:
+			Kit.board(world, Vector3(-8.75, 2.2, -16.0), PI / 2.0, Vector2(2.9, 2.0), tex)
+			out.append({"kind": "map", "pos": Vector3(-7.4, 0, -16.0), "map": room["map"], "text": "Study the map of the world in 335 BC",
+				"note": room.get("map_note", "")})
+			spots["map"] = Vector3(-7.4, 0, -16.0)
+	Kit.box(world, Vector3(-8.2, 0.5, -19.6), Vector3(0.5, 1.0, 0.5), "wood")
+	Kit.box(world, Vector3(-8.2, 1.05, -19.6), Vector3(0.45, 0.06, 0.6), "parchment", false)
+	out.append({"kind": "book", "pos": Vector3(-7.0, 0, -19.6), "text": "Read a page of the %s" % room["book"]})
+	spots["book"] = Vector3(-7.0, 0, -19.6)
+	# Aristotle himself, walking up and down the walkway; talk to him wherever he is
+	var aristotle := Kit.walker(world, Vector3(-6.5, 0, 6.0), PI, room.get("portrait", {}))
+	aristotle["path"] = [Vector3(-6.5, 0, -18.0), Vector3(-6.5, 0, 8.0)]
+	aristotle["speed"] = 1.1
+	out.append({"kind": "author", "pos": Vector3(-6.5, 0, 6.0), "follow": aristotle["root"], "text": "Walk with %s" % room["author"]})
+	spots["author"] = Vector3(-6.5, 0, 6.0)
+	# for later lessons: the library at the north end, and the grove across the bridge
+	Kit.box(world, Vector3(-2, 2.6, -29.5), Vector3(14.0, 5.2, 7.0), "stone")
+	Kit.box(world, Vector3(-2, 5.35, -29.5), Vector3(15.0, 0.3, 8.0), "roof", false)
+	Kit.box(world, Vector3(-2, 1.6, -25.85), Vector3(2.0, 3.2, 0.3), "dark", false)
+	Kit.box(world, Vector3(-2, 1.5, -25.9), Vector3(1.8, 3.0, 0.16), "wood", false)
+	for x in [-6.0, 2.0]:
+		Kit.column(world, Vector3(x, 0, -25.4), 4.6)
+	out.append({"kind": "gate", "pos": Vector3(-2, 0, -24.4), "to": "aristotle-the-rest-of-the-organon", "open": false,
+		"text": "The library of the Lyceum"})
+	for p in [Vector3(17, 0, -1), Vector3(20, 0, -8), Vector3(24, 0, -3), Vector3(19, 0, 6), Vector3(27, 0, 3), Vector3(23, 0, -12)]:
+		sway.append(Kit.olive(world, p, 1.2))
+	Kit.bust(world, Vector3(15.0, 0, -4), -PI / 2.0, {"beard": "long"})  # a herm of the god of the grove
+	out.append({"kind": "gate", "pos": Vector3(13.4, 0, -4), "to": "aristotle-nicomachean-ethics", "open": false,
+		"text": "The sacred grove of Apollo Lyceus"})
+	out.append(seat(world, Vector3(4.8, 0, 8.0), Vector3(1, 0, 0), "Sit by the stream"))
+	# on the meadow beyond the grove, Alexander's men drill: a block of pikemen marching a
+	# circuit of the road, the sun of Macedon on every shield
+	for r in [[Vector3(30, 0.01, 0), Vector3(2.4, 0.02, 46.0)], [Vector3(38, 0.01, 0), Vector3(2.4, 0.02, 46.0)],
+			[Vector3(34, 0.01, 22), Vector3(10.4, 0.02, 2.4)], [Vector3(34, 0.01, -22), Vector3(10.4, 0.02, 2.4)]]:
+		Kit.box(world, r[0], r[1], "path", false)
+	var squad := Kit.squad(world, Vector3(30, 0, 18), 4, 4)
+	squad["path"] = [Vector3(30, 0, -22), Vector3(38, 0, -22), Vector3(38, 0, 22), Vector3(30, 0, 22)]
+	out.append({"kind": "person", "pos": Vector3(30, 0, 18), "follow": squad["root"], "text": "Watch the Macedonians",
+		"note": "Macedonian foot soldiers, the men of Philip and now of Alexander. Each carries the sarissa, a pike nearly six metres long, and a small shield with the sixteen-rayed sun of the Argead kings. Since Chaeronea, three years ago, they are the masters of Greece; next spring they cross into Asia."})
+	spots["walk"] = Vector3(-6.5, 0, 2.0)
+	spots["march"] = Vector3(22, 0, 12)
+	var spawn := Vector3(0, 0.05, 23.5)
+	return {"name": "%s - %s" % [room.get("where", ""), room.get("when", "")], "interactables": out, "spawn": spawn,
+		"yaw": 0.0, "spots": spots, "flicker": flicker, "people": [aristotle], "restored": 0,
+		"sway": sway, "birds": birds, "squads": [squad]}
 
 
 ## Porphyry's Tree carved in marble: a trunk of kinds with a branch off each level.

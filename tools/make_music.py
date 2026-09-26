@@ -2,8 +2,9 @@
 
 Every zone has its own track: the Shore's is slow, dark and grand (a low drone, slow
 minor chords, distant bells triggered in-game); Porphyry's Sicily is warmer, a plucked
-lyre (a simulated string, Karplus-Strong) over a soft drone in the Dorian mode.
-Ambient loops give each place its sound: waves, wind, fire, cicadas, a fountain.
+lyre (a simulated string, Karplus-Strong) over a soft drone in the Dorian mode; Aristotle's
+Lyceum is a bright morning, pan pipes in the Phrygian mode over a walking bass.
+Ambient loops give each place its sound: waves, wind, fire, cicadas, a fountain, birds, a stream.
 Reverb is added in-game on the Music bus, so these files are dry. Loops are seamless:
 drone partials fit the loop exactly, tails past the end fold back to the start, and
 noise loops crossfade their seam.
@@ -145,6 +146,94 @@ def render_lyre(seconds: int = 48, seed: int = 11) -> list[float]:
     return out
 
 
+# Aristotle's Lyceum, a bright morning in Athens: a syrinx (pan pipes) in E Phrygian over a
+# light drone, with a low plucked note walking underneath at an unhurried pace.
+ATHENS_SCALE = [329.63, 349.23, 392.0, 440.0, 493.88, 523.25, 587.33, 659.26, 698.46, 783.99]
+
+
+def pipe(buf: list[float], freq: float, level: float, start: int, seconds: float, rng: random.Random) -> None:
+    """A breathy pipe note: a sine with slow vibrato and a little air, swelling in and out."""
+    total = int(seconds * RATE)
+    phase = 0.0
+    air = 0.0
+    for n in range(total):
+        if start + n >= len(buf):
+            break
+        t = n / RATE
+        env = min(1.0, n / (0.06 * RATE)) * min(1.0, (total - n) / (0.12 * RATE))
+        vib = 1.0 + 0.006 * math.sin(TAU * 5.5 * t) * min(1.0, t / 0.4)
+        phase += freq * vib * TABLE_SIZE / RATE
+        air += (rng.uniform(-1, 1) - air) * 0.3
+        tone = SINE[int(phase) % TABLE_SIZE] + 0.25 * SINE[int(phase * 2) % TABLE_SIZE]
+        buf[start + n] += (tone + air * 0.08) * level * env
+
+
+def render_athens(seconds: int = 48, seed: int = 23) -> list[float]:
+    rng = random.Random(seed)
+    total = seconds * RATE
+    buf = [0.0] * (total + 4 * RATE)
+    for freq, level in ((82.41, 0.045), (123.47, 0.03), (164.81, 0.018)):  # E2, B2, E3
+        f = fit(freq, seconds)
+        osc(buf, f, level, 0, lambda n: 1.0 if n < total else -1)
+        osc(buf, fit(f * 2, seconds), level * 0.2, 0, lambda n: 1.0 if n < total else -1)
+    beat = 60.0 / 66.0  # an unhurried walking pace
+    t = 0.0
+    while t < seconds:  # the walk: a low note every other step
+        pluck(buf, 82.41 if int(t / beat) % 4 else 123.47, 0.13, int(t * RATE), 1.6, rng, 0.25)
+        t += beat * 2
+    t = 1.2
+    step = 4
+    while t < seconds - 4.0:
+        for k in range(rng.randint(3, 6)):  # a phrase on the pipe
+            step = max(0, min(len(ATHENS_SCALE) - 1, step + rng.choice([-2, -1, 1, 1, 2, 3])))
+            length = rng.choice([0.5, 0.75, 1.0, 1.5])
+            pipe(buf, ATHENS_SCALE[step], 0.16, int(t * RATE), length * 0.95, rng)
+            t += length
+        t += rng.uniform(2.0, 3.5)  # then quiet, and the walk goes on
+    out = buf[:total]
+    for n in range(total, len(buf)):
+        out[n - total] += buf[n]
+    return out
+
+
+def render_birds(seconds: int = 14, seed: int = 29) -> list[float]:
+    """Songbirds in the plane trees: short whistles that rise or fall, now and then."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE // 2
+    out = [0.0] * (total + fade)
+    t = 0.3
+    while t < seconds + 0.5:
+        base = rng.uniform(2200.0, 3800.0)
+        for k in range(rng.randint(2, 5)):  # a little run of notes
+            length = rng.uniform(0.06, 0.16)
+            sweep = rng.uniform(-900.0, 900.0)
+            start = int((t + k * (length + 0.04)) * RATE)
+            phase = 0.0
+            for n in range(int(length * RATE)):
+                if start + n >= len(out):
+                    break
+                f = base + sweep * n / (length * RATE)
+                phase += f * TABLE_SIZE / RATE
+                env = math.sin(math.pi * n / (length * RATE)) ** 0.7
+                out[start + n] += SINE[int(phase) % TABLE_SIZE] * env * 0.5
+        t += rng.uniform(1.2, 3.6)
+    return _seam(out, total, fade)
+
+
+def render_stream(seconds: int = 12, seed: int = 31) -> list[float]:
+    """The Ilissos: a steady, wide trickle over stones."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE // 2
+    out, a, b, c = [], 0.0, 0.0, 0.0
+    for n in range(total + fade):
+        x = rng.uniform(-1, 1)
+        a += (x - a) * 0.35
+        b += (a - b) * 0.1
+        c += (rng.uniform(0.6, 1.0) - c) * 0.002  # slow unevenness in the flow
+        out.append((a - b) * c)
+    return _seam(out, total, fade)
+
+
 def _seam(out: list[float], total: int, fade: int) -> list[float]:
     """Crossfade the extra tail onto the start so a noise loop has no seam."""
     for n in range(fade):
@@ -283,6 +372,9 @@ def main() -> int:
     write_wav(OUT / "fire.wav", render_fire(), 0.4)
     write_wav(OUT / "fountain.wav", render_fountain(), 0.3)
     write_wav(OUT / "croak.wav", render_croak(), 0.8)
+    write_wav(OUT / "athens.wav", render_athens(), 0.7)
+    write_wav(OUT / "birds.wav", render_birds(), 0.4)
+    write_wav(OUT / "stream.wav", render_stream(), 0.3)
     return 0
 
 

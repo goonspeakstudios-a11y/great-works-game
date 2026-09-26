@@ -108,8 +108,8 @@ func test_rooms_follow_the_reading_list() -> void:
 	check_eq(doors.map(func(d): return d["work"]), c.work_order, "doors come straight from the reading list")
 	check_eq(doors.size(), 17, "one door for every Greek work")
 	check_eq(doors[0]["work"], "porphyry-isagoge", "the first door is the Isagoge")
-	check(doors[0]["open"], "the Isagoge room is open")
-	check(not doors[1]["open"], "the rest are sealed for now")
+	check(doors[0]["open"] and doors[1]["open"], "the Isagoge and the Categories have their places")
+	check(not doors[2]["open"], "the rest are sealed for now")
 	var room := Rooms.room("porphyry-isagoge")
 	check(room["facts"].size() >= 4, "the room has facts on its walls")
 	for f in room["facts"]:
@@ -124,7 +124,7 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate")
 	check_eq(gates.size(), 17, "one gateway for every Greek work")
 	check_eq(gates.map(func(g): return g["to"]), Rooms.doors().map(func(d): return d["work"]), "gateways follow the reading list")
-	check(gates[0]["open"] and not gates[1]["open"], "the Isagoge is open, the rest not yet")
+	check(gates[0]["open"] and gates[1]["open"] and not gates[2]["open"], "the first two are open, the rest not yet")
 	hall.free()
 
 
@@ -362,6 +362,7 @@ func test_the_villa_feels_lived_in() -> void:
 
 
 const Lettering := preload("res://scripts/hall/lettering.gd")
+const Music := preload("res://scripts/pixel/music.gd")
 
 
 func test_the_lettering_is_hand_cut_not_the_default() -> void:
@@ -395,4 +396,63 @@ func test_every_word_on_screen_uses_our_lettering() -> void:
 				cheap.append(n.name)
 	check_eq(cheap.size(), 0, "no cheap lettering anywhere: %s" % str(cheap))
 	check(hall._answer.get_content_height() <= hall._answer.size.y, "the teacher's greeting fits the page (%d of %d)" % [hall._answer.get_content_height(), hall._answer.size.y])
+	hall.free()
+
+
+func test_aristotles_lyceum_is_ready() -> void:
+	var room := Rooms.room("aristotle-categories")
+	check_eq(room.get("place", ""), "lyceum", "the Categories are taught at the Lyceum")
+	check_eq(room.get("zone", ""), "athens", "with Athens' own music")
+	check_eq(room.get("lesson", []).size(), 6, "a six-point lesson")
+	for f in ["athens", "birds", "stream"]:
+		check(FileAccess.file_exists(Music.file_for(f)), "%s.wav is rendered" % f)
+	var book := Library.load_book("aristotle-categories")
+	check(book != null and book.chunks.size() > 10, "the Categories are in the library")
+	if book:
+		var hits: Array = book.search("primary substance individual man horse", 3)
+		check(hits.size() > 0 and str(hits[0]["where"]).contains("Chap. 5"), "chapter 5 answers about substance")
+	check(FileAccess.file_exists("res://content/maps/335bc.json") and FileAccess.file_exists("res://assets/maps/335bc.png"), "the map of 335 BC is drawn")
+
+
+func test_aristotle_walks_his_walkway() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("aristotle-categories")
+	check(hall.here_name.contains("Lyceum"), "you are at the Lyceum")
+	check(not hall.people.is_empty() and hall.people[0].has("path"), "Aristotle is there, and he walks")
+	var author: Array = hall.interactables.filter(func(i): return i["kind"] == "author")
+	check(author.size() == 1 and author[0].has("follow"), "you talk to him wherever he is")
+	var closed: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and not i["open"])
+	check(closed.size() >= 2, "the library and the grove wait for later lessons")
+	var root: Node3D = hall.people[0]["root"]
+	hall.player.position = Vector3(0, 0.05, 40)  # far away: he keeps walking
+	var before := root.position
+	for i in 30:
+		hall._animate_people(0.1)
+	check(root.position.distance_to(before) > 0.5, "he paces when left alone")
+	hall.player.position = root.position + root.global_transform.basis.z * 2.0  # in front of him
+	var here := root.position
+	for i in 30:
+		hall._animate_people(0.1)
+	check(root.position.distance_to(here) < 0.05, "he stops to talk when you come near")
+	hall.free()
+
+
+func test_the_macedonians_march_in_step() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("aristotle-categories")
+	check_eq(hall.squads.size(), 1, "a block of soldiers drills on the meadow")
+	var sq: Dictionary = hall.squads[0]
+	check_eq(sq["legs"].size(), 32, "sixteen men, in rows and files")
+	var start: Vector3 = sq["root"].position
+	for i in 20:
+		hall._animate_squads(0.1)
+	check(sq["root"].position.distance_to(start) > 1.5, "they march")
+	check(absf(sq["legs"][0].rotation.x) > 0.01, "in step")
+	check(hall.interactables.any(func(i): return i["kind"] == "person" and i["note"].contains("sarissa")), "you can learn who they are")
+	var shield: Material = preload("res://scripts/hall/textures.gd").material("shield")
+	check(shield is StandardMaterial3D and shield.albedo_texture != null, "the sun of Macedon is on the shield")
 	hall.free()

@@ -18,7 +18,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
-LIBRARY = Path.home() / "Desktop" / "Book Collections"
+# BB1's book library lives on the E: drive; the Desktop copy is the fallback
+LIBRARY = next((p for p in (Path("E:/Book Collections"), Path.home() / "Desktop" / "Book Collections") if p.exists()),
+               Path("E:/Book Collections"))
 OUT = ROOT / "content" / "books"
 TARGET_WORDS = 200
 MAX_WORDS = 380
@@ -32,6 +34,14 @@ BOOKS = {
         "start": r"INTRODUCTION OF PORPHYRY",
         "end": r"\[This translation appears",  # a transcriber's note, then footnotes
         "chapter": r"^\s*Chap\.\s*([IVXL]+)\.",
+    },
+    "aristotle-categories": {
+        "file": "Aristotle - Categories (tr. Edghill).txt",
+        "title": "Categories",
+        "translation": "tr. E. M. Edghill (1928), public domain",
+        "start": r"SECTION 1",
+        "end": r"THE END",
+        "chapter": r"^\s*Part (\d+)\s*$",
     },
 }
 

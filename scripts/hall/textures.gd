@@ -103,10 +103,19 @@ static func material(kind: String) -> Material:
 			m.albedo_color = Color("1a1612")
 		"clay":
 			world_tex.call(_noise(Color("a86a48"), Color("8e5638"), Color("b87c58"), 13), 0.5)
+		"plane":
+			world_tex.call(_noise(Color("7c9a58"), Color("607c44"), Color("98b070"), 6), 1.0)
+		"bark":
+			world_tex.call(_noise(Color("a09a88"), Color("7e7868"), Color("c0b8a4"), 17), 0.5)
 		"rug":
 			m.albedo_texture = _rug()  # spans the rug's own surface, not the world
 		"plaque":
 			m.albedo_texture = _plaque()
+		"shield":
+			m.albedo_texture = _shield()
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+			m.alpha_scissor_threshold = 0.5
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_cache[kind] = m
 	return m
 
@@ -192,6 +201,34 @@ static func _rug() -> ImageTexture:
 	for y in H:
 		img.set_pixel(0, y, cream)
 		img.set_pixel(W - 1, y, cream)
+	return ImageTexture.create_from_image(img)
+
+
+## A Macedonian shield: a bronze rim round a blue field bearing the sixteen-rayed sun of
+## the Argead kings (the star of Vergina), in gold. Round; the corners are cut away.
+static func _shield() -> ImageTexture:
+	const N := 40
+	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
+	var c := (N - 1) / 2.0
+	var gold := Color("e0b640")
+	for y in N:
+		for x in N:
+			var dx := x - c
+			var dy := y - c
+			var r := sqrt(dx * dx + dy * dy)
+			if r > c:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+				continue
+			var col := Color("8a6a3a") if r > c - 2.5 else Color("2a3a7a")
+			var a := atan2(dy, dx)
+			var k := roundf(a / (TAU / 16.0))
+			var off := absf(a - k * (TAU / 16.0))  # angle away from the nearest ray
+			var reach := (c - 4.0) if int(k) % 2 == 0 else (c - 8.0)
+			if r <= 3.2 or (r > 2.0 and r < reach and off < 0.16 * (1.0 - r / reach) + 0.04):
+				col = gold
+			if r <= 1.2:
+				col = Color("a8862a")
+			img.set_pixel(x, y, col)
 	return ImageTexture.create_from_image(img)
 
 

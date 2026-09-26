@@ -50,6 +50,7 @@ var travelling := false
 var progress: RefCounted  # what the player has learned (Progress)
 var teacher := {}  # the author in person, if this place has one: {root, head, hand}
 var people: Array = []  # everyone here in person, the teacher first
+var squads: Array = []  # soldiers marching a circuit: {root, legs, path, leg, speed, step}
 var restored_columns := 0
 var music: Node  # the zone's music and sounds (none in tests)
 var birds: Array = []  # swallows: {node, wings, center, r, h, speed, angle, phase}
@@ -168,11 +169,24 @@ func _ready() -> void:
 
 
 ## Screenshot mode for checking the look without playing:
-##   godot --path . -- --shot=C:/out.png --view=hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read
+##   godot --path . -- --shot=C:/out.png --view=hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|lyceum_map
 func _stage_shot(view: String) -> void:
-	if not view in ["hub", "gate", "ruins", "head", "toad"]:
+	if view in ["lyceum", "walk", "lyceum_map", "march"]:
+		_load_place(doors[1]["work"])
+	elif not view in ["hub", "gate", "ruins", "head", "toad"]:
 		_load_place(doors[0]["work"])
 	match view:
+		"lyceum":
+			_stand(Vector3(1.5, 0, 16), Vector3(-6, 0, -8))
+		"walk":
+			_stand(Vector3(-6.5, 0, 9.5), Vector3(-6.5, 0, -10))
+			people[0]["root"].position = Vector3(-6.5, 0, 4.0)
+			people[0]["root"].rotation.y = 0.0
+		"march":
+			_stand(Vector3(37, 0, 9), Vector3(30, 0, 15))  # their shield side
+		"lyceum_map":
+			_stand(spots["map"], spots["map"] + Vector3(-5, 0, 0))
+			activate(interactables.filter(func(i): return i["kind"] == "map")[0])
 		"gate":
 			_stand(spots["gate0"], Places.gate_spot(0))
 		"ruins":
@@ -263,6 +277,7 @@ func _load_place(to: String) -> void:
 	if music:
 		music.play("shore" if to == "hub" else Rooms.room(to).get("zone", "shore"))
 	people = built.get("people", [])
+	squads = built.get("squads", [])
 	teacher = people[0] if not people.is_empty() else {}
 	restored_columns = built.get("restored", 0)
 	here_name = built["name"]
@@ -787,7 +802,53 @@ func _animate_life(delta: float) -> void:
 		if is_instance_valid(sway[i]):
 			sway[i].rotation.z = sin(_t * 0.9 + i * 1.3) * 0.03
 			sway[i].rotation.x = cos(_t * 0.7 + i * 0.9) * 0.02
+	_animate_squads(delta)
 	_animate_toad(delta)
+
+
+## Soldiers march their circuit in step, the whole block turning at each corner.
+func _animate_squads(delta: float) -> void:
+	for sq in squads:
+		var root: Node3D = sq["root"]
+		if not is_instance_valid(root) or not sq.has("path"):
+			continue
+		var goal: Vector3 = sq["path"][sq["leg"]]
+		var d := goal - root.position
+		d.y = 0.0
+		if d.length() < 0.3:
+			sq["leg"] = (sq["leg"] + 1) % sq["path"].size()
+			continue
+		root.position += d.normalized() * minf(d.length(), sq["speed"] * delta)
+		root.rotation.y = lerp_angle(root.rotation.y, atan2(d.x, d.z), minf(1.0, delta * 2.0))
+		sq["step"] += delta * 5.5
+		for j in sq["legs"].size():
+			sq["legs"][j].rotation.x = sin(sq["step"] + (j % 2) * PI) * 0.5
+
+
+## A walking teacher paces between the points of his path; when you come close he stops,
+## turns to you, and waits, then walks on when you leave.
+func _walk(person: Dictionary, to: Vector3, delta: float, t: float) -> void:
+	var root: Node3D = person["root"]
+	var legs: Array = person.get("legs", [])
+	var k := minf(1.0, delta * 4.0)
+	if to.length() < 4.0 and to.z > -0.5:
+		var face := player.global_position - root.position
+		root.rotation.y = lerp_angle(root.rotation.y, atan2(face.x, face.z), k)
+		for leg in legs:
+			leg.rotation.x = lerpf(leg.rotation.x, 0.0, k)
+		return
+	var path: Array = person["path"]
+	var leg_i: int = person.get("leg", 0)
+	var goal: Vector3 = path[leg_i]
+	var d := goal - root.position
+	d.y = 0.0
+	if d.length() < 0.25:
+		person["leg"] = (leg_i + 1) % path.size()
+		return
+	root.position += d.normalized() * minf(d.length(), person.get("speed", 1.0) * delta)
+	root.rotation.y = lerp_angle(root.rotation.y, atan2(d.x, d.z), k)
+	for j in legs.size():
+		legs[j].rotation.x = sin(t * 6.0 + j * PI) * 0.45
 
 
 ## The toad stays a little behind you and to the right, hops to catch up, and faces you when
@@ -843,6 +904,8 @@ func _animate_people(delta: float) -> void:
 		root.scale.y = 1.0 + 0.008 * sin(t * 1.6)
 		var to: Vector3 = root.to_local(player.global_position)
 		var near := to.length() < 6.0 and to.z > 0.0
+		if person.has("path"):
+			_walk(person, to, delta, t)
 		var want_yaw := clampf(atan2(to.x, to.z), -0.9, 0.9) if near else 0.0
 		var want_pitch := -0.12 if near else 0.35 + 0.05 * sin(t * 0.7)
 		var k := minf(1.0, delta * 3.0)
@@ -857,6 +920,8 @@ func _nearest() -> Dictionary:
 	var best_d := INF
 	var at := player.global_position
 	for it in interactables:
+		if it.has("follow") and is_instance_valid(it["follow"]):
+			it["pos"] = it["follow"].global_position  # someone who moves about
 		var to: Vector3 = it["pos"] - at
 		to.y = 0.0
 		var d := to.length()

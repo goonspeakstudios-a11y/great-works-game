@@ -13,6 +13,7 @@ const BELL_NOTES := [1.0, 1.1892, 1.3348, 1.4983, 1.7818]  # D minor pentatonic 
 const ZONES := {
 	"shore": {"music": ["shore", -8.0], "sounds": {"waves": -15.0, "wind": -18.0, "fire": -22.0}, "bells": true},
 	"sicily": {"music": ["sicily", -9.0], "sounds": {"cicadas": -22.0, "waves": -24.0, "fountain": -26.0, "wind": -24.0}, "bells": false},
+	"athens": {"music": ["athens", -10.0], "sounds": {"birds": -20.0, "stream": -22.0, "wind": -27.0}, "bells": false},
 }
 
 var zone := ""

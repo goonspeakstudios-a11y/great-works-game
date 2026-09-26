@@ -72,6 +72,46 @@ MAPS = {
             {"name": "Palmyra", "note": "Zenobia's city", "at": [38.27, 34.55]},
         ],
     },
+    "335bc": {
+        "title": "The world in 335 BC",
+        "bounds": [-11.0, 58.0, 20.0, 57.0],
+        "px_per_deg": 4.0,
+        "regions": [
+            {"name": "Persian Empire", "sub": "King Darius III", "color": [196, 146, 48], "label": [44.0, 34.5],
+             "poly": [(26.0, 40.6), (26.3, 41.6), (29.0, 41.4), (33.0, 42.1), (36.0, 42.0), (41.5, 41.8),
+                      (46.0, 41.0), (50.0, 40.0), (54.0, 38.5), (58.5, 38.0), (58.5, 24.5), (56.5, 24.0),
+                      (51.5, 27.0), (48.5, 29.8), (44.5, 31.0), (42.0, 33.5), (39.0, 34.0), (37.5, 32.0),
+                      (36.5, 29.0), (34.5, 27.5), (33.0, 24.0), (29.0, 24.0), (25.0, 29.5), (25.1, 31.8),
+                      (29.0, 31.3), (34.2, 31.4), (35.6, 36.9), (30.0, 36.6), (27.5, 37.0), (26.2, 39.0)]},
+            {"name": "Macedon", "sub": "King Alexander, aged 21; Greece under his hand", "color": [70, 104, 138], "label": [25.2, 43.6],
+             "poly": [(19.2, 41.8), (19.5, 42.6), (22.0, 42.6), (24.0, 42.1), (26.0, 41.7), (26.5, 40.8),
+                      (24.5, 40.4), (23.5, 39.8), (22.8, 39.2), (23.2, 38.5), (24.2, 38.0), (23.2, 37.4),
+                      (22.6, 36.5), (21.5, 36.8), (21.0, 38.0), (20.5, 39.0), (20.0, 40.0), (19.5, 41.0)]},
+            {"name": "Carthage", "sub": "the sea's traders", "color": [124, 58, 96], "label": [6.0, 33.0],
+             "poly": [(-2.0, 35.5), (3.0, 36.9), (8.5, 37.2), (11.2, 37.2), (11.3, 33.5), (15.5, 32.7),
+                      (19.5, 30.5), (19.5, 29.5), (10.0, 31.5), (6.0, 34.0), (0.0, 34.2), (-2.0, 34.8)]},
+            {"name": "Carthage", "sub": "", "color": [124, 58, 96],
+             "poly": [(12.0, 38.3), (13.5, 38.2), (13.5, 37.2), (12.4, 37.5)]},
+            {"name": "Carthage", "sub": "", "color": [124, 58, 96],
+             "poly": [(8.0, 41.1), (9.9, 41.1), (9.9, 38.9), (8.2, 38.9)]},
+            {"name": "Rome", "sub": "a small republic", "color": [150, 58, 42], "label": [12.5, 41.9],
+             "poly": [(11.5, 42.5), (13.0, 42.7), (14.3, 41.4), (15.0, 40.8), (14.2, 40.5), (12.5, 41.4), (11.8, 42.1)]},
+        ],
+        "others": [
+            {"name": "Celts", "at": [3.0, 47.0]},
+            {"name": "Scythians", "at": [34.0, 48.0]},
+            {"name": "Illyrians", "at": [15.5, 45.4]},
+            {"name": "Arabia", "at": [44.0, 24.0]},
+            {"name": "Libya", "at": [16.0, 26.0]},
+        ],
+        "pins": [
+            {"name": "Athens", "note": "the Lyceum, his new school", "at": [23.73, 37.98], "main": True},
+            {"name": "Stagira", "note": "his birthplace", "at": [23.75, 40.53]},
+            {"name": "Pella", "note": "where he taught the boy Alexander", "at": [22.52, 40.80], "side": "left"},
+            {"name": "Mytilene", "note": "where he studied the creatures of the sea", "at": [26.55, 39.10], "side": "below"},
+            {"name": "Persepolis", "note": "Darius's capital; Alexander burns it in 330", "at": [52.89, 29.93]},
+        ],
+    },
 }
 
 
@@ -188,7 +228,7 @@ def build(map_id: str) -> None:
         "title": spec["title"],
         "size": [w, h],
         "regions": [{"name": r["name"], "sub": r["sub"], "color": r["color"], "label": px(r["label"])}
-                    for r in spec["regions"]],
+                    for r in spec["regions"] if r.get("label")],  # an island of a region carries no name
         "others": [{"name": o["name"], "label": px(o["at"])} for o in spec["others"]],
         "pins": [{"name": p["name"], "note": p["note"], "at": px(p["at"]), "main": p.get("main", False),
                   "side": p.get("side", "right")}  # which side of the pin its name sits on
