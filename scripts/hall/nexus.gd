@@ -247,7 +247,12 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 
 	# the base of the Tower: a plinth you walk round, 17 column slots, the altar and its beam
 	for step in [[6.5, 0.0], [6.0, 0.35], [5.6, 0.7]]:
-		Kit.cylinder(world, Vector3(0, step[1], 0), step[0], 0.35, "voidstone", true, 12)
+		Kit.cylinder(world, Vector3(0, step[1], 0), step[0], 0.35, "voidstone", false, 12)
+	var slope := CylinderMesh.new()  # an unseen gentle slope over the steps, so you walk straight up
+	slope.top_radius = 5.5
+	slope.bottom_radius = 6.9
+	slope.height = PLINTH_TOP
+	Kit.solid(world, slope.create_convex_shape(), Vector3(0, PLINTH_TOP / 2.0, 0))
 	var standing: Array = []
 	for k in SLOTS:
 		var work: String = doors[k]["work"] if k < doors.size() else ""
@@ -373,6 +378,8 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 	var bench := Places.seat(world, Vector3(-10.92, 0, 7.94), Vector3(-0.809, 0, 0.588), "Sit and look into the dark")
 	spots["bench"] = bench["pos"]
 
+	for body in world.find_children("Rails*", "StaticBody3D", true, false):
+		body.free()  # the edges are open: step off and the void gives you back where you came in
 	var out: Array = gates + lines + shades + others + [bench]
 	var looks := {"saturation": saturation, "bridge": "whole" if whole else "broken", "greek_door": "warm" if warm else "cold",
 		"shades": "lifted" if lifted else "bowed", "ember": ember, "stars": clampi(points, 0, 800), "dust": dust.amount,

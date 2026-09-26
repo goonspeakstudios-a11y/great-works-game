@@ -170,7 +170,7 @@ func test_the_nexus_music_follows_its_pieces() -> void:
 			check(not shore.has(l["file"]), "%s is the Nexus's own, not the Shore's" % l["file"])
 
 
-func test_you_cannot_walk_off_the_edge() -> void:
+func test_you_can_walk_off_the_edge() -> void:
 	var built := _build(Nexus.for_stage(0, Rooms.doors()))
 	var ground: Array = built["ground"]
 	var rails: Array = built["rails"]
@@ -193,7 +193,8 @@ func test_you_cannot_walk_off_the_edge() -> void:
 				var q: Vector2 = g["c"] + dir * (g["r"] + 0.2)
 				if not _on_ground(ground, q) and not _crosses_rail(rails, p, q):
 					misses += 1
-	check_eq(misses, 0, "every step off an edge meets a rail")
+	check(misses == 0, "the rails still trace every edge (the toad keeps inside them)")
+	check_eq(built["holder"].find_children("Rails*", "StaticBody3D", true, false).size(), 0, "but you can walk off")
 	built["holder"].free()
 
 
@@ -254,16 +255,16 @@ func test_the_void_has_no_sky() -> void:
 	hall.free()
 
 
-func test_the_rift_brings_you_back_to_greeces_door() -> void:
+func test_the_brazier_brings_you_back_to_greeces_door() -> void:
 	var hall := _hall()
 	hall.activate(_door(hall, "greece"))
 	check_eq(hall.here, "hub", "Greece's door leads to the Shore")
 	var rift: Dictionary = hall.interactables[-1]
-	check_eq(rift.get("to", ""), "nexus", "the rift is the Shore's last interactable")
+	check_eq(rift.get("to", ""), "nexus", "the brazier is the Shore's last interactable")
 	check_eq(hall.interactables[0]["to"], "porphyry-isagoge", "gateway 1 is still first")
-	check(hall._nearest().get("to", "") != "nexus", "you arrive facing gateway 1, not the rift")
+	check(hall._nearest().get("to", "") != "nexus", "you arrive facing gateway 1, not the brazier")
 	hall.activate(rift)
-	check_eq(hall.here, "nexus", "the rift leads back")
+	check_eq(hall.here, "nexus", "the brazier leads back")
 	check(hall.player.position.distance_to(Vector3(0, 0.05, -29.5)) < 0.1, "you arrive at Greece's door")
 	check(hall.player.facing().dot(Vector3(0, 0, 1)) > 0.95, "facing the Tower")
 	check(hall._nearest().get("world", "") != "greece", "the door does not prompt behind you")
