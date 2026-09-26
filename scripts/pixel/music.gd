@@ -1,12 +1,13 @@
 extends Node
-## Each zone's music and sounds, as layers. The Shore: its slow, grand theme, waves far below,
-## wind, the fire, and distant bells. A book's place starts lost to the world, and you hear it:
-## only the faint echo of its tune and the wind. Each piece of the place you bring back by
-## understanding brings back its own layer (the stream, the birds, the walking bass, the warm
-## drone, the teacher's own melody, the soldiers' drum), until the whole track plays and the
-## echo is gone. Layers of one track loop in step. Passing a gateway crossfades between zones;
-## sitting down swells the music a little. Files come from tools/make_music.py; reverb lives on
-## the Music bus.
+## Each zone's music and sounds, as layers. The Nexus, where the game begins: a slow prelude on
+## glass chimes, heard at first only as an echo in the void. The Shore: its slow, grand theme,
+## waves far below, wind, the fire, and distant bells. A book's place starts lost to the world,
+## and you hear it: only the faint echo of its tune and the wind. Each piece of the place you
+## bring back by understanding brings back its own layer (the stream, the birds, the walking
+## bass, the warm drone, the teacher's own melody, the soldiers' drum), until the whole track
+## plays and the echo is gone. Layers of one track loop in step. Passing a gateway crossfades
+## between zones; sitting down swells the music a little. Files come from tools/make_music.py;
+## reverb lives on the Music bus.
 
 const BUS := "Music"
 const FADE := 2.5
@@ -18,6 +19,17 @@ const BELL_NOTES := [1.0, 1.1892, 1.3348, 1.4983, 1.7818]  # D minor pentatonic 
 ## back before it is heard), "until" (the piece whose return silences it), "fade" (dB it drops
 ## for each piece back), and "loud_db" with "loud_until" (louder until that piece is back).
 const ZONES := {
+	# The Nexus: while it lies in pieces, only a sunken echo of its prelude and the void's
+	# breath. Each piece mended brings back a layer (C minor; the Shore's bells are D minor).
+	"nexus": {"bells": false, "layers": [
+		{"file": "nexus_ghost", "db": -9.0, "music": true, "until": "greek_door", "fade": 1.5},
+		{"file": "nexus_drone", "db": -9.0, "music": true, "needs": "ember"},
+		{"file": "nexus_bass", "db": -9.0, "music": true, "needs": "path"},
+		{"file": "nexus_arp", "db": -9.0, "music": true, "needs": "greek_door"},
+		{"file": "nexus_pad", "db": -9.0, "music": true, "needs": "colour"},
+		{"file": "nexus_voices", "db": -9.0, "music": true, "needs": "shades"},
+		{"file": "fire", "db": -26.0, "needs": "ember"},
+		{"file": "void", "db": -20.0, "loud_db": -13.0, "loud_until": "ember"}]},
 	"shore": {"bells": true, "layers": [
 		{"file": "shore", "db": -8.0, "music": true},
 		{"file": "waves", "db": -15.0}, {"file": "wind", "db": -18.0}, {"file": "fire", "db": -22.0}]},
