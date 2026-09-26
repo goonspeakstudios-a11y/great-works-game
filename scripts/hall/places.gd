@@ -83,6 +83,7 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 ## turned toward the Shore; the haze nearly hides it. Returns the eyes, which the Hall blinks.
 static func far_toad(world: Node3D, at: Vector3) -> Array:
 	var g := Kit.group(world, at, Kit.face_yaw(at, Vector3(0, at.y, 0)))
+	g.scale = Vector3.ONE * 1.3
 	var eyes: Array = []
 	for side in [-17.0, 17.0]:
 		var eye := Kit.group(g, Vector3(side, 0, 0))
