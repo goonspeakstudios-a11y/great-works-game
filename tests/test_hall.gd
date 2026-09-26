@@ -644,8 +644,8 @@ func test_the_teacher_is_told_how_far_his_place_is_back() -> void:
 	hall.travel("aristotle-categories")
 	hall._open_ask("aristotle-categories")
 	var state: String = hall._ask_room["state"]
-	check(state.contains("yourself again") and not state.contains("pale shade"), "five pieces back: he knows he is himself again")
-	check(state.contains("The morning comes back to Athens."), "and what has come back")
+	check(state.contains("you are yourself") and not state.contains("pale shade"), "five pieces back: he knows he is himself")
+	check(state.contains("It is morning in Athens.") and state.contains("Never promise"), "and how things stand, with no promise")
 	hall.free()
 
 

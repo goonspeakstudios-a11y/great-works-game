@@ -264,7 +264,7 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 			columns_seen.append(work)
 			var title := _title(doors[k])
 			others.append({"kind": "look", "pos": Kit.sky_point(bearing, 0.0, 7.2), "text": "Look at the column of the %s" % title,
-				"note": "%s. You mastered it, and its column stands again." % title})
+				"note": "%s. Its column stands." % title})
 	var tower := Kit.tower(world, Vector3(0, PLINTH_TOP, 0), standing, tier_whole)
 	Kit.box(world, Vector3(0, 1.45, 0), Vector3(1.6, 0.8, 1.6), "stone", false)  # the altar
 	var beam_q := QuadMesh.new()

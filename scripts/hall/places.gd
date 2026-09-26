@@ -371,7 +371,7 @@ static func lyceum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	squad["path"] = [Vector3(30, 0, -22), Vector3(38, 0, -22), Vector3(38, 0, 22), Vector3(30, 0, 22)]
 	var note := "Macedonian foot soldiers, the men of Philip and now of Alexander. Each carries the sarissa, a pike nearly six metres long, and a small shield with the sixteen-rayed sun of the Argead kings. Since Chaeronea, three years ago, they are the masters of Greece; next spring they cross into Asia."
 	if not living:
-		note = "What is left of Philip's and Alexander's men, still drilling on the meadow long after the world has forgotten them. Their sarissas are snapped, and the sun of Macedon on their shields has gone green with age. They will be men again when this place is whole."
+		note = "What is left of Philip's and Alexander's men, still drilling on the meadow long after the world has forgotten them. Their sarissas are snapped, and the sun of Macedon on their shields has gone green with age."
 	out.append({"kind": "person", "pos": Vector3(30, 0, 18), "follow": squad["root"],
 		"text": "Watch the Macedonians" if living else "Watch the dead march", "note": note})
 	spots["walk"] = Vector3(-6.5, 0, 2.0)

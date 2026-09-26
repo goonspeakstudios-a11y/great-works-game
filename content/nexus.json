@@ -1,19 +1,63 @@
 {
  "name": "The Nexus",
- "first": "Your mind lies in pieces.",
- "hint": "One door still glows. Go to it.",
- "rule": "Each idea you understand lights a star. Each book you master raises a column of the Tower.",
+ "first": "It is in pieces.",
+ "hint": "One door is warm.",
+ "rule": "Some stars are ideas. Some columns are books. They are what they are.",
  "restores": [
-  {"what": "ember",      "need": {"points": 1},  "line": "A small fire kindles at the foot of the Tower."},
-  {"what": "path",       "need": {"points": 3},  "line": "The broken way to Greece knits itself whole."},
-  {"what": "greek_door", "need": {"books": 1},   "line": "The door of Greece burns warm again."},
-  {"what": "colour",     "need": {"books": 2},   "line": "A little colour seeps back into the void."},
-  {"what": "shades",     "need": {"books": 9},   "line": "The shades at the edge lift their heads, and sing."},
-  {"what": "greek_tier", "need": {"books": 17},  "line": "The Greek tier of the Tower stands whole."}
+  {
+   "what": "ember",
+   "need": {
+    "points": 1
+   },
+   "line": "There is a fire at the foot of the Tower."
+  },
+  {
+   "what": "path",
+   "need": {
+    "points": 3
+   },
+   "line": "The way to Greece is whole."
+  },
+  {
+   "what": "greek_door",
+   "need": {
+    "books": 1
+   },
+   "line": "The door of Greece is warm."
+  },
+  {
+   "what": "colour",
+   "need": {
+    "books": 2
+   },
+   "line": "There is some colour in the void."
+  },
+  {
+   "what": "shades",
+   "need": {
+    "books": 9
+   },
+   "line": "The shades at the edge have lifted their heads. They sing."
+  },
+  {
+   "what": "greek_tier",
+   "need": {
+    "books": 17
+   },
+   "line": "The Greek tier of the Tower stands."
+  }
  ],
- "saturation": [0.2, 0.24, 0.28, 0.32, 0.45, 0.52, 0.6],
- "star": "A new star burns in the dark.",
- "stars": "{n} new stars burn in the dark.",
- "column": "A column of the Tower stands again ({k} of 17).",
- "columns": "{n} columns of the Tower stand again ({k} of 17)."
+ "saturation": [
+  0.2,
+  0.24,
+  0.28,
+  0.32,
+  0.45,
+  0.52,
+  0.6
+ ],
+ "star": "There is a new star.",
+ "stars": "There are {n} new stars.",
+ "column": "A column stands.",
+ "columns": "{n} columns stand."
 }

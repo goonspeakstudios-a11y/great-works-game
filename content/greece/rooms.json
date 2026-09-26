@@ -86,15 +86,15 @@
     ],
     "home": "house",
     "props": "your tree carved on the wall, the busts of Aristotle and Plotinus, the map of the world",
-    "greeting_lost": "A visitor? It has been so long. This house has faded, and I with it. But if you come to understand what I wrote, it will come back. Shall I teach you?",
+    "greeting_lost": "A visitor. The house is grey, and so am I. That is how it is. You came about the book, I think?",
     "restores": [
       {
         "what": "water",
-        "line": "Water fills the pool again."
+        "line": "Water fills the pool."
       },
       {
         "what": "leaves",
-        "line": "The olives and cypresses are green again, and the cicadas sing."
+        "line": "The olives and cypresses are green, and the cicadas sing."
       },
       {
         "what": "lamps",
@@ -102,15 +102,15 @@
       },
       {
         "what": "sun",
-        "line": "The sun comes back to Sicily."
+        "line": "The sun is on Sicily."
       },
       {
         "what": "teacher",
-        "line": "Porphyry is himself again, and his lyre with him."
+        "line": "Porphyry is himself, and his lyre with him."
       },
       {
         "what": "household",
-        "line": "The household is home: the fire is lit, and his copyist is back at work."
+        "line": "The household is home: the fire is lit, and his copyist is at work."
       }
     ]
   },
@@ -199,31 +199,31 @@
     ],
     "home": "school",
     "props": "the busts of Plato and Alexander, the map of the world in 335 BC, the stream, the walkway you pace, the soldiers drilling on the meadow",
-    "greeting_lost": "You can see me? Good. This was my school. The world forgot it, and it went grey. Learn the ten with me and it will come back. Walk with me.",
+    "greeting_lost": "You can see me. This was my school. It is grey now; the world forgot it. Walk with me, if you are walking.",
     "restores": [
       {
         "what": "water",
-        "line": "The Ilissos runs again."
+        "line": "The Ilissos runs."
       },
       {
         "what": "leaves",
-        "line": "The plane trees come into leaf, and the birds return."
+        "line": "The plane trees are in leaf, and there are birds."
       },
       {
         "what": "walkway",
-        "line": "The walkway stands whole again."
+        "line": "The walkway stands whole."
       },
       {
         "what": "sun",
-        "line": "The morning comes back to Athens."
+        "line": "It is morning in Athens."
       },
       {
         "what": "teacher",
-        "line": "Aristotle is himself again, and his music with him."
+        "line": "Aristotle is himself, and his music with him."
       },
       {
         "what": "soldiers",
-        "line": "Alexander's men are men again."
+        "line": "Alexander's men are men."
       }
     ]
   }

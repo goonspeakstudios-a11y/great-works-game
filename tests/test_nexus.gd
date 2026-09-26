@@ -63,8 +63,8 @@ func test_the_game_starts_in_the_nexus() -> void:
 	check_eq(hall.here_name, "The Nexus", "the corner says so")
 	check_eq(hall._view.size, Vector2i(320, 180), "at Greece's sharpness")
 	check_eq(hall.restored_here, [], "a new game finds it broken")
-	check_eq(hall._quip, "Your mind lies in pieces.", "one short line on arrival")
-	check_eq(hall._hint, "One door still glows. Go to it.", "and one goal")
+	check_eq(hall._quip, "It is in pieces.", "one short line on arrival")
+	check_eq(hall._hint, "One door is warm.", "and one plain fact")
 	hall.free()
 
 

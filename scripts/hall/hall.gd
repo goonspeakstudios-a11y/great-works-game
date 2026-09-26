@@ -929,14 +929,14 @@ func _state_note(work: String) -> String:
 	var home: String = room.get("home", "home")
 	var stage := _stage(work)
 	if stage >= restores.size():
-		return "Where you are now: your %s is alive again, brought back by what this visitor came to understand. You are glad of it." % home
+		return "Where you are now: your %s is alive. That is simply how it is." % home
 	var back: Array = restores.slice(0, stage)
 	var himself := back.any(func(r): return r["what"] == "teacher")
-	var note := "Where you are now: your %s had faded almost out of the world, and %s. Each point the visitor truly understands brings a piece of it back (%d of %d so far)." % [
-		home, "you are yourself again" if himself else "you are only a pale shade of yourself", stage, restores.size()]
+	var note := "Where you are now: your %s has faded almost out of the world, and %s." % [
+		home, "you are yourself" if himself else "you are only a pale shade of yourself"]
 	if not back.is_empty():
-		note += " Already back: %s" % " ".join(back.map(func(r): return r["line"]))
-	return note + " You may say so once, in a few words, if it fits; never dwell on it."
+		note += " As it stands: %s" % " ".join(back.map(func(r): return r["line"]))
+	return note + " That is simply how things are. Never promise the visitor it will change or say what would change it; never hope aloud. You may remark on it once, flatly, in a few words."
 
 
 ## His first words: a greeting the first time, a welcome back that picks up where you left off.
