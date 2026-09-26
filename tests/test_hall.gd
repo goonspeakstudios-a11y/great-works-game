@@ -39,7 +39,7 @@ func test_request_is_grounded_in_the_book() -> void:
 	check_eq(body["model"], "claude-haiku-4-5", "uses the cheap model")
 	check(str(body["system"]).contains("Porphyry"), "speaks as Porphyry")
 	var content: Array = body["messages"][-1]["content"]
-	check_eq(content.size(), 5, "four passages plus the question")
+	check_eq(content.size(), 6, "four passages, the question, and the keep-it-short note")
 	for i in 4:
 		check_eq(content[i]["type"], "document", "passage %d is a document" % i)
 		check(content[i]["citations"]["enabled"], "citations are on for passage %d" % i)
@@ -99,6 +99,13 @@ func test_every_fact_gets_its_own_plaque() -> void:
 	for s in spots:
 		seen[str(s)] = true
 	check_eq(seen.size(), 8, "eight facts, eight places")
+
+
+func test_book_pages_fit_the_screen() -> void:
+	var book := Library.load_book("porphyry-isagoge")
+	for c in book.chunks:
+		var page: String = Hall.excerpt(c["text"], 360)
+		check(page.length() <= 370, "page from %s fits (%d chars)" % [c["where"], page.length()])
 
 
 func test_plural_filler_words_are_ignored() -> void:

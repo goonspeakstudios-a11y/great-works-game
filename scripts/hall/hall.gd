@@ -114,6 +114,13 @@ func _ready() -> void:
 	if not offline:
 		add_child(Music.new())
 	_ok = true
+	if _args.has("demo"):
+		var demo: Node = load("res://scripts/hall/demo.gd").new()
+		demo.hall = self
+		if _args.get("shots", "") != "":
+			demo.shots_dir = _args["shots"]
+		add_child(demo)
+		demo.run()
 
 
 ## Screenshot mode for checking the look without playing:
@@ -483,6 +490,19 @@ static func _esc(s: String) -> String:
 	return s.replace("[", "[lb]")
 
 
+## Whole sentences from the start of a passage, up to about n characters, so a page fits the screen.
+static func excerpt(s: String, n: int) -> String:
+	s = s.replace("\n", " ").strip_edges()
+	if s != "" and s[0] == s[0].to_lower() and s[0] != s[0].to_upper():  # starts mid-sentence
+		var start := s.find(". ")
+		if start > 0 and start < s.length() / 2:
+			s = s.substr(start + 2)
+	if s.length() <= n:
+		return s
+	var cut := s.left(n).rfind(". ")
+	return s.left(cut + 1) + " ..." if cut > n / 3 else _shorten(s, n)
+
+
 static func _shorten(s: String, n: int) -> String:
 	s = s.replace("\n", " ").strip_edges()
 	return s if s.length() <= n else s.left(n).rstrip(" ,;") + "..."
@@ -571,7 +591,7 @@ func activate(it: Dictionary) -> void:
 			var book := _book(it["work"])
 			if book:
 				var p: Dictionary = book.random_passage()
-				_show_read("[i]%s, %s[/i]\n\n%s" % [p["where"], book.translation, _esc(_shorten(p["text"], 700))])
+				_show_read("[i]%s, %s[/i]\n\n%s" % [p["where"], book.translation, _esc(excerpt(p["text"], 360))])
 		"author":
 			_open_ask(it["work"])
 

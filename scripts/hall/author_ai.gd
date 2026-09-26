@@ -9,14 +9,16 @@ signal answered(reply: Dictionary)
 
 const MODEL := "claude-haiku-4-5"
 const URL := "https://api.anthropic.com/v1/messages"
-const MAX_TOKENS := 500
+const MAX_TOKENS := 350
 const PASSAGES := 4
 const KEEP_EXCHANGES := 2
 const SECRETS := "user://secrets.cfg"
+## Sent right after the question, where the model heeds it most.
+const BRIEF := "(Answer in two or three short, plain sentences: 60 words at most.)"
 const RULES := """How to answer:
 - Speak as yourself, in the first person, warm and a little weary, like an old teacher in a quiet ruin.
 - Use plain, simple words a twelve-year-old could follow. One everyday example helps.
-- Keep it short: two to five sentences, never more than 100 words. Plain text only: no lists, headings, asterisks or other formatting.
+- Keep it short: two or three short sentences, at most 60 words. Start with the answer itself, no greeting or scene-setting. Plain text only: no lists, headings, asterisks or other formatting.
 - The visitor is a stranger from a much later age, not one of your students. Don't call them by a name.
 - Base what you say on the passages from your book given with the question, and cite them. Explain them in your own simple words; don't repeat the old translation's wording, since the visitor sees the quotes separately.
 - If those passages don't cover it, say so plainly and give only the simple gist you are sure of. Never invent a quotation.
@@ -54,6 +56,7 @@ static func build_request(room: Dictionary, passages: Array, question: String, p
 			"citations": {"enabled": true},
 		})
 	content.append({"type": "text", "text": question})
+	content.append({"type": "text", "text": BRIEF})
 	messages.append({"role": "user", "content": content})
 	return {"model": MODEL, "max_tokens": MAX_TOKENS, "system": system, "messages": messages}
 
@@ -76,9 +79,10 @@ static func parse_reply(data: Dictionary) -> Dictionary:
 			if q != "" and not seen.has(q):
 				seen[q] = true
 				quotes.append({"text": q, "where": str(c.get("document_title", ""))})
-	if text.strip_edges() == "":
+	text = text.replace("*", "").strip_edges()  # no markdown in the game's text
+	if text == "":
 		return {"text": "", "quotes": [], "error": "I have nothing to say to that. Try asking another way."}
-	return {"text": text.strip_edges(), "quotes": quotes, "error": ""}
+	return {"text": text, "quotes": quotes, "error": ""}
 
 
 func history_for(work: String) -> Array:
