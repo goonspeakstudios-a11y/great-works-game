@@ -15,6 +15,8 @@ const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
 const Player := preload("res://scripts/hall/player.gd")
 const Progress := preload("res://scripts/hall/progress.gd")
+const Worlds := preload("res://scripts/hall/worlds.gd")
+const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 const RES := Vector2i(320, 180)
@@ -211,6 +213,9 @@ func _load_place(to: String) -> void:
 	for c in world.get_children():
 		world.remove_child(c)
 		c.queue_free()
+	var world_id: String = "greece" if to == "hub" else Rooms.room(to).get("world", "greece")
+	_view.size = Worlds.render_size(world_id, DisplayServer.window_get_size())
+	Kit.detail = Worlds.detail(world_id)
 	var built: Dictionary = Places.hub(world, doors, progress) if to == "hub" else Places.place(world, to, Rooms.room(to))
 	if to != "hub":
 		progress.visit(to)

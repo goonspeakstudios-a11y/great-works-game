@@ -7,6 +7,9 @@ extends RefCounted
 
 const Tex := preload("res://scripts/hall/textures.gd")
 
+## How round curved shapes are: 1 in Greece (chunky), higher in later, sharper worlds.
+static var detail := 1
+
 
 static func face_yaw(from: Vector3, to: Vector3) -> float:
 	return atan2(to.x - from.x, to.z - from.z)
@@ -61,7 +64,7 @@ static func cylinder(parent: Node3D, base: Vector3, radius: float, height: float
 	cm.bottom_radius = radius
 	cm.top_radius = radius if top_radius < 0.0 else top_radius
 	cm.height = height
-	cm.radial_segments = sides
+	cm.radial_segments = sides * detail
 	cm.rings = 1
 	var mi := mesh(parent, cm, mat, base + Vector3(0, height / 2.0, 0))
 	if is_solid:
@@ -77,8 +80,8 @@ static func blob(parent: Node3D, center: Vector3, radius: float, mat: String, sq
 	var sm := SphereMesh.new()
 	sm.radius = radius
 	sm.height = radius * 2.0
-	sm.radial_segments = sides
-	sm.rings = maxi(3, sides / 2)
+	sm.radial_segments = sides * detail
+	sm.rings = maxi(3, sides * detail / 2)
 	return mesh(parent, sm, mat, center, Vector3.ZERO, squash)
 
 
@@ -180,7 +183,7 @@ static func fallen_column(parent: Node3D, at: Vector3, yaw: float, length: float
 		drum.top_radius = 0.3
 		drum.bottom_radius = 0.3
 		drum.height = length / 3.0 - 0.08
-		drum.radial_segments = 8
+		drum.radial_segments = 8 * detail
 		mesh(g, drum, "marble", Vector3(0, 0.3, (k - 1) * length / 3.0), Vector3(PI / 2.0, 0, 0.2 * k))
 	var s := BoxShape3D.new()
 	s.size = Vector3(0.6, 0.6, length)
@@ -413,6 +416,6 @@ static func _cyl(radius: float, height: float) -> CylinderMesh:
 	c.top_radius = radius
 	c.bottom_radius = radius
 	c.height = height
-	c.radial_segments = 6
+	c.radial_segments = 6 * detail
 	c.rings = 1
 	return c

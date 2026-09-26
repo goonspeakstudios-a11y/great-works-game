@@ -263,3 +263,24 @@ func test_porphyry_sits_at_his_desk() -> void:
 	hall.travel("porphyry-isagoge")
 	check(hall.teacher.has("head") and is_instance_valid(hall.teacher["head"]), "Porphyry is there in person")
 	hall.free()
+
+
+const Worlds := preload("res://scripts/hall/worlds.gd")
+const Kit := preload("res://scripts/hall/kit.gd")
+
+
+func test_the_world_sharpens_as_history_moves_on() -> void:
+	check_eq(Worlds.render_size("greece", Vector2i(1280, 720)), Vector2i(320, 180), "Greece is PS1-sharp")
+	check_eq(Worlds.render_size("rome", Vector2i(1280, 720)), Vector2i(640, 360), "Rome is PS2-sharp")
+	check(Worlds.detail("rome") > Worlds.detail("greece"), "Rome's shapes are rounder than Greece's")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	check_eq(hall._view.size, Vector2i(320, 180), "the Shore renders at Greece's size")
+	var holder := Node3D.new()
+	Kit.detail = 2
+	var col: MeshInstance3D = Kit.cylinder(holder, Vector3.ZERO, 1.0, 1.0, "stone", false, 8)
+	check_eq((col.mesh as CylinderMesh).radial_segments, 16, "more detail means more sides")
+	Kit.detail = 1
+	holder.free()
+	hall.free()
