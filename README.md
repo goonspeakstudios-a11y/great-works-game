@@ -21,6 +21,7 @@ the reading-list map: `docs/greek-game-map.md`. The earlier 3D card slice is kep
   `%APPDATA%\Godot\app_userdata\Great Works\secrets.cfg` with `[anthropic]` and `api_key="sk-ant-..."`.
 - The authors need internet. The "Great Works (sandboxed)" shortcut's Sandboxie box blocks internet.
 - Ask from the command line: `godot --headless --path . --script res://tools/ask_author.gd -- porphyry-isagoge "What is a genus?"`
+- The author teaches: a lesson plan per book (`lesson` in rooms.json), a check after each exchange marks what you have shown you understand (in your own words), progress is saved in `user://progress.json`; T opens your tablet. Try a lesson headless: `godot --headless --path . --script res://tools/teach_check.gd -- porphyry-isagoge "Teach me the next thing" "..."`
 - For a Steam release the key must move behind a small server, so players never hold it.
 
 ## Books

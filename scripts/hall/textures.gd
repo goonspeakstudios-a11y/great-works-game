@@ -8,6 +8,12 @@ static var _cache := {}
 static func material(kind: String) -> Material:
 	if _cache.has(kind):
 		return _cache[kind]
+	if kind.begins_with("#"):  # a plain colour, e.g. "#2e3a5a" for a robe
+		var c := StandardMaterial3D.new()
+		c.albedo_color = Color(kind)
+		c.roughness = 1.0
+		_cache[kind] = c
+		return c
 	var m := StandardMaterial3D.new()
 	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	m.roughness = 1.0

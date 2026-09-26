@@ -187,13 +187,19 @@ static func fallen_column(parent: Node3D, at: Vector3, yaw: float, length: float
 	solid(g, s, Vector3(0, 0.3, 0))
 
 
+## Columns of the Shore's temple that lie broken until books are mastered, in the order
+## they stand up again.
+const BROKEN_COLUMNS := [2, 5, 7, 9]
+
+
 ## A temple left standing in pieces: three steps, a ring of columns, some broken or fallen.
-static func temple_ruin(parent: Node3D, at: Vector3, yaw: float) -> void:
+## Each mastered book puts one broken column back up (restored = how many).
+static func temple_ruin(parent: Node3D, at: Vector3, yaw: float, restored: int = 0) -> void:
 	var g := group(parent, at, yaw)
 	for k in 3:
 		box(g, Vector3(0, 0.15 + k * 0.3, 0), Vector3(12.0 - k * 0.8, 0.3, 8.0 - k * 0.8), "marble")
 	var top := Vector3(0, 0.9, 0)
-	var broken := [2, 5, 7, 9]
+	var broken: Array = BROKEN_COLUMNS.slice(mini(restored, BROKEN_COLUMNS.size()))
 	var spots: Array = []
 	for x in [-4.5, -2.7, -0.9, 0.9, 2.7, 4.5]:
 		spots.append(Vector3(x, 0, -2.8))
@@ -238,13 +244,18 @@ static func stele(parent: Node3D, at: Vector3, yaw: float) -> Vector3:
 	return g.to_global(Vector3(0, 0, 1.1)) if g.is_inside_tree() else at + Vector3(sin(yaw), 0, cos(yaw)) * 1.1
 
 
-## A stone gateway. Open ones glow with the light of the place beyond.
-static func gateway(parent: Node3D, at: Vector3, yaw: float, open: bool) -> OmniLight3D:
+## A stone gateway. Open ones glow with the light of the place beyond; a mastered one
+## also burns with a flame on top.
+static func gateway(parent: Node3D, at: Vector3, yaw: float, open: bool, mastered: bool = false) -> OmniLight3D:
 	var g := group(parent, at, yaw)
 	for x in [-1.5, 1.5]:
 		box(g, Vector3(x, 1.8, 0), Vector3(0.6, 3.6, 0.6), "marble")
 	box(g, Vector3(0, 3.85, 0), Vector3(3.9, 0.5, 0.75), "marble", false)
 	box(g, Vector3(0, 0.08, 0), Vector3(3.8, 0.16, 1.2), "stone", false)
+	if mastered:
+		cylinder(g, Vector3(0, 4.1, 0), 0.35, 0.2, "bronze", false, 8, 0.5)
+		for p in [Vector3(0, 4.5, 0), Vector3(0.12, 4.4, 0.08)]:
+			blob(g, p, 0.2, "fire", Vector3(1.0, 1.7, 1.0), 5)
 	if open:
 		var q := QuadMesh.new()
 		q.size = Vector2(2.4, 3.4)
@@ -282,8 +293,48 @@ static func bust(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -> v
 	box(g, Vector3(0, 1.8, 0.2), Vector3(0.05, 0.1, 0.06), "marble", false)
 
 
+## A teacher sitting at a desk, facing the room: robe, arms on the desk, a head that can
+## turn toward a visitor. Returns {"root", "head", "hand"} so the Hall can bring him to life.
+static func teacher(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -> Dictionary:
+	var robe := "#" + str(look.get("robe", "2e3a5a"))
+	var skin := "#" + str(look.get("skin", "c49a78"))
+	var hair := "#" + str(look.get("beard_color", look.get("hair_color", "d0ccc4")))
+	var root := group(parent, at, yaw)
+	box(root, Vector3(0, 0.25, -0.05), Vector3(0.45, 0.5, 0.45), "wood")
+	box(root, Vector3(0, 0.6, 0.15), Vector3(0.5, 0.22, 0.55), robe, false)
+	box(root, Vector3(0, 0.3, 0.4), Vector3(0.44, 0.52, 0.2), robe, false)
+	cylinder(root, Vector3(0, 0.62, -0.02), 0.25, 0.62, robe, false, 8, 0.2)
+	blob(root, Vector3(0, 1.28, 0), 0.28, robe, Vector3(1.35, 0.55, 0.8), 8)
+	var hand: Node3D = group(root, Vector3.ZERO)
+	for x in [-0.24, 0.24]:
+		mesh(root, _cyl(0.08, 0.5), robe, Vector3(x, 1.08, 0.18), Vector3(-1.1, 0, 0))
+	blob(root, Vector3(-0.2, 0.92, 0.42), 0.07, skin)
+	blob(hand, Vector3(0.2, 0.92, 0.42), 0.07, skin)
+	var head: Node3D = group(root, Vector3(0, 1.52, 0.02))
+	blob(head, Vector3(0, 0.08, 0), 0.14, skin, Vector3(1.0, 1.15, 1.05), 8)
+	blob(head, Vector3(0, 0.16, -0.04), 0.14, hair, Vector3(1.05, 0.75, 1.05), 8)
+	if look.get("beard", "none") != "none":
+		blob(head, Vector3(0, -0.06, 0.07), 0.12, hair, Vector3(1.0, 1.5 if look.get("beard") == "long" else 0.9, 0.7), 6)
+	box(head, Vector3(0, 0.07, 0.14), Vector3(0.04, 0.07, 0.04), skin, false)
+	var body := BoxShape3D.new()
+	body.size = Vector3(0.6, 1.6, 0.9)
+	solid(root, body, Vector3(0, 0.8, 0.15))
+	return {"root": root, "head": head, "hand": hand}
+
+
+## A shelf of scrolls for the wall behind a writer.
+static func scroll_shelf(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	for y in [0.9, 1.5, 2.1]:
+		box(g, Vector3(0, y, 0), Vector3(1.8, 0.06, 0.35), "wood", false)
+		for k in 7:
+			mesh(g, _cyl(0.06, 0.32), "parchment", Vector3(-0.72 + k * 0.24, y + 0.09, 0), Vector3(PI / 2.0, 0, 0))
+	for x in [-0.92, 0.92]:
+		box(g, Vector3(x, 1.25, 0), Vector3(0.06, 2.5, 0.35), "wood", false)
+
+
 ## A writing desk with scrolls, an open scroll, an oil lamp and a stool.
-static func desk(parent: Node3D, at: Vector3, yaw: float) -> OmniLight3D:
+static func desk(parent: Node3D, at: Vector3, yaw: float, with_stool: bool = true) -> OmniLight3D:
 	var g := group(parent, at, yaw)
 	box(g, Vector3(0, 0.78, 0), Vector3(1.7, 0.08, 0.85), "wood")
 	for p in [Vector3(-0.75, 0.37, -0.35), Vector3(0.75, 0.37, -0.35), Vector3(-0.75, 0.37, 0.35), Vector3(0.75, 0.37, 0.35)]:
@@ -295,7 +346,8 @@ static func desk(parent: Node3D, at: Vector3, yaw: float) -> OmniLight3D:
 		mesh(g, _cyl(0.05, 0.42), "parchment", Vector3(-0.55 + k * 0.12, 0.87, -0.2), Vector3(0, 0, PI / 2.0))
 	box(g, Vector3(0.25, 0.83, 0.1), Vector3(0.55, 0.01, 0.34), "parchment", false)
 	box(g, Vector3(0.62, 0.86, -0.2), Vector3(0.12, 0.08, 0.08), "bronze", false)
-	box(g, Vector3(0, 0.25, 0.75), Vector3(0.45, 0.5, 0.45), "wood", false)
+	if with_stool:
+		box(g, Vector3(0, 0.25, 0.75), Vector3(0.45, 0.5, 0.45), "wood", false)
 	var lamp := OmniLight3D.new()
 	lamp.position = Vector3(0.62, 1.05, -0.2)
 	lamp.light_color = Color("ffb060")

@@ -14,6 +14,7 @@ const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
 const Player := preload("res://scripts/hall/player.gd")
+const Progress := preload("res://scripts/hall/progress.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 const RES := Vector2i(320, 180)
@@ -21,6 +22,7 @@ const REACH := 1.8
 const GATE_REACH := 2.4
 const QUIT_WINDOW := 2.0
 const FADE := 0.9
+const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give me an example", "Why does this matter?"]
 
 var offline := false  # tests: no music, no mouse capture, instant travel
 var doors: Array = []
@@ -35,6 +37,9 @@ var books := {}  # work -> Library
 var target := {}
 var flicker: Array = []  # {light, base, seed}
 var travelling := false
+var progress: RefCounted  # what the player has learned (Progress)
+var teacher := {}  # the author in person, if this place has one: {root, head, hand}
+var restored_columns := 0
 
 var _view: SubViewport
 var _ui: CanvasLayer
@@ -50,6 +55,7 @@ var _ask_life: Label
 var _answer: RichTextLabel
 var _question_box: LineEdit
 var _suggestions: Array = []
+var _lessons: RichTextLabel
 var _ask_room: Dictionary = {}
 var _ask_work := ""
 var _map_panel: Panel
@@ -73,6 +79,7 @@ static func ensure_actions() -> void:
 		"turn_left": [KEY_LEFT, KEY_Q], "turn_right": [KEY_RIGHT, KEY_E],
 		"interact": [KEY_F, KEY_ENTER],
 		"sprint": [KEY_SHIFT],
+		"tablet": [KEY_T, KEY_TAB],
 	}
 	var pad_axes := {"move_forward": [JOY_AXIS_LEFT_Y, -1.0], "move_back": [JOY_AXIS_LEFT_Y, 1.0],
 		"strafe_left": [JOY_AXIS_LEFT_X, -1.0], "strafe_right": [JOY_AXIS_LEFT_X, 1.0],
@@ -108,10 +115,12 @@ func _ready() -> void:
 	if doors.is_empty():
 		push_error("Could not load the reading list.")
 		return
+	progress = Progress.open("" if offline else Progress.PATH)
 	_build_view()
 	_build_ui()
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
+	author.judged.connect(_on_judged)
 	add_child(author)
 	_load_place("hub")
 	if not offline:
@@ -202,8 +211,13 @@ func _load_place(to: String) -> void:
 	for c in world.get_children():
 		world.remove_child(c)
 		c.queue_free()
-	var built: Dictionary = Places.hub(world, doors) if to == "hub" else Places.place(world, to, Rooms.room(to))
+	var built: Dictionary = Places.hub(world, doors, progress) if to == "hub" else Places.place(world, to, Rooms.room(to))
+	if to != "hub":
+		progress.visit(to)
+		progress.save()
 	here = to
+	teacher = built.get("teacher", {})
+	restored_columns = built.get("restored", 0)
 	here_name = built["name"]
 	interactables = built["interactables"]
 	spots = built["spots"]
@@ -314,9 +328,17 @@ func _build_ask_panel() -> void:
 	_ask_life.position = Vector2(8, 85)
 	_ask_life.size = Vector2(60, 8)
 	_ask_panel.add_child(_ask_life)
+	_lessons = RichTextLabel.new()
+	_lessons.bbcode_enabled = true
+	_lessons.position = Vector2(6, 95)
+	_lessons.size = Vector2(60, 56)
+	_lessons.scroll_active = false
+	_lessons.add_theme_font_size_override("normal_font_size", 5)
+	_lessons.add_theme_color_override("default_color", Color("8a8074"))
+	_ask_panel.add_child(_lessons)
 	var hint := _label(5, Color("8a8074"))
-	hint.text = "Esc to leave"
-	hint.position = Vector2(8, 150)
+	hint.text = "Esc to leave  T: tablet"
+	hint.position = Vector2(8, 155)
 	_ask_panel.add_child(hint)
 	_answer = RichTextLabel.new()
 	_answer.bbcode_enabled = true
@@ -473,12 +495,15 @@ func _open_ask(work: String) -> void:
 	_ask_portrait.texture = Portrait.make(_ask_room.get("portrait", {}))
 	_ask_name.text = _ask_room["author"]
 	_ask_life.text = _ask_room["life"]
-	var qs: Array = _ask_room.get("questions", [])
+	var qs: Array = TEACH_BUTTONS if _ask_room.has("lesson") else _ask_room.get("questions", [])
 	for k in _suggestions.size():
 		_suggestions[k].visible = k < qs.size()
 		if k < qs.size():
 			_suggestions[k].text = qs[k]
-	_answer.text = _talk.get(work, "[i]%s looks up.[/i]\n\nAsk me anything about my book. I'll answer from what I actually wrote." % _ask_room["author"])
+	if not _talk.has(work):
+		_talk[work] = "[color=#e0b660]%s:[/color] %s" % [_ask_room["author"], _esc(_greeting(work))]
+	_answer.text = _talk[work]
+	_refresh_lessons()
 	_show_panel(_ask_panel)
 	_question_box.grab_focus()
 
@@ -490,7 +515,62 @@ func _send(question: String) -> void:
 	_question_box.text = ""
 	_talk[_ask_work] = "%s\n\n[i]%s is thinking...[/i]" % [_you(question), _ask_room["author"]]
 	_answer.text = _talk[_ask_work]
-	author.ask(_ask_work, _ask_room, _book(_ask_work), question)
+	author.ask(_ask_work, _ask_room, _book(_ask_work), question, progress.understood(_ask_work), progress.visits(_ask_work))
+
+
+## His first words: a greeting the first time, a welcome back that picks up where you left off.
+func _greeting(work: String) -> String:
+	var room := Rooms.room(work)
+	var have: Array = progress.understood(work)
+	if progress.is_mastered(work):
+		return "You again, my friend. You know my little book as well as I do now. Ask me anything."
+	if have.is_empty():
+		return room.get("greeting", "Ask me anything about my book.")
+	var done: Array = room.get("lesson", []).filter(func(p): return have.has(p["id"])).map(func(p): return p["label"])
+	return "Back again? Last time you came to understand: %s. Shall we go on?" % ", ".join(done).to_lower()
+
+
+## The lesson points under the portrait: gold once you understand them.
+func _refresh_lessons() -> void:
+	var lesson: Array = _ask_room.get("lesson", [])
+	if lesson.is_empty():
+		_lessons.text = ""
+		return
+	var have: Array = progress.understood(_ask_work)
+	var lines: Array = ["[color=#a6c8cc]Lesson %d / %d[/color]" % [have.size(), lesson.size()]]
+	for p in lesson:
+		lines.append(("[color=#e0b660]+ %s[/color]" if have.has(p["id"]) else "- %s") % p["label"])
+	_lessons.text = "\n".join(lines)
+
+
+## The understanding check came back: fill the tablet, and celebrate mastery.
+func _on_judged(work: String, ids: Array) -> void:
+	var fresh: Array = progress.learn(work, ids)
+	if fresh.is_empty():
+		return
+	var room := Rooms.room(work)
+	var names: Array = room.get("lesson", []).filter(func(p): return fresh.has(p["id"])).map(func(p): return p["label"])
+	var note := "\n\n[color=#a6c8cc]On your tablet: %s[/color]" % ", ".join(names)
+	if progress.check_mastery(work, room.get("lesson", [])):
+		note += "\n\n[i][color=#e0b660]%s[/color][/i]\n[color=#e0b660]You have mastered the %s. Its gateway on the Shore now burns.[/color]" % [
+			_esc(room.get("gift", "")), room.get("book", "book")]
+	progress.save()
+	_talk[work] = _talk.get(work, "") + note
+	if _ask_panel.visible and _ask_work == work:
+		_answer.text = _talk[work]
+		_refresh_lessons()
+
+
+## Your wax tablet: what you have understood, in plain words.
+func _tablet_text() -> String:
+	if here == "hub":
+		return "[color=#e0b660]Your tablet[/color]\n\nBooks mastered: %d of %d." % [progress.mastered_count(), doors.size()]
+	var room := Rooms.room(here)
+	var have: Array = progress.understood(here)
+	var lines: Array = ["[color=#e0b660]Your tablet: %s[/color]" % room.get("book", "")]
+	for p in room.get("lesson", []):
+		lines.append(("+ %s" % p["point"]) if have.has(p["id"]) else ("[color=#8a8074]- %s: not yet[/color]" % p["label"]))
+	return "\n\n".join(lines)
 
 
 static func _you(question: String) -> String:
@@ -582,6 +662,7 @@ func _process(delta: float) -> void:
 	for f in flicker:
 		if is_instance_valid(f["light"]):
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
+	_animate_teacher(delta)
 	if player.frozen:
 		_prompt.text = ""
 		return
@@ -596,6 +677,23 @@ func _process(delta: float) -> void:
 		_prompt.text = target["text"] + ("\nF: Enter" if target["to"] != "hub" else "\nF: Go")
 	else:
 		_prompt.text = "F: " + target["text"]
+
+
+## He breathes, writes when alone, and looks up and turns toward you when you come near.
+func _animate_teacher(delta: float) -> void:
+	if teacher.is_empty() or not is_instance_valid(teacher["head"]):
+		return
+	var root: Node3D = teacher["root"]
+	var head: Node3D = teacher["head"]
+	root.scale.y = 1.0 + 0.008 * sin(_t * 1.6)
+	var to: Vector3 = root.to_local(player.global_position)
+	var near := to.length() < 6.0 and to.z > 0.0
+	var want_yaw := clampf(atan2(to.x, to.z), -0.9, 0.9) if near else 0.0
+	var want_pitch := -0.12 if near else 0.35 + 0.05 * sin(_t * 0.7)
+	head.rotation.y = lerpf(head.rotation.y, want_yaw, delta * 3.0)
+	head.rotation.x = lerpf(head.rotation.x, want_pitch, delta * 3.0)
+	var hand: Node3D = teacher["hand"]
+	hand.position = Vector3(0.03 * sin(_t * 7.0), 0.0, 0.02 * sin(_t * 3.5)) if not near else hand.position.lerp(Vector3.ZERO, delta * 4.0)
 
 
 func _nearest() -> Dictionary:
@@ -661,6 +759,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseButton and event.pressed and not player.frozen and not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		return
+	if event.is_action_pressed("tablet") and not _ask_panel.visible:
+		get_viewport().set_input_as_handled()
+		if _read_panel.visible:
+			_close_panels()
+		else:
+			_show_read(_tablet_text())
 		return
 	if _ask_panel.visible:
 		return

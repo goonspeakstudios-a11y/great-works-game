@@ -11,6 +11,22 @@
       {"name": "Plotinus", "beard": "long", "bald": true, "note": "Plotinus (about 204 - 270 AD), Porphyry's teacher in Rome. When Porphyry fell into a deep sadness, Plotinus sent him away to Sicily to recover. Plotinus died in 270, while Porphyry was still here."}
     ],
     "tree": true,
+    "greeting": "Ah, a visitor. Come in, the sea air is kind this evening. I was just writing about how to say what a thing is. Shall I teach you?",
+    "lesson": [
+      {"id": "why", "label": "Why he wrote it",
+        "point": "Porphyry wrote the Isagoge as a short beginner's guide, so his student could understand Aristotle's Categories."},
+      {"id": "genus_species", "label": "Family and kind",
+        "point": "A genus is the wide family (animal); a species is one kind inside it (human)."},
+      {"id": "difference", "label": "What splits them",
+        "point": "The difference is what splits a family into kinds: for humans, being able to reason."},
+      {"id": "property_accident", "label": "Always vs. sometimes",
+        "point": "A property always comes with a kind, and only that kind (laughing, for humans). An accident can come and go (sitting, being pale)."},
+      {"id": "definition", "label": "Saying what a thing is",
+        "point": "To say what something is, name its family and add its difference: a human is an animal that reasons. That is Porphyry's Tree."},
+      {"id": "universals", "label": "The open question",
+        "point": "He left one big question open: do 'animal' and 'human' exist out in the world, or only in our minds? People argued about it for a thousand years."}
+    ],
+    "gift": "Porphyry presses a small wax tablet into your hands, his tree scratched on it in his own hand. \"Take it. You understand it now.\"",
     "author": "Porphyry",
     "life": "about 234 - 305 AD",
     "book": "Isagoge",

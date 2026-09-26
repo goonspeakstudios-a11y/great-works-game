@@ -185,3 +185,81 @@ func test_nothing_steals_the_mouse_while_walking() -> void:
 		if n is Control and n.is_visible_in_tree() and n.mouse_filter != Control.MOUSE_FILTER_IGNORE:
 			check(not n.get_global_rect().grow(0.5).has_point(centre), "%s would catch mouse look at the centre" % n.name)
 	hall.free()
+
+
+const Progress := preload("res://scripts/hall/progress.gd")
+
+
+func test_porphyry_has_a_lesson_plan() -> void:
+	var lesson: Array = Rooms.room("porphyry-isagoge")["lesson"]
+	check(lesson.size() >= 4 and lesson.size() <= 8, "a short lesson plan")
+	var ids := {}
+	for p in lesson:
+		check(p.has("id") and p.has("label") and p.has("point"), "each point has an id, label and plain point")
+		ids[p["id"]] = true
+	check_eq(ids.size(), lesson.size(), "point ids are unique")
+
+
+func test_the_teacher_knows_what_is_left_to_teach() -> void:
+	var room := Rooms.room("porphyry-isagoge")
+	var passages: Array = Library.load_book("porphyry-isagoge").search("genus", 4)
+	var body := AuthorAI.build_request(room, passages, "Teach me the next thing", [], ["why"], 2)
+	var system: String = body["system"]
+	check(system.contains("always comes with a kind"), "the lesson points are in his instructions")
+	check(system.contains("Already understood: Why he wrote it"), "he knows what you've understood")
+	check(system.contains("in their own words"), "he asks you to explain things back")
+	check(system.contains("visit number 2"), "he remembers you've been before")
+
+
+func test_the_understanding_check_only_counts_real_points() -> void:
+	var room := Rooms.room("porphyry-isagoge")
+	var req := AuthorAI.build_judge_request(room, "A genus is the family, like animal, and a species is a kind in it, like human.", "A genus is the wide family...", [])
+	check(str(req["messages"][0]["content"]).contains("judge only this"), "only the student's own words are judged")
+	check(not AuthorAI.worth_judging("OK I think I get it"), "a short 'I get it' isn't checked")
+	check(not AuthorAI.worth_judging("Teach me the next thing"), "a request isn't checked")
+	check(AuthorAI.worth_judging("So a genus is the family and a species is a kind inside it"), "a real explanation is checked")
+	check_eq(req["model"], "claude-haiku-4-5", "the check uses the cheap model")
+	check_eq(req["output_config"]["format"]["type"], "json_schema", "the check answers in a fixed shape")
+	var got := AuthorAI.parse_judgement({"content": [{"type": "text", "text": "{\"understood\": [\"genus_species\", \"made_up\"]}"}]}, room)
+	check_eq(got, ["genus_species"], "unknown point ids are ignored")
+	check_eq(AuthorAI.parse_judgement({"content": [{"type": "text", "text": "not json"}]}, room), [], "a garbled check counts nothing")
+
+
+func test_progress_is_remembered_and_mastery_is_earned() -> void:
+	var path := "user://test_progress.json"
+	var p: RefCounted = Progress.open(path)
+	p.data = {"works": {}}
+	var lesson: Array = Rooms.room("porphyry-isagoge")["lesson"]
+	check_eq(p.learn("porphyry-isagoge", ["why", "why", "difference"]), ["why", "difference"], "new points are counted once")
+	check(not p.check_mastery("porphyry-isagoge", lesson), "not mastered with points left")
+	p.visit("porphyry-isagoge")
+	p.save()
+	var again: RefCounted = Progress.open(path)
+	check_eq(again.understood("porphyry-isagoge"), ["why", "difference"], "understanding survives a restart")
+	check_eq(again.visits("porphyry-isagoge"), 1, "visits are remembered")
+	again.learn("porphyry-isagoge", lesson.map(func(x): return x["id"]))
+	check(again.check_mastery("porphyry-isagoge", lesson), "every point understood means mastered")
+	check(not again.check_mastery("porphyry-isagoge", lesson), "mastery is only announced once")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+func test_mastery_lights_the_gateway_and_restores_the_temple() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	var before: int = hall.restored_columns
+	hall.progress.learn("porphyry-isagoge", Rooms.room("porphyry-isagoge")["lesson"].map(func(x): return x["id"]))
+	hall.progress.check_mastery("porphyry-isagoge", Rooms.room("porphyry-isagoge")["lesson"])
+	hall.travel("hub")
+	check(hall.interactables[0].get("mastered", false), "gateway 1 shows the book is mastered")
+	check_eq(hall.restored_columns, before + 1, "a column of the temple stands again")
+	hall.free()
+
+
+func test_porphyry_sits_at_his_desk() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.travel("porphyry-isagoge")
+	check(hall.teacher.has("head") and is_instance_valid(hall.teacher["head"]), "Porphyry is there in person")
+	hall.free()
