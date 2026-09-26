@@ -146,11 +146,15 @@ func _ready() -> void:
 ## Screenshot mode for checking the look without playing:
 ##   godot --path . -- --shot=C:/out.png --view=hub|gate|villa|path|study|map|tree|ask|read
 func _stage_shot(view: String) -> void:
-	if view != "hub" and view != "gate":
+	if not view in ["hub", "gate", "ruins", "head"]:
 		_load_place(doors[0]["work"])
 	match view:
 		"gate":
 			_stand(spots["gate0"], Places.gate_spot(0))
+		"ruins":
+			_stand(Vector3(3, 0, 8), Vector3(-60, 0, -95))
+		"head":
+			_stand(Vector3(6, 0, 3), Vector3(14, 0, 12))
 		"path":
 			_stand(Vector3(0, 0, 19), Vector3(0, 0, 0))
 		"villa":

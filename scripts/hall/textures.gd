@@ -83,6 +83,12 @@ static func material(kind: String) -> Material:
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"beam":
+			m.albedo_color = Color(1.0, 0.85, 0.6, 0.13)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"dark":
 			m.albedo_color = Color("1a1612")
 		"plaque":

@@ -24,9 +24,17 @@ static func gate_spot(i: int) -> Vector3:
 
 
 static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dictionary:
-	Kit.sunset(world)
+	Kit.sunset(world, "dusk")
 	Kit.sea(world, -10.0)
 	Kit.plateau(world, 34.0)
+	# what was lost: a broken colossus, its fallen head, temples on far headlands, and the
+	# empty foundation where the Tower of the Reformed Man will rise
+	Kit.colossus_legs(world, Vector3(-13, 0, -8), 0.6)
+	Kit.fallen_head(world, Vector3(14, 0, 12), -2.3)
+	Kit.far_ruin(world, Vector3(190, -10, -110), 1.0)
+	Kit.far_ruin(world, Vector3(-210, -10, -40), 1.3)
+	Kit.far_ruin(world, Vector3(70, -10, 230), 0.9)
+	Kit.tower_site(world, Vector3(-150, -10, -250))
 	Kit.cylinder(world, Vector3(0, -0.02, 0), 7.0, 0.1, "paving", false, 12)
 	var flicker: Array = [Kit.brazier(world, Vector3.ZERO)]
 	var restored: int = progress.mastered_count() if progress else 0
@@ -47,8 +55,8 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 		var between := deg_to_rad(GATE_START_DEG + GATE_STEP_DEG * (i + 0.5))
 		if i < doors.size() - 1:
 			Kit.cypress(world, Vector3(cos(between), 0, sin(between)) * 29.5, 6.0 + (i % 3))
-	for p in [Vector3(9, 0, 7), Vector3(-10, 0, 6), Vector3(6, 0, 14), Vector3(-7, 0, 15),
-			Vector3(13, 0, -4), Vector3(-14, 0, -3), Vector3(1, 0, 18)]:
+	for p in [Vector3(8, 0, 4), Vector3(-10, 0, 6), Vector3(5, 0, 15), Vector3(-7, 0, 15),
+			Vector3(13, 0, -4), Vector3(-17, 0, 1), Vector3(-1, 0, 19)]:
 		Kit.olive(world, p, 1.0 + fmod(p.x * 0.37, 0.4))
 	for p in [Vector3(20, 0, 12), Vector3(-19, 0, 13), Vector3(8, 0, -27), Vector3(-9, 0, -27), Vector3(16, 0, 19)]:
 		Kit.rock(world, p, 0.9)

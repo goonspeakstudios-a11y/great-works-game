@@ -87,14 +87,17 @@ static func blob(parent: Node3D, center: Vector3, radius: float, mat: String, sq
 
 # ---------- land, sea and sky ----------
 
-## Evening light over the sea: a warm low sun in the west, a violet-to-amber sky, haze.
-static func sunset(parent: Node3D) -> DirectionalLight3D:
+## Evening light over the sea. "golden" (the places you visit, like memories): a warm low sun,
+## a violet-to-amber sky. "dusk" (the Shore, the lonely present): the sun almost gone, a deeper
+## sky, the first stars.
+static func sunset(parent: Node3D, mood: String = "golden") -> DirectionalLight3D:
+	var dusk := mood == "dusk"
 	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("2a3a6e")
-	sky_mat.sky_horizon_color = Color("f0aa74")
-	sky_mat.sky_curve = 0.12
-	sky_mat.ground_horizon_color = Color("b8765a")
-	sky_mat.ground_bottom_color = Color("1a2230")
+	sky_mat.sky_top_color = Color("1a2248") if dusk else Color("2a3a6e")
+	sky_mat.sky_horizon_color = Color("d8845e") if dusk else Color("f0aa74")
+	sky_mat.sky_curve = 0.09 if dusk else 0.12
+	sky_mat.ground_horizon_color = Color("a0604c") if dusk else Color("b8765a")
+	sky_mat.ground_bottom_color = Color("141a28") if dusk else Color("1a2230")
 	sky_mat.sun_angle_max = 12.0
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
@@ -102,10 +105,10 @@ static func sunset(parent: Node3D) -> DirectionalLight3D:
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("7c7a92")
-	env.ambient_light_energy = 0.65
+	env.ambient_light_color = Color("686c8e") if dusk else Color("7c7a92")
+	env.ambient_light_energy = 0.6 if dusk else 0.65
 	env.fog_enabled = true
-	env.fog_light_color = Color("c89a84")
+	env.fog_light_color = Color("8e7488") if dusk else Color("c89a84")
 	env.fog_density = 0.0022
 	env.fog_sky_affect = 0.15
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
@@ -113,13 +116,41 @@ static func sunset(parent: Node3D) -> DirectionalLight3D:
 	we.environment = env
 	parent.add_child(we)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = Vector3(-9.0, -100.0, 0.0)  # low in the west, shining east
-	sun.light_color = Color("ffc896")
-	sun.light_energy = 1.15
+	sun.rotation_degrees = Vector3(-4.0 if dusk else -9.0, -100.0, 0.0)  # low in the west, shining east
+	sun.light_color = Color("ff9a6a") if dusk else Color("ffc896")
+	sun.light_energy = 0.8 if dusk else 1.15
+	if dusk:
+		stars(parent)
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 60.0
 	parent.add_child(sun)
 	return sun
+
+
+## The first stars, high in the east away from the last of the sun.
+static func stars(parent: Node3D) -> void:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	var q := BoxMesh.new()
+	q.size = Vector3(3.2, 3.2, 3.2)
+	mm.mesh = q
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 42
+	mm.instance_count = 110
+	for i in mm.instance_count:
+		var az := rng.randf_range(-PI * 0.35, PI * 1.35)  # everywhere but the sunset
+		var el := rng.randf_range(0.28, 1.35)
+		var d := Vector3(cos(el) * cos(az), sin(el), cos(el) * sin(az)) * 760.0
+		mm.set_instance_transform(i, Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * rng.randf_range(0.6, 1.3)), d))
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(1.0, 0.96, 0.88)
+	mat.disable_fog = true
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	mmi.material_override = mat
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mmi)
 
 
 static func sea(parent: Node3D, y: float) -> void:
@@ -215,6 +246,64 @@ static func temple_ruin(parent: Node3D, at: Vector3, yaw: float, restored: int =
 	box(g, top + Vector3(3.6, 4.3, 2.8), Vector3(2.8, 0.5, 0.9), "marble", false)
 	fallen_column(g, Vector3(1.5, 0, 5.4), 1.2)
 	fallen_column(g, Vector3(-6.8, 0, 1.0), 0.3)
+
+
+## "Two vast and trunkless legs of stone": all that stands of a colossus, on its pedestal.
+static func colossus_legs(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.9, 0), Vector3(4.6, 1.8, 3.2), "stone")
+	box(g, Vector3(0, 1.95, 0), Vector3(4.9, 0.3, 3.5), "marble", false)
+	for x in [-0.95, 0.95]:
+		box(g, Vector3(x, 2.35, 0.35), Vector3(1.1, 0.5, 1.8), "marble", false)  # feet
+		cylinder(g, Vector3(x, 2.1, 0.0), 0.6, 3.2, "marble", false, 8, 0.72)  # shins
+		cylinder(g, Vector3(x, 5.3, 0.0), 0.72, 1.4, "marble", false, 8, 0.85)  # knees and thighs
+		for k in 3:  # the broken top
+			box(g, Vector3(x + (k - 1) * 0.3, 6.7 + (k % 2) * 0.25, 0.1 * k), Vector3(0.4, 0.5, 0.5), "marble", false,
+				Vector3(0.4 * k, 0.7, 0.3))
+	for p in [Vector3(-3.2, 0.3, 2.4), Vector3(2.8, 0.25, -2.6), Vector3(3.4, 0.4, 1.8)]:
+		box(g, p, Vector3(0.9, 0.6, 0.7), "marble", true, Vector3(0.2, p.x, 0.3))
+
+
+## A giant marble head lying on its side, half sunk in the earth.
+static func fallen_head(parent: Node3D, at: Vector3, yaw: float) -> void:
+	var g := group(parent, at, yaw)
+	var head := group(g, Vector3(0, 0.9, 0))
+	head.rotation = Vector3(0.1, 0, 1.25)
+	blob(head, Vector3.ZERO, 1.9, "marble", Vector3(1.0, 1.2, 1.05), 8)
+	blob(head, Vector3(0, 0.95, -0.25), 1.8, "marble", Vector3(1.05, 0.7, 1.05), 8)
+	blob(head, Vector3(0, -1.2, 0.55), 1.3, "marble", Vector3(1.0, 1.1, 0.8), 6)  # the beard
+	box(head, Vector3(0, 0.05, 1.95), Vector3(0.45, 0.8, 0.45), "marble", false)  # the nose
+	box(head, Vector3(-0.6, 0.45, 1.75), Vector3(0.7, 0.18, 0.3), "stone", false)
+	box(head, Vector3(0.6, 0.45, 1.75), Vector3(0.7, 0.18, 0.3), "stone", false)
+	var s := SphereShape3D.new()
+	s.radius = 2.1
+	solid(g, s, Vector3(0, 0.9, 0))
+
+
+## A far headland across the sea with a ruined temple on it: the silhouette of what was.
+static func far_ruin(parent: Node3D, at: Vector3, size: float) -> void:
+	cylinder(parent, at + Vector3(0, -30, 0), 28.0 * size, 38.0, "rock", false, 7, 18.0 * size)
+	var top := at + Vector3(0, 8.0, 0)
+	box(parent, top + Vector3(0, 0.6, 0), Vector3(16, 1.2, 9) * size, "marble", false)
+	for i in 6:
+		var h := (7.0 if i % 3 != 1 else 3.5) * size
+		cylinder(parent, top + Vector3((-6.0 + i * 2.4) * size, 1.2, 0), 0.7 * size, h, "marble", false, 6)
+	box(parent, top + Vector3(-3.6 * size, 1.2 + 7.0 * size, 0), Vector3(8, 1.1, 2) * size, "marble", false)
+
+
+## Where the Tower of the Reformed Man will rise: an empty foundation on a far island, and a
+## faint beam of light. Tiers are added as whole worlds are mastered.
+static func tower_site(parent: Node3D, at: Vector3) -> void:
+	cylinder(parent, at + Vector3(0, -30, 0), 34.0, 38.0, "rock", false, 8, 26.0)
+	var top := at + Vector3(0, 8.0, 0)
+	for i in 16:
+		var a := TAU * i / 16.0
+		box(parent, top + Vector3(cos(a), 0, sin(a)) * 11.0 + Vector3(0, 1.0, 0), Vector3(4.4, 2.0, 1.6), "stone", false,
+			Vector3(0, -a, 0))
+	var q := QuadMesh.new()
+	q.size = Vector2(9, 220)
+	var beam := mesh(parent, q, "beam", top + Vector3(0, 110, 0))
+	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 static func olive(parent: Node3D, at: Vector3, size: float = 1.0) -> void:
