@@ -5,6 +5,7 @@ config_version=5
 [application]
 
 config/name="Great Works"
+config/version="0.4.0"
 config/description="A haunted hall of the great books, where the authors answer your questions from their own words."
 run/main_scene="res://scenes/hall.tscn"
 config/features=PackedStringArray("4.7")

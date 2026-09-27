@@ -122,7 +122,7 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	hall.travel("hub")
 	check_eq(hall.here, "hub", "Greece's hub is the Shore")
-	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and i["to"] != "nexus")
+	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and not i["to"] in ["nexus", "asset_test"])
 	var places: Array = Rooms.doors().filter(func(d): return Rooms.room(d["work"]).get("area_of", "") == "")
 	check_eq(gates.size(), 15, "one gateway for every place (Aristotle's three books share one)")
 	check_eq(gates.map(func(g): return g["to"]), places.map(func(d): return d["work"]), "gateways follow the reading list")

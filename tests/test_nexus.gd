@@ -147,6 +147,12 @@ func test_each_idea_lights_a_star_and_each_book_raises_a_column() -> void:
 	after["holder"].free()
 
 
+func test_the_shore_music_never_changes() -> void:
+	var lost: Array = Music.plan("shore", [])
+	for k in range(1, PIECES.size() + 1):
+		check_eq(Music.plan("shore", PIECES.slice(0, k)), lost, "the Shore's music stays as it was")
+
+
 func test_the_nexus_music_never_changes() -> void:
 	var lost: Array = Music.plan("nexus", [])
 	check_eq(lost.map(func(l): return l["file"]), ["nexus_ghost", "void"], "only the echo and the void's breath")

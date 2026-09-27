@@ -22,6 +22,11 @@ func _init() -> void:
 	title.text = "PAUSED"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	var version := Label.new()
+	version.text = "Great Works v%s" % ProjectSettings.get_setting("application/config/version", "?")
+	version.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	version.modulate = Color(1, 1, 1, 0.55)
+	box.add_child(version)
 	_slider(box, "volume", "Volume", 0.0, 1.0, 0.8)
 	_slider(box, "walk", "Walking speed", 0.5, 2.0, 1.0)
 	_slider(box, "look", "Mouse speed", 0.25, 3.0, 1.0)
