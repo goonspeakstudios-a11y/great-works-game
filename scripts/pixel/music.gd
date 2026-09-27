@@ -44,15 +44,17 @@ const ZONES := {
 		{"file": "fire", "db": -30.0, "needs": "household"},
 		{"file": "waves", "db": -24.0},
 		{"file": "wind", "db": -24.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Athens is peeled back under its melody (BB1, 2026-09-27: "slightly too oppressive and constant"):
+	# the pipes lead, the walking bass, drone and drum sit well under them.
 	"athens": {"bells": false, "layers": [
-		{"file": "athens_ghost", "db": -10.0, "music": true, "until": "teacher", "fade": 1.5},
-		{"file": "athens_walk", "db": -10.0, "music": true, "needs": "walkway"},
-		{"file": "athens_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "athens_ghost", "db": -13.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "athens_walk", "db": -15.0, "music": true, "needs": "walkway"},
+		{"file": "athens_drone", "db": -16.0, "music": true, "needs": "sun"},
 		{"file": "athens_pipes", "db": -10.0, "music": true, "needs": "teacher"},
-		{"file": "athens_drum", "db": -10.0, "music": true, "needs": "soldiers"},
+		{"file": "athens_drum", "db": -16.0, "music": true, "needs": "soldiers"},
 		{"file": "stream", "db": -22.0, "needs": "water"},
 		{"file": "birds", "db": -20.0, "needs": "leaves"},
-		{"file": "wind", "db": -27.0, "loud_db": -17.0, "loud_until": "sun"}]},
+		{"file": "wind", "db": -27.0, "loud_db": -20.0, "loud_until": "sun"}]},
 }
 
 var zone := ""

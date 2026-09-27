@@ -129,6 +129,8 @@ var _ok := false
 var _talk := {}  # work -> what has been said there, as shown in the panel
 var _quit_armed := -100.0
 var _seat := {}  # the bench you are sitting on
+var boats: Array = []  # boats on the waterway: {root, oars, speed, junction, landings, landing, route, to}
+var _riding := {}  # the boat you are sitting in
 var _mouse_before := Input.MOUSE_MODE_CAPTURED  # how the mouse was before a panel opened
 
 
@@ -218,12 +220,15 @@ func _ready() -> void:
 
 
 ## Screenshot mode for checking the look without playing:
-##   godot --path . -- --shot=C:/out.png --view=nexus|hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map [--stage=0-6]
+##   godot --path . -- --shot=C:/out.png --view=nexus|hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map|hill|grove|stones|yard|garden|garden_w [--stage=0-6]
 func _stage_shot(view: String) -> void:
 	if _args.has("stage"):  # --stage=N: see the places with N pieces brought back
 		for d in doors.slice(0, 2):
 			progress.learn(d["work"], Rooms.room(d["work"]).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
-	if view in ["lyceum", "walk", "lyceum_map", "march"]:
+		if view in ["hill", "grove"]:  # the two areas past the Lyceum keep their own stage
+			var extra: String = Places.ORGANON if view == "hill" else Places.ETHICS
+			progress.learn(extra, Rooms.room(extra).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
+	if view in ["lyceum", "walk", "lyceum_map", "march", "hill", "grove", "stones", "yard"]:
 		_load_place(doors[1]["work"])
 	elif view in ["hub", "gate", "ruins", "head", "toad"]:
 		_load_place("hub")
@@ -269,6 +274,18 @@ func _stage_shot(view: String) -> void:
 		"read":
 			_stand(spots["fact1"], spots["fact1"] + Vector3(5, 0, 0))
 			activate(interactables.filter(func(i): return i["kind"] == "fact")[1])
+		"hill":
+			_stand(Places.ORGANON_AT + Vector3(1.5, Places.HILL_TOP, -1.5), Places.ORGANON_AT + Vector3(3.5, Places.HILL_TOP, -7.8))
+		"grove":
+			_stand(Places.ETHICS_AT + Vector3(0, 0, 15), Places.ETHICS_AT)
+		"stones":  # the ring of the ten kinds, by the way in
+			_stand(Vector3(-1.5, 0, 23.5), Vector3(-7, 0, 19.5))
+		"yard":  # the lesson stones behind the walkway
+			_stand(Vector3(-12.5, 0, 13.5), Vector3(-17, 0, -4))
+		"garden":  # the villa's lesson stones in the gardens
+			_stand(Vector3(6.0, 0, 22.0), Vector3(17.0, 0, 5.0))
+		"garden_w":
+			_stand(Vector3(-6.0, 0, 21.0), Vector3(-18.0, 0, 4.0))
 	if view == "ask":
 		_open_ask(doors[0]["work"])
 		_talk[doors[0]["work"]] = _you("What's the difference between genus and species?") + "\n\n[color=#e0b660]Porphyry:[/color] Genus is the wide family, like animal. Species is one kind inside it, like human. What splits them is the difference: being able to reason."
@@ -276,7 +293,7 @@ func _stage_shot(view: String) -> void:
 
 
 func _stand(at: Vector3, look_at: Vector3) -> void:
-	player.position = Vector3(at.x, 0.05, at.z)
+	player.position = Vector3(at.x, at.y + 0.05, at.z)
 	player.rotation.y = Places.look_yaw(look_at - at)
 
 
@@ -368,6 +385,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 		music.play(_zone(to), restored_here)
 	people = built.get("people", [])
 	squads = built.get("squads", [])
+	boats = built.get("boats", [])
 	teacher = people[0] if not people.is_empty() else {}
 	restored_columns = built.get("restored", 0)
 	here_name = built["name"]
@@ -384,6 +402,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 			flicker.append({"light": l, "base": l.light_energy, "seed": randf() * 10.0})
 	player.stand()
 	_seat = {}
+	_riding = {}
 	if music:
 		music.swell(false)
 	if keep:
@@ -726,14 +745,14 @@ func _stage(work: String) -> int:
 func _where_everyone_is() -> Dictionary:
 	var at := func(d: Dictionary) -> Array:
 		return [d["root"].position, d["root"].rotation.y, d.get("leg", 0)] if is_instance_valid(d.get("root")) else []
-	return {"player": [player.position, player.rotation.y], "people": people.map(at), "squads": squads.map(at)}
+	return {"player": [player.position, player.rotation.y], "people": people.map(at), "squads": squads.map(at), "boats": boats.map(at)}
 
 
 func _put_back(held: Dictionary) -> void:
 	player.position = held["player"][0]
 	player.rotation.y = held["player"][1]
-	for group in [["people", people], ["squads", squads]]:
-		var was: Array = held[group[0]]
+	for group in [["people", people], ["squads", squads], ["boats", boats]]:
+		var was: Array = held.get(group[0], [])
 		for i in mini(was.size(), group[1].size()):
 			if was[i].is_empty():
 				continue
@@ -1130,9 +1149,22 @@ func _refresh_lessons() -> void:
 
 ## The understanding check came back: fill the tablet, and celebrate mastery.
 func _on_judged(work: String, ids: Array) -> void:
+	var note := _learned(work, ids)
+	if note == "":
+		return
+	_talk[work] = _talk.get(work, "") + note
+	if _ask_panel.visible and _ask_work == work:
+		_answer.text = _talk[work]
+		_refresh_lessons()
+
+
+## Points newly understood (through the teacher, or a stone in Zen): fill the tablet, bring a piece
+## of this place back when you turn away, and celebrate mastery. Returns the lines that say so, or
+## "" if nothing was new.
+func _learned(work: String, ids: Array) -> String:
 	var fresh: Array = progress.learn(work, ids)
 	if fresh.is_empty():
-		return
+		return ""
 	var room := Rooms.room(work)
 	var names: Array = room.get("lesson", []).filter(func(p): return fresh.has(p["id"])).map(func(p): return p["label"])
 	var note := "\n\n[color=#a6c8cc]On your tablet: %s[/color]" % ", ".join(names)
@@ -1145,10 +1177,7 @@ func _on_judged(work: String, ids: Array) -> void:
 		note += "\n\n[i][color=#e0b660]%s[/color][/i]\n[color=#e0b660]You have mastered the %s. Its gateway on the Shore now burns.[/color]" % [
 			_esc(room.get("gift", "")), room.get("book", "book")]
 	progress.save()
-	_talk[work] = _talk.get(work, "") + note
-	if _ask_panel.visible and _ask_work == work:
-		_answer.text = _talk[work]
-		_refresh_lessons()
+	return note
 
 
 ## Your wax tablet: what you have understood, in plain words.
@@ -1278,7 +1307,7 @@ func _process(delta: float) -> void:
 		_prompt.text = ""
 		return
 	if player.seated:
-		_prompt.text = "F: Stand up"
+		_prompt.text = "F: Step ashore" if not _riding.is_empty() else "F: Stand up"
 		return
 	if _falling_since >= 0.0:
 		_prompt.text = "Are you ready to stop falling?
@@ -1328,6 +1357,7 @@ func _animate_life(delta: float) -> void:
 		node.position = d["base"] + Vector3(0, sin(_t * w + d["phase"]) * d["bob"], 0)
 		node.rotation = d["rot"] + d["spin"] * _t + Vector3(0, 0, sin(_t * w * 0.5 + d["phase"]) * d["sway"])
 	_animate_squads(delta)
+	_animate_boats(delta)
 	_animate_toad(delta)
 
 
@@ -1496,8 +1526,10 @@ func activate(it: Dictionary) -> void:
 	match it.get("kind", ""):
 		"fact":
 			_show_read(it["text"])
-		"statue", "person", "look":
+		"statue", "person":
 			_show_read(it["note"])
+		"look":
+			_read_stone(it)
 		"map":
 			_open_map(it)
 		"tree":
@@ -1514,8 +1546,21 @@ func activate(it: Dictionary) -> void:
 				travel(it["to"])
 		"seat":
 			sit(it)
+		"ferry":
+			take_boat(it)
 		"toad":
 			pat_toad()
+
+
+## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
+## counts as understood as you read it, and a piece of the place comes back when you turn from it;
+## for a Mathetes (Student) it is only there to read: the teacher must hear it in your own words.
+func _read_stone(it: Dictionary) -> void:
+	_show_read(it["note"])  # open first, so what comes back waits until you turn away
+	if it.has("id") and progress.mode(_world_of(here)) == "zen":
+		var note := _learned(it.get("work", here), [it["id"]])
+		if note != "":
+			_show_read(it["note"] + note)
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.
@@ -1527,6 +1572,18 @@ func sit(it: Dictionary) -> void:
 
 
 func stand_up() -> void:
+	if not _riding.is_empty():  # step ashore: onto the landing, or the nearer bank mid-river
+		var boat := _riding
+		var off := Vector3.ZERO
+		if boat["landing"] != "":
+			off = boat["landings"][boat["landing"]]["off"]
+		else:
+			var heading := Vector3(sin(boat["root"].rotation.y), 0, cos(boat["root"].rotation.y))
+			off = Vector3(heading.z, 0, -heading.x) * 2.0
+		boat["route"] = []  # it waits where you left it
+		_riding = {}
+		player.stand(off)
+		return
 	var away := Vector3.ZERO
 	if not _seat.is_empty():
 		away = (_seat["seat"] - _seat["look"])
@@ -1536,6 +1593,46 @@ func stand_up() -> void:
 	player.stand(away)
 	if music:
 		music.swell(false)
+
+
+## Take the boat from a landing to another: it is waiting at the landing you are at (the landings
+## are far apart, and a boat left anywhere else is brought round), you sit on its thwart, and it rows
+## you there by way of the junction.
+func take_boat(it: Dictionary) -> void:
+	var boat: Dictionary = it["boat"]
+	var at: Vector3 = boat["landings"][it["from"]]["at"]
+	var junction: Vector3 = boat["junction"]
+	boat["root"].position = at
+	boat["root"].rotation.y = atan2(junction.x - at.x, junction.z - at.z)
+	boat["route"] = [junction, boat["landings"][it["to"]]["at"]]
+	boat["to"] = it["to"]
+	boat["landing"] = ""
+	_riding = boat
+	player.sit(at, Places.look_yaw(junction - at))
+
+
+## The boat you are in rows on to its landing, carrying you with it, and rests there.
+func _animate_boats(delta: float) -> void:
+	for boat in boats:
+		var root: Node3D = boat["root"]
+		if not is_instance_valid(root) or boat.get("route", []).is_empty():
+			continue
+		var d: Vector3 = boat["route"][0] - root.position
+		d.y = 0.0
+		if d.length() < 0.05:
+			boat["route"].pop_front()
+			if boat["route"].is_empty():  # there: it rests at the landing
+				boat["landing"] = boat["to"]
+				for oar in boat["oars"]:
+					oar.rotation.y = 0.0
+			continue
+		root.position += d.normalized() * minf(d.length(), boat["speed"] * delta)
+		root.rotation.y = lerp_angle(root.rotation.y, atan2(d.x, d.z), minf(1.0, delta * 2.0))
+		var stroke := sin(_t * 2.4) * 0.55
+		boat["oars"][0].rotation.y = stroke
+		boat["oars"][1].rotation.y = -stroke
+		if is_same(boat, _riding):
+			player.position = Vector3(root.position.x, player.position.y, root.position.z)
 
 
 ## Mouse look and Esc are handled here, before anything on screen can swallow them.

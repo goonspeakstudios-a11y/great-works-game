@@ -708,3 +708,107 @@ func test_each_book_has_its_own_ground_and_its_own_aristotle() -> void:
 		check(seen.size() == 1 and seen[0]["area"] == w, "and only that book's Aristotle is there")
 		check_eq(hall._tablet_text().contains(Rooms.room(w)["book"]), true, "the tablet is that book's")
 	hall.free()
+
+
+## The lesson stones (sprint 3): every point of every lesson in Greece has its own scene, and
+## reading it shows the plain summary of that point.
+func test_every_lesson_point_has_its_stone() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for place in ["porphyry-isagoge", "aristotle-categories"]:
+		hall.travel(place)
+		var works: Array = [place]
+		if place == "aristotle-categories":
+			works.append_array(["aristotle-the-rest-of-the-organon", "aristotle-nicomachean-ethics"])
+		for work in works:
+			for p in Rooms.room(work)["lesson"]:
+				var stones: Array = hall.interactables.filter(func(i): return i.get("id", "") == p["id"] and i.get("work", place) == work)
+				check(not stones.is_empty(), "%s: a stone for '%s'" % [work, p["id"]])
+				check(stones.any(func(i): return i["note"] == p["point"]), "%s: the '%s' stone reads its point" % [work, p["id"]])
+	hall.free()
+
+
+## Zen (Theoros): reading a lesson stone counts its point, and a piece of the place comes back
+## when you turn from the stone. Student (Mathetes): the stone is only there to read.
+func test_in_zen_a_stone_mends_the_world_and_in_student_it_does_not() -> void:
+	for mode in ["student", "zen"]:
+		var hall := _lyceum_hall()
+		hall.progress.data = {"works": {}}
+		hall.progress.set_mode("greece", mode)
+		var stone: Dictionary = hall.interactables.filter(func(i): return i.get("id", "") == "ten_questions")[0]
+		hall.activate(stone)
+		check(hall._read_panel.visible, "%s: the stone is read" % mode)
+		hall._close_panels()
+		if mode == "zen":
+			check(hall.progress.understood("aristotle-categories").has("ten_questions"), "zen: the point counts")
+			check_eq(hall.restored_here, ["water"], "zen: the Ilissos runs again")
+		else:
+			check(hall.progress.understood("aristotle-categories").is_empty(), "student: the stone counts nothing")
+			check_eq(hall.restored_here, [], "student: nothing comes back")
+		hall.free()
+
+
+func test_a_zen_stone_on_the_hill_mends_the_hill() -> void:
+	var hall := _lyceum_hall()
+	hall.progress.data = {"works": {}}
+	hall.progress.set_mode("greece", "zen")
+	var stone: Dictionary = hall.interactables.filter(func(i): return i.get("id", "") == "premise")[0]
+	hall.activate(stone)
+	hall._close_panels()
+	check(hall.progress.understood("aristotle-the-rest-of-the-organon").has("premise"), "the Organon's point counts")
+	check(hall.progress.understood("aristotle-categories").is_empty(), "and not the Categories'")
+	check_eq(hall.backs.get("aristotle-the-rest-of-the-organon", []), ["water"], "the hill's stream runs")
+	hall.free()
+
+
+## An area's life facts sit together on one stone at its entrance, next to its banner.
+func test_an_areas_facts_are_on_the_stone_by_its_banner() -> void:
+	var hall := _lyceum_hall()
+	for w in ["aristotle-the-rest-of-the-organon", "aristotle-nicomachean-ethics"]:
+		check(hall.interactables.filter(func(i): return i["kind"] == "fact" and i.get("work", "") == w).is_empty(), "%s: no separate fact stones" % w)
+		var markers: Array = hall.interactables.filter(func(i): return i.get("work", "") == w and i["text"].begins_with("Read the stone: The"))
+		check_eq(markers.size(), 1, "%s: one stone by the banner" % w)
+		for f in Rooms.room(w)["facts"]:
+			check(markers[0]["note"].contains(f), "%s: the stone carries '%s'" % [w, f.left(30)])
+	hall.free()
+
+
+## The waterway (BB1): once the Ilissos runs, a boat rows between the Lyceum, the hill of the Organon
+## and the grove of the Ethics; at each landing you choose where to go, and F steps you ashore. On
+## the dry bed the boat lies stranded.
+func test_the_boat_rows_you_to_all_three_places() -> void:
+	var hall := _lyceum_hall()
+	check(hall.interactables.filter(func(i): return i["kind"] == "ferry").is_empty(), "no boat to take on a dry bed")
+	check(hall.interactables.any(func(i): return i.get("note", "").contains("dry bed of the Ilissos")), "the stranded boat is explained")
+	hall.progress.learn("aristotle-categories", ["ten_questions"])
+	hall.travel("aristotle-categories")
+	var ferries: Array = hall.interactables.filter(func(i): return i["kind"] == "ferry")
+	check_eq(ferries.size(), 6, "from each of the three landings, a way to each of the other two")
+	for leg in [["lyceum", "hill", "aristotle-the-rest-of-the-organon"], ["hill", "grove", "aristotle-nicomachean-ethics"],
+			["grove", "lyceum", "aristotle-categories"]]:
+		var take: Dictionary = ferries.filter(func(i): return i["from"] == leg[0] and i["to"] == leg[1])[0]
+		check(take["text"].contains(Places.LANDINGS[leg[1]]["name"]), "the landing says where it goes: %s" % take["text"])
+		hall.activate(take)
+		check(hall.player.seated, "%s: you sit in the boat" % leg[0])
+		for k in 120:
+			hall._animate_boats(0.5)
+		var boat: Dictionary = take["boat"]
+		var there: Vector3 = Places.LANDINGS[leg[1]]["at"]
+		check(boat["root"].position.distance_to(there) < 0.1, "it rows you from %s to %s" % [leg[0], leg[1]])
+		check(Vector2(hall.player.position.x, hall.player.position.z).distance_to(Vector2(there.x, there.z)) < 0.1, "carrying you with it")
+		hall.stand_up()
+		check(not hall.player.seated, "F steps you ashore at %s" % leg[1])
+		hall._check_area()
+		check_eq(hall.area, leg[2], "and you are in %s's place" % leg[2])
+	# stepping out mid-river puts you on a bank, and the boat waits there
+	var take: Dictionary = ferries.filter(func(i): return i["from"] == "lyceum" and i["to"] == "grove")[0]
+	hall.activate(take)
+	for k in 6:
+		hall._animate_boats(0.5)
+	hall.stand_up()
+	check(absf(hall.player.position.x - 8.0) > 1.5, "mid-river, you step onto a bank, out of the water")
+	var left: Vector3 = take["boat"]["root"].position
+	hall._animate_boats(0.5)
+	check_eq(take["boat"]["root"].position, left, "the boat waits where you left it")
+	hall.free()
