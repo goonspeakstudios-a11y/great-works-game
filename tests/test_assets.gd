@@ -14,7 +14,9 @@ const ALL_BACK := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "hou
 ## Every area set piece, by the name of its builder in kit_greek_areas.gd.
 const AREAS := ["law_court", "memory_house", "museum_court", "prop_one", "prop_forty_seven",
 	"ships", "scaean_gate", "achilles_hut", "forge", "walls", "ithaca_hall", "cyclops_cave", "underworld", "sirens",
-	"helicon", "farm", "garden"]
+	"helicon", "farm", "garden",
+	"argos_palace", "areopagus", "thebes_gate", "crossroads", "antigone_tomb", "cithaeron", "pentheus_palace",
+	"strepsiades_house", "thinkery", "sardis", "delphi", "thermopylae", "kerameikos", "plague", "corcyra", "melos"]
 ## Homer's areas, each with its playable beats.
 const HOMER := ["ships", "scaean_gate", "achilles_hut", "forge", "walls", "ithaca_hall", "cyclops_cave", "underworld", "sirens"]
 const People := preload("res://scripts/hall/kit_greek_people.gd")
@@ -298,4 +300,18 @@ func test_the_cyclops_cave_is_shut_by_its_stone() -> void:
 		"the stone bars the way out")
 	check(area["rams"].size() >= 3, "rams to cling under")
 	check(area["cyclops"].has("eye"), "his one eye")
+	holder.free()
+
+
+func test_the_areopagus_votes_and_thermopylae_has_both_armies() -> void:
+	var holder := Node3D.new()
+	var court := Areas.areopagus(holder, Vector3.ZERO, 0.0, ALL_BACK)
+	check(court["urns"] is Vector3, "the urns stand ready")
+	check(court["people"].size() >= 12 + 5, "twelve judges and the Furies")
+	var narrows := Areas.thermopylae(holder, Vector3(200, 0, 0), 0.0, ALL_BACK)
+	check_eq(narrows["squads"].size(), 2, "the Spartans and the Immortals")
+	for sq in narrows["squads"]:
+		check(sq.has("legs") and sq.has("speed"), "each marches like the Macedonians")
+	var funeral := Areas.kerameikos(holder, Vector3(400, 0, 0), 0.0, ALL_BACK)
+	check_eq(funeral["coffins"].size(), 10, "a coffin for each of the ten tribes")
 	holder.free()

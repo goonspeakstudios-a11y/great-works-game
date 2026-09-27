@@ -147,6 +147,52 @@ static func pieces() -> Dictionary:
 		"area_helicon": [1, func(s: Node3D, w: bool): Areas.helicon(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		"area_farm": [1, func(s: Node3D, w: bool): Areas.farm(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		"area_garden": [1, func(s: Node3D, w: bool): Areas.garden(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		# e3 people and props
+		"tragedy_people": [1, func(s: Node3D, w: bool):
+			var who := ["clytemnestra", "cassandra", "watchman", "fury", "orestes", "oedipus", "jocasta", "creon", "antigone",
+				"dionysus", "pentheus", "agave", "maenad", "hera"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 7) * 1.0, 0, 0), 0.0, who[k], not w)],
+		"history_people": [1, func(s: Node3D, w: bool):
+			var who := ["socrates", "strepsiades", "pheidippides", "cloud", "croesus", "solon", "pythia", "leonidas", "xerxes",
+				"pericles", "envoy", "melian"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 6) * 1.0, 0, 0), 0.0, who[k], not w)],
+		"sphinx": [1, func(s: Node3D, w: bool): People.sphinx(s, Vector3.ZERO, 0.0, w)],
+		"palace_front": [1, func(s: Node3D, w: bool): Props.palace_front(s, Vector3.ZERO, 0.0, w)],
+		"palace_shaken": [1, func(s: Node3D, w: bool): Props.palace_front(s, Vector3.ZERO, 0.0, w, true)],
+		"beacon_carpet_bath": [1, func(s: Node3D, w: bool):
+			Props.beacon(s, Vector3(-4, 0, 0), w)
+			Props.carpet(s, Vector3(0, 0, 4), Vector3(0, 0, -4), w)
+			Props.bath(s, Vector3(3, 0, 0), 0.0, w)],
+		"urns_and_pyre": [1, func(s: Node3D, w: bool):
+			Props.voting_urns(s, Vector3(-3, 0, 0), 0.0, w)
+			Props.pyre(s, Vector3(2, 0, 0), 0.0, w)],
+		"rock_tomb": [1, func(s: Node3D, w: bool): Props.rock_tomb(s, Vector3.ZERO, 0.0, w)],
+		"fir_tree": [1, func(s: Node3D, w: bool): Props.fir_tree(s, Vector3.ZERO, 12.0, w)],
+		"thinkery": [1, func(s: Node3D, w: bool): Props.thinkery(s, Vector3.ZERO, 0.0, w)],
+		"cages": [1, func(s: Node3D, w: bool): Props.cages(s, Vector3.ZERO, 0.0, w)],
+		"gold_offering": [1, func(s: Node3D, w: bool): Props.gold_offering(s, Vector3.ZERO, 0.0, w)],
+		"phocian_wall": [1, func(s: Node3D, w: bool): Props.phocian_wall(s, Vector3.ZERO, 0.0, 14.0, w)],
+		"larnakes": [1, func(s: Node3D, w: bool): Props.larnakes(s, Vector3.ZERO, 0.0, w)],
+		"siege_wall": [1, func(s: Node3D, w: bool): Props.siege_wall(s, Vector3(-15, 0, 0), Vector3(15, 0, 0), w)],
+		# e3 areas
+		"area_argos_palace": [1, func(s: Node3D, w: bool): Areas.argos_palace(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_areopagus": [1, func(s: Node3D, w: bool): Areas.areopagus(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_thebes_gate": [1, func(s: Node3D, w: bool): Areas.thebes_gate(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_crossroads": [1, func(s: Node3D, w: bool): Areas.crossroads(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_antigone_tomb": [1, func(s: Node3D, w: bool): Areas.antigone_tomb(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_cithaeron": [1, func(s: Node3D, w: bool): Areas.cithaeron(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_pentheus_palace": [1, func(s: Node3D, w: bool): Areas.pentheus_palace(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_strepsiades_house": [1, func(s: Node3D, w: bool): Areas.strepsiades_house(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_thinkery": [1, func(s: Node3D, w: bool): Areas.thinkery(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_sardis": [1, func(s: Node3D, w: bool): Areas.sardis(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_delphi": [1, func(s: Node3D, w: bool): Areas.delphi(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_thermopylae": [1, func(s: Node3D, w: bool): Areas.thermopylae(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_kerameikos": [1, func(s: Node3D, w: bool): Areas.kerameikos(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_plague": [1, func(s: Node3D, w: bool): Areas.plague(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_corcyra": [1, func(s: Node3D, w: bool): Areas.corcyra(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_melos": [1, func(s: Node3D, w: bool): Areas.melos(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		# Rome
 		"stone_pines": [2, func(s: Node3D, w: bool):
 			Rome.stone_pine(s, Vector3(-4, 0, 0), 1.0, w)

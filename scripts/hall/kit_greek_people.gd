@@ -92,10 +92,39 @@ const WHO := {
 	"anticleia": {"robe": "4a4450", "skin": "c0b0a0", "hair_color": "c8c4bc", "props": ["veil"]},
 	"elpenor": {"robe": "6a5a4a", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
 	"achilles_shade": {"robe": "8a7a5a", "skin": "c8a078", "hair_color": "b8904a", "props": ["spear"]},
+	"hera": {"robe": "6a2a3a", "skin": "e0c0a0", "hair_color": "2a1810", "size": 1.2, "props": ["crown", "veil", "sceptre"]},
 	"aphrodite": {"robe": "e8d0d8", "skin": "e8c8b0", "hair_color": "b8904a", "props": ["veil", "girdle"]},
 	"muse": {"robe": "d8cfa8", "skin": "e0c0a0", "hair_color": "3a2418", "props": ["veil"]},
 	"pandora": {"robe": "e0d8c4", "skin": "e0c0a0", "hair_color": "8a6a3a", "props": ["crown"]},
 	"kronos": {"robe": "2a2a30", "skin": "8a8078", "hair_color": "3a3a3a", "beard": "long", "size": 2.2, "props": ["sickle"]},
+	# e3: the tragedians
+	"clytemnestra": {"robe": "5a1a2a", "skin": "d0a888", "hair_color": "2a1810", "props": ["crown", "veil"]},
+	"cassandra": {"robe": "e0d8c4", "skin": "d8b090", "hair_color": "1a1410", "props": ["wreath", "staff"]},
+	"watchman": {"robe": "6a5a4a", "skin": "b89070", "hair_color": "4a3a2a", "beard": "short", "props": []},
+	"fury": {"robe": "1a1618", "skin": "6a6a60", "hair_color": "1a1618", "props": ["snakes"]},
+	"orestes": {"robe": "4a4a5a", "skin": "c8a078", "hair_color": "2a1e16", "props": ["sword"]},
+	"oedipus": {"robe": "5a2a4a", "skin": "c09070", "hair_color": "2a1e16", "beard": "short", "props": ["crown", "staff"]},
+	"jocasta": {"robe": "4a2a4a", "skin": "d0a888", "hair_color": "3a2418", "props": ["crown", "veil"]},
+	"creon": {"robe": "3a3a5a", "skin": "c09070", "hair_color": "8a8278", "beard": "short", "props": ["crown", "sceptre"]},
+	"antigone": {"robe": "2a2a2a", "skin": "d8b090", "hair_color": "1a1410", "props": ["veil"]},
+	"dionysus": {"robe": "6a2a6a", "skin": "e0c0a0", "hair_color": "b8904a", "props": ["ivy", "thyrsus", "fawnskin"]},
+	"pentheus": {"robe": "c8a0b0", "skin": "c8a078", "hair_color": "3a2418", "props": ["veil"]},
+	"agave": {"robe": "5a4a3a", "skin": "c8a078", "hair_color": "2a1810", "props": ["ivy", "fawnskin", "thyrsus"]},
+	"maenad": {"robe": "8a6a4a", "skin": "d0a080", "hair_color": "2a1810", "props": ["ivy", "fawnskin", "thyrsus"]},
+	# Aristophanes
+	"socrates": {"robe": "8a8274", "skin": "c09070", "hair_color": "c09070", "beard": "long", "props": []},
+	"strepsiades": {"robe": "6a5a44", "skin": "b89070", "hair_color": "a8a098", "beard": "short", "props": []},
+	"pheidippides": {"robe": "b8863a", "skin": "d0a880", "hair_color": "4a3018", "props": []},
+	"cloud": {"robe": "d8dce4", "skin": "e0dcd8", "hair_color": "c8ccd4", "props": ["veil"]},
+	# the historians
+	"croesus": {"robe": "b8863a", "skin": "c8a078", "hair_color": "2a1810", "beard": "long", "props": ["crown", "sceptre"]},
+	"solon": {"robe": "e0d8c4", "skin": "c0a080", "hair_color": "e0dcd4", "beard": "long", "props": ["staff"]},
+	"pythia": {"robe": "e8e2d2", "skin": "d8b898", "hair_color": "3a2418", "props": ["wreath", "veil"]},
+	"leonidas": {"robe": "8a1e1a", "skin": "c09070", "hair_color": "2a1810", "beard": "long", "props": ["helmet", "spear"]},
+	"xerxes": {"robe": "2a4a6a", "skin": "b88a64", "hair_color": "1a1410", "beard": "long", "props": ["crown", "sceptre"]},
+	"pericles": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "4a3a2a", "beard": "short", "props": ["helmet_up"]},
+	"envoy": {"robe": "e0d6c0", "skin": "c8a078", "hair_color": "3a2a1e", "beard": "short", "props": ["staff"]},
+	"melian": {"robe": "4a5a6a", "skin": "c09070", "hair_color": "8a8278", "beard": "long", "props": []},
 }
 
 
@@ -155,6 +184,25 @@ static func figure(parent: Node3D, at: Vector3, yaw: float, who: String, undead:
 				Greek.kylix(hand, Vector3(0.3, 1.38, 0.42))
 			"girdle":  # Aphrodite's embroidered band
 				Kit.cylinder(root, Vector3(0, 1.05, 0), 0.23, 0.06, "gold", false, 8)
+			"wreath":  # laurel
+				Kit.mesh(head, TorusMesh.new(), "olive", Vector3(0, 0.17, 0), Vector3.ZERO, Vector3(0.16, 0.3, 0.16))
+			"ivy":
+				Kit.mesh(head, TorusMesh.new(), "#3a5a2a", Vector3(0, 0.17, 0), Vector3.ZERO, Vector3(0.17, 0.4, 0.17))
+			"snakes":  # the Furies' hair of snakes
+				for k in 6:
+					var a := TAU * k / 6.0
+					Kit.box(head, Vector3(cos(a) * 0.12, 0.2, sin(a) * 0.12), Vector3(0.025, 0.2, 0.025), "#2a3a1a", false,
+						Vector3(sin(a) * 0.8, 0, -cos(a) * 0.8))
+			"thyrsus":  # the fennel wand with its pine cone
+				Kit.box(root, Vector3(0.36, 1.1, 0.12), Vector3(0.03, 1.6, 0.03), "#6a8a3a", false)
+				Kit.blob(root, Vector3(0.36, 1.95, 0.12), 0.07, "#5a3a22", Vector3(1.0, 1.4, 1.0), 6)
+			"fawnskin":
+				Kit.box(root, Vector3(0, 1.3, 0.22), Vector3(0.4, 0.3, 0.03), "#9a6a3a", false, Vector3(0, 0, 0.4))
+			"sword":
+				Kit.box(root, Vector3(0.36, 1.1, 0.25), Vector3(0.04, 0.6, 0.012), "bronze", false, Vector3(-0.9, 0, 0))
+			"helmet_up":  # Pericles' helmet, pushed back on his head as in his portraits
+				Kit.blob(head, Vector3(0, 0.24, -0.06), 0.15, "bronze", Vector3(1.0, 0.9, 1.2), 7)
+				Kit.box(head, Vector3(0, 0.36, -0.1), Vector3(0.04, 0.1, 0.28), "#2a2a2a", false)
 			"sickle":
 				Kit.box(root, Vector3(0.36, 1.4, 0.2), Vector3(0.03, 0.5, 0.03), "wood", false)
 				for k in 4:
@@ -214,3 +262,26 @@ static func siren(parent: Node3D, at: Vector3, yaw: float, alive: bool = true) -
 	Kit.blob(g, Vector3(0, 1.04, 0.14), 0.15, "#3a2418" if alive else "#5a5856", Vector3(1.05, 0.8, 1.05), 7)
 	Kit.box(g, Vector3(0, 0.9, 0.32), Vector3(0.05, 0.03, 0.01), "#6a2a2a" if alive else "dark", false)  # the singing mouth
 	return g
+
+
+## The Sphinx of Thebes on her column: a lion's body, an eagle's wings, a woman's head, asking her
+## riddle of everyone who comes to the gate. Lost: the column broken and the Sphinx fallen from it
+## in pieces. Faces +Z. Returns the Sphinx's node (on the column, or on the ground).
+static func sphinx(parent: Node3D, at: Vector3, yaw: float, alive: bool = true) -> Node3D:
+	var g := Kit.group(parent, at, yaw)
+	var h := 4.0 if alive else 1.4
+	Kit.box(g, Vector3(0, 0.25, 0), Vector3(1.4, 0.5, 1.4), "marble")
+	Kit.cylinder(g, Vector3(0, 0.5, 0), 0.45, h - 0.5, "marble", true, 10, 0.4)
+	var s := Kit.group(g, Vector3(0, h, 0) if alive else Vector3(1.8, 0.2, 1.0))
+	if not alive:
+		s.rotation = Vector3(0, 0.7, 1.4)
+	var skin := "#c8a068" if alive else "ashbed"
+	Kit.blob(s, Vector3(0, 0.45, -0.1), 0.35, skin, Vector3(0.9, 0.8, 1.6), 7)  # the lion's body, sitting
+	for side: float in [-1.0, 1.0]:
+		Kit.box(s, Vector3(side * 0.15, 0.2, 0.35), Vector3(0.1, 0.4, 0.1), skin, false)  # forelegs
+		Kit.box(s, Vector3(side * 0.3, 0.9, -0.3), Vector3(0.06, 0.8, 0.5), "#8a6a44" if alive else "ashbed", false,
+			Vector3(-0.5, 0, side * 0.35))  # wings swept up
+	Kit.blob(s, Vector3(0, 0.95, 0.3), 0.14, "#d8b090" if alive else "ashbed", Vector3(1.0, 1.15, 1.0), 7)  # the woman's head
+	Kit.blob(s, Vector3(0, 1.02, 0.25), 0.15, "#2a1810" if alive else "ashbed", Vector3(1.05, 0.8, 1.1), 7)
+	Kit.box(s, Vector3(0, 0.3, -0.7), Vector3(0.05, 0.05, 0.5), skin, false, Vector3(0.6, 0, 0))  # the tail
+	return s

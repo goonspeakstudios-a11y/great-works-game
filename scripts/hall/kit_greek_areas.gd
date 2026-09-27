@@ -658,3 +658,394 @@ static func garden(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dict
 		Greek.ship(g, Vector3(-40.0 + k * 30.0, -10.0, 160.0), PI / 2.0, "trireme", true, true, back.has("soldiers"))
 	return _spots(area, g, back, Vector3(0, 0, 3.0), Vector3(0, 0, -2.0), 6.5,
 		[Vector3(-8.0, 0, 14.0), Vector3(-5.0, 0, 15.0)], Vector3(8.0, 0, 12.0), PI, Vector3(0, 0, 14.0), PI)
+
+
+# ---------- e3: Aeschylus ----------
+
+## Argos, the house of Atreus (Agamemnon): the palace front with the watchman on its roof, the
+## beacon blazing on the far height, the chariot come home from Troy with Cassandra in it, the
+## crimson tapestries spread from the chariot to the door, Clytemnestra waiting on the step, and
+## inside, the bath with its net.
+static func argos_palace(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 6.0), Vector3(50.0, 0.04, 30.0), "paving" if whole else "ashbed", false)
+	var palace := Props.palace_front(g, Vector3(0, 0, -6.0), 0.0, whole)
+	_person(area, g, palace["roof"], Vector3(30.0, 8.0, 60.0), "watchman", back)
+	var fire := Props.beacon(g, Vector3(30.0, 10.0, 70.0), back.has("lamps"))
+	if fire:
+		area["flicker"].append(fire)
+	Kit.cylinder(g, Vector3(30.0, -20.0, 70.0), 14.0, 30.0, "rock", false, 8, 3.0)  # the height the beacon burns on
+	Props.chariot(g, Vector3(0, 0, 14.0), PI, 2, back.has("household"))
+	_person(area, g, Vector3(0.3, 0.75, 15.5), Vector3(0, 0, 0), "cassandra", back)
+	Props.carpet(g, Vector3(0, 0, 12.0), Vector3(0, 0.62, -3.0), back.has("household"))
+	_person(area, g, Vector3(0, 0.6, -3.5), Vector3(0, 0, 14.0), "clytemnestra", back)
+	Props.bath(g, Vector3(-6.0, 0.6, -5.0), 0.0, whole)
+	return _spots(area, g, back, Vector3(3.0, 0, 6.0), Vector3(0, 0, 6.0), 8.0,
+		[Vector3(-18.0, 0, 6.0), Vector3(-18.0, 0, 9.0), Vector3(-18.0, 0, 12.0)], Vector3(16.0, 0, 8.0), -PI / 2.0,
+		Vector3(12.0, 0, 16.0), PI)
+
+
+## The Areopagus in Athens (Eumenides): the bare hill of Ares with its rough seats for the
+## judges, Athena presiding, Orestes at the altar, the Furies crouched round him in black, the
+## table with the two urns where the votes fall even.
+static func areopagus(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.cylinder(g, Vector3(0, -2.0, 0), 22.0, 2.0, "rock", true, 12, 18.0)
+	var seats := _ring(Vector3(0, 0, -2.0), 9.0, 12, 200.0, 340.0)
+	for k in seats.size():  # the judges' seats cut in the rock, and the judges on them
+		var p: Vector3 = seats[k]
+		Kit.box(g, p + Vector3(0, 0.25, 0), Vector3(1.0, 0.5, 0.8), "rock", true, Vector3(0, Kit.face_yaw(p, Vector3.ZERO), 0))
+		_folk(area, g, p + Vector3(0, 0, 0.6), Vector3(0, 0, 0), {"robe": "e0d6c0", "hair_color": "8a8278", "beard": "long"}, back)
+	_person(area, g, Vector3(0, 0, -6.0), Vector3(0, 0, 3.0), "athena", back, "teacher")
+	area["urns"] = Props.voting_urns(g, Vector3(0, 0, -3.5), 0.0, whole)
+	Greek.altar(g, Vector3(0, 0, 3.0), 0.0, "greek", back.has("lamps"), whole)
+	_person(area, g, Vector3(0, 0, 4.4), Vector3(0, 0, -6.0), "orestes", back)
+	for k in 5:  # the Furies, crouched round him
+		var a := PI * 0.2 + k * PI * 0.15
+		var p := Vector3(cos(a) * 3.0, 0, 4.0 + sin(a) * 3.0)
+		var f := _person(area, g, p, Vector3(0, 0, 4.4), "fury", back, "soldiers")
+		(f["root"] as Node3D).rotation.x = 0.4
+	return _spots(area, g, back, Vector3(-2.0, 0, 0.0), Vector3(0, 0, 0), 5.5,
+		[Vector3(-14.0, 0, 6.0), Vector3(-12.0, 0, 9.0)], Vector3(12.0, 0, 6.0), -PI / 2.0, Vector3(10.0, 0, 11.0), PI)
+
+
+# ---------- e3: Sophocles ----------
+
+## The gate of Thebes in the plague (Oedipus the King): the palace front, the city's altar heaped
+## with suppliants' branches, the plague's dead laid out and burning on pyres, and on her column
+## the Sphinx whose riddle Oedipus answered.
+static func thebes_gate(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 6.0), Vector3(50.0, 0.04, 30.0), "paving" if whole else "ashbed", false)
+	Props.palace_front(g, Vector3(0, 0, -6.0), 0.0, whole)
+	var light := Greek.altar(g, Vector3(0, 0, 4.0), PI, "greek", back.has("lamps"), whole)
+	if light:
+		area["flicker"].append(light)
+	for k in 6:  # the suppliants' olive branches wound with wool, laid on the altar steps
+		Kit.box(g, Vector3(-1.0 + k * 0.4, 0.25, 4.8), Vector3(0.05, 0.05, 0.9), "olive", false, Vector3(0, 0.3 * k, 0))
+	for k in 3:
+		var fire := Props.pyre(g, Vector3(14.0 + k * 3.0, 0, 12.0), 0.3 * k, back.has("lamps"))
+		if fire:
+			area["flicker"].append(fire)
+	for k in 4:  # the dead of the plague, laid in the street
+		Kit.blob(g, Vector3(-14.0 + k * 1.2, 0.2, 12.0), 0.2, "#8a8274", Vector3(1.2, 0.7, 4.0), 6)
+	area["sphinx"] = People.sphinx(g, Vector3(-18.0, 0, -2.0), 0.6, back.has("teacher"))
+	_person(area, g, Vector3(1.5, 0.6, -3.0), Vector3(0, 0, 8.0), "oedipus", back)
+	_person(area, g, Vector3(-1.5, 0.6, -3.2), Vector3(0, 0, 8.0), "jocasta", back)
+	_person(area, g, Vector3(4.0, 0, 8.0), Vector3(1.5, 0, -3.0), "teiresias", back)
+	return _spots(area, g, back, Vector3(3.0, 0, 8.0), Vector3(0, 0, 8.0), 7.0,
+		[Vector3(20.0, 0, 2.0), Vector3(20.0, 0, 5.0)], Vector3(-12.0, 0, 18.0), PI, Vector3(10.0, 0, 18.0), PI)
+
+
+## The place where three roads meet, in Phocis (Oedipus the King 716-813): a narrow way between
+## mountains splitting three ways at a lonely crossing, a shrine-stone, the old man's carriage
+## overturned in the road.
+static func crossroads(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(60.0, 0.04, 60.0), "earth" if back.has("leaves") else "ashbed", false)
+	for k in 3:  # the three roads
+		var a := TAU * k / 3.0 + PI / 2.0
+		Kit.box(g, Vector3(cos(a), 0, sin(a)) * 14.0 + Vector3(0, 0.03, 0), Vector3(2.5, 0.04, 28.0), "path", false,
+			Vector3(0, -a + PI / 2.0, 0))
+		var hill := Vector3(cos(a + PI / 3.0), 0, sin(a + PI / 3.0)) * 24.0
+		Kit.cylinder(g, hill + Vector3(0, -2.0, 0), 12.0, 16.0, "rock", false, 7, 3.0)  # the mountains between
+	Kit.box(g, Vector3(0, 0.8, 0), Vector3(0.6, 1.6, 0.6), "stone")  # the shrine-stone at the meeting
+	var cart := Kit.group(g, Vector3(3.0, 0.4, 3.0), 0.8)
+	cart.rotation.z = 1.4
+	Props.chariot(cart, Vector3.ZERO, 0.0, 0, whole)  # overturned
+	Greek.beast(g, Vector3(6.0, 0, 6.0), 2.2, "horse", "", 1.0, back.has("household"))
+	return _spots(area, g, back, Vector3(-2.0, 0, 2.0), Vector3(0, 0, 0), 6.0,
+		[Vector3(-8.0, 0, 10.0), Vector3(-10.0, 0, 8.0)], Vector3(8.0, 0, -8.0), PI / 4.0, Vector3(-6.0, 0, -6.0), PI / 4.0)
+
+
+## Antigone's tomb (Antigone): outside the walls the body of Polynices left unburied under a thin
+## dust she scattered, the guards' post, and in the rock the tomb where Creon walls her up alive.
+static func antigone_tomb(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 6.0), Vector3(40.0, 0.04, 30.0), "earth" if back.has("leaves") else "ashbed", false)
+	area["door"] = Props.rock_tomb(g, Vector3(0, 0, -8.0), 0.0, whole)
+	Kit.blob(g, Vector3(6.0, 0.2, 6.0), 0.22, "#6a5a4a", Vector3(1.2, 0.8, 4.2), 6)  # Polynices
+	Kit.box(g, Vector3(6.0, 0.32, 6.0), Vector3(0.8, 0.02, 1.6), "earth", false)  # the thin dust over him
+	for k in 2:
+		_person(area, g, Vector3(9.0 + k * 1.2, 0, 3.0), Vector3(6.0, 0, 6.0), "watchman", back, "soldiers")
+	_person(area, g, Vector3(-1.5, 0, -5.5), Vector3(0, 0, 6.0), "antigone", back)
+	_person(area, g, Vector3(-6.0, 0, 4.0), Vector3(0, 0, -6.0), "creon", back)
+	return _spots(area, g, back, Vector3(-3.0, 0, 3.0), Vector3(0, 0, 4.0), 6.0,
+		[Vector3(-16.0, 0, 8.0), Vector3(-16.0, 0, 11.0)], Vector3(14.0, 0, 14.0), PI, Vector3(-10.0, 0, 16.0), PI)
+
+
+# ---------- e3: Euripides ----------
+
+## Mount Cithaeron (the Bacchae): a glade under firs where the women of Thebes, maddened by the
+## god, dance with their thyrsi and fawnskins, milk and honey welling from the ground, and the tall
+## fir bent and let spring up again with Pentheus in its top.
+static func cithaeron(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var alive := back.has("leaves")
+	Kit.cylinder(g, Vector3(0, -3.0, 0), 28.0, 3.0, "grass" if alive else "ashbed", true, 14, 20.0)
+	for k in 9:
+		var a := TAU * k / 9.0
+		Props.fir_tree(g, Vector3(cos(a), 0, sin(a)) * (14.0 + (k % 3) * 2.0), 10.0 + (k % 3) * 2.0, alive)
+	var top := Props.fir_tree(g, Vector3(0, 0, -6.0), 16.0, alive)
+	var p := People.figure(top, Vector3(0, -0.8, 0), 0.0, "pentheus", not back.has("household"))
+	area["people"].append(p)
+	for k in 8:  # the maenads, dancing round
+		var a := TAU * k / 8.0
+		_person(area, g, Vector3(cos(a) * 5.0, 0, 2.0 + sin(a) * 5.0), Vector3(0, 0, 2.0), "agave" if k == 0 else "maenad", back)
+	Kit.cylinder(g, Vector3(3.0, 0.01, 4.0), 0.8, 0.02, "#e8e4dc" if back.has("water") else "drybed", false, 8)  # milk from the earth
+	_person(area, g, Vector3(-4.0, 0, 8.0), Vector3(0, 0, 2.0), "dionysus", back, "teacher")
+	return _spots(area, g, back, Vector3(-2.0, 0, 9.0), Vector3(0, 0, 2.0), 9.0,
+		[Vector3(10.0, 0, 8.0), Vector3(10.0, 0, 11.0)], Vector3(-10.0, 0, 6.0), PI / 2.0, Vector3(6.0, 0, 12.0), PI)
+
+
+## Pentheus's palace at Thebes (the Bacchae): the palace front split by the god's earthquake, fire
+## leaping from Semele's tomb, Dionysus in his mortal shape, Pentheus dressed as a woman, the old men
+## Cadmus and Teiresias in fawnskins.
+static func pentheus_palace(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	Kit.box(g, Vector3(0, 0.01, 6.0), Vector3(44.0, 0.04, 28.0), "paving" if back.has("walkway") else "ashbed", false)
+	var palace := Props.palace_front(g, Vector3(0, 0, -6.0), 0.0, back.has("walkway"), true)
+	if palace["fire"] and back.has("lamps"):
+		area["flicker"].append(palace["fire"])
+	_person(area, g, Vector3(2.0, 0, 3.0), Vector3(-1.0, 0, 3.0), "dionysus", back, "teacher")
+	_person(area, g, Vector3(-1.0, 0, 3.0), Vector3(2.0, 0, 3.0), "pentheus", back)
+	_person(area, g, Vector3(-5.0, 0, 6.0), Vector3(0, 0, 3.0), "teiresias", back)
+	return _spots(area, g, back, Vector3(4.0, 0, 7.0), Vector3(0, 0, 6.0), 7.0,
+		[Vector3(16.0, 0, 6.0), Vector3(16.0, 0, 9.0)], Vector3(-14.0, 0, 12.0), PI, Vector3(10.0, 0, 16.0), PI)
+
+
+# ---------- e3: Aristophanes ----------
+
+## Strepsiades' house (the Clouds): a farmer ruined by his son's horses, awake at night in bed
+## counting his debts while the son sleeps and dreams of racing; the horse in its stall, a lamp,
+## the Thinkery's door across the street.
+static func strepsiades_house(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(20.0, 0.04, 16.0), "paving", false)
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * 6.2, 1.7, -2.0), Vector3(0.3, 3.4, 10.0), "plaster")
+	Kit.box(g, Vector3(0, 1.7, -7.0), Vector3(12.7, 3.4, 0.3), "plaster")
+	if whole:
+		Kit.box(g, Vector3(0, 3.5, -2.0), Vector3(13.0, 0.25, 10.5), "roof", false)
+	for x: float in [-3.0, 3.0]:
+		Kit.bed(g, Vector3(x, 0, -4.5), 0.0)
+	_person(area, g, Vector3(-3.0, 0, -3.3), Vector3(-3.0, 0, 0), "strepsiades", back)
+	var son := _person(area, g, Vector3(3.0, 0.55, -4.5), Vector3(3.0, 0.5, 0), "pheidippides", back)
+	(son["root"] as Node3D).rotation = Vector3(-PI / 2.0, PI / 2.0, 0)  # asleep on his bed
+	Greek.beast(g, Vector3(-4.0, 0, 5.0), PI / 2.0, "horse", "", 1.0, back.has("household"))
+	var lamp := Kit.lamp_stand(g, Vector3(0, 0, -5.5), back.has("lamps"))
+	if lamp:
+		area["flicker"].append(lamp)
+	return _spots(area, g, back, Vector3(0, 0, 0), Vector3(0, 0, 2.0), 4.0,
+		[Vector3(-5.5, 0, 4.0), Vector3(-5.5, 0, 6.5)], Vector3(4.5, 0, 5.0), -PI / 2.0, Vector3(0, 0, 6.5), PI)
+
+
+## The Thinkery (the Clouds): Socrates' school, his pupils bent double over the ground, the map of
+## the earth, Socrates in his basket in the air, the Clouds come down as women to be the chorus,
+## and the two Arguments in their cages.
+static func thinkery(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 4.0), Vector3(30.0, 0.04, 24.0), "paving" if whole else "ashbed", false)
+	var t := Props.thinkery(g, Vector3(0, 0, -4.0), 0.0, whole)
+	area["basket"] = t["basket"]
+	var soc := People.figure(t["basket"], Vector3(0, -0.9, 0), 0.0, "socrates", not back.has("teacher"))
+	(soc["root"] as Node3D).scale = Vector3.ONE * 0.6
+	area["people"].append(soc)
+	for k in 6:  # the Clouds, come down as women
+		var a := PI * 0.15 + k * PI * 0.14
+		_person(area, g, Vector3(cos(a) * 9.0, 0, 4.0 + sin(a) * 6.0), Vector3(0, 0, 4.0), "cloud", back)
+	area["arguments"] = Props.cages(g, Vector3(-8.0, 0, 8.0), 0.4, back.has("household"))
+	_person(area, g, Vector3(2.0, 0, 5.0), Vector3(0, 0, -4.0), "strepsiades", back)
+	return _spots(area, g, back, Vector3(-2.0, 0, 6.0), Vector3(0, 0, 7.0), 5.0,
+		[Vector3(12.0, 0, 8.0), Vector3(12.0, 0, 11.0)], Vector3(10.0, 0, -2.0), -PI / 2.0, Vector3(-10.0, 0, 14.0), PI)
+
+
+# ---------- e3: Herodotus ----------
+
+## Sardis, Croesus's capital (Histories I.29-45, 86-87): the court where he shows Solon his
+## treasuries and asks who is the happiest of men, and in the square below the pyre where, a
+## captive of Cyrus, he calls out Solon's name, and the sudden rain that puts it out.
+static func sardis(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 4.0), Vector3(50.0, 0.04, 36.0), "paving" if whole else "ashbed", false)
+	Props.palace_front(g, Vector3(0, 0, -10.0), 0.0, whole)
+	Props.gold_offering(g, Vector3(-6.0, 0, -4.0), 0.0, whole)
+	_person(area, g, Vector3(0, 0, -5.0), Vector3(0, 0, 0), "croesus", back)
+	_person(area, g, Vector3(0, 0, -1.0), Vector3(0, 0, -5.0), "solon", back, "teacher")
+	var fire := Props.pyre(g, Vector3(10.0, 0, 10.0), 0.3, back.has("lamps"), false, 1.5)
+	if fire:
+		area["flicker"].append(fire)
+	var captive := _person(area, g, Vector3(10.0, 2.1, 10.0), Vector3(0, 0, 0), "croesus", back, "soldiers")
+	area["on_the_pyre"] = captive
+	for k in 6:  # the Persian soldiers round the pyre
+		var a := TAU * k / 6.0
+		Greek.immortal(g, Vector3(10.0 + cos(a) * 4.0, 0, 10.0 + sin(a) * 4.0), not back.has("soldiers"))
+	return _spots(area, g, back, Vector3(-3.0, 0, 2.0), Vector3(-4.0, 0, 6.0), 6.0,
+		[Vector3(-20.0, 0, 6.0), Vector3(-20.0, 0, 9.0)], Vector3(-16.0, 0, 16.0), PI, Vector3(0, 0, 18.0), PI)
+
+
+## Delphi, where Croesus sent to test the oracles (Histories I.46-56): the temple of Apollo on its
+## terrace under the cliffs, the tripod and the navel stone, the Pythia, and Croesus's golden gifts.
+static func delphi(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 4.0), Vector3(44.0, 0.04, 34.0), "paving" if whole else "ashbed", false)
+	Kit.box(g, Vector3(0, 12.0, -20.0), Vector3(60.0, 24.0, 4.0), "rock")  # the Phaedriades, the shining cliffs
+	Rome.temple(g, Vector3(0, 0, -8.0), 0.0, whole)
+	Greek.tripod(g, Vector3(-4.0, 0, 4.0), back.has("sun"), whole)
+	Greek.omphalos(g, Vector3(4.0, 0, 4.0), whole)
+	_person(area, g, Vector3(-4.0, 0, 5.2), Vector3(0, 0, 10.0), "pythia", back, "teacher")
+	Props.gold_offering(g, Vector3(10.0, 0, 2.0), -PI / 2.0, whole)
+	for k in 3:  # Croesus's messengers, waiting for the answer
+		_person(area, g, Vector3(-2.0 + k * 1.6, 0, 11.0), Vector3(-4.0, 0, 5.0), "envoy", back)
+	return _spots(area, g, back, Vector3(2.0, 0, 8.0), Vector3(0, 0, 8.0), 8.0,
+		[Vector3(-18.0, 0, 8.0), Vector3(-18.0, 0, 11.0)], Vector3(16.0, 0, 12.0), -PI / 2.0, Vector3(-12.0, 0, 16.0), PI)
+
+
+## Thermopylae (Histories VII.201-239): the narrow pass between the mountain wall (-X) and the sea
+## (+X), the Phocian wall across it, the Spartans combing their hair and exercising before the
+## battle as the Persian scout saw them, and the Immortals coming up the road. Returns, besides
+## the usual, the two armies in "squads".
+static func thermopylae(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(14.0, 0.04, 80.0), "earth" if back.has("leaves") else "ashbed", false)
+	Kit.box(g, Vector3(-12.0, 15.0, 0), Vector3(10.0, 30.0, 80.0), "rock")  # Mount Kallidromos
+	Kit.box(g, Vector3(7.5, 1.5, 0), Vector3(1.0, 3.0, 80.0), "rock", false)  # the drop to the sea
+	Props.phocian_wall(g, Vector3(0, 0, 0), 0.0, 14.0, whole)
+	area["squads"].append(Greek.phalanx(g, Vector3(0, 0, -6.0), 3, 8, "sparta", not back.has("soldiers")))
+	var immortals := Kit.group(g, Vector3(0, 0, 30.0), PI)
+	var legs: Array = []
+	for r in 3:
+		for f in 8:
+			legs.append_array(Greek.immortal(immortals, Vector3((f - 3.5) * 0.9, 0, -r * 1.1), not back.has("soldiers")))
+	area["squads"].append({"root": immortals, "legs": legs, "leg": 0, "speed": 1.0, "step": 0.0, "undead": not back.has("soldiers")})
+	_person(area, g, Vector3(2.0, 0, -2.0), Vector3(0, 0, 10.0), "leonidas", back, "teacher")
+	return _spots(area, g, back, Vector3(-2.0, 0, -12.0), Vector3(0, 0, -16.0), 4.5,
+		[Vector3(-5.0, 0, -24.0), Vector3(-5.0, 0, -21.0)], Vector3(4.0, 0, -24.0), -PI / 2.0, Vector3(4.0, 0, -28.0), 0.0)
+
+
+# ---------- e3: Thucydides ----------
+
+## The Kerameikos, the public cemetery of Athens (II.34-46): the ten cypress coffins and the empty
+## bier, the grave monuments along the road, the high platform Pericles spoke from, and the
+## mourners.
+static func kerameikos(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(50.0, 0.04, 40.0), "earth" if back.has("leaves") else "ashbed", false)
+	Kit.box(g, Vector3(0, 0.03, 0), Vector3(6.0, 0.04, 40.0), "path", false)  # the road out of the city
+	for k in 10:  # grave monuments along the road
+		for side: float in [-1.0, 1.0]:
+			Kit.stele(g, Vector3(side * 5.0, 0, -16.0 + k * 3.5), -side * PI / 2.0)
+	area["coffins"] = Props.larnakes(g, Vector3(-12.0, 0, -2.0), PI / 2.0, whole)
+	Greek.bema(g, Vector3(10.0, 0, 0), -PI / 2.0, whole)
+	_person(area, g, Vector3(10.0, 1.2 if whole else 0.7, 0), Vector3(-12.0, 0, 0), "pericles", back, "teacher")
+	for k in 8:  # the mourners
+		var a := PI * 0.6 + k * 0.12
+		_folk(area, g, Vector3(-12.0 + cos(a) * 10.0, 0, sin(a) * 10.0), Vector3(-12.0, 0, 0),
+			{"robe": "2a2a2a", "hair_color": "2a1e16"}, back)
+	for k in 6:
+		area["sway"].append(Kit.cypress(g, Vector3(-22.0 + k * 1.5, 0, 16.0), 7.0, back.has("leaves")))
+	return _spots(area, g, back, Vector3(8.0, 0, 3.0), Vector3(0, 0, -8.0), 6.0,
+		[Vector3(18.0, 0, 10.0), Vector3(18.0, 0, 13.0)], Vector3(18.0, 0, -12.0), -PI / 2.0, Vector3(-18.0, 0, -14.0), 0.0)
+
+
+## Athens in the plague (II.47-54): a street by a fountain where the sick lay dying of thirst,
+## beds carried out into the open, the dead lying unburied, pyres of strangers' bodies, the temples
+## full of the dead.
+static func plague(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(40.0, 0.04, 34.0), "paving" if whole else "ashbed", false)
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * 14.0, 2.5, 0), Vector3(3.0, 5.0, 30.0), "plaster")  # the street's houses
+	Rome.fountain(g, Vector3(0, 0, -6.0), 0.0, back.has("water"))
+	for k in 6:  # the sick on beds carried into the street
+		var p := Vector3((k % 3 - 1) * 4.0, 0, 2.0 + (k / 3) * 5.0)
+		Kit.bed(g, p, PI / 2.0)
+		Kit.blob(g, p + Vector3(0, 0.62, 0), 0.2, "#8a8274", Vector3(1.2, 0.6, 3.5), 6)
+	for k in 5:  # the dead at the fountain's edge
+		Kit.blob(g, Vector3(-3.0 + k * 1.4, 0.2, -3.8), 0.2, "#6a6258", Vector3(1.2, 0.7, 4.0), 6)
+	for k in 2:
+		var fire := Props.pyre(g, Vector3(-6.0 + k * 12.0, 0, 12.0), 0.5, back.has("lamps"))
+		if fire:
+			area["flicker"].append(fire)
+	return _spots(area, g, back, Vector3(0, 0, 8.0), Vector3(0, 0, 4.0), 7.0,
+		[Vector3(-11.0, 0, -8.0), Vector3(-11.0, 0, -5.0)], Vector3(11.0, 0, -10.0), -PI / 2.0, Vector3(10.0, 0, 13.0), PI)
+
+
+## Corcyra in civil strife (III.82-83): a harbour town's square, the temple of Hera where the
+## suppliants took refuge, houses burning, bodies in the temple precinct; words changed their
+## meanings, and nothing held.
+static func corcyra(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(44.0, 0.04, 36.0), "paving" if whole else "ashbed", false)
+	Props.shrine(g, Vector3(0, 0, -10.0), 0.0, "hera", whole)  # Hera's temple
+	for k in 5:  # the suppliants at the altar
+		var a := PI * 0.2 + k * PI * 0.15
+		_folk(area, g, Vector3(cos(a) * 3.0, 0, -5.0 + sin(a) * 3.0), Vector3(0, 0, -6.0), {"robe": "5a4a3a"}, back)
+	for k in 3:  # the houses, one of them burning
+		var p := Vector3(-16.0 + k * 16.0, 0, 12.0)
+		Kit.box(g, p + Vector3(0, 2.2, 0), Vector3(8.0, 4.4, 6.0), "plaster" if k != 1 else "#2a2622")
+		if k == 1 and back.has("lamps"):
+			for q: Vector3 in [Vector3(-1, 4.8, 0), Vector3(1, 5.0, 1), Vector3(0, 5.2, -1)]:
+				Kit.blob(g, p + q, 0.7, "fire", Vector3(1.0, 1.8, 1.0), 5)
+			var l := OmniLight3D.new()
+			l.position = p + Vector3(0, 6.0, 0)
+			l.light_color = Color("ff9040")
+			l.light_energy = 2.5
+			l.omni_range = 16.0
+			g.add_child(l)
+			area["flicker"].append(l)
+	for k in 3:
+		Kit.blob(g, Vector3(6.0 + k * 1.3, 0.2, -4.0), 0.2, "#6a6258", Vector3(1.2, 0.7, 4.0), 6)
+	Greek.ship(g, Vector3(0, -1.2, 40.0), PI / 2.0, "trireme", false, true, back.has("soldiers"))
+	return _spots(area, g, back, Vector3(-4.0, 0, 4.0), Vector3(0, 0, 3.0), 7.0,
+		[Vector3(-19.0, 0, -6.0), Vector3(-19.0, 0, -3.0)], Vector3(19.0, 0, -6.0), -PI / 2.0, Vector3(18.0, 0, 3.0), -PI / 2.0)
+
+
+## Melos (V.84-116): the small island city's wall, the Athenian envoys and the Melian magistrates
+## meeting in private before it, the Athenian ships in the bay and the siege wall they build right
+## round the town while the talking goes on.
+static func melos(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var area := _area(g)
+	var whole := back.has("walkway")
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(70.0, 0.04, 50.0), "earth" if back.has("leaves") else "ashbed", false)
+	Greek.troy_wall(g, Vector3(0, 0, -14.0), 0.0, 40.0, true, whole)  # the Melians' wall (a small city's)
+	Rome.far_city(g, Vector3(0, 0, -40.0), 14.0, 24.0, 20, 416)
+	Props.siege_wall(g, Vector3(-30.0, 0, 4.0), Vector3(30.0, 0, 4.0), back.has("soldiers"))
+	for k in 2:  # the talk: two Athenians, two Melians, a table between
+		_person(area, g, Vector3(-1.5 + k * 1.0, 0, -3.0), Vector3(0, 0, -6.0), "envoy", back, "teacher")
+		_person(area, g, Vector3(-1.5 + k * 1.0, 0, -7.0), Vector3(0, 0, -3.0), "melian", back)
+	Kit.table(g, Vector3(-1.0, 0, -5.0), PI / 2.0)
+	for k in 3:
+		Greek.ship(g, Vector3(-30.0 + k * 20.0, -1.2, 40.0), PI / 2.0, "trireme", false, true, back.has("soldiers"))
+	area["squads"].append(Greek.phalanx(g, Vector3(18.0, 0, 10.0), 2, 6, "athens", not back.has("soldiers")))
+	return _spots(area, g, back, Vector3(2.0, 0, -1.0), Vector3(0, 0, -5.0), 6.0,
+		[Vector3(-24.0, 0, 12.0), Vector3(-24.0, 0, 15.0)], Vector3(-18.0, 0, 18.0), PI, Vector3(10.0, 0, 20.0), PI)

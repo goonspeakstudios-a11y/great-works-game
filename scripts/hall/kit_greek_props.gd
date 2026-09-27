@@ -428,3 +428,321 @@ static func sparrow_chariot(parent: Node3D, at: Vector3, yaw: float, whole: bool
 			Kit.box(bird, Vector3(side * 0.08, 0.02, 0), Vector3(0.12, 0.01, 0.06), "#5a4028", false, Vector3(0, 0, side * 0.4))
 		birds.append(bird)
 	return birds
+
+
+# ---------- the tragedians ----------
+
+## A palace front as the tragedies stage it (the house of Atreus at Argos, the house of Cadmus
+## at Thebes): a wide stone front on a platform with two columns before the great double door, a
+## flat roof with a parapet and a stair up to it (where the watchman lies waiting for the
+## beacon). `shaken`: the god's earthquake has split it (the Bacchae), a pillar down and fire
+## leaping from Semele's tomb beside it. Lost: its doors fallen, the roof half gone. Faces +Z.
+## Returns {"root", "door": the doorway, "roof": the roof walk, "fire": the tomb's light or null}.
+static func palace_front(parent: Node3D, at: Vector3, yaw: float, whole: bool = true, shaken: bool = false) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.3, 0), Vector3(18.0, 0.6, 5.0), "stone")  # the platform
+	for side: float in [-1.0, 1.0]:  # the walls either side of the door
+		Kit.box(g, Vector3(side * 5.0, 4.1, -1.5), Vector3(8.0, 7.0, 2.0), "stone")
+	Kit.box(g, Vector3(0, 6.6, -1.5), Vector3(2.0, 2.0, 2.0), "stone", false)  # over the door
+	if whole and not shaken:
+		for side: float in [-1.0, 1.0]:
+			Kit.box(g, Vector3(side * 0.5, 3.1, -0.45), Vector3(0.95, 5.0, 0.12), "bronze", false)  # the doors, shut
+	else:
+		Kit.box(g, Vector3(0.4, 0.75, 1.0), Vector3(0.95, 0.15, 5.0), "bronze" if whole else "verdigris", false, Vector3(0, 0.3, 0))
+	for x: float in [-2.0, 2.0]:
+		if shaken and x > 0.0:
+			Kit.fallen_column(g, Vector3(3.0, 0.6, 2.0), 1.2, 5.0)
+		else:
+			Kit.column(g, Vector3(x, 0.6, 1.0), 5.8, not whole and x > 0.0)
+	Kit.box(g, Vector3(0, 7.7, -1.0), Vector3(18.0 if whole else 11.0, 0.3, 3.2), "stone", false)  # the roof
+	if whole:
+		Kit.box(g, Vector3(0, 8.1, 0.5), Vector3(18.0, 0.5, 0.2), "stone", false)  # the parapet
+	for k in 12:  # the stair up the side to the roof
+		Kit.box(g, Vector3(9.4, 0.6 + k * 0.6, -3.0 + k * 0.2), Vector3(1.2, 0.3, 0.6), "stone")
+	var fire: OmniLight3D = null
+	if shaken:
+		Kit.box(g, Vector3(-2.6, 4.0, -0.45), Vector3(0.15, 6.0, 0.05), "dark", false, Vector3(0, 0, 0.2))  # the crack
+		var tomb := Kit.group(g, Vector3(-11.5, 0, 2.0))
+		Kit.box(tomb, Vector3(0, 0.5, 0), Vector3(2.0, 1.0, 1.4), "stone")
+		for p: Vector3 in [Vector3(0, 1.4, 0), Vector3(0.3, 1.2, 0.2), Vector3(-0.3, 1.25, -0.1)]:
+			Kit.blob(tomb, p, 0.4, "fire", Vector3(1.0, 1.8, 1.0), 5)
+		fire = OmniLight3D.new()
+		fire.position = Vector3(0, 2.2, 0)
+		fire.light_color = Color("ff9040")
+		fire.light_energy = 2.0
+		fire.omni_range = 10.0
+		tomb.add_child(fire)
+	return {"root": g, "door": g.transform * Vector3(0, 0.6, 1.5), "roof": g.transform * Vector3(0, 7.85, -0.5), "fire": fire}
+
+
+## A beacon: a stone base heaped with pine brushwood, burning high (the chain of fires that
+## brought the news of Troy's fall across the sea to Argos in one night). Returns its light (or
+## null when cold).
+static func beacon(parent: Node3D, at: Vector3, lit: bool = true) -> OmniLight3D:
+	var g := Kit.group(parent, at)
+	Kit.cylinder(g, Vector3.ZERO, 1.2, 1.0, "stone", true, 8, 1.0)
+	for k in 6:
+		Kit.mesh(g, Kit._cyl(0.08, 1.8), "wood" if lit else "deadwood", Vector3(0, 1.4, 0), Vector3(0.5, k * 1.05, 0))
+	if not lit:
+		Kit.blob(g, Vector3(0, 1.05, 0), 0.8, "ashbed", Vector3(1.0, 0.3, 1.0), 6)
+		return null
+	for p: Vector3 in [Vector3(0, 2.2, 0), Vector3(0.3, 1.9, 0.2), Vector3(-0.3, 2.0, -0.2), Vector3(0, 2.9, 0)]:
+		Kit.blob(g, p, 0.5, "fire", Vector3(1.0, 1.9, 1.0), 5)
+	var sparks := Kit._drift(g, Vector3(0, 2.5, 0), 20, 2.5, 0.08, "fire", Vector3.UP, 25.0, Vector2(1.0, 2.5))
+	sparks.gravity = Vector3(0.4, 0.2, 0)
+	var l := OmniLight3D.new()
+	l.position = Vector3(0, 3.0, 0)
+	l.light_color = Color("ff9040")
+	l.light_energy = 3.0
+	l.omni_range = 18.0
+	g.add_child(l)
+	return l
+
+
+## The crimson tapestries spread from the chariot to the palace door for Agamemnon to walk on
+## (Agamemnon 905-957), treading the house's wealth underfoot. Lost: faded and torn.
+static func carpet(parent: Node3D, from: Vector3, to: Vector3, whole: bool = true) -> void:
+	var mid := (from + to) / 2.0
+	var g := Kit.group(parent, mid, atan2(to.x - from.x, to.z - from.z))
+	var length := from.distance_to(to)
+	if whole:
+		Kit.box(g, Vector3(0, 0.02, 0), Vector3(1.6, 0.04, length), "#7a1026", false)
+		for side: float in [-1.0, 1.0]:
+			Kit.box(g, Vector3(side * 0.75, 0.03, 0), Vector3(0.1, 0.04, length), "gold", false)
+		return
+	for k in int(length / 2.0):  # faded strips with gaps
+		if k % 3 == 1:
+			continue
+		Kit.box(g, Vector3(0.1 * (k % 2), 0.02, -length / 2.0 + 1.0 + k * 2.0), Vector3(1.4, 0.04, 1.8), "#4a3a3e", false,
+			Vector3(0, 0.1 * (k % 3), 0))
+
+
+## The bath where Agamemnon was killed (Agamemnon 1379-1392), with the robe Clytemnestra threw
+## over him like a fishing net. Lost: the tub cracked and dry, the net rotted.
+static func bath(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	Kit.cylinder(g, Vector3.ZERO, 0.6, 0.7, "clay", true, 10, 0.75)
+	Kit.cylinder(g, Vector3(0, 0.6, 0), 0.62, 0.04, "water" if whole else "drybed", false, 10)
+	for k in 5:  # the net-robe hanging over its rim
+		Kit.box(g, Vector3(-0.5 + k * 0.25, 0.5, 0.72), Vector3(0.03, 0.6, 0.02), "#6a1a2a" if whole else "ashbed", false)
+		Kit.box(g, Vector3(0, 0.35 + k * 0.12, 0.72), Vector3(1.2, 0.02, 0.02), "#6a1a2a" if whole else "ashbed", false)
+
+
+## The voting on the Areopagus (Eumenides 566-753): a table with two urns, one for condemning
+## and one for acquitting, and the jurors' pebbles heaped before them; the votes came out equal
+## and Athena's cast freed Orestes. Lost: the urns broken. Returns the table's spot.
+static func voting_urns(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.45, 0), Vector3(2.0, 0.1, 0.9), "stone")
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * 0.8, 0.2, 0), Vector3(0.2, 0.4, 0.7), "stone", false)
+		if whole:
+			Kit.cylinder(g, Vector3(side * 0.5, 0.5, 0), 0.18, 0.5, "bronze", false, 10, 0.12)
+		else:
+			Greek._sherds(g, Vector3(side * 0.5, 0.5, 0.1), 0.3, 3, 0.12)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 501
+	for k in 16:  # the pebbles, white and black
+		Kit.blob(g, Vector3(rng.randf_range(-0.3, 0.3), 0.52, rng.randf_range(0.1, 0.35)), 0.03, "#e8e4dc" if k % 2 else "#1a1816")
+	return g.transform * Vector3(0, 0, 1.0)
+
+
+## A pyre of logs laid crosswise, with a body wrapped on top (the plague's dead, burned on other
+## men's pyres), or, with `body` false, empty (Croesus's, before he is put on it). `lit` burns.
+## Returns the light (or null).
+static func pyre(parent: Node3D, at: Vector3, yaw: float, lit: bool = false, body: bool = true, size: float = 1.0) -> OmniLight3D:
+	var g := Kit.group(parent, at, yaw)
+	g.scale = Vector3.ONE * size
+	for k in 6:  # courses of logs, each across the last
+		for j in 4:
+			var along := k % 2 == 0
+			var off := -0.75 + j * 0.5
+			Kit.mesh(g, Kit._cyl(0.12, 2.0), "wood", Vector3(off if along else 0, 0.12 + k * 0.22, 0 if along else off),
+				Vector3(PI / 2.0, 0, 0) if along else Vector3(0, 0, PI / 2.0))
+	var heap := BoxShape3D.new()
+	heap.size = Vector3(2.0, 1.4, 2.0)
+	Kit.solid(g, heap, Vector3(0, 0.7, 0))
+	if body:
+		Kit.blob(g, Vector3(0, 1.5, 0), 0.22, "#8a8274", Vector3(1.2, 0.7, 4.0), 6)
+	if not lit:
+		return null
+	for p: Vector3 in [Vector3(0, 1.6, 0), Vector3(0.5, 1.4, 0.3), Vector3(-0.5, 1.5, -0.3)]:
+		Kit.blob(g, p, 0.45, "fire", Vector3(1.0, 1.8, 1.0), 5)
+	var smoke := Kit._drift(g, Vector3(0, 2.4, 0), 8, 5.0, 1.5, "mist", Vector3.UP, 10.0, Vector2(0.6, 1.0))
+	smoke.scale_amount_max = 2.0
+	var l := OmniLight3D.new()
+	l.position = Vector3(0, 2.5, 0)
+	l.light_color = Color("ff9040")
+	l.light_energy = 2.2
+	l.omni_range = 12.0
+	g.add_child(l)
+	return l
+
+
+## A tomb cut into a rock face, its doorway half shut with a slab (Antigone walled up alive): the
+## cliff, the dark doorway, the slab, the path to it. Lost: the slab fallen and the doorway
+## choked with rubble. Faces +Z. Returns the doorway.
+static func rock_tomb(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 5.0, -2.0), Vector3(16.0, 10.0, 4.0), "rock")
+	Kit.box(g, Vector3(0, 1.4, 0.01), Vector3(1.6, 2.8, 0.1), "dark", false)
+	Kit.box(g, Vector3(0, 3.0, 0.1), Vector3(2.4, 0.4, 0.3), "stone", false)  # the lintel cut in the rock
+	if whole:
+		Kit.box(g, Vector3(0.6, 1.4, 0.35), Vector3(1.2, 2.8, 0.35), "stone")  # the slab, dragged half across
+	else:
+		Kit.box(g, Vector3(1.5, 0.2, 1.5), Vector3(1.2, 0.35, 2.8), "stone", true, Vector3(0, 0.4, 0.1))
+		for k in 5:
+			Kit.blob(g, Vector3(-0.4 + k * 0.2, 0.3, 0.5), 0.35, "rock", Vector3(1.0, 0.7, 1.0), 5)
+	return g.transform * Vector3(0, 0, 1.5)
+
+
+## A tall fir on Cithaeron: tiers of dark boughs narrowing to the top, like the tree Dionysus bent
+## down for Pentheus to sit in and let spring upright again, so the maenads could see him. Dead:
+## bare grey. Returns the top (where Pentheus sits).
+static func fir_tree(parent: Node3D, at: Vector3, height: float = 12.0, alive: bool = true) -> Node3D:
+	var g := Kit.group(parent, at)
+	Kit.cylinder(g, Vector3.ZERO, 0.35, height, "bark" if alive else "deadwood", true, 7, 0.08)
+	for k in 5:
+		var t := float(k) / 5.0
+		if alive:
+			Kit.cylinder(g, Vector3(0, height * (0.25 + t * 0.15 * 4.0), 0), 2.8 * (1.0 - t * 0.8), height * 0.22, "cypress", false, 8, 0.2)
+		else:
+			for j in 4:
+				var a := TAU * j / 4.0 + k
+				Kit.box(g, Vector3(cos(a) * 0.9, height * (0.3 + t * 0.6), sin(a) * 0.9), Vector3(1.8 * (1.0 - t * 0.7), 0.06, 0.06),
+					"deadwood", false, Vector3(0, -a, -0.3))
+	return Kit.group(g, Vector3(0, height, 0))
+
+
+# ---------- Aristophanes ----------
+
+## Socrates' Thinkery (the Clouds): a small house with a door and a window, a board with the map
+## of the whole earth (Athens here, Sparta far too near), a star globe, geometry tools, pupils
+## bent double studying what lies under the earth, and the crane with Socrates in his basket
+## "walking on air and contemplating the sun". Lost: burned out (the play ends with it on fire),
+## the roof gone, the walls black. Faces +Z. Returns {"root", "door", "basket"}.
+static func thinkery(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var wall := "plaster" if whole else "#2a2622"
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * 3.0, 1.7, -3.0), Vector3(0.3, 3.4, 6.0), wall)
+		Kit.box(g, Vector3(side * 1.9, 1.7, 0), Vector3(2.2, 3.4, 0.3), wall)
+	Kit.box(g, Vector3(0, 1.7, -6.0), Vector3(6.3, 3.4, 0.3), wall)
+	Kit.box(g, Vector3(0, 3.0, 0), Vector3(1.6, 0.8, 0.3), wall, false)
+	if whole:
+		Kit.box(g, Vector3(0, 3.5, -3.0), Vector3(6.6, 0.25, 6.6), "roof", false)
+		var map := Kit.group(g, Vector3(-2.0, 0, 2.0), 0.3)
+		Kit.box(map, Vector3(0, 1.3, 0), Vector3(1.6, 1.0, 0.05), "papyrus", false)  # the map of the earth
+		Kit.blob(map, Vector3(-0.2, 1.3, 0.04), 0.05, "#8a1e1a")  # Athens
+		Kit.blob(map, Vector3(-0.35, 1.15, 0.04), 0.05, "#2a2a2a")  # Sparta, much too close
+		Kit.box(map, Vector3(0, 0.4, 0), Vector3(0.08, 0.8, 0.08), "wood", false)
+		Kit.cylinder(g, Vector3(2.4, 0, 1.8), 0.1, 0.9, "wood", false, 6)
+		Kit.blob(g, Vector3(2.4, 1.2, 1.8), 0.3, "bronze")  # the star globe
+		for k in 3:  # pupils bent double, studying the ground
+			var w := Kit.walker(g, Vector3(-1.0 + k * 1.0, 0, 3.5 + (k % 2) * 0.8), PI + 0.3 * k, {"robe": "8a8274", "skin": "e0d0c0"})
+			(w["root"] as Node3D).rotation.x = 0.9
+			(w["root"] as Node3D).position.y = 0.3
+	else:
+		for k in 4:
+			Kit.box(g, Vector3(-2.0 + k * 1.3, 0.15, -2.0 + (k % 2)), Vector3(1.2, 0.2, 0.25), "#1a1612", false, Vector3(0, k, 0))  # charred beams
+	var hung := Greek.crane(g, Vector3(4.5, 0, 1.0), -PI / 2.0 + 0.3, true, whole)
+	return {"root": g, "door": g.transform * Vector3(0, 0, 1.0), "basket": hung}
+
+
+## The two Arguments of the Clouds, the Better and the Worse, brought on in wicker cages like
+## fighting cocks and let out to fight it out for the young man. Lost: the cages broken open and
+## empty. Faces +Z.
+static func cages(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Array:
+	var g := Kit.group(parent, at, yaw)
+	var out: Array = []
+	for side: float in [-1.0, 1.0]:
+		var c := Kit.group(g, Vector3(side * 1.5, 0, 0))
+		Kit.cylinder(c, Vector3.ZERO, 0.8, 0.1, "wicker", true, 10)
+		for k in 10:
+			var a := TAU * k / 10.0
+			if not whole and k < 4:
+				continue
+			Kit.box(c, Vector3(cos(a) * 0.78, 1.1, sin(a) * 0.78), Vector3(0.05, 2.2, 0.05), "wicker", false)
+		if whole:
+			Kit.cylinder(c, Vector3(0, 2.2, 0), 0.8, 0.1, "wicker", false, 10, 0.2)
+			var arg := Kit.walker(c, Vector3.ZERO, 0.0, {"robe": "e0d8c4" if side < 0.0 else "4a3a2a", "beard": "long" if side < 0.0 else "none"})
+			out.append(arg)
+	return out
+
+
+# ---------- Herodotus ----------
+
+## Croesus's gifts to Delphi (Histories I.50): 117 half-bricks of gold (a few here) stacked in a
+## pyramid with a lion of pure gold on top, and his great mixing bowl beside them. Lost: the gold
+## melted by fire (Herodotus saw the lion, dropped from the burnt temple) and tarnished. Returns
+## the lion's node.
+static func gold_offering(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Node3D:
+	var g := Kit.group(parent, at, yaw)
+	var gold := "gold" if whole else "verdigris"
+	for level in 4:  # the bricks, fewer each course
+		var n := 4 - level
+		for i in n:
+			for j in n:
+				Kit.box(g, Vector3((i - (n - 1) / 2.0) * 0.5, 0.1 + level * 0.2, (j - (n - 1) / 2.0) * 0.26), Vector3(0.45, 0.18, 0.22),
+					gold, false)
+	var lion := Greek.beast(g, Vector3(0, 0.8, 0), 0.0, "wolf", gold, 0.6, whole)
+	Kit.cylinder(g, Vector3(1.8, 0, 0), 0.3, 0.6, "stone", false, 8)
+	Kit.cylinder(g, Vector3(1.8, 0.6, 0), 0.35, 0.5, "#c0c0c8" if whole else "ashbed", false, 10, 0.6)  # the silver krater
+	var body := BoxShape3D.new()
+	body.size = Vector3(2.2, 0.9, 1.2)
+	Kit.solid(g, body, Vector3(0, 0.45, 0))
+	return lion["root"]
+
+
+## The Phocian wall across the pass of Thermopylae, rebuilt by the Greeks where it had fallen:
+## a rough stone wall with a gap, between the mountain (-X) and the sea (+X). Lost: tumbled down to
+## a line of stones. Faces +Z (toward the Persians).
+static func phocian_wall(parent: Node3D, at: Vector3, yaw: float, length: float = 20.0, whole: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 480
+	var n := int(length / 1.3)
+	for k in n:
+		var x := -length / 2.0 + (k + 0.5) * (length / n)
+		if absf(x) < 1.5:
+			continue  # the gap the Spartans went out through
+		var h := (2.2 if whole else 0.5) + rng.randf_range(-0.2, 0.2)
+		Kit.box(g, Vector3(x, h / 2.0, rng.randf_range(-0.15, 0.15)), Vector3(1.3, h, 1.4), "rock", true, Vector3(0, rng.randf_range(-0.1, 0.1), 0))
+
+
+# ---------- Thucydides ----------
+
+## The public funeral (Histories II.34): ten coffins of cypress wood on their wagons, one for each
+## tribe, and one empty bier spread with a cloth for the missing whose bodies could not be found.
+## Lost: the wood grey and split. Returns the coffins' spots (in the parent's space).
+static func larnakes(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Array:
+	var g := Kit.group(parent, at, yaw)
+	var wood := "#8a5a3a" if whole else "deadwood"
+	var out: Array = []
+	for k in 10:
+		var p := Vector3((k % 5 - 2) * 2.2, 0, (k / 5) * 3.2)
+		Kit.box(g, p + Vector3(0, 0.55, 0), Vector3(0.9, 0.1, 2.4), "wood" if whole else "deadwood", false)  # the wagon bed
+		for side: float in [-1.0, 1.0]:
+			for z: float in [-0.8, 0.8]:
+				Kit.mesh(g, Greek._prism(0.3, 0.08, 8), "wood" if whole else "deadwood", p + Vector3(side * 0.5, 0.3, z), Vector3(0, 0, PI / 2.0))
+		Kit.box(g, p + Vector3(0, 0.95, 0), Vector3(0.7, 0.7, 2.0), wood)  # the coffin
+		Kit.box(g, p + Vector3(0, 1.33, 0), Vector3(0.78, 0.08, 2.08), wood, false)
+		out.append(g.transform * p)
+	bier(g, Vector3(0, 0, 7.0), 0.0, false, whole)  # the empty bier
+	return out
+
+
+## A siege wall like the one the Athenians built right round Melos: a double wall of rough stone
+## with a walk between, and towers at intervals, from one point to another. Lost: fallen to its
+## footings. Solid.
+static func siege_wall(parent: Node3D, from: Vector3, to: Vector3, whole: bool = true) -> void:
+	var mid := (from + to) / 2.0
+	var length := from.distance_to(to)
+	var g := Kit.group(parent, mid, atan2(to.x - from.x, to.z - from.z) - PI / 2.0)  # along X
+	var h := 3.0 if whole else 0.6
+	for z: float in [-1.4, 1.4]:
+		Kit.box(g, Vector3(0, h / 2.0, z), Vector3(length, h, 0.8), "rock")
+	Kit.box(g, Vector3(0, 0.3, 0), Vector3(length, 0.6, 2.0), "path", false)
+	if whole:
+		for k in int(length / 12.0) + 1:
+			Kit.box(g, Vector3(-length / 2.0 + k * 12.0, 2.5, 0), Vector3(3.0, 5.0, 3.6), "rock")
