@@ -3,12 +3,15 @@ extends SceneTree
 ## the look without building a place. Needs a display (on a server: xvfb-run).
 ##   godot --path . --script res://tools/gallery.gd -- --out=C:/shots [name ...]
 ## With no names it renders every piece, whole and lost to the world ("name" and "name_lost").
-## --list prints the names. --size=640x360 sets the image.
+## --list prints the names. --size=640x360 sets the image. --eye=x,y,z and --look=x,y,z put the
+## camera there instead of framing the whole piece (to see inside a cave or a hall).
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Greek := preload("res://scripts/hall/kit_greek.gd")
 const Rome := preload("res://scripts/hall/kit_rome.gd")
 const Areas := preload("res://scripts/hall/kit_greek_areas.gd")
+const People := preload("res://scripts/hall/kit_greek_people.gd")
+const Props := preload("res://scripts/hall/kit_greek_props.gd")
 ## Every piece a place can bring back: an area set piece is built with all of them, or none.
 const ALL_BACK := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "household", "soldiers"]
 
@@ -18,7 +21,8 @@ var _camera: Camera3D
 
 
 ## Every piece by name: [the world's detail, how to build it on a stage, whole or lost to the
-## world]. Each is rendered both ways: "name" whole, "name_lost" lost.
+## world]. Each is rendered both ways: "name" whole, "name_lost" lost; a third entry `false` marks
+## a piece that is never lost (the hero's own arms).
 static func pieces() -> Dictionary:
 	return {
 		# Greece, the places still to come
@@ -90,6 +94,59 @@ static func pieces() -> Dictionary:
 		"area_museum_court": [1, func(s: Node3D, w: bool): Areas.museum_court(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		"area_prop_one": [1, func(s: Node3D, w: bool): Areas.prop_one(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		"area_prop_forty_seven": [1, func(s: Node3D, w: bool): Areas.prop_forty_seven(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		# e2 people: the hero's arms, Homer's people, the dead, the Muses and gods
+		"hero_arms": [1, func(s: Node3D, _w: bool):
+			var heroes: Array = People.HEROES.keys()
+			for k in heroes.size():
+				var cam := Kit.group(s, Vector3((k - heroes.size() / 2.0) * 1.1, 1.6, 0), PI)
+				People.hero_arms(cam, heroes[k]), false],
+		"homer_people": [1, func(s: Node3D, w: bool):
+			var who := ["agamemnon", "athena", "thetis", "briseis", "phoenix", "ajax", "odysseus", "hector", "andromache",
+				"priam", "hermes", "penelope", "eurycleia", "telemachus", "suitor"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 7) * 1.0, 0, 0), 0.0, who[k], not w, "kneel" if who[k] == "priam" else "")],
+		"shades_and_gods": [1, func(s: Node3D, w: bool):
+			var who := ["teiresias", "anticleia", "elpenor", "achilles_shade", "muse", "aphrodite", "pandora", "kronos"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 4) * 1.4, 0, 0), 0.0, who[k], not w)],
+		"cyclops_sirens": [1, func(s: Node3D, w: bool):
+			People.cyclops(s, Vector3(0, 0, 0), 0.0, false, w)
+			People.cyclops(s, Vector3(6, 0, 0), 0.0, true, w)
+			People.siren(s, Vector3(-3, 0, 2), 0.0, w)],
+		# e2 props
+		"achaean_hut": [1, func(s: Node3D, w: bool): Props.achaean_hut(s, Vector3.ZERO, 0.0, w, w)],
+		"chariot": [1, func(s: Node3D, w: bool): Props.chariot(s, Vector3.ZERO, 1.2, 2, w)],
+		"shield_of_achilles": [1, func(s: Node3D, w: bool): Props.shield_of_achilles(s, Vector3.ZERO, 0.0, 12.0, w)],
+		"forge": [1, func(s: Node3D, w: bool): Props.forge(s, Vector3.ZERO, 0.0, w)],
+		"bow_and_axes": [1, func(s: Node3D, w: bool): Props.bow_and_axes(s, Vector3.ZERO, 0.0, w)],
+		"olive_bed": [1, func(s: Node3D, w: bool): Props.olive_bed(s, Vector3.ZERO, 0.0, w)],
+		"trench_and_bier": [1, func(s: Node3D, w: bool):
+			Props.blood_trench(s, Vector3(-2, 0, 0), 0.0, w)
+			Props.bier(s, Vector3(3, 0, 0), 0.0, true, w)],
+		"sirens_rock": [1, func(s: Node3D, w: bool): Props.sirens_rock(s, Vector3.ZERO, 0.0, w)],
+		"pithos_shrine": [1, func(s: Node3D, w: bool):
+			Props.pithos(s, Vector3(-4, 0, 2), true, w)
+			Props.shrine(s, Vector3(2, 0, 0), 0.0, "aphrodite", w)],
+		"prometheus_rock": [1, func(s: Node3D, w: bool): Props.prometheus_rock(s, Vector3.ZERO, 0.0, w)],
+		"spring_and_ages": [1, func(s: Node3D, w: bool):
+			Props.hippocrene(s, Vector3(-9, 0, 2), w)
+			Props.ages_frieze(s, Vector3(2, 0, 0), 0.0, w)],
+		"orchard_and_sparrows": [1, func(s: Node3D, w: bool):
+			Props.apple_tree(s, Vector3(-2, 0, 0), 1.0, w)
+			Props.sparrow_chariot(s, Vector3(2, 1.5, 0), 0.8, w)],
+		# e2 areas
+		"area_ships": [1, func(s: Node3D, w: bool): Areas.ships(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_scaean_gate": [1, func(s: Node3D, w: bool): Areas.scaean_gate(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_achilles_hut": [1, func(s: Node3D, w: bool): Areas.achilles_hut(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_forge": [1, func(s: Node3D, w: bool): Areas.forge(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_walls": [1, func(s: Node3D, w: bool): Areas.walls(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_ithaca_hall": [1, func(s: Node3D, w: bool): Areas.ithaca_hall(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_cyclops_cave": [1, func(s: Node3D, w: bool): Areas.cyclops_cave(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_underworld": [1, func(s: Node3D, w: bool): Areas.underworld(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_sirens": [1, func(s: Node3D, w: bool): Areas.sirens(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_helicon": [1, func(s: Node3D, w: bool): Areas.helicon(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_farm": [1, func(s: Node3D, w: bool): Areas.farm(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_garden": [1, func(s: Node3D, w: bool): Areas.garden(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		# Rome
 		"stone_pines": [2, func(s: Node3D, w: bool):
 			Rome.stone_pine(s, Vector3(-4, 0, 0), 1.0, w)
@@ -154,7 +211,9 @@ func _run() -> void:
 	var all := pieces()
 	var every: Array = []
 	for n in all:
-		every.append_array([n, n + "_lost"])
+		every.append(n)
+		if all[n].size() < 3 or all[n][2]:
+			every.append(n + "_lost")
 	if args.has("list"):
 		print("\n".join(every))
 		quit()
@@ -194,7 +253,11 @@ func _run() -> void:
 		all[base][1].call(holder, whole)
 		for i in 3:
 			await process_frame
-		_frame(holder)
+		if args.has("eye") and args.has("look"):
+			_camera.position = _vec(str(args["eye"]))
+			_camera.look_at(_vec(str(args["look"])), Vector3.UP)
+		else:
+			_frame(holder)
 		for i in 8:
 			await process_frame
 		var path := out_dir.path_join("%s.png" % name)
@@ -222,3 +285,8 @@ func _frame(holder: Node3D) -> void:
 	var dir := Vector3(0.55, 0.42, 1.0).normalized()
 	_camera.position = centre + dir * radius * 1.9
 	_camera.look_at(centre, Vector3.UP)
+
+
+static func _vec(text: String) -> Vector3:
+	var n := text.split(",")
+	return Vector3(float(n[0]), float(n[1]), float(n[2]))

@@ -221,6 +221,12 @@ static func material(kind: String) -> Material:
 			world_tex.call(_furrows(), 0.5)
 		"cave":  # the dark rock of Plato's cave
 			world_tex.call(_noise(Color("4a4038"), Color("3a322c"), Color("5a5046"), 79), 0.3)
+		"mist":  # ground mist: a soft grey cloud that fades out at its edges
+			m.albedo_texture = _cloud(71)
+			m.albedo_color = Color(0.72, 0.72, 0.76, 0.4)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 		"shadow":  # a shadow cast on the cave wall
 			m.albedo_color = Color(0.02, 0.02, 0.03, 0.6)
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA

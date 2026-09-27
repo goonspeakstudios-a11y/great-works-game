@@ -12,7 +12,12 @@ const Gallery := preload("res://tools/gallery.gd")
 const Areas := preload("res://scripts/hall/kit_greek_areas.gd")
 const ALL_BACK := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "household", "soldiers"]
 ## Every area set piece, by the name of its builder in kit_greek_areas.gd.
-const AREAS := ["law_court", "memory_house", "museum_court", "prop_one", "prop_forty_seven"]
+const AREAS := ["law_court", "memory_house", "museum_court", "prop_one", "prop_forty_seven",
+	"ships", "scaean_gate", "achilles_hut", "forge", "walls", "ithaca_hall", "cyclops_cave", "underworld", "sirens",
+	"helicon", "farm", "garden"]
+## Homer's areas, each with its playable beats.
+const HOMER := ["ships", "scaean_gate", "achilles_hut", "forge", "walls", "ithaca_hall", "cyclops_cave", "underworld", "sirens"]
+const People := preload("res://scripts/hall/kit_greek_people.gd")
 
 const NEW_ZONES := ["rome", "troy", "theatre", "lesbos", "alexandria", "academy", "helicon", "sardis", "kerameikos",
 	"ephesus"]
@@ -20,7 +25,7 @@ const NEW_SOUNDS := ["crowd", "arena", "rain", "oars", "loom", "hooves", "flock"
 	"forge", "sheep", "salpinx", "shades"]
 const TEXTURED := ["travertine", "tufa", "brick", "reticulatum", "basalt", "mosaic", "fresco", "porphyry", "giallo", "pine",
 	"toga", "rust", "scutum", "scutum_dead", "hoplon_sparta", "hoplon_athens", "hoplon_dead", "persian", "wicker",
-	"blackfigure", "papyrus", "sand", "grass", "furrows", "cave"]
+	"blackfigure", "papyrus", "sand", "grass", "furrows", "cave", "mist"]
 
 
 func test_every_new_material_has_its_texture() -> void:
@@ -54,6 +59,8 @@ func test_every_piece_in_the_gallery_builds() -> void:
 func test_every_piece_has_a_lost_version() -> void:
 	var pieces: Dictionary = Gallery.pieces()
 	for name in pieces:
+		if pieces[name].size() > 2 and not pieces[name][2]:
+			continue  # never lost
 		Kit.detail = pieces[name][0]
 		var looks: Array = []
 		for whole in [true, false]:
@@ -250,4 +257,45 @@ func test_the_forty_seventh_counts_nine_and_sixteen_to_twenty_five() -> void:
 	check_eq([sq[3].size(), sq[4].size(), sq[5].size()], [9, 16, 25], "3 x 3, 4 x 4 and 5 x 5 tiles")
 	var lost: Dictionary = Greek.tiled_squares(holder, Vector3(20, 0, 0), 0.0, 1.0, false)["squares"]
 	check(lost[5].size() < 25, "lost, some are missing")
+	holder.free()
+
+
+func test_homer_is_played_as_the_scenes_hero() -> void:
+	for name in HOMER:
+		var holder := Node3D.new()
+		var area: Dictionary = Callable(Areas, name).call(holder, Vector3.ZERO, 0.0, ALL_BACK)
+		check(area.has("beats") and not area["beats"].is_empty(), "%s has moments to play" % name)
+		for beat in area.get("beats", {}):
+			var b: Dictionary = area["beats"][beat]
+			check(b["at"] is Vector3, "%s/%s happens somewhere" % [name, beat])
+			check(People.HEROES.has(b["hero"]), "%s/%s is seen through a hero's eyes (%s)" % [name, beat, b["hero"]])
+		holder.free()
+	for hero in People.HEROES:
+		var cam := Node3D.new()
+		var arms := People.hero_arms(cam, hero)
+		check_eq(arms["hands"].size(), 2, "%s has two hands in view" % hero)
+		check(cam.find_children("*", "CollisionObject3D", true, false).is_empty(), "%s's arms touch nothing" % hero)
+		check(arms["root"].position.z < 0.0 and arms["root"].position.y < 0.0, "%s's arms are low in front of the eyes" % hero)
+		cam.free()
+
+
+func test_the_underworld_is_crowded_with_the_dead() -> void:
+	var holder := Node3D.new()
+	var area := Areas.underworld(holder, Vector3.ZERO, 0.0, ALL_BACK)
+	check(area["shades"].size() >= 16, "the dead come in crowds")
+	var named: Array = area["shades"].map(func(s): return s["who"]).filter(func(w): return w != "")
+	for who in ["teiresias", "anticleia", "elpenor", "achilles_shade"]:
+		check(named.has(who), "%s is among them" % who)
+	check(area["shades"].all(func(s): return s["home"].distance_to(s["trench"]) > 3.0), "they begin away from the blood")
+	check(area["people"].all(func(p): return p.get("shade", false)), "every one of them a shade, even when all is back")
+	holder.free()
+
+
+func test_the_cyclops_cave_is_shut_by_its_stone() -> void:
+	var holder := Node3D.new()
+	var area := Areas.cyclops_cave(holder, Vector3.ZERO, 0.0, ALL_BACK)
+	check(area["stone"] is Node3D and not area["stone"].find_children("*", "CollisionObject3D", true, false).is_empty(),
+		"the stone bars the way out")
+	check(area["rams"].size() >= 3, "rams to cling under")
+	check(area["cyclops"].has("eye"), "his one eye")
 	holder.free()
