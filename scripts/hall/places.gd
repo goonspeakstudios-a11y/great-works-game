@@ -73,12 +73,46 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 	for p in [Vector3(20, 0, 12), Vector3(-19, 0, 13), Vector3(8, 0, -27), Vector3(-9, 0, -27), Vector3(16, 0, 19)]:
 		Kit.rock(world, p, 0.9)
 	out.append(seat(world, Vector3(-29.5, 0, 3.0), Vector3(-1, 0, 0)))
+	Kit.box(world, Vector3(4, 1.2, 8), Vector3(0.3, 2.4, 0.3), "ph_marble_01")
+	out.append({"kind": "gate", "pos": Vector3(4, 0, 8), "to": "asset_test", "open": true, "text": "GREECE TEST ASSET ZONE"})
 	out.append({"kind": "gate", "pos": Vector3.ZERO, "to": "nexus", "open": true, "text": "The brazier: back to the Nexus"})
 	var spawn := Vector3(0, 0.05, 5.0)
 	return {"name": "The Shore of the Great Works", "interactables": out, "spawn": spawn,
 		"yaw": look_yaw(gate_spot(0) - spawn), "spots": spots, "flicker": flicker, "people": [], "restored": restored,
 		"sway": sway, "birds": birds, "blink": blink}
 
+
+
+## GREECE TEST ASSET ZONE: code-made material on the left, Poly Haven (CC0) on the right,
+## one pair per row; look at a pair to read its names. The busts and the vase stand at the end.
+const ASSET_PAIRS := [["marble", "ph_marble_01"], ["paving", "ph_marble_tiles"],
+	["stone", "ph_large_sandstone_blocks"], ["rock", "ph_old_stone_wall"], ["plaster", "ph_clay_plaster"],
+	["roof", "ph_clay_roof_tiles"], ["clay", "ph_patterned_terracotta_tiling"], ["wood", "ph_oak_wood_planks"]]
+
+
+static func asset_test(world: Node3D) -> Dictionary:
+	Kit.sunset(world, "golden")
+	Kit.box(world, Vector3(0, -0.1, -12), Vector3(14, 0.2, 34), "paving")
+	var out: Array = []
+	for i in ASSET_PAIRS.size():
+		var z := -3.0 * i
+		for side in 2:
+			Kit.box(world, Vector3(-1.8 if side == 0 else 1.8, 1.0, z), Vector3(2.4, 2.0, 0.6), ASSET_PAIRS[i][side])
+		out.append({"kind": "look", "pos": Vector3(0, 0, z + 1.5), "text": "%s | %s" % ASSET_PAIRS[i],
+			"note": "Left: code-made \"%s\". Right: Poly Haven \"%s\"." % ASSET_PAIRS[i]})
+	var end := -3.0 * ASSET_PAIRS.size() - 1.0
+	for m in [["marble_bust_01", -1.5], ["antique_ceramic_vase_01", 1.5]]:
+		var scene: PackedScene = load("res://assets/polyhaven/models/%s/%s.gltf" % [m[0], m[0]])
+		if scene:
+			var n := scene.instantiate() as Node3D
+			n.position = Vector3(m[1], 1.0, end)
+			n.scale = Vector3.ONE * 2.0
+			world.add_child(n)
+		Kit.box(world, Vector3(m[1], 0.5, end), Vector3(0.8, 1.0, 0.8), "ph_marble_01")
+	out.append({"kind": "gate", "pos": Vector3(0, 0, 4), "to": "hub", "open": true, "text": "Back to the Shore"})
+	var spawn := Vector3(0, 0.05, 2.5)
+	return {"name": "GREECE TEST ASSET ZONE", "interactables": out, "spawn": spawn, "yaw": 0.0,
+		"spots": {}, "flicker": [], "people": []}
 
 
 ## A toad the size of a hill, squatting in the sea at the edge of the world, three quarters of it

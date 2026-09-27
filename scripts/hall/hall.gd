@@ -358,7 +358,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	var world_id: String = "greece"
 	if to == "nexus":
 		world_id = Nexus.world_reached(progress)
-	elif to != "hub":
+	elif not to in ["hub", "asset_test"]:
 		world_id = Rooms.room(to).get("world", "greece")
 	_view.size = Worlds.render_size(world_id, DisplayServer.window_get_size())
 	Kit.detail = Worlds.detail(world_id)
@@ -367,13 +367,15 @@ func _load_place(to: String, keep: bool = false) -> void:
 		built = Nexus.build(world, Worlds.all(), doors, _nexus_shown(keep))
 	elif to == "hub":
 		built = Places.hub(world, doors, progress)
+	elif to == "asset_test":
+		built = Places.asset_test(world)
 	else:
 		var stages := {}
 		for d in doors:
 			if Rooms.room(d["work"]).get("area_of", "") == to:
 				stages[d["work"]] = _stage(d["work"])
 		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
-	if not to in ["hub", "nexus"] and not keep:
+	if not to in ["hub", "nexus", "asset_test"] and not keep:
 		progress.visit(to)
 		progress.save()
 	here = to
