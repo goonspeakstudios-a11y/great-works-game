@@ -1,0 +1,187 @@
+{
+ "title": "The world in 431 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Persian Empire",
+   "sub": "King Artaxerxes I",
+   "color": [
+    196,
+    146,
+    48
+   ],
+   "label": [
+    172,
+    90
+   ]
+  },
+  {
+   "name": "Macedon",
+   "sub": "King Perdiccas II",
+   "color": [
+    110,
+    96,
+    140
+   ],
+   "label": [
+    99,
+    60
+   ]
+  },
+  {
+   "name": "Sparta and allies",
+   "sub": "the Peloponnesian League, Thebes, Corinth",
+   "color": [
+    160,
+    52,
+    52
+   ],
+   "label": [
+    99,
+    83
+   ]
+  },
+  {
+   "name": "Athenian empire",
+   "sub": "Pericles; the Delian League",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    115,
+    74
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "the sea's traders",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    53,
+    96
+   ]
+  },
+  {
+   "name": "Rome",
+   "sub": "a republic of central Italy",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    73,
+    56
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Thracians",
+   "label": [
+    114,
+    57
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Celts",
+   "label": [
+    44,
+    40
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  },
+  {
+   "name": "Libya",
+   "label": [
+    85,
+    124
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Athens",
+   "note": "Pericles' city; Thucydides begins his history",
+   "at": [
+    109,
+    76
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Sparta",
+   "note": "the rival",
+   "at": [
+    105,
+    80
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Melos",
+   "note": "neutral; Athens takes it in 416",
+   "at": [
+    111,
+    81
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Mytilene",
+   "note": "revolts in 428; the debate",
+   "at": [
+    118,
+    72
+   ],
+   "main": false,
+   "side": "right"
+  },
+  {
+   "name": "Syracuse",
+   "note": "the Athenians lost there, 413",
+   "at": [
+    82,
+    80
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Corcyra",
+   "note": "the quarrel that starts the war",
+   "at": [
+    97,
+    70
+   ],
+   "main": false,
+   "side": "left"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

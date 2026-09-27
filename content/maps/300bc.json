@@ -1,0 +1,177 @@
+{
+ "title": "The world in 300 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Seleucid Empire",
+   "sub": "King Seleucus I",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    182,
+    92
+   ]
+  },
+  {
+   "name": "Ptolemaic Egypt",
+   "sub": "King Ptolemy I",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    127,
+    120
+   ]
+  },
+  {
+   "name": "Lysimachus",
+   "sub": "king of Thrace and Asia",
+   "color": [
+    110,
+    96,
+    140
+   ],
+   "label": [
+    131,
+    72
+   ]
+  },
+  {
+   "name": "Macedon",
+   "sub": "King Cassander; Greece under his hand",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    100,
+    56
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "the sea's traders",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    53,
+    96
+   ]
+  },
+  {
+   "name": "Rome",
+   "sub": "winning the Samnite wars",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    73,
+    53
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Celts",
+   "label": [
+    44,
+    40
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  },
+  {
+   "name": "Libya",
+   "label": [
+    85,
+    124
+   ]
+  },
+  {
+   "name": "Armenia",
+   "label": [
+    171,
+    67
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Alexandria",
+   "note": "Euclid writes the Elements; the Library, the Pharos",
+   "at": [
+    128,
+    103
+   ],
+   "main": true,
+   "side": "left"
+  },
+  {
+   "name": "Athens",
+   "note": "Epicurus and Zeno teach",
+   "at": [
+    109,
+    76
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Syracuse",
+   "note": "Archimedes is born here, about 287",
+   "at": [
+    82,
+    80
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Rhodes",
+   "note": "the Colossus is raised, 292 - 280",
+   "at": [
+    123,
+    82
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Seleucia",
+   "note": "Seleucus's new capital on the Tigris",
+   "at": [
+    174,
+    96
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

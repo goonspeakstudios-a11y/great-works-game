@@ -53,6 +53,68 @@ const ZONES := {
 		{"file": "stream", "db": -22.0, "needs": "water"},
 		{"file": "birds", "db": -20.0, "needs": "leaves"},
 		{"file": "wind", "db": -27.0, "loud_db": -17.0, "loud_until": "sun"}]},
+	# The places still to come, ready for when they are built (their music is made; which piece
+	# brings back which layer follows the Lyceum: the ghost until the teacher, the drone with the
+	# sun, the melody with the teacher, the soldiers' drum with the soldiers).
+	# Rome: the cornu's pedal, the water organ, a tibia, the legion's drum and horn calls.
+	"rome": {"bells": false, "layers": [
+		{"file": "rome_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "rome_organ", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "rome_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "rome_tibia", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "rome_march", "db": -11.0, "music": true, "needs": "soldiers"},
+		{"file": "crowd", "db": -24.0, "needs": "household"},
+		{"file": "fountain", "db": -26.0, "needs": "water"},
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Troy (Homer): a phorminx to the hexameter, the bard's hum, the camp's slow war drum, the sea.
+	"troy": {"bells": false, "layers": [
+		{"file": "troy_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "troy_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "troy_voice", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "troy_phorminx", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "troy_drum", "db": -10.0, "music": true, "needs": "soldiers"},
+		{"file": "waves", "db": -20.0},
+		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
+	# The theatre (the tragedians): the aulos over its drone pipe, the chorus, the heart drum.
+	"theatre": {"bells": false, "layers": [
+		{"file": "theatre_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "theatre_drum", "db": -12.0, "music": true, "needs": "walkway"},
+		{"file": "theatre_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "theatre_aulos", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "theatre_chorus", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "cicadas", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Lesbos (Sappho): the barbitos to the Sapphic stanza, a woman's voice, the sea below.
+	"lesbos": {"bells": false, "layers": [
+		{"file": "lesbos_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "lesbos_low", "db": -9.0, "music": true, "needs": "lamps"},
+		{"file": "lesbos_drone", "db": -9.0, "music": true, "needs": "sun"},
+		{"file": "lesbos_barbitos", "db": -9.0, "music": true, "needs": "teacher"},
+		{"file": "lesbos_voice", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "waves", "db": -21.0},
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -24.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Alexandria (Euclid): the tetraktys on a kithara, the monochord, gulls over the harbour.
+	"alexandria": {"bells": false, "layers": [
+		{"file": "alexandria_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "alexandria_low", "db": -9.0, "music": true, "needs": "walkway"},
+		{"file": "alexandria_drone", "db": -9.0, "music": true, "needs": "sun"},
+		{"file": "alexandria_kithara", "db": -9.0, "music": true, "needs": "teacher"},
+		{"file": "alexandria_monochord", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "gulls", "db": -26.0, "needs": "sun"},
+		{"file": "waves", "db": -22.0},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# The Academy (Plato): the enharmonic pipe, the Sirens of Er, the Fates; the Cephisus nearby.
+	"academy": {"bells": false, "layers": [
+		{"file": "academy_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "academy_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "academy_spheres", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "academy_pipe", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "academy_voices", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -23.0, "needs": "water"},
+		{"file": "birds", "db": -22.0, "needs": "leaves"},
+		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
 }
 
 var zone := ""

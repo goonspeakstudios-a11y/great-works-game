@@ -1,0 +1,128 @@
+{
+ "title": "The world in 117 AD",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Parthian Empire",
+   "sub": "King Osroes I",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    197,
+    100
+   ]
+  },
+  {
+   "name": "Roman Empire",
+   "sub": "Emperor Trajan, at its widest",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    91,
+    50
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Germans",
+   "label": [
+    69,
+    18
+   ]
+  },
+  {
+   "name": "Sarmatians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    166,
+    132
+   ]
+  },
+  {
+   "name": "Garamantes",
+   "label": [
+    78,
+    124
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Rome",
+   "note": "Trajan's forum and column",
+   "at": [
+    74,
+    60
+   ],
+   "main": true,
+   "side": "left"
+  },
+  {
+   "name": "Nicopolis",
+   "note": "Epictetus teaches here",
+   "at": [
+    99,
+    72
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Chaeronea",
+   "note": "Plutarch writes the Lives",
+   "at": [
+    106,
+    74
+   ],
+   "main": false,
+   "side": "above"
+  },
+  {
+   "name": "Sarmizegetusa",
+   "note": "Dacia's capital, taken in 106",
+   "at": [
+    107,
+    46
+   ],
+   "main": false,
+   "side": "above"
+  },
+  {
+   "name": "Selinus",
+   "note": "Trajan dies here, August 117",
+   "at": [
+    135,
+    83
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Ctesiphon",
+   "note": "the Parthian capital, taken in 116",
+   "at": [
+    174,
+    96
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

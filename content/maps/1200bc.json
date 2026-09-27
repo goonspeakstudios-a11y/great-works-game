@@ -1,0 +1,177 @@
+{
+ "title": "The world about 1200 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Hittite Empire",
+   "sub": "the last great king, Suppiluliuma II",
+   "color": [
+    120,
+    84,
+    54
+   ],
+   "label": [
+    139,
+    72
+   ]
+  },
+  {
+   "name": "Troy",
+   "sub": "Wilusa, a city bound to the Hittites",
+   "color": [
+    176,
+    128,
+    64
+   ],
+   "label": [
+    119,
+    67
+   ]
+  },
+  {
+   "name": "Achaeans",
+   "sub": "the Mycenaean kings of Agamemnon's Greece",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    101,
+    70
+   ]
+  },
+  {
+   "name": "Egypt",
+   "sub": "the pharaohs of the New Kingdom",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    130,
+    122
+   ]
+  },
+  {
+   "name": "Assyria",
+   "sub": "a warrior kingdom on the Tigris",
+   "color": [
+    110,
+    70,
+    110
+   ],
+   "label": [
+    169,
+    83
+   ]
+  },
+  {
+   "name": "Babylonia",
+   "sub": "the Kassite kings",
+   "color": [
+    150,
+    110,
+    70
+   ],
+   "label": [
+    178,
+    102
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Thracians",
+   "label": [
+    114,
+    58
+   ]
+  },
+  {
+   "name": "Libyans",
+   "label": [
+    103,
+    114
+   ]
+  },
+  {
+   "name": "Elam",
+   "label": [
+    191,
+    100
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  },
+  {
+   "name": "Italy",
+   "label": [
+    79,
+    64
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Troy",
+   "note": "Priam's city: the war Homer sings",
+   "at": [
+    117,
+    68
+   ],
+   "main": true,
+   "side": "above"
+  },
+  {
+   "name": "Mycenae",
+   "note": "Agamemnon's citadel",
+   "at": [
+    106,
+    77
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Sparta",
+   "note": "Menelaus and Helen",
+   "at": [
+    105,
+    80
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Ithaca",
+   "note": "Odysseus's home",
+   "at": [
+    99,
+    75
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Hattusa",
+   "note": "the Hittite king's capital",
+   "at": [
+    143,
+    68
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}
