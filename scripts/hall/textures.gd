@@ -22,6 +22,15 @@ static func material(kind: String) -> Material:
 		m.uv1_triplanar = true
 		m.uv1_world_triplanar = true
 		m.uv1_scale = Vector3(scale, scale, scale)
+	if kind.begins_with("ph_"):  # a CC0 Poly Haven texture, e.g. "ph_marble_tiles" (assets/polyhaven)
+		var path := "res://assets/polyhaven/textures/%s.png" % kind.substr(3)
+		if ResourceLoader.exists(path):
+			world_tex.call(load(path), 0.25)
+		else:
+			push_warning("missing texture " + path)
+			m.albedo_color = Color("ff00ff")
+		_cache[kind] = m
+		return m
 	match kind:
 		"marble":
 			world_tex.call(_noise(Color("e4dccb"), Color("cfc5b0"), Color("f2ece0"), 11), 0.5)

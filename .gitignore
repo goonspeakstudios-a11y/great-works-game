@@ -5,3 +5,4 @@ export/
 cookies.json
 __pycache__/
 tools/data/
+assets/polyhaven/textures/*_src.jpg
