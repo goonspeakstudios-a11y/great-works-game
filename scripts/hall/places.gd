@@ -83,36 +83,107 @@ static func hub(world: Node3D, doors: Array, progress: RefCounted = null) -> Dic
 
 
 
-## GREECE TEST ASSET ZONE: code-made material on the left, Poly Haven (CC0) on the right,
-## one pair per row; look at a pair to read its names. The busts and the vase stand at the end.
-const ASSET_PAIRS := [["marble", "ph_marble_01"], ["paving", "ph_marble_tiles"],
-	["stone", "ph_large_sandstone_blocks"], ["rock", "ph_old_stone_wall"], ["plaster", "ph_clay_plaster"],
-	["roof", "ph_clay_roof_tiles"], ["clay", "ph_patterned_terracotta_tiling"], ["wood", "ph_oak_wood_planks"]]
+## GREECE TEST ASSET ZONE: a sunlit stoa for judging assets. Walk up the aisle: each bay pair
+## shows one material used as it would be in a place (floor, back wall, column, plinth, eave),
+## code-made on the LEFT and Poly Haven (CC0) on the RIGHT; press F in the aisle to read the
+## names. At the far end, a round court of Poly Haven props on plinths, each labelled.
+const ASSET_PAIRS := [
+	["marble", "ph_marble_01"], ["marble", "ph_white_sandstone_bricks"],
+	["paving", "ph_marble_tiles"], ["paving", "ph_stone_pathway"],
+	["stone", "ph_large_sandstone_blocks"], ["rock", "ph_old_stone_wall"],
+	["rock", "ph_rocky_terrain"], ["rock", "ph_cliff_side"],
+	["plaster", "ph_clay_plaster"], ["plaster", "ph_white_plaster_rough_01"],
+	["plaster", "ph_painted_plaster_wall"], ["rug", "ph_old_mosaic_floor"],
+	["paving", "ph_marble_mosaic_tiles"], ["roof", "ph_clay_roof_tiles"],
+	["clay", "ph_patterned_terracotta_tiling"], ["wood", "ph_oak_wood_planks"],
+	["earth", "ph_sparse_grass"], ["path", "ph_dry_ground_rocks"],
+	["withered", "ph_withered_grass"], ["drybed", "ph_mud_cracked_dry_03"],
+	["path", "ph_coast_sand_01"],
+]
+const ASSET_PROPS := [
+	["marble_bust_01", 1.0], ["horse_statue_01", 1.4], ["antique_ceramic_vase_01", 0.8],
+	["ceramic_vase_01", 0.6], ["ceramic_vase_02", 0.6], ["ceramic_vase_03", 0.6], ["jug_01", 0.4],
+	["brass_pot_01", 0.5], ["wooden_bowl_01", 0.35], ["wicker_basket_01", 0.6],
+	["wooden_candlestick", 0.5], ["wooden_stool_01", 0.6], ["boulder_01", 1.6], ["rock_07", 1.0],
+	["shrub_01", 1.4], ["tree_stump_01", 0.9], ["dead_tree_trunk", 2.2],
+]
+const BAY := 4.0  # metres per bay along the aisle
 
 
 static func asset_test(world: Node3D) -> Dictionary:
 	Kit.sunset(world, "golden")
-	Kit.box(world, Vector3(0, -0.1, -12), Vector3(14, 0.2, 34), "paving")
+	var n := ASSET_PAIRS.size()
+	var far := -BAY * n
+	var court := Vector3(0, 0, far - 9.0)
+	Kit.box(world, Vector3(0, -0.1, far / 2.0), Vector3(16, 0.2, -far + 8), "earth")
+	Kit.box(world, Vector3(0, 0.0, far / 2.0), Vector3(3.0, 0.04, -far + 6), "paving", false)
 	var out: Array = []
-	for i in ASSET_PAIRS.size():
-		var z := -3.0 * i
+	var flicker: Array = []
+	var sway: Array = []
+	for i in n:
+		var z := -BAY * i - 2.0
 		for side in 2:
-			Kit.box(world, Vector3(-1.8 if side == 0 else 1.8, 1.0, z), Vector3(2.4, 2.0, 0.6), ASSET_PAIRS[i][side])
-		out.append({"kind": "look", "pos": Vector3(0, 0, z + 1.5), "text": "%s | %s" % ASSET_PAIRS[i],
-			"note": "Left: code-made \"%s\". Right: Poly Haven \"%s\"." % ASSET_PAIRS[i]})
-	var end := -3.0 * ASSET_PAIRS.size() - 1.0
-	for m in [["marble_bust_01", -1.5], ["antique_ceramic_vase_01", 1.5]]:
-		var scene: PackedScene = load("res://assets/polyhaven/models/%s/%s.gltf" % [m[0], m[0]])
-		if scene:
-			var n := scene.instantiate() as Node3D
-			n.position = Vector3(m[1], 1.0, end)
-			n.scale = Vector3.ONE * 2.0
-			world.add_child(n)
-		Kit.box(world, Vector3(m[1], 0.5, end), Vector3(0.8, 1.0, 0.8), "ph_marble_01")
-	out.append({"kind": "gate", "pos": Vector3(0, 0, 4), "to": "hub", "open": true, "text": "Back to the Shore"})
-	var spawn := Vector3(0, 0.05, 2.5)
+			_bay(world, 1.0 if side == 1 else -1.0, z, ASSET_PAIRS[i][side])
+		out.append({"kind": "look", "pos": Vector3(0, 0, z), "text": "%d. %s  |  %s" % [i + 1, ASSET_PAIRS[i][0], ASSET_PAIRS[i][1]],
+			"note": "LEFT, code-made: \"%s\".\nRIGHT, Poly Haven (CC0): \"%s\"." % ASSET_PAIRS[i]})
+		if i % 3 == 1:
+			for x in [-1.3, 1.3]:
+				flicker.append(Kit.brazier(world, Vector3(x, 0, z - BAY / 2.0)))
+	# the round court of props
+	Kit.cylinder(world, court + Vector3(0, -0.02, 0), 8.0, 0.08, "ph_marble_mosaic_tiles", false, 24)
+	var m := ASSET_PROPS.size()
+	for j in m:
+		var a := PI * (0.1 + 0.8 * j / float(m - 1))  # a half ring opening toward the aisle
+		var at := court + Vector3(-cos(a), 0, -sin(a)) * 6.5
+		Kit.box(world, at + Vector3(0, 0.35, 0), Vector3(1.0, 0.7, 1.0), "ph_white_sandstone_bricks")
+		_prop(world, ASSET_PROPS[j][0], at + Vector3(0, 0.7, 0), ASSET_PROPS[j][1], Kit.face_yaw(at, court))
+		out.append({"kind": "look", "pos": at.lerp(court, 0.25), "text": ASSET_PROPS[j][0],
+			"note": "Poly Haven (CC0) model \"%s\", shown about %.1f m tall." % ASSET_PROPS[j]})
+	flicker.append(Kit.brazier(world, court))
+	for z in [2.0, far - 1.0]:
+		for x in [-7.0, 7.0]:
+			sway.append(Kit.cypress(world, Vector3(x, 0, z), 6.0))
+	for p in [Vector3(-9, 0, far - 12), Vector3(9, 0, far - 12), Vector3(0, 0, far - 18)]:
+		sway.append(Kit.olive(world, p, 1.2))
+	out.append({"kind": "gate", "pos": Vector3(0, 0, 3), "to": "hub", "open": true, "text": "Back to the Shore"})
+	var spawn := Vector3(0, 0.05, 1.5)
 	return {"name": "GREECE TEST ASSET ZONE", "interactables": out, "spawn": spawn, "yaw": 0.0,
-		"spots": {}, "flicker": [], "people": []}
+		"spots": {"court": court}, "flicker": flicker, "people": [], "sway": sway}
+
+
+## One material as a place would wear it: floor, back wall with an eave, a column, a plinth.
+static func _bay(world: Node3D, s: float, z: float, mat: String) -> void:
+	Kit.box(world, Vector3(s * 4.2, 0.03, z), Vector3(5.0, 0.06, BAY - 0.3), mat, false)
+	Kit.box(world, Vector3(s * 6.9, 1.6, z), Vector3(0.4, 3.2, BAY - 0.3), mat)
+	Kit.box(world, Vector3(s * 6.4, 3.3, z), Vector3(1.6, 0.16, BAY - 0.1), mat, false, Vector3(0, 0, s * 0.35))
+	Kit.cylinder(world, Vector3(s * 2.1, 0, z - 1.1), 0.28, 2.8, mat, true, 10)
+	Kit.box(world, Vector3(s * 4.6, 0.3, z + 0.7), Vector3(1.4, 0.6, 1.4), mat)
+	Kit.box(world, Vector3(s * 4.6, 0.75, z + 0.7), Vector3(0.9, 0.3, 0.9), mat)
+
+
+## A Poly Haven model standing at `at`, scaled to `height` metres whatever its source size.
+static func _prop(world: Node3D, id: String, at: Vector3, height: float, yaw: float) -> void:
+	var path := "res://assets/polyhaven/models/%s/%s.gltf" % [id, id]
+	if not ResourceLoader.exists(path):
+		push_warning("missing model " + path)
+		return
+	var node := (load(path) as PackedScene).instantiate() as Node3D
+	world.add_child(node)
+	var box := AABB()
+	var first := true
+	for mi in node.find_children("*", "MeshInstance3D", true, false):
+		var t := Transform3D.IDENTITY  # the mesh's transform relative to the model's root
+		var up: Node = mi
+		while up != node:
+			t = (up as Node3D).transform * t
+			up = up.get_parent()
+		var b: AABB = t * (mi as MeshInstance3D).get_aabb()
+		box = b if first else box.merge(b)
+		first = false
+	var k := height / maxf(box.size.y, 0.01)
+	node.scale = Vector3.ONE * k
+	node.rotation.y = yaw
+	node.position = at - Vector3(box.get_center().x, box.position.y, box.get_center().z) * k
 
 
 ## A toad the size of a hill, squatting in the sea at the edge of the world, three quarters of it

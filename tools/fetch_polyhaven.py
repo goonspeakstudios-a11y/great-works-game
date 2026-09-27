@@ -32,11 +32,40 @@ TEXTURES = {
     "patterned_terracotta_tiling": "terracotta floor",
     "old_stone_wall": "rough stone: field walls, the hill",
     "oak_wood_planks": "wood: doors, lecterns, boats",
+    "white_sandstone_bricks": "pale ashlar: temple walls",
+    "white_plaster_rough_01": "whitewash: houses",
+    "painted_plaster_wall": "painted plaster: interiors",
+    "old_mosaic_floor": "mosaic floor: villa rooms",
+    "marble_mosaic_tiles": "marble mosaic: fine floors",
+    "rocky_terrain": "rocky ground: the hill, the Shore",
+    "sparse_grass": "dry grass: meadows",
+    "dry_ground_rocks": "dry path: roads between places",
+    "stone_pathway": "stone path: the way up",
+    "withered_grass": "dead grass: places still lost",
+    "mud_cracked_dry_03": "cracked mud: dry riverbed",
+    "coast_sand_01": "beach sand: the shore",
+    "cliff_side": "cliff face: headlands",
 }
 MODELS = {
     "marble_bust_01": "classical marble bust",
     "antique_ceramic_vase_01": "antique ceramic vase (amphora stand-in)",
+    "horse_statue_01": "horse statue",
+    "ceramic_vase_01": "ceramic vase",
+    "ceramic_vase_02": "ceramic vase",
+    "ceramic_vase_03": "ceramic vase",
+    "jug_01": "jug: households",
+    "wooden_bowl_01": "wooden bowl: households",
+    "wicker_basket_01": "basket: households, markets",
+    "wooden_stool_01": "stool: studies, workshops",
+    "wooden_candlestick": "candlestick: studies at night",
+    "brass_pot_01": "bronze-look pot: kitchens, altars",
+    "boulder_01": "boulder: hillsides",
+    "rock_07": "rock: hillsides",
+    "shrub_01": "shrub: maquis",
+    "tree_stump_01": "stump: felled groves",
+    "dead_tree_trunk": "dead trunk: places still lost",
 }
+MAX_MODEL_BYTES = 12_000_000  # skip anything heavier than this at 1k
 
 log = logging.getLogger("fetch_polyhaven")
 
@@ -57,7 +86,7 @@ def get(url: str, tries: int = 4) -> bytes:
 
 
 def save_checked(url: str, md5: str, dest: Path) -> None:
-    if dest.exists() and hashlib.md5(dest.read_bytes()).hexdigest() == md5:
+    if dest.exists():  # checked when it was downloaded (model textures are shrunk after)
         return
     data = get(url)
     if hashlib.md5(data).hexdigest() != md5:
@@ -71,6 +100,15 @@ def pixelate(src: Path, dest: Path) -> None:
     img = Image.open(src).convert("RGB").resize((PIXEL_SIZE, PIXEL_SIZE), Image.Resampling.BOX)
     img = img.quantize(colors=PALETTE, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
     img.convert("RGB").save(dest)
+
+
+MODEL_TEX_SIZE = 256  # plenty at 320x180, and keeps the repo small
+
+
+def shrink(path: Path) -> None:
+    img = Image.open(path)
+    if max(img.size) > MODEL_TEX_SIZE:
+        img.convert("RGB").resize((MODEL_TEX_SIZE, MODEL_TEX_SIZE), Image.Resampling.LANCZOS).save(path, quality=90)
 
 
 def info(asset: str) -> dict:
@@ -89,10 +127,15 @@ def fetch_texture(asset: str) -> dict:
 def fetch_model(asset: str) -> dict:
     files = json.loads(get(f"{API}/files/{asset}"))
     g = files["gltf"]["1k"]["gltf"]
+    total = g.get("size", 0) + sum(f.get("size", 0) for f in g["include"].values())
+    if total > MAX_MODEL_BYTES:
+        raise ValueError(f"too large at 1k ({total // 1_000_000} MB)")
     folder = OUT / "models" / asset
     save_checked(g["url"], g["md5"], folder / f"{asset}.gltf")
     for rel, f in g["include"].items():
         save_checked(f["url"], f["md5"], folder / rel)
+        if rel.endswith(".jpg"):
+            shrink(folder / rel)
     return info(asset)
 
 
