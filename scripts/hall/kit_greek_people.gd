@@ -125,12 +125,59 @@ const WHO := {
 	"pericles": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "4a3a2a", "beard": "short", "props": ["helmet_up"]},
 	"envoy": {"robe": "e0d6c0", "skin": "c8a078", "hair_color": "3a2a1e", "beard": "short", "props": ["staff"]},
 	"melian": {"robe": "4a5a6a", "skin": "c09070", "hair_color": "8a8278", "beard": "long", "props": []},
+	# e4: the Pre-Socratics
+	"heraclitus": {"robe": "3a3a3a", "skin": "c09070", "hair_color": "5a5a5a", "beard": "long", "props": ["staff"]},
+	"parmenides": {"robe": "e8e2d2", "skin": "c8a888", "hair_color": "d8d4cc", "beard": "long", "props": []},
+	"goddess": {"robe": "1e2238", "skin": "e8d8c8", "hair_color": "1a1410", "size": 1.35, "props": ["veil", "crown"]},
+	"dike": {"robe": "d8cfa8", "skin": "e0c0a0", "hair_color": "3a2418", "size": 1.2, "props": ["keys"]},
+	"heliad": {"robe": "f0d890", "skin": "f0d8b8", "hair_color": "d8a840", "props": []},
+	"child": {"robe": "c8b898", "skin": "d8b090", "hair_color": "3a2418", "size": 0.62, "props": []},
+	# Plato
+	"meletus": {"robe": "6a5a4a", "skin": "c8a078", "hair_color": "2a1e16", "beard": "short", "props": []},
+	"juror": {"robe": "a89c84", "skin": "c09070", "hair_color": "6a6058", "beard": "short", "props": ["staff"]},
+	"cephalus": {"robe": "e0d6c0", "skin": "c8b09a", "hair_color": "e8e4dc", "beard": "long", "props": ["wreath"]},
+	"polemarchus": {"robe": "4a5a3a", "skin": "c8a078", "hair_color": "3a2a1e", "beard": "short", "props": []},
+	"thrasymachus": {"robe": "8a2a2a", "skin": "c09070", "hair_color": "1a1410", "beard": "short", "props": []},
+	"glaucon": {"robe": "3a4a6a", "skin": "d0a880", "hair_color": "5a3a22", "props": []},
+	"adeimantus": {"robe": "5a4a6a", "skin": "d0a880", "hair_color": "4a3018", "beard": "short", "props": []},
+	"gyges": {"robe": "6a5a44", "skin": "b89070", "hair_color": "3a2a1e", "beard": "short", "props": ["crook", "ring"]},
+	"er": {"robe": "5a4a3a", "skin": "b89070", "hair_color": "2a1e16", "beard": "short", "props": []},
+	"lachesis": {"robe": "e8e4dc", "skin": "e0c8b0", "hair_color": "c8c4bc", "size": 1.4, "props": ["wreath", "distaff"]},
+	"clotho": {"robe": "e8e4dc", "skin": "e0c8b0", "hair_color": "8a6a4a", "size": 1.4, "props": ["wreath", "distaff"]},
+	"atropos": {"robe": "e8e4dc", "skin": "e0c8b0", "hair_color": "2a1810", "size": 1.4, "props": ["wreath", "distaff"]},
+	"necessity": {"robe": "2a2a3a", "skin": "d8c8b8", "hair_color": "1a1618", "size": 2.2, "props": ["veil"]},
+	"prophet": {"robe": "d8d0b8", "skin": "c8a888", "hair_color": "c8c4bc", "beard": "long", "props": ["scroll"]},
+	"agathon": {"robe": "b8863a", "skin": "e0c0a0", "hair_color": "3a2418", "props": ["wreath"]},
+	"aristophanes": {"robe": "6a5a44", "skin": "c8a078", "hair_color": "3a2a1e", "beard": "short", "props": ["wreath"]},
+	"alcibiades": {"robe": "6a2a6a", "skin": "d0a880", "hair_color": "8a5a2a", "beard": "short", "props": ["ivy"]},
+	"eryximachus": {"robe": "4a6a5a", "skin": "c8a078", "hair_color": "4a3a2a", "beard": "short", "props": ["wreath"]},
+	"phaedrus": {"robe": "c8b8d8", "skin": "e0c0a0", "hair_color": "8a6a3a", "props": ["wreath"]},
+	"flute_girl": {"robe": "d88a6a", "skin": "d8b090", "hair_color": "1a1410", "props": ["pipes"]},
+	"phaedo": {"robe": "8a7a5a", "skin": "d8b898", "hair_color": "8a5a2a", "props": []},
+	"crito": {"robe": "5a5048", "skin": "c0a080", "hair_color": "c8c4bc", "beard": "long", "props": []},
+	"xanthippe": {"robe": "4a3a2a", "skin": "d0a888", "hair_color": "2a1810", "props": ["veil", "baby"]},
+	"jailer": {"robe": "3a3430", "skin": "b88a64", "hair_color": "2a1e16", "beard": "short", "props": ["cup"]},
+	# Aristotle, and the city in speech
+	"aristotle": {"robe": "3a4a5a", "skin": "c8a078", "hair_color": "6a5a4a", "beard": "short", "props": ["scroll"]},
+	"farmer": {"robe": "8a7a5a", "skin": "b88a64", "hair_color": "3a2a1e", "beard": "short", "props": ["hoe"]},
+	"builder": {"robe": "7a6a5a", "skin": "b89070", "hair_color": "4a3a2a", "beard": "short", "props": ["hammer"]},
+	"weaver": {"robe": "9a6a5a", "skin": "d0a888", "hair_color": "2a1810", "props": ["distaff"]},
+	"cobbler": {"robe": "5a4a3a", "skin": "c09070", "hair_color": "6a5a4a", "beard": "long", "props": ["last"]},
+	"smith": {"robe": "3a3430", "skin": "a87a54", "hair_color": "1a1410", "beard": "short", "props": ["hammer"]},
+	"herdsman": {"robe": "6a5a44", "skin": "b88a64", "hair_color": "3a2a1e", "beard": "long", "props": ["crook"]},
+	"merchant": {"robe": "4a5a7a", "skin": "c8a078", "hair_color": "2a1e16", "beard": "short", "props": ["scales"]},
+	"painter": {"robe": "b8a07a", "skin": "d0a880", "hair_color": "5a3a22", "props": ["brush"]},
+	"cook": {"robe": "d8d0c0", "skin": "c09070", "hair_color": "3a2a1e", "beard": "short", "props": ["pot"]},
+	"doctor": {"robe": "e0d8c4", "skin": "c8a078", "hair_color": "8a8278", "beard": "long", "props": ["staff", "scroll"]},
+	"educator": {"robe": "c8c0a8", "skin": "c8a078", "hair_color": "a8a098", "beard": "long", "props": ["lyre"]},
+	"ruler": {"robe": "b8943a", "skin": "c8a888", "hair_color": "d8d4cc", "beard": "long", "props": ["staff"]},
 }
 
 
 ## A named person of the Greek places, standing, facing +Z: see WHO for who there is. A walker,
 ## so the Hall can walk, turn and bring them to life; with `undead` a pale shade (always so for
-## the dead of the underworld). With `pose` "kneel" they kneel (Priam before Achilles); `robe`
+## the dead of the underworld). With `pose` "kneel" they kneel (Priam before Achilles), "sit"
+## they sit (the Fates on their thrones), "recline" they lie at dinner on a couch; `robe`
 ## dresses them in another colour (the nine Muses, each in her own). Returns what kit.gd's walker
 ## returns.
 static func figure(parent: Node3D, at: Vector3, yaw: float, who: String, undead: bool = false, pose: String = "",
@@ -208,10 +255,58 @@ static func figure(parent: Node3D, at: Vector3, yaw: float, who: String, undead:
 				for k in 4:
 					Kit.box(root, Vector3(0.36 + 0.07 * k, 1.7 + 0.04 * k - 0.02 * k * k, 0.2), Vector3(0.1, 0.03, 0.02), "#9a9aa0", false,
 						Vector3(0, 0, -0.4 * k))
+			"keys":  # Justice keeps the keys of the gates of Night and Day
+				Kit.box(root, Vector3(0.36, 1.25, 0.3), Vector3(0.03, 0.5, 0.03), "bronze", false, Vector3(0.3, 0, 0))
+				for k in 2:
+					Kit.box(root, Vector3(0.36, 1.05 - k * 0.12, 0.36), Vector3(0.1, 0.03, 0.03), "bronze", false)
+			"crook":
+				Kit.box(root, Vector3(0.36, 0.95, 0.12), Vector3(0.035, 1.9, 0.035), "wood", false)
+				Kit.mesh(root, TorusMesh.new(), "wood", Vector3(0.44, 1.92, 0.12), Vector3(PI / 2.0, 0, 0), Vector3(0.09, 0.2, 0.09))
+			"ring":  # the ring of Gyges, on the hand he turns it with
+				Kit.mesh(hand, TorusMesh.new(), "gold", Vector3(0.3, 1.38, 0.4), Vector3(PI / 2.0, 0, 0), Vector3(0.035, 0.12, 0.035))
+			"distaff":  # the wool on its staff: the Fates spin, and so does the weaver
+				Kit.box(root, Vector3(-0.32, 1.2, 0.2), Vector3(0.025, 0.9, 0.025), "wood", false)
+				Kit.blob(root, Vector3(-0.32, 1.6, 0.2), 0.09, "#e8e2d2", Vector3(1.0, 1.6, 1.0), 6)
+			"scroll":
+				Kit.mesh(hand, Kit._cyl(0.04, 0.3), "papyrus", Vector3(0.3, 1.36, 0.4), Vector3(0, 0, PI / 2.0))
+			"pipes":  # the aulos, two pipes from the mouth
+				for x: float in [-0.04, 0.04]:
+					Kit.box(head, Vector3(x, -0.05, 0.3), Vector3(0.02, 0.02, 0.4), "wood", false, Vector3(0.5, x * 4.0, 0))
+			"hoe":
+				Kit.box(root, Vector3(0.36, 0.8, 0.12), Vector3(0.035, 1.6, 0.035), "wood", false)
+				Kit.box(root, Vector3(0.36, 1.58, 0.24), Vector3(0.18, 0.04, 0.24), "iron", false)
+			"hammer":
+				Kit.box(hand, Vector3(0.3, 1.38, 0.52), Vector3(0.03, 0.03, 0.3), "wood", false)
+				Kit.box(hand, Vector3(0.3, 1.38, 0.68), Vector3(0.07, 0.14, 0.07), "iron", false)
+			"last":  # the cobbler's wooden foot and a sandal on it
+				Kit.box(hand, Vector3(0.3, 1.34, 0.44), Vector3(0.1, 0.08, 0.26), "wood", false)
+				Kit.box(hand, Vector3(0.3, 1.3, 0.44), Vector3(0.11, 0.02, 0.27), "#6a4a34", false)
+			"scales":
+				Kit.box(hand, Vector3(0.3, 1.5, 0.4), Vector3(0.02, 0.25, 0.02), "bronze", false)
+				Kit.box(hand, Vector3(0.3, 1.6, 0.4), Vector3(0.4, 0.02, 0.02), "bronze", false)
+				for x: float in [-0.18, 0.18]:
+					Kit.cylinder(hand, Vector3(0.3 + x, 1.45, 0.4), 0.07, 0.02, "bronze", false, 8)
+			"brush":
+				Kit.box(hand, Vector3(0.3, 1.45, 0.42), Vector3(0.015, 0.3, 0.015), "wood", false, Vector3(0.4, 0, 0))
+				Kit.blob(hand, Vector3(0.3, 1.58, 0.48), 0.02, "#8a1e1a")
+			"pot":
+				Kit.cylinder(hand, Vector3(0.3, 1.3, 0.44), 0.14, 0.16, "clay", false, 8, 0.1)
+			"lyre":
+				Kit.box(root, Vector3(-0.3, 1.25, 0.25), Vector3(0.3, 0.05, 0.05), "wood", false)
+				for x: float in [-0.12, 0.12]:
+					Kit.box(root, Vector3(-0.3 + x, 1.1, 0.25), Vector3(0.04, 0.35, 0.04), "#8a6a44", false, Vector3(0, 0, x))
+				Kit.blob(root, Vector3(-0.3, 0.92, 0.25), 0.12, "#6a4a2a", Vector3(1.2, 0.8, 0.5), 6)
 	if pose == "kneel":
 		for hip in w["legs"]:
 			(hip as Node3D).rotation.x = -1.4  # thighs forward
 		root.position.y -= 0.45 * root.scale.y
+	elif pose == "sit":  # on a stool, a throne or the edge of a bed about knee high
+		for hip in w["legs"]:
+			(hip as Node3D).rotation.x = -1.5
+		root.position.y -= 0.4 * root.scale.y
+	elif pose == "recline":  # on a couch at dinner, leaning on the left elbow, the head toward the couch's end (+X)
+		root.rotation.z = -1.25
+		root.position.y += 0.75
 	if undead or who in ["teiresias", "anticleia", "elpenor", "achilles_shade"]:
 		Kit.shade(root, 0.35 if undead else 0.5)
 		w["shade"] = true

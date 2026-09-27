@@ -34,10 +34,12 @@ const BEASTS := {
 		"coat": "#8a6a44", "dark": "#2a2018", "nose": "#141010", "tail": 0.35},
 	"wolf": {"len": 1.05, "leg": 0.6, "girth": 0.24, "neck": 0.28, "lift": 0.55, "tilt": 0.2, "head": 0.13, "muzzle": 0.18,
 		"coat": "#7a7266", "dark": "#3a3632", "nose": "#141010", "tail": 0.45},
+	"pig": {"len": 1.0, "leg": 0.32, "girth": 0.3, "neck": 0.12, "lift": 0.15, "tilt": 0.25, "head": 0.16, "muzzle": 0.16,
+		"coat": "#b89080", "dark": "#3a2a24", "nose": "#8a6060", "tail": 0.15},
 }
 
 
-## An animal standing on four legs, facing +Z: "horse", "ox", "sheep", "goat", "dog" or "wolf".
+## An animal standing on four legs, facing +Z: "horse", "ox", "sheep", "goat", "dog", "wolf" or "pig".
 ## `mat` casts it in one stuff instead (bronze for a statue, wood for the horse of Troy); `scale`
 ## sizes it up. Lost to the world (alive = false) a living beast is its grey bones with a cold
 ## light in the eyes, and a statue goes green (bronze) or grey and rotten (wood). Returns {"root",

@@ -12,6 +12,7 @@ const Rome := preload("res://scripts/hall/kit_rome.gd")
 const Areas := preload("res://scripts/hall/kit_greek_areas.gd")
 const People := preload("res://scripts/hall/kit_greek_people.gd")
 const Props := preload("res://scripts/hall/kit_greek_props.gd")
+const Thinkers := preload("res://scripts/hall/kit_greek_thinkers.gd")
 ## Every piece a place can bring back: an area set piece is built with all of them, or none.
 const ALL_BACK := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "household", "soldiers"]
 
@@ -193,6 +194,67 @@ static func pieces() -> Dictionary:
 		"area_plague": [1, func(s: Node3D, w: bool): Areas.plague(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		"area_corcyra": [1, func(s: Node3D, w: bool): Areas.corcyra(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		"area_melos": [1, func(s: Node3D, w: bool): Areas.melos(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		# e4 people and props: the Pre-Socratics, Plato, Aristotle, the city in speech
+		"thinkers_people": [1, func(s: Node3D, w: bool):
+			var who := ["heraclitus", "parmenides", "goddess", "dike", "heliad", "child", "meletus", "juror", "cephalus", "polemarchus",
+				"thrasymachus", "glaucon", "adeimantus", "gyges", "er", "prophet"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 8) * 1.0, 0, 0), 0.0, who[k], not w)],
+		"fates_and_necessity": [1, func(s: Node3D, w: bool):
+			var who := ["clotho", "lachesis", "atropos", "necessity"]
+			for k in who.size():
+				Kit.box(s, Vector3((k - 1.5) * 2.4, 0.3, -0.2), Vector3(1.0, 0.6, 1.0), "marble")
+				People.figure(s, Vector3((k - 1.5) * 2.4, 0.25, 0), 0.0, who[k], not w, "sit")],
+		"symposium_people": [1, func(s: Node3D, w: bool):
+			var who := ["agathon", "aristophanes", "alcibiades", "eryximachus", "phaedrus", "flute_girl", "phaedo", "crito",
+				"xanthippe", "jailer", "aristotle"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 5) * 1.0, 0, 0), 0.0, who[k], not w)],
+		"city_people": [1, func(s: Node3D, w: bool):
+			var who := ["farmer", "builder", "weaver", "cobbler", "smith", "herdsman", "merchant", "painter", "cook", "doctor",
+				"educator", "ruler"]
+			for k in who.size():
+				People.figure(s, Vector3((k - 6) * 1.0, 0, 0), 0.0, who[k], not w)],
+		"reclining": [1, func(s: Node3D, w: bool):
+			Greek.kline(s, Vector3(0, 0, 0), 0.0, w)
+			People.figure(s, Vector3(-0.8, 0, 0), 0.0, "agathon", not w, "recline")
+			Greek.kline(s, Vector3(0, 0, -2.4), 0.0, w)
+			People.figure(s, Vector3(-0.8, 0, -2.4), 0.0, "socrates", not w, "recline")],
+		"pigs": [1, func(s: Node3D, w: bool):
+			for k in 3:
+				Greek.beast(s, Vector3(-1.4 + k * 1.4, 0, 0), 1.9 + k * 0.3, "pig", "", 1.0, w)],
+		"artemision_column": [1, func(s: Node3D, w: bool): Props.artemision_column(s, Vector3.ZERO, 0.0, 14.0, w)],
+		"ever_fire_and_sphere": [1, func(s: Node3D, w: bool):
+			Props.ever_fire(s, Vector3(-4, 0, 0), w)
+			Props.sphere(s, Vector3(3, 0, 0), 2.0, w)],
+		"great_gates": [1, func(s: Node3D, w: bool): Props.great_gates(s, Vector3.ZERO, 0.0, true, w)],
+		"kleroterion": [1, func(s: Node3D, w: bool): Props.kleroterion(s, Vector3.ZERO, 0.0, w)],
+		"bronze_horse": [1, func(s: Node3D, w: bool): Props.bronze_horse(s, Vector3.ZERO, 0.6, w)],
+		"spindle_of_necessity": [1, func(s: Node3D, w: bool): Props.spindle_of_necessity(s, Vector3.ZERO, w)],
+		"plain_of_lethe": [1, func(s: Node3D, w: bool): Props.plain_of_lethe(s, Vector3.ZERO, 0.0, 20.0, w)],
+		"prison_cell": [1, func(s: Node3D, w: bool):
+			Props.prison_cell(s, Vector3.ZERO, 0.0, w)
+			Props.hemlock_cup(s, Vector3(0.9, 0, -2.0), 0.0, w)],
+		"household_to_city": [1, func(s: Node3D, w: bool): Props.household_to_city(s, Vector3.ZERO, 0.0, w)],
+		# e4 areas
+		"area_ephesus": [1, func(s: Node3D, w: bool): Thinkers.ephesus(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_elea": [1, func(s: Node3D, w: bool): Thinkers.elea(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_court": [1, func(s: Node3D, w: bool): Thinkers.court(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_cephalus_house": [1, func(s: Node3D, w: bool): Thinkers.cephalus_house(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_gyges": [1, func(s: Node3D, w: bool): Thinkers.gyges(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_the_line": [1, func(s: Node3D, w: bool): Thinkers.the_line(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_cave": [1, func(s: Node3D, w: bool): Thinkers.cave(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_er": [1, func(s: Node3D, w: bool): Thinkers.er(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_symposium": [1, func(s: Node3D, w: bool): Thinkers.symposium(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_prison": [1, func(s: Node3D, w: bool): Thinkers.prison(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_politics": [1, func(s: Node3D, w: bool): Thinkers.politics(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_poetics": [1, func(s: Node3D, w: bool): Thinkers.poetics(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"city_stage_0": [1, func(s: Node3D, w: bool): Thinkers.city_in_speech(s, Vector3.ZERO, 0.0, 0, ALL_BACK if w else [])],
+		"city_stage_1": [1, func(s: Node3D, w: bool): Thinkers.city_in_speech(s, Vector3.ZERO, 0.0, 1, ALL_BACK if w else [])],
+		"city_stage_2": [1, func(s: Node3D, w: bool): Thinkers.city_in_speech(s, Vector3.ZERO, 0.0, 2, ALL_BACK if w else [])],
+		"city_stage_3": [1, func(s: Node3D, w: bool): Thinkers.city_in_speech(s, Vector3.ZERO, 0.0, 3, ALL_BACK if w else [])],
+		"city_stage_4": [1, func(s: Node3D, w: bool): Thinkers.city_in_speech(s, Vector3.ZERO, 0.0, 4, ALL_BACK if w else [])],
+		"city_stage_5": [1, func(s: Node3D, w: bool): Thinkers.city_in_speech(s, Vector3.ZERO, 0.0, 5, ALL_BACK if w else [])],
 		# Rome
 		"stone_pines": [2, func(s: Node3D, w: bool):
 			Rome.stone_pine(s, Vector3(-4, 0, 0), 1.0, w)

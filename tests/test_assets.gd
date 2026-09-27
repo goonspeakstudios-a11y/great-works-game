@@ -20,6 +20,11 @@ const AREAS := ["law_court", "memory_house", "museum_court", "prop_one", "prop_f
 ## Homer's areas, each with its playable beats.
 const HOMER := ["ships", "scaean_gate", "achilles_hut", "forge", "walls", "ithaca_hall", "cyclops_cave", "underworld", "sirens"]
 const People := preload("res://scripts/hall/kit_greek_people.gd")
+const Thinkers := preload("res://scripts/hall/kit_greek_thinkers.gd")
+const Props := preload("res://scripts/hall/kit_greek_props.gd")
+## The philosophers' areas, by the name of their builder in kit_greek_thinkers.gd.
+const THINKERS := ["ephesus", "elea", "court", "cephalus_house", "gyges", "the_line", "cave", "er", "symposium", "prison",
+	"politics", "poetics"]
 
 const NEW_ZONES := ["rome", "troy", "theatre", "lesbos", "alexandria", "academy", "helicon", "sardis", "kerameikos",
 	"ephesus"]
@@ -222,10 +227,15 @@ func test_every_map_is_ready() -> void:
 
 
 func test_every_area_builds_whole_and_lost_with_its_spots() -> void:
-	for name in AREAS:
+	var builders: Array = AREAS.map(func(n): return Callable(Areas, n)) + THINKERS.map(func(n): return Callable(Thinkers, n))
+	for stage in 6:
+		builders.append(func(h: Node3D, at: Vector3, yaw: float, back: Array) -> Dictionary:
+			return Thinkers.city_in_speech(h, at, yaw, stage, back))
+	for build: Callable in builders:
+		var name: String = str(build.get_method()) if build.is_standard() else "city_in_speech"
 		for back in [ALL_BACK, []]:
 			var holder := Node3D.new()
-			var area: Dictionary = Callable(Areas, name).call(holder, Vector3(3, 0, -2), 0.5, back)
+			var area: Dictionary = build.call(holder, Vector3(3, 0, -2), 0.5, back)
 			for key in ["root", "spots", "people", "flicker", "sway", "birds", "squads"]:
 				check(area.has(key), "%s has %s" % [name, key])
 			var spots: Dictionary = area["spots"]
@@ -314,4 +324,52 @@ func test_the_areopagus_votes_and_thermopylae_has_both_armies() -> void:
 		check(sq.has("legs") and sq.has("speed"), "each marches like the Macedonians")
 	var funeral := Areas.kerameikos(holder, Vector3(400, 0, 0), 0.0, ALL_BACK)
 	check_eq(funeral["coffins"].size(), 10, "a coffin for each of the ten tribes")
+	holder.free()
+
+
+func test_the_divided_line_is_cut_in_plato_s_proportion() -> void:
+	var holder := Node3D.new()
+	var area := Thinkers.the_line(holder, Vector3.ZERO, 0.0, ALL_BACK)
+	var segs: Array = area["segments"]
+	check_eq(segs.map(func(s): return s["name"]), ["images", "things", "mathematicals", "forms"], "four parts, dim to bright")
+	var lengths: Array = segs.map(func(s): return (s["from"] as Vector3).distance_to(s["to"]))
+	check(is_equal_approx(lengths[1] / lengths[0], (lengths[2] + lengths[3]) / (lengths[0] + lengths[1])),
+		"the visible part is cut in the same ratio as the whole line")
+	check(is_equal_approx(lengths[3] / lengths[2], lengths[1] / lengths[0]), "and so is the intelligible part")
+	check(is_equal_approx(lengths[1], lengths[2]), "so the two middle parts come out equal")
+	holder.free()
+
+
+func test_er_sees_the_spindle_and_the_lives() -> void:
+	var holder := Node3D.new()
+	var area := Thinkers.er(holder, Vector3.ZERO, 0.0, ALL_BACK)
+	check_eq(area["whorls"].size(), 8, "eight whorls, one inside the next")
+	check(area["speeds"][7] < area["speeds"][1] and area["speeds"][0] > 0.0 and area["speeds"][1] < 0.0,
+		"the whole turns one way, the inner seven the other, the eighth fastest")
+	check(area["lives"].size() > 6, "more patterns of lives than souls choosing at once")
+	check(area["banks"].size() >= 3, "room at Lethe's bank to drink")
+	var still := Props.spindle_of_necessity(holder, Vector3(100, 0, 0), false)
+	check(still["speeds"].all(func(v): return v == 0.0), "lost, the whorls stand still")
+	var gyges := Thinkers.gyges(holder, Vector3(200, 0, 0), 0.0, ALL_BACK)
+	check(gyges["ring"] is Node3D, "the ring is in the horse")
+	check(Thinkers.gyges(holder, Vector3(300, 0, 0), 0.0, [])["ring"] == null, "and gone when the place is lost")
+	holder.free()
+
+
+func test_the_city_in_speech_grows_and_turns_into_the_soul() -> void:
+	var holder := Node3D.new()
+	var last := -1
+	for stage in 6:
+		var city := Thinkers.city_in_speech(holder, Vector3(stage * 120.0, 0, 0), 0.0, stage, ALL_BACK)
+		check_eq(city["stage"], stage, "stage %d is built" % stage)
+		check(city["buildings"].size() > last or stage == 0, "stage %d raises more buildings than the last" % stage)
+		last = city["buildings"].size()
+		check(city["slots"].is_empty() == (stage == 5), "stage %d %s" % [stage, "is finished" if stage == 5 else "has room for the next"])
+		check(city["soul"]["root"].visible == (stage == 5), "the soul shows %s" % ("at last" if stage == 5 else "not yet"))
+		check_eq(city["soul"]["parts"].keys(), ["appetite", "spirit", "reason"], "the soul has its three parts")
+		var orders: Dictionary = city["orders"]
+		check((orders["producers"].size() > 0) == (stage >= 1), "stage %d: the producers" % stage)
+		check((orders["auxiliaries"].size() > 0) == (stage >= 3), "stage %d: the auxiliaries" % stage)
+		check((orders["guardians"].size() > 0) == (stage >= 4), "stage %d: the guardians" % stage)
+		check(city["soul"]["root"].find_children("*", "CollisionObject3D", true, false).is_empty(), "the soul is not in the way")
 	holder.free()

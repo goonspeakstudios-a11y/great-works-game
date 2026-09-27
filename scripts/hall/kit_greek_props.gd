@@ -746,3 +746,350 @@ static func siege_wall(parent: Node3D, from: Vector3, to: Vector3, whole: bool =
 	if whole:
 		for k in int(length / 12.0) + 1:
 			Kit.box(g, Vector3(-length / 2.0 + k * 12.0, 2.5, 0), Vector3(3.0, 5.0, 3.6), "rock")
+
+
+# ---------- e4: the Pre-Socratics ----------
+
+## A column of the Artemision at Ephesus, the temple where Heraclitus laid up his book and played
+## knucklebones with the boys (Diogenes Laertius IX.3-6): an Ionic column on its moulded base, the
+## lowest drum carved with figures in relief, the shaft, and the capital with its two scrolls.
+## Lost: the temple burned (356 BC): a stump, and its drums lying on the ground. Faces +Z.
+static func artemision_column(parent: Node3D, at: Vector3, yaw: float, height: float = 14.0, whole: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	var r := height / 18.0
+	Kit.cylinder(g, Vector3.ZERO, r * 1.5, r * 0.5, "marble", true, 12)  # the base's mouldings
+	Kit.cylinder(g, Vector3(0, r * 0.5, 0), r * 1.25, r * 0.3, "marble", false, 12)
+	Kit.cylinder(g, Vector3(0, r * 0.8, 0), r * 1.1, r * 2.2, "marble", true, 12)  # the carved drum
+	for k in 8:  # its figures in relief
+		var a := TAU * k / 8.0
+		Kit.blob(g, Vector3(sin(a) * r * 1.1, r * 1.9, cos(a) * r * 1.1), r * 0.3, "marble", Vector3(0.8, 2.2, 0.6), 5)
+	var shaft := height - r * 4.0 if whole else height * 0.22
+	Kit.cylinder(g, Vector3(0, r * 3.0, 0), r, shaft, "marble", true, 12, r * 0.88 if whole else r * 0.97)
+	if whole:
+		var top := r * 3.0 + shaft
+		Kit.box(g, Vector3(0, top + r * 0.2, 0), Vector3(r * 2.2, r * 0.4, r * 1.9), "marble", false)  # the echinus
+		for side: float in [-1.0, 1.0]:  # the scrolls, seen from the front
+			Kit.mesh(g, Greek._prism(r * 0.55, r * 1.9, 10), "marble", Vector3(side * r * 1.25, top + r * 0.05, 0), Vector3(PI / 2.0, 0, 0))
+			Kit.mesh(g, Greek._prism(r * 0.2, r * 1.95, 8), "stone", Vector3(side * r * 1.25, top + r * 0.05, 0), Vector3(PI / 2.0, 0, 0))
+		Kit.box(g, Vector3(0, top + r * 0.55, 0), Vector3(r * 2.7, r * 0.3, r * 2.7), "marble", false)  # the abacus
+		return
+	for k in 4:  # the fallen drums, blackened
+		var a := 0.6 + k * 0.9
+		var p := Vector3(cos(a) * (r * 3.0 + k * r * 1.5), r * 0.95, sin(a) * (r * 3.0 + k * r * 1.5))
+		Kit.mesh(g, Kit._cyl(r * 0.95, r * 1.6), "marble" if k % 2 else "ashbed", p, Vector3(0, a, PI / 2.0))
+		var drum := CylinderShape3D.new()
+		drum.radius = r * 0.95
+		drum.height = r * 1.6
+		Kit.solid(g, drum, p, Vector3(0, a, PI / 2.0))
+
+
+## Heraclitus's fire, "ever-living, kindled in measures and quenched in measures" (fr. B30): a
+## fire burning in a low ring of stones on the bare ground, never tended and never out, its sparks
+## always going up. Lost: a cold ring of ash. Returns its light (or null).
+static func ever_fire(parent: Node3D, at: Vector3, lit: bool = true) -> OmniLight3D:
+	var g := Kit.group(parent, at)
+	for k in 10:
+		var a := TAU * k / 10.0
+		Kit.blob(g, Vector3(cos(a) * 1.1, 0.15, sin(a) * 1.1), 0.25, "stone", Vector3(1.2, 0.8, 1.0), 5)
+	Kit.cylinder(g, Vector3.ZERO, 0.95, 0.08, "ashbed", false, 10)
+	var ring := CylinderShape3D.new()
+	ring.radius = 1.3
+	ring.height = 0.4
+	Kit.solid(g, ring, Vector3(0, 0.2, 0))
+	if not lit:
+		return null
+	for p: Vector3 in [Vector3(0, 0.6, 0), Vector3(0.35, 0.45, 0.2), Vector3(-0.3, 0.5, -0.25), Vector3(0.1, 0.9, -0.1)]:
+		Kit.blob(g, p, 0.4 if p.y < 0.8 else 0.25, "fire", Vector3(1.0, 1.9, 1.0), 5)
+	var sparks := Kit._drift(g, Vector3(0, 1.0, 0), 24, 3.0, 0.07, "fire", Vector3.UP, 30.0, Vector2(0.8, 1.6))
+	sparks.gravity = Vector3(0.2, 0.2, 0)
+	var l := OmniLight3D.new()
+	l.position = Vector3(0, 1.4, 0)
+	l.light_color = Color("ff9a48")
+	l.light_energy = 2.4
+	l.omni_range = 14.0
+	g.add_child(l)
+	return l
+
+
+## The gates of the paths of Night and Day in Parmenides' poem (B1.11-21): a stone lintel and
+## threshold, and filling them great doors "of aether", turning on bronze posts fixed with pins and
+## bolts. Justice keeps the keys; the Heliades persuade her to draw the bolt, and the doors fly
+## open onto the goddess's road. `open` swings them wide. Lost: the lintel down and the doors
+## fallen flat. Faces +Z (the side the traveller comes from). Returns {"root", "doors": [left,
+## right] (pivots that turn about Y), "way": the spot on the road beyond them}.
+static func great_gates(parent: Node3D, at: Vector3, yaw: float, open: bool = true, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	const W := 8.0
+	const H := 12.0
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * (W / 2.0 + 1.0), H / 2.0, 0), Vector3(2.0, H, 2.4), "stone")
+		Kit.cylinder(g, Vector3(side * (W / 2.0 - 0.1), 0, 0), 0.18, H, "bronze", false, 8)  # the bronze post the door turns on
+	Kit.box(g, Vector3(0, 0.1, 0), Vector3(W, 0.2, 2.4), "stone", false)  # the stone threshold
+	if whole:
+		Kit.box(g, Vector3(0, H + 0.75, 0), Vector3(W + 4.0, 1.5, 2.6), "stone")
+	else:
+		Kit.box(g, Vector3(2.0, 0.75, 4.5), Vector3(W + 4.0, 1.5, 2.6), "stone", true, Vector3(0, 0.3, 0))
+	var doors: Array = []
+	for side: float in [-1.0, 1.0]:
+		var pivot := Kit.group(g, Vector3(side * (W / 2.0 - 0.1), 0, 0))
+		Kit.box(pivot, Vector3(-side * W / 4.0, H / 2.0, 0), Vector3(W / 2.0 - 0.1, H - 0.3, 0.4), "#2a3050" if whole else "#4a4a52")
+		for k in 4:  # its bronze bands
+			Kit.box(pivot, Vector3(-side * W / 4.0, 1.5 + k * 3.0, 0.22), Vector3(W / 2.0 - 0.2, 0.2, 0.05), "bronze" if whole else "verdigris", false)
+		Kit.blob(pivot, Vector3(-side * (W / 2.0 - 0.5), H / 2.0, 0.25), 0.18, "bronze" if whole else "verdigris")  # the bolt's boss
+		if not whole:
+			pivot.position += Vector3(0, 0.2, 0.2)
+			pivot.rotation.x = PI / 2.0
+		elif open:
+			pivot.rotation.y = -side * 1.3
+		doors.append(pivot)
+	return {"root": g, "doors": doors, "way": g.transform * Vector3(0, 0, -8.0)}
+
+
+## "Like the bulk of a well-rounded sphere, equally balanced from the middle every way" (Parmenides
+## B8.43): what is, whole and unmoving, without a seam, on a low round plinth. Lost: cracked
+## through and half sunk in the ground, as if it could be broken after all. Returns the sphere.
+static func sphere(parent: Node3D, at: Vector3, radius: float = 3.0, whole: bool = true) -> Node3D:
+	var g := Kit.group(parent, at)
+	Kit.cylinder(g, Vector3.ZERO, radius * 0.9, 0.4, "marble", true, 16)
+	var s := Kit.group(g, Vector3(0, 0.4 + radius, 0) if whole else Vector3(0.4, radius * 0.45, 0.3))
+	Kit.blob(s, Vector3.ZERO, radius, "#f2f0ea" if whole else "ashbed", Vector3.ONE, 16)
+	if not whole:
+		s.rotation = Vector3(0.3, 0, 0.2)
+		Kit.box(s, Vector3(0, 0, radius * 0.2), Vector3(0.12, radius * 2.02, radius * 1.2), "dark", false, Vector3(0, 0.4, 0.2))
+	var ball := SphereShape3D.new()
+	ball.radius = radius
+	Kit.solid(s, ball, Vector3.ZERO)
+	return s
+
+
+# ---------- e4: Plato ----------
+
+## A kleroterion, the allotment machine of the Athenian courts: a stone slab with rows of slots
+## for the jurors' bronze tickets (pinakia), a column to each tribe, and a bronze tube down its side
+## with a funnel at the top; white and black balls let through the tube decide, row by row, who
+## judges today (Aristotle, Constitution of Athens 63-64). Lost: the slab broken across and the
+## tube gone. Faces +Z. Returns the node holding the tickets.
+static func kleroterion(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Node3D:
+	var g := Kit.group(parent, at, yaw)
+	var h := 2.2 if whole else 1.1
+	Kit.box(g, Vector3(0, 0.15, 0), Vector3(1.8, 0.3, 0.8), "stone")
+	Kit.box(g, Vector3(0, 0.3 + h / 2.0, 0), Vector3(1.4, h, 0.3), "marble")
+	var tickets := Kit.group(g, Vector3(0, 0.3, 0.16))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 399
+	var rows := int((h - 0.2) / 0.11)
+	for row in rows:
+		for col in 10:
+			var p := Vector3(-0.54 + col * 0.12, 0.15 + row * 0.11, 0)
+			Kit.box(tickets, p, Vector3(0.08, 0.025, 0.02), "dark", false)
+			if rng.randf() < (0.8 if whole else 0.2):
+				Kit.box(tickets, p + Vector3(0, 0.02, 0.012), Vector3(0.07, 0.05, 0.008), "bronze" if whole else "verdigris", false)
+	if whole:
+		Kit.box(g, Vector3(0.78, 0.3 + h / 2.0, 0.08), Vector3(0.08, h, 0.08), "bronze", false)  # the tube
+		Kit.cylinder(g, Vector3(0.78, 0.3 + h, 0.08), 0.04, 0.2, "bronze", false, 8, 0.14)  # its funnel
+		for k in 6:  # the balls that came out at the bottom
+			Kit.blob(g, Vector3(0.78 + (k % 3) * 0.06 - 0.06, 0.34, 0.3 + (k / 3) * 0.06), 0.025, "#e8e4dc" if k % 2 else "#1a1816")
+	else:
+		Kit.box(g, Vector3(0.9, 0.2, 0.8), Vector3(1.4, 0.3, 1.0), "marble", true, Vector3(0, 0.4, 0))  # the top half, fallen
+	return tickets
+
+
+## The hollow bronze horse Gyges the shepherd found in the chasm the earthquake opened (Republic
+## II.359d-360b), with little doors in its side; inside, a corpse larger than a man's, naked but
+## for a gold ring on its hand. Lost: the bronze green and split, the corpse dust, no ring.
+## Faces +Z. Returns {"root", "door": the spot at its open door, "ring": the ring (null when lost)}.
+static func bronze_horse(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	const S := 2.6
+	Greek.beast(g, Vector3.ZERO, 0.0, "horse", "bronze", S, whole)
+	var body_y := (0.95 + 0.36 * 0.55) * S
+	Kit.box(g, Vector3(0.36 * S * 0.97, body_y, 0.1), Vector3(0.06, 0.55, 0.8), "dark", false, Vector3(0, 0, 0.3))  # the open door
+	var leaf := Kit.group(g, Vector3(0.36 * S, body_y, 0.5))
+	Kit.box(leaf, Vector3(0.05, 0, -0.4), Vector3(0.05, 0.55, 0.8), "bronze" if whole else "verdigris", false)
+	leaf.rotation.y = 1.1
+	var ring: Node3D = null
+	if whole:  # the corpse, half seen through the door, and the ring on its hand
+		Kit.blob(g, Vector3(0.1, body_y - 0.1, 0), 0.4, "#c8b8a0", Vector3(1.0, 0.7, 4.0), 6)
+		ring = Kit.group(g, Vector3(0.62, body_y - 0.05, 0.25))
+		Kit.mesh(ring, TorusMesh.new(), "gold", Vector3.ZERO, Vector3(0, 0, PI / 2.0), Vector3(0.06, 0.2, 0.06))
+		Kit.box(ring, Vector3(0.02, 0, 0), Vector3(0.03, 0.04, 0.04), "gold", false)  # the bezel Gyges turned inward
+	else:
+		Kit.box(g, Vector3(0, body_y + 0.8, -0.4), Vector3(0.08, 1.2, 2.0), "dark", false, Vector3(0.2, 0, 0))  # the split along its back
+	return {"root": g, "door": g.transform * Vector3(2.2, 0, 0.1), "ring": ring}
+
+
+## The eight whorls of the spindle, from the outermost in: the breadth of each rim, its colour, its turn.
+const WHORLS := [
+	{"breadth": 0.8, "color": "#c8cce0", "speed": 0.05},  # the fixed stars: broadest, spangled
+	{"breadth": 0.15, "color": "#d8c070", "speed": -0.06},  # Saturn: yellower
+	{"breadth": 0.2, "color": "#f4f4f0", "speed": -0.08},  # Jupiter: whitest
+	{"breadth": 0.6, "color": "#c05030", "speed": -0.1},  # Mars: reddish
+	{"breadth": 0.3, "color": "#d8c070", "speed": -0.13},  # Mercury: like Saturn
+	{"breadth": 0.7, "color": "#ece8dc", "speed": -0.13},  # Venus: second in whiteness
+	{"breadth": 0.4, "color": "#fff0a0", "speed": -0.13},  # the Sun: brightest
+	{"breadth": 0.5, "color": "#d8d0a8", "speed": -0.2},  # the Moon: coloured by the Sun's light
+]
+
+## The spindle of Necessity (Republic X.616b-617d): a straight light like a pillar runs through
+## heaven and earth, and on its ends hangs the spindle that turns on Necessity's knees: a shaft
+## and hook of adamant, and a whorl made of eight whorls fitted one inside the next like nested
+## bowls, their rims seen from above as rings of different breadths and colours (the fixed stars,
+## Saturn, Jupiter, Mars, Mercury, Venus, the Sun, the Moon). On each rim stands a Siren singing one
+## note, and the eight make one harmony. Lost: the light out, the whorls grey and still. Returns
+## {"root", "whorls": the eight rims from the outermost in, each turning about Y, "speeds": how fast
+## each turns (radians a second; the whole one way, the inner seven the other, the eighth fastest,
+## the seventh, sixth and fifth together, then the fourth, third and second)}.
+static func spindle_of_necessity(parent: Node3D, at: Vector3, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at)
+	const Y := 3.0
+	if whole:  # the pillar of light, through heaven and earth
+		Kit.cylinder(g, Vector3(0, -2.0, 0), 0.5, 80.0, "glow", false, 12)
+	Kit.mesh(g, Kit._cyl(0.08, 6.0), "iron", Vector3(0, Y, 0))  # the adamant shaft
+	Kit.mesh(g, TorusMesh.new(), "iron", Vector3(0, Y + 3.1, 0), Vector3(PI / 2.0, 0, 0), Vector3(0.25, 0.25, 0.25))  # the hook
+	var whorls: Array = []
+	var speeds: Array = []
+	var outer := 5.0
+	for k in WHORLS.size():
+		var w: Dictionary = WHORLS[k]
+		var breadth: float = w["breadth"]
+		var node := Kit.group(g, Vector3(0, Y, 0))
+		var rim := TorusMesh.new()
+		rim.outer_radius = outer
+		rim.inner_radius = outer - breadth
+		rim.rings = 16 * Kit.detail * 2
+		rim.ring_segments = 6
+		Kit.mesh(node, rim, str(w["color"]) if whole else "ashbed", Vector3(0, -k * 0.06, 0), Vector3.ZERO, Vector3(1.0, 0.35, 1.0))
+		if k == 0 and whole:  # the spangles of the fixed stars
+			for j in 24:
+				var a := TAU * j / 24.0
+				Kit.blob(node, Vector3(cos(a), 0, sin(a)) * (outer - breadth / 2.0) + Vector3(0, 0.12, 0), 0.05, "glow")
+		var a := TAU * k / 8.0  # each Siren at her own place round the whorl, facing out, singing
+		var siren := People.siren(node, Vector3(cos(a), 0, sin(a)) * (outer - breadth / 2.0) + Vector3(0, 0.1 - k * 0.06, 0),
+			atan2(cos(a), sin(a)), whole)
+		siren.scale = Vector3.ONE * 0.45
+		whorls.append(node)
+		speeds.append(float(w["speed"]) if whole else 0.0)
+		outer -= breadth + 0.05
+	return {"root": g, "whorls": whorls, "speeds": speeds}
+
+
+## The plain of Lethe (Republic X.621a): a burning, stifling waste with no tree or plant, and
+## across it the river of Unheeding, whose water no vessel holds; the souls camp by it at evening
+## and each must drink a measure, and the unwise drink more and forget everything. Lost: the river
+## a dry bed. Faces +Z; the river runs across (along X). Returns the spots on the near bank where the
+## souls kneel to drink, in the parent's space.
+static func plain_of_lethe(parent: Node3D, at: Vector3, yaw: float, size: float = 30.0, flowing: bool = true) -> Array:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(size, 0.04, size), "drybed", false)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 621
+	for k in 30:  # the ground cracked with heat
+		Kit.box(g, Vector3(rng.randf_range(-size / 2.0, size / 2.0), 0.035, rng.randf_range(-size / 2.0, size / 2.0)),
+			Vector3(rng.randf_range(0.8, 2.4), 0.01, 0.05), "dark", false, Vector3(0, rng.randf() * PI, 0))
+	Kit.stream(g, Vector3(-size / 2.0, 0, -2.0), Vector3(size / 2.0, 0, -2.0), 3.0, flowing)
+	var banks: Array = []
+	for k in 6:
+		banks.append(g.transform * Vector3(-size / 3.0 + k * size / 7.5, 0, 0.2))
+	return banks
+
+
+## The hemlock (Phaedo 116-118): a small table with the mortar and pestle it was pounded in, and
+## the cup "with the drug ready pounded in it" that the servant brings. Lost: the cup broken and
+## dry. Returns the cup's node.
+static func hemlock_cup(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Node3D:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.6, 0), Vector3(0.8, 0.06, 0.5), "wood" if whole else "deadwood")
+	for p: Vector3 in [Vector3(-0.34, 0.29, -0.2), Vector3(0.34, 0.29, -0.2), Vector3(-0.34, 0.29, 0.2), Vector3(0.34, 0.29, 0.2)]:
+		Kit.box(g, p, Vector3(0.05, 0.58, 0.05), "wood" if whole else "deadwood", false)
+	Kit.cylinder(g, Vector3(-0.2, 0.63, 0), 0.12, 0.12, "stone", false, 10, 0.15)  # the mortar
+	Kit.box(g, Vector3(-0.17, 0.8, 0), Vector3(0.04, 0.26, 0.04), "stone", false, Vector3(0, 0, -0.4))  # the pestle
+	var cup := Kit.group(g, Vector3(0.18, 0.63, 0))
+	Greek.kylix(cup, Vector3.ZERO, whole)
+	if whole:
+		Kit.cylinder(cup, Vector3(0, 0.075, 0), 0.085, 0.005, "#2a3a1e", false, 10)  # the pounded hemlock
+	return cup
+
+
+## The cell where Socrates spent his last day (Phaedo 59d-118): a plain room of rough stone, a small
+## barred window high in the wall, the bed he sits up on to rub his leg when the fetters are off, a
+## stool, a doorway onto the prison court, and through a side door the little room where he bathed.
+## Lost: the roof gone, the door off its hinges. Faces +Z (the door). Returns {"root", "bed": where
+## Socrates sits, "door", "window", "bath"} in the parent's space.
+static func prison_cell(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	const W := 6.0
+	const D := 7.0
+	const H := 3.6
+	Kit.box(g, Vector3(0, 0.01, 0), Vector3(W, 0.04, D), "stone", false)
+	Kit.box(g, Vector3(0, H / 2.0, -D / 2.0), Vector3(W, H, 0.4), "stone")  # the back wall, with the window
+	Kit.box(g, Vector3(0, H - 0.7, -D / 2.0 + 0.21), Vector3(0.7, 0.5, 0.02), "dark", false)
+	for k in 3:
+		Kit.box(g, Vector3(-0.2 + k * 0.2, H - 0.7, -D / 2.0 + 0.24), Vector3(0.04, 0.5, 0.04), "iron", false)
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * W / 2.0, H / 2.0, 0), Vector3(0.4, H, D), "stone")
+		Kit.box(g, Vector3(side * (W / 4.0 + 0.5), H / 2.0, D / 2.0), Vector3(W / 2.0 - 1.0, H, 0.4), "stone")  # the front, the door between
+	Kit.box(g, Vector3(0, H - 0.4, D / 2.0), Vector3(2.0, 0.8, 0.4), "stone", false)
+	var leaf := Kit.group(g, Vector3(-1.0, 0, D / 2.0))
+	Kit.box(leaf, Vector3(0.5, 1.4, 0), Vector3(1.0, 2.8, 0.12), "wood" if whole else "deadwood", whole)
+	leaf.rotation.y = -1.2 if whole else 0.0
+	if not whole:
+		leaf.rotation.x = PI / 2.0 - 0.1
+		leaf.position += Vector3(0, 0.1, 0.2)
+	if whole:
+		Kit.box(g, Vector3(0, H + 0.1, 0), Vector3(W + 0.4, 0.2, D + 0.4), "roof", false)
+	Kit.bed(g, Vector3(-1.6, 0, -1.5), PI / 2.0)
+	Kit.box(g, Vector3(-1.6, 0.1, -0.2), Vector3(0.3, 0.06, 0.2), "iron" if whole else "rust", false)  # the fetters, off
+	Kit.cylinder(g, Vector3(1.4, 0, -1.0), 0.22, 0.45, "wood" if whole else "deadwood", false, 8)  # a stool
+	Kit.box(g, Vector3(W / 2.0 - 0.01, 1.1, -1.8), Vector3(0.05, 2.2, 1.0), "dark", false)  # the way through to the bath
+	Kit.box(g, Vector3(W / 2.0 + 1.5, H / 2.0, -1.8), Vector3(3.0, H, 3.0), "stone")
+	return {"root": g, "bed": g.transform * Vector3(-1.2, 0, -1.5), "door": g.transform * Vector3(0, 0, D / 2.0 + 1.0),
+		"window": g.transform * Vector3(0, H - 0.7, -D / 2.0), "bath": g.transform * Vector3(W / 2.0 - 0.5, 0, -1.8)}
+
+
+# ---------- e4: Aristotle ----------
+
+## Aristotle's Politics I.2 as a model on a low table, three steps in a row: the household (a
+## house, a man and his wife, a slave, the ox for the plough, "a house first, and a wife, and an
+## ox", as Hesiod has it), the village (households grown together), the city (walls round many
+## houses, an agora and a temple on its height), which "comes to be for the sake of life, and is
+## for the sake of the good life". Lost: the little houses scattered, the table cracked. Faces +Z.
+## Returns {"root", "stages": [household, village, city]} so each can be lit or raised in turn.
+static func household_to_city(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.4, 0), Vector3(9.0, 0.8, 3.0), "stone")
+	Kit.box(g, Vector3(0, 0.81, 0), Vector3(8.8, 0.02, 2.8), "earth" if whole else "ashbed", false)
+	if not whole:
+		Kit.box(g, Vector3(-1.4, 0.82, 0), Vector3(0.05, 0.02, 2.8), "dark", false, Vector3(0, 0.2, 0))
+	var stages: Array = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1252
+	for step in 3:
+		var s := Kit.group(g, Vector3(-3.0 + step * 3.0, 0.82, 0))
+		stages.append(s)
+		var houses: Array = []
+		match step:
+			0:
+				houses = [Vector3(0, 0, -0.4)]
+				Greek.beast(s, Vector3(0.6, 0, 0.5), 0.8, "ox", "", 0.2, whole)
+				for q: Vector3 in [Vector3(-0.3, 0, 0.4), Vector3(-0.1, 0, 0.5), Vector3(0.2, 0, 0.3)]:  # the man, the wife, the slave
+					Kit.cylinder(s, q, 0.04, 0.18, "#8a6a4a" if whole else "ashbed", false, 6)
+					Kit.blob(s, q + Vector3(0, 0.21, 0), 0.03, "#c8a078" if whole else "ashbed")
+			1:
+				houses = [Vector3(-0.6, 0, -0.5), Vector3(0.5, 0, -0.6), Vector3(-0.5, 0, 0.5), Vector3(0.6, 0, 0.4), Vector3(0, 0, 0)]
+			2:
+				houses = []
+				for k in 14:
+					houses.append(Vector3(rng.randf_range(-1.0, 1.0), 0, rng.randf_range(-0.9, 0.9)))
+				for k in 16:  # the wall round the city
+					var a := TAU * k / 16.0
+					Kit.box(s, Vector3(cos(a) * 1.3, 0.1, sin(a) * 1.2), Vector3(0.5, 0.2, 0.06), "stone" if whole or k % 3 else "ashbed", false,
+						Vector3(0, -a + PI / 2.0, 0))
+				Kit.box(s, Vector3(0, 0.1, -0.6), Vector3(0.5, 0.2, 0.3), "marble", false)  # the temple on the height
+				Kit.box(s, Vector3(0, 0.25, -0.6), Vector3(0.55, 0.1, 0.35), "roof", false)
+		for h: Vector3 in houses:
+			var p := h if whole else h + Vector3(rng.randf_range(-0.2, 0.2), 0, rng.randf_range(-0.2, 0.2))
+			Kit.box(s, p + Vector3(0, 0.1, 0), Vector3(0.28, 0.2, 0.22), "plaster" if whole else "ashbed", false,
+				Vector3(0, 0, 0) if whole else Vector3(0, rng.randf(), 0.3))
+			if whole:
+				Kit.box(s, p + Vector3(0, 0.23, 0), Vector3(0.32, 0.06, 0.26), "roof", false)
+	return {"root": g, "stages": stages}
