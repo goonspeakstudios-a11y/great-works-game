@@ -20,17 +20,11 @@ const BELL_NOTES := [1.0, 1.1892, 1.3348, 1.4983, 1.7818]  # D minor pentatonic 
 ## back before it is heard), "until" (the piece whose return silences it), "fade" (dB it drops
 ## for each piece back), and "loud_db" with "loud_until" (louder until that piece is back).
 const ZONES := {
-	# The Nexus: while it lies in pieces, only a sunken echo of its prelude and the void's
-	# breath. Each piece mended brings back a layer (C minor; the Shore's bells are D minor).
+	# The Nexus: always the sunken echo of its prelude and the void's breath, the same however
+	# much is mended (the healed layers nexus_drone/bass/arp/pad/voices are kept but unused).
 	"nexus": {"bells": false, "layers": [
-		{"file": "nexus_ghost", "db": -9.0, "music": true, "until": "greek_door", "fade": 1.5},
-		{"file": "nexus_drone", "db": -9.0, "music": true, "needs": "ember"},
-		{"file": "nexus_bass", "db": -9.0, "music": true, "needs": "path"},
-		{"file": "nexus_arp", "db": -9.0, "music": true, "needs": "greek_door"},
-		{"file": "nexus_pad", "db": -9.0, "music": true, "needs": "colour"},
-		{"file": "nexus_voices", "db": -9.0, "music": true, "needs": "shades"},
-		{"file": "fire", "db": -26.0, "needs": "ember"},
-		{"file": "void", "db": -20.0, "loud_db": -13.0, "loud_until": "ember"}]},
+		{"file": "nexus_ghost", "db": -9.0, "music": true},
+		{"file": "void", "db": -13.0}]},
 	"shore": {"bells": true, "layers": [
 		{"file": "shore", "db": -8.0, "music": true},
 		{"file": "waves", "db": -15.0}, {"file": "wind", "db": -18.0}, {"file": "fire", "db": -22.0}]},

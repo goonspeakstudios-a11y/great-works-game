@@ -147,22 +147,11 @@ func test_each_idea_lights_a_star_and_each_book_raises_a_column() -> void:
 	after["holder"].free()
 
 
-func test_the_nexus_music_follows_its_pieces() -> void:
-	var files := func(back: Array) -> Array:
-		var f: Array = Music.plan("nexus", back).map(func(l): return l["file"])
-		f.sort()
-		return f
-	check_eq(files.call([]), ["nexus_ghost", "void"], "lost: only the echo and the void's breath")
-	for k in range(1, 6):
-		check(files.call(PIECES.slice(0, k)) != files.call(PIECES.slice(0, k - 1)), "%s changes what you hear" % PIECES[k - 1])
-	check(not files.call(PIECES.slice(0, 3)).has("nexus_ghost"), "the echo is gone once Greece's door is warm")
-	var db := func(back: Array, file: String) -> float:
-		for l in Music.plan("nexus", back):
-			if l["file"] == file:
-				return l["db"]
-		return -999.0
-	check(db.call(PIECES.slice(0, 1), "nexus_ghost") < db.call([], "nexus_ghost"), "the echo fades as pieces return")
-	check(db.call([], "void") > db.call(PIECES.slice(0, 1), "void"), "the void is loudest while nothing is mended")
+func test_the_nexus_music_never_changes() -> void:
+	var lost: Array = Music.plan("nexus", [])
+	check_eq(lost.map(func(l): return l["file"]), ["nexus_ghost", "void"], "only the echo and the void's breath")
+	for k in range(1, PIECES.size() + 1):
+		check_eq(Music.plan("nexus", PIECES.slice(0, k)), lost, "%s leaves the music as it was" % PIECES[k - 1])
 	var shore: Array = Music.plan("shore", []).filter(func(l): return l["music"]).map(func(l): return l["file"])
 	for l in Music.plan("nexus", PIECES):
 		check(ResourceLoader.exists(Music.file_for(l["file"])), "%s is rendered" % l["file"])
