@@ -10,8 +10,10 @@ const Tex := preload("res://scripts/hall/textures.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Gallery := preload("res://tools/gallery.gd")
 
-const NEW_ZONES := ["rome", "troy", "theatre", "lesbos", "alexandria", "academy"]
-const NEW_SOUNDS := ["crowd", "arena", "rain", "oars", "loom", "hooves", "flock", "crickets", "drip", "gulls", "owl", "cornu"]
+const NEW_ZONES := ["rome", "troy", "theatre", "lesbos", "alexandria", "academy", "helicon", "sardis", "kerameikos",
+	"ephesus"]
+const NEW_SOUNDS := ["crowd", "arena", "rain", "oars", "loom", "hooves", "flock", "crickets", "drip", "gulls", "owl", "cornu",
+	"forge", "sheep", "salpinx", "shades"]
 const TEXTURED := ["travertine", "tufa", "brick", "reticulatum", "basalt", "mosaic", "fresco", "porphyry", "giallo", "pine",
 	"toga", "rust", "scutum", "scutum_dead", "hoplon_sparta", "hoplon_athens", "hoplon_dead", "persian", "wicker",
 	"blackfigure", "papyrus", "sand", "grass", "furrows", "cave"]

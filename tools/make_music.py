@@ -21,6 +21,8 @@ water organ, a tibia and the legion's drum), Troy (a phorminx to the hexameter),
 stanza), Alexandria (the tetraktys on a kithara, in pure ratios) and the Academy (the
 enharmonic quarter tones, the Sirens of Er); and their sounds: a crowd, the arena, rain, oars,
 a loom, hooves, a flock's bells, crickets, a cave's drips, gulls, an owl and the horn call.
+Round 2: Helicon (Hesiod), Sardis (Herodotus), the Kerameikos (Thucydides) and Ephesus (the
+Pre-Socratics); the forge, sheep, the dead in the underworld, and the salpinx.
 
 Usage: C:\\Python314\\python.exe tools/make_music.py [name ...]   (no names: everything)
 """
@@ -133,6 +135,12 @@ def pluck(buf: list[float], freq: float, level: float, start: int, seconds: floa
 
 # Porphyry's Sicily: a lyre in A Dorian over a soft drone, phrases with rests between.
 SICILY_SCALE = [220.0, 246.94, 261.63, 293.66, 329.63, 369.99, 392.0, 440.0, 493.88, 523.25]
+
+
+def _centred(samples: list[float]) -> list[float]:
+    """Take out the offset many plucked notes leave (the loop's mean), so it sits on zero."""
+    mean = sum(samples) / max(1, len(samples))
+    return [x - mean for x in samples]
 
 
 def _fold(buf: list[float], total: int) -> list[float]:
@@ -777,8 +785,7 @@ def render_lesbos(seconds: int = 48, seed: int = 73) -> dict[str, list[float]]:
             t += 2 * unit
     out = {k: _fold(v, total) for k, v in stems.items()}
     for k in ("barbitos", "low"):  # so many low plucks leave the strings off centre: take it out
-        mean = sum(out[k]) / total
-        out[k] = [x - mean for x in out[k]]
+        out[k] = _centred(out[k])
     return out
 
 
@@ -839,6 +846,154 @@ def render_academy(seconds: int = 48, seed: int = 83) -> dict[str, list[float]]:
     for t0, length, f in FATES:
         choir(stems["voices"], f, 0.05, int(t0 * RATE), length + 2.0, rng, attack=3.0, release=3.0)
         choir(stems["voices"], f / 2, 0.02, int(t0 * RATE), length + 2.0, rng, attack=3.0, release=3.0)
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
+# Hesiod's Helicon: the shepherd on the mountain where the Muses found him, in the Hypolydian
+# (F with a raised fourth). A shepherd's pipe, low and slow; the nine Muses in three parts; a
+# lyre's low notes; a drone like the wind over the ridge.
+HELICON_SCALE = [174.61, 196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00]
+MUSES = [  # (start s, length s, three notes): the Muses' chords, each part held by three voices
+    (0.0, 12.0, (349.23, 440.00, 523.25)), (12.0, 12.0, (329.63, 392.00, 523.25)),
+    (24.0, 12.0, (293.66, 440.00, 587.33)), (36.0, 12.0, (329.63, 392.00, 493.88)),
+]
+
+
+def render_helicon(seconds: int = 48, seed: int = 151) -> dict[str, list[float]]:
+    """Helicon in four layers: the drone, the shepherd's pipe, the Muses, the lyre's low notes."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 6 * RATE) for k in ("drone", "pipe", "muses", "low")}
+    for freq, level in ((87.31, 0.045), (130.81, 0.025), (174.61, 0.01)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    for t, length, f in _phrases(rng, seconds, 3.0, HELICON_SCALE, [-1, -1, 1, 1, 2, -2], [1.0, 1.5, 2.0, 2.5],
+                                 (3.0, 5.0), (2, 4)):
+        pipe(stems["pipe"], f, 0.13, int(t * RATE), length * 0.95, rng, attack=0.25)
+    for t0, length, chord in MUSES:
+        for f in chord:
+            choir(stems["muses"], f, 0.03, int(t0 * RATE), length + 1.5, rng, attack=3.0, release=3.0)
+    for k in range(8):
+        pluck(stems["low"], (87.31, 130.81)[k % 2], 0.13, int(k * 6 * RATE), 5.0, rng, 0.25, 0.998, release=0.5)
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
+# Herodotus's Sardis and Thermopylae: Croesus's court in the Lydian mode (the white notes on C),
+# a bright kithara over a warm drone; and, heard only once the soldiers are back, the Spartans'
+# march: a reed pipe setting the step and a drum, as they went into battle to the aulos.
+SARDIS_SCALE = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.26]
+SPARTAN_MARCH = [(0, 1), (2, 1), (4, 2), (2, 1), (0, 1), (1, 1), (2, 2)]  # (scale step, beats): a plain, steady tune
+
+
+def render_sardis(seconds: int = 48, seed: int = 157) -> dict[str, list[float]]:
+    """Sardis in four layers: the drone, the kithara, the low notes, the Spartan march."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 6 * RATE) for k in ("drone", "kithara", "low", "march")}
+    for freq, level in ((65.41, 0.045), (98.00, 0.03), (130.81, 0.012)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    for t, length, f in _phrases(rng, seconds, 1.0, SARDIS_SCALE, [-2, -1, 1, 1, 2, 3], [0.3, 0.3, 0.6, 0.9],
+                                 (1.5, 3.0), (4, 8)):
+        pluck(stems["kithara"], f, 0.17, int(t * RATE), 2.5, rng, 0.7, 0.996)
+    for k in range(4):
+        pluck(stems["low"], 65.41 * (1.0, 1.5, 1.0, 4 / 3)[k], 0.14, int(k * 12 * RATE), 6.0, rng, 0.2, 0.998, release=0.5)
+    beat = seconds / 96  # 120 steps a minute
+    drum_rng = random.Random(seed + 1)
+    for k in range(96):
+        drum(stems["march"], int(k * beat * RATE), 0.12 if k % 2 == 0 else 0.07, drum_rng, base=64.0)
+    t = 0.0
+    while t < seconds - 0.1:
+        for step, beats in SPARTAN_MARCH:
+            reed(stems["march"], SARDIS_SCALE[step + 2], 0.045, int(t * RATE), beats * beat * 1.9, rng, attack=0.05)
+            t += beats * beat * 2
+        t += 4 * beat
+    out = {k: _fold(v, total) for k, v in stems.items()}
+    out["kithara"] = _centred(out["kithara"])
+    return out
+
+
+def wail(buf: list[float], start_f: float, end_f: float, level: float, start: int, seconds: float,
+         rng: random.Random) -> None:
+    """A mourning voice: an "ah" that slides down from one note to another, trembling, as women
+    keened over the dead."""
+    total = int(seconds * RATE)
+    phase = 0.0
+    vib_phase = rng.uniform(0, TAU)
+    for n in range(total):
+        if start + n >= len(buf):
+            break
+        u = n / total
+        t = n / RATE
+        env = min(1.0, t / 0.4, (total - n) / (0.8 * RATE))
+        f = start_f * (end_f / start_f) ** (u ** 1.5)
+        vib = 1.0 + 0.012 * math.sin(TAU * 6.0 * t + vib_phase) * min(1.0, t / 0.3)
+        phase += f * vib * TABLE_SIZE / RATE
+        p = int(phase)
+        s = SINE[p % TABLE_SIZE] + 0.45 * SINE[(2 * p) % TABLE_SIZE] + 0.25 * SINE[(3 * p) % TABLE_SIZE]
+        buf[start + n] += s * env * level
+
+
+# Thucydides' Athens at war: a funeral in the Kerameikos. G Dorian; a slow aulos, the women's
+# lament falling from note to note, a drum beating twice like a slow tread, a dark drone.
+KERAMEIKOS_SCALE = [196.00, 220.00, 233.08, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 466.16]
+LAMENT = [(1.0, 6.0, 466.16, 392.00), (8.0, 5.0, 440.00, 349.23), (14.0, 7.0, 392.00, 293.66),
+          (25.0, 6.0, 466.16, 392.00), (32.0, 5.0, 440.00, 329.63), (38.0, 8.0, 392.00, 293.66)]
+
+
+def render_kerameikos(seconds: int = 48, seed: int = 163) -> dict[str, list[float]]:
+    """Athens at war in four layers: the drone, the aulos, the lament, the funeral drum."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 8 * RATE) for k in ("drone", "aulos", "lament", "drum")}
+    for i in range(4):
+        reed(stems["drone"], 98.00, 0.06, i * 12 * RATE, 14.0, rng, attack=2.0)
+    osc(stems["drone"], fit(49.0, seconds), 0.03, 0, lambda n: 1.0 if n < total else -1)
+    for t, length, f in _phrases(rng, seconds, 4.0, KERAMEIKOS_SCALE, [-1, -1, -2, 1, 1], [1.5, 2.0, 3.0],
+                                 (3.0, 5.0), (2, 4)):
+        reed(stems["aulos"], f, 0.11, int(t * RATE), length * 0.95, rng, attack=0.2, bend=rng.choice([0.0, 0.02]))
+    for t0, length, f0, f1 in LAMENT:
+        wail(stems["lament"], f0, f1, 0.07, int(t0 * RATE), length, rng)
+        wail(stems["lament"], f0 * 1.004, f1 * 1.004, 0.04, int((t0 + 0.15) * RATE), length, rng)
+    drum_rng = random.Random(seed + 1)
+    beat = seconds / 24  # thirty treads a minute
+    for k in range(24):
+        drum(stems["drum"], int(k * beat * RATE), 0.22, drum_rng, base=44.0)
+        drum(stems["drum"], int((k * beat + 0.4) * RATE), 0.12, drum_rng, base=44.0)
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
+# The Pre-Socratics at Ephesus and Elea, high and strange, on G Lydian. Heraclitus: a quick
+# figure that never comes round the same way twice (you cannot step into the same river twice),
+# and the lyre's "back-stretched harmony" (strife resolving). Parmenides: one tone, held,
+# unchanging from the first moment of the loop to the last: what is, is.
+EPHESUS_SCALE = [392.00, 440.00, 493.88, 554.37, 587.33, 659.26, 739.99, 783.99, 880.00, 987.77]
+STRIFE = [((277.18, 293.66), 293.66), ((369.99, 392.00), 392.00), ((246.94, 261.63), 293.66), ((554.37, 587.33), 587.33)]
+
+
+def render_ephesus(seconds: int = 48, seed: int = 167) -> dict[str, list[float]]:
+    """Ephesus and Elea in four layers: the drone, the river (flux), the one tone, the lyre."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 6 * RATE) for k in ("drone", "flux", "one", "lyre")}
+    for freq, level in ((98.00, 0.04), (146.83, 0.02)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    t = 0.5
+    step = 4
+    while t < seconds - 1.0:  # the river: runs of quick notes, each run starting somewhere new
+        step = rng.randrange(len(EPHESUS_SCALE))
+        for _ in range(rng.randint(5, 11)):
+            step = max(0, min(len(EPHESUS_SCALE) - 1, step + rng.choice([-2, -1, 1, 2])))
+            pluck(stems["flux"], EPHESUS_SCALE[step], 0.1, int(t * RATE), 1.2, rng, 0.8, 0.993)
+            t += rng.choice([0.14, 0.18, 0.18, 0.24])
+        t += rng.uniform(0.6, 1.6)
+    one = fit(783.99, seconds)  # G5, a whole number of cycles in the loop: no seam, no change
+    osc(stems["one"], one, 0.035, 0, lambda n: 1.0 if n < total else -1)
+    osc(stems["one"], fit(one * 2, seconds), 0.006, 0, lambda n: 1.0 if n < total else -1)
+    span = seconds / len(STRIFE)
+    for i, (pair, rest) in enumerate(STRIFE):  # two notes pulling against each other, then one
+        s0 = int(i * span * RATE)
+        for f in pair:
+            pluck(stems["lyre"], f / 2, 0.15, s0, 4.0, rng, 0.4, 0.997)
+        pluck(stems["lyre"], rest / 2, 0.17, s0 + int(4.0 * RATE), 6.0, rng, 0.4, 0.998, release=0.5)
     return {k: _fold(v, total) for k, v in stems.items()}
 
 
@@ -1067,6 +1222,92 @@ def render_cornu(seed: int = 149) -> list[float]:
         brass(out, 73.42 * harmonic, 0.5, int(dt * RATE), length, attack=0.04, release=0.2)
     return out
 
+def render_forge(seconds: int = 12, seed: int = 173) -> list[float]:
+    """Hephaestus's forge: the hammer ringing on the anvil in threes, the bellows breathing, the fire."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    buf = [0.0] * (total + 3 * RATE)
+    lo = 0.0
+    for n in range(total):  # the bellows: a slow breath of low noise every 3 s
+        x = rng.uniform(-1, 1)
+        lo += (x - lo) * 0.03
+        buf[n] += lo * 0.8 * max(0.0, math.sin(TAU * n / (3 * RATE))) ** 2
+    for k in range(seconds // 2):
+        for j, dt in enumerate((0.0, 0.32, 0.64)):  # three blows, the last the hardest
+            s0 = int((k * 2 + 0.5 + dt) * RATE)
+            base = rng.uniform(1180.0, 1260.0)
+            for mult, level, decay in ((1.0, 0.35, 5.0), (2.71, 0.2, 7.0), (5.1, 0.1, 11.0)):
+                osc(buf, base * mult, level * (0.7 + 0.15 * j), s0,
+                    lambda n, d=decay: -1 if n >= RATE else math.exp(-d * n / RATE) * min(1.0, n / 20))
+            _knock(buf, s0, 180.0, 0.3, 40.0, rng)
+    return _fold(buf, total)
+
+
+def render_sheep(seconds: int = 12, seed: int = 179) -> list[float]:
+    """Sheep in a cave or on a hillside: now and then a bleat, a nasal voice with a fast tremble."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    buf = [0.0] * (total + 2 * RATE)
+    t = 0.4
+    while t < seconds - 0.5:
+        f0 = rng.uniform(330.0, 520.0)
+        length = rng.uniform(0.5, 0.9)
+        s0 = int(t * RATE)
+        phase = 0.0
+        for n in range(int(length * RATE)):
+            u = n / (length * RATE)
+            tt = n / RATE
+            f = f0 * (1.0 + 0.08 * math.sin(math.pi * u) - 0.1 * u)
+            phase += f * TABLE_SIZE / RATE
+            p = int(phase)
+            tone = SINE[p % TABLE_SIZE] + 0.6 * SINE[(2 * p) % TABLE_SIZE] + 0.45 * SINE[(3 * p) % TABLE_SIZE] \
+                + 0.3 * SINE[(4 * p) % TABLE_SIZE]
+            tremble = 0.6 + 0.4 * math.sin(TAU * 22.0 * tt)
+            buf[s0 + n] += tone * tremble * math.sin(math.pi * u) ** 0.6 * 0.25
+        t += rng.uniform(1.5, 4.0)
+    return _fold(buf, total)
+
+
+def render_salpinx(seed: int = 181) -> list[float]:
+    """The salpinx, the Greek battle trumpet (a sound, not a loop): one harsh, bright blast."""
+    del seed
+    out = [0.0] * int(2.6 * RATE)
+    brass(out, 440.0, 0.5, 0, 0.35, attack=0.03, release=0.1)
+    brass(out, 440.0, 0.6, int(0.45 * RATE), 1.9, attack=0.05, release=0.5)
+    return out
+
+def render_shades(seconds: int = 16, seed: int = 191) -> list[float]:
+    """The dead crowding up out of the dark (Odyssey 11): a low, whispering throng, voices that
+    are only breath, rising and falling in a slow surge, and now and then a thin cry."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE
+    out = [0.0] * (total + fade)
+    for _ in range(18):  # the whisperers: high breathy noise in syllables, no voice under it
+        hp = rng.uniform(0.3, 0.6)
+        rate = rng.uniform(2.0, 4.5)
+        level = rng.uniform(0.3, 0.7)
+        a = b = 0.0
+        talking, until = rng.random() < 0.5, rng.uniform(0.5, 3.0)
+        for n in range(total + fade):
+            t = n / RATE
+            if t > until:
+                talking, until = not talking, t + (rng.uniform(0.8, 2.5) if not talking else rng.uniform(0.6, 2.0))
+            x = rng.uniform(-1, 1)
+            a += (x - a) * hp
+            b += (a - b) * 0.08
+            if talking:
+                out[n] += (a - b) * level * max(0.0, math.sin(TAU * rate * t)) ** 3
+    surge = [x * (0.45 + 0.55 * math.sin(math.pi * n / (8 * RATE)) ** 2) for n, x in enumerate(out)]  # 8 s divides 16
+    surge = _seam(surge, total, fade)
+    cries = [0.0] * (total + 3 * RATE)
+    t = rng.uniform(1.0, 3.0)
+    while t < seconds - 2.0:
+        wail(cries, rng.uniform(900.0, 1300.0), rng.uniform(500.0, 700.0), 0.12, int(t * RATE), rng.uniform(1.2, 2.0), rng)
+        t += rng.uniform(4.0, 7.0)
+    return [a + b for a, b in zip(surge, _fold(cries, total))]
+
+
+
 
 def write_wav(path: Path, samples: list[float], peak: float, top: float | None = None) -> None:
     """Write a mono 16-bit file, scaled so `top` (by default its own loudest sample) hits `peak`."""
@@ -1158,6 +1399,15 @@ JOBS: dict[str, Callable[[], None]] = {
     "gulls": _one("gulls", render_gulls, 0.3),
     "owl": _one("owl", render_owl, 0.6),
     "cornu": _one("cornu", render_cornu, 0.7),
+    # round 2: Hesiod, Herodotus, Thucydides, the Pre-Socratics
+    "helicon": _track("helicon", render_helicon, (), HELICON_SCALE, 87.31, "pipe", 153),
+    "sardis": _track("sardis", render_sardis, ("drone", "kithara", "low"), SARDIS_SCALE, 65.41, "lyre", 159),
+    "kerameikos": _track("kerameikos", render_kerameikos, (), KERAMEIKOS_SCALE, 98.00, "reed", 165),
+    "ephesus": _track("ephesus", render_ephesus, (), EPHESUS_SCALE, 98.00, "lyre", 169),
+    "forge": _one("forge", render_forge, 0.45),
+    "sheep": _one("sheep", render_sheep, 0.35),
+    "salpinx": _one("salpinx", render_salpinx, 0.7),
+    "shades": _one("shades", render_shades, 0.4),
 }
 
 

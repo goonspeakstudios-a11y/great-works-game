@@ -115,6 +115,44 @@ const ZONES := {
 		{"file": "stream", "db": -23.0, "needs": "water"},
 		{"file": "birds", "db": -22.0, "needs": "leaves"},
 		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Helicon (Hesiod): a shepherd's pipe, the nine Muses, the flock on the mountain, their spring.
+	"helicon": {"bells": false, "layers": [
+		{"file": "helicon_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "helicon_low", "db": -9.0, "music": true, "needs": "lamps"},
+		{"file": "helicon_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "helicon_pipe", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "helicon_muses", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -24.0, "needs": "water"},
+		{"file": "flock", "db": -22.0, "needs": "leaves"},
+		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
+	# Sardis and Thermopylae (Herodotus): Croesus's kithara in the Lydian mode; the Spartans' march.
+	"sardis": {"bells": false, "layers": [
+		{"file": "sardis_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "sardis_low", "db": -9.0, "music": true, "needs": "lamps"},
+		{"file": "sardis_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "sardis_kithara", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "sardis_march", "db": -11.0, "music": true, "needs": "soldiers"},
+		{"file": "crowd", "db": -25.0, "needs": "household"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Athens at war (Thucydides): the funeral in the Kerameikos, the lament, the pyres.
+	"kerameikos": {"bells": false, "layers": [
+		{"file": "kerameikos_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "kerameikos_drum", "db": -11.0, "music": true, "needs": "walkway"},
+		{"file": "kerameikos_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "kerameikos_aulos", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "kerameikos_lament", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "fire", "db": -26.0, "needs": "lamps"},
+		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
+	# Ephesus and Elea (the Pre-Socratics): Heraclitus's river and fire, Parmenides' one tone.
+	"ephesus": {"bells": false, "layers": [
+		{"file": "ephesus_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "ephesus_one", "db": -11.0, "music": true, "needs": "walkway"},
+		{"file": "ephesus_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "ephesus_flux", "db": -9.0, "music": true, "needs": "teacher"},
+		{"file": "ephesus_lyre", "db": -9.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -22.0, "needs": "water"},
+		{"file": "fire", "db": -27.0, "needs": "lamps"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
 }
 
 var zone := ""
