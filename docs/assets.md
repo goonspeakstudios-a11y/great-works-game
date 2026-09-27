@@ -98,3 +98,15 @@ invasion: Thermopylae, Salamis), 431 BC (the Peloponnesian War: the Athenian emp
 league, Melos, Mytilene), 300 BC (Euclid's Alexandria: the kingdoms after Alexander), 44 BC
 (Caesar's death: the Republic, Cleopatra's Egypt, Parthia), 117 AD (Trajan: the empire at its
 widest; Epictetus, Plutarch), 170 AD (Marcus Aurelius on the Danube). Borders are approximate.
+
+## Round 2: every piece lost or whole, and ready-made areas (scripts/hall/kit_greek_areas.gd)
+Every piece above now builds lost to the world as well as whole (flags `alive`, `whole`, `lit`,
+`flowing`, `undead`, defaulting to whole); the gallery renders each both ways (`name`, `name_lost`).
+An area set piece is one book's ground, built as far as its place is restored:
+`Areas.<name>(parent, at, yaw, back)` returns the root, its people, lights, swaying trees, and the
+spots a place needs (teacher, book, seat, facts, lesson stones).
+
+| Module | Work | Areas | New props |
+|---|---|---|---|
+| e1 | Rhetorica ad Herennium | `law_court`, `memory_house` (twenty loci in order, a golden hand at every fifth) | `Rome.tribunal`, `Rome.subsellia`, `Rome.memory_image` (poison, bloodied, crowned, smeared, golden hand), `Greek.clepsydra` |
+| e1 | Euclid | `museum_court`, `prop_one` (Elements I.1 at walking size), `prop_forty_seven` (9 + 16 = 25 tiles) | `Greek.armarium`, `Greek.date_palm`, `Greek.construction`, `Greek.tiled_squares`, `Greek.prop_one_drawing` |

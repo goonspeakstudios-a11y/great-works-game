@@ -9,6 +9,10 @@ const Rome := preload("res://scripts/hall/kit_rome.gd")
 const Tex := preload("res://scripts/hall/textures.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Gallery := preload("res://tools/gallery.gd")
+const Areas := preload("res://scripts/hall/kit_greek_areas.gd")
+const ALL_BACK := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "household", "soldiers"]
+## Every area set piece, by the name of its builder in kit_greek_areas.gd.
+const AREAS := ["law_court", "memory_house", "museum_court", "prop_one", "prop_forty_seven"]
 
 const NEW_ZONES := ["rome", "troy", "theatre", "lesbos", "alexandria", "academy", "helicon", "sardis", "kerameikos",
 	"ephesus"]
@@ -206,3 +210,44 @@ func test_every_map_is_ready() -> void:
 		for p in data["pins"]:
 			check(p["at"][0] >= 0 and p["at"][0] < data["size"][0] and p["at"][1] >= 0 and p["at"][1] < data["size"][1],
 				"%s: %s is on the map" % [id, p["name"]])
+
+
+func test_every_area_builds_whole_and_lost_with_its_spots() -> void:
+	for name in AREAS:
+		for back in [ALL_BACK, []]:
+			var holder := Node3D.new()
+			var area: Dictionary = Callable(Areas, name).call(holder, Vector3(3, 0, -2), 0.5, back)
+			for key in ["root", "spots", "people", "flicker", "sway", "birds", "squads"]:
+				check(area.has(key), "%s has %s" % [name, key])
+			var spots: Dictionary = area["spots"]
+			for key in ["teacher", "book", "seat", "facts", "stones"]:
+				check(spots.has(key), "%s has a %s spot" % [name, key])
+			check(spots["stones"].size() >= 5, "%s has room for a lesson's stones (%d)" % [name, spots["stones"].size()])
+			check(spots["facts"].size() >= 2, "%s has room for its facts" % name)
+			check(spots["teacher"] is Vector3 and spots["book"] is Vector3, "%s's spots are places" % name)
+			check(spots["stones"].all(func(p): return p is Vector3 and Vector2(p.x - 3, p.z + 2).length() < 60.0),
+				"%s's stones are in the area" % name)
+			if back.is_empty():
+				check(area["people"].all(func(p): return p.get("shade", false)), "%s's people are shades while it is lost" % name)
+			holder.free()
+
+
+func test_the_memory_house_has_twenty_places_in_order() -> void:
+	var holder := Node3D.new()
+	var area := Areas.memory_house(holder, Vector3.ZERO, 0.0, ALL_BACK)
+	check_eq(area["loci"].size(), 20, "twenty places, five a side")
+	var hands := holder.find_children("*", "MeshInstance3D", true, false).filter(
+		func(m): return (m as MeshInstance3D).material_override == Tex.material("gold"))
+	check(hands.size() >= 4 * 6, "a golden hand at every fifth place")
+	for k in 19:
+		check(area["loci"][k].distance_to(area["loci"][k + 1]) < 7.0, "place %d leads on to the next" % (k + 1))
+	holder.free()
+
+
+func test_the_forty_seventh_counts_nine_and_sixteen_to_twenty_five() -> void:
+	var holder := Node3D.new()
+	var sq: Dictionary = Greek.tiled_squares(holder, Vector3.ZERO, 0.0)["squares"]
+	check_eq([sq[3].size(), sq[4].size(), sq[5].size()], [9, 16, 25], "3 x 3, 4 x 4 and 5 x 5 tiles")
+	var lost: Dictionary = Greek.tiled_squares(holder, Vector3(20, 0, 0), 0.0, 1.0, false)["squares"]
+	check(lost[5].size() < 25, "lost, some are missing")
+	holder.free()

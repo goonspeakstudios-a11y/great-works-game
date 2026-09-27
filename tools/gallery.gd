@@ -8,6 +8,9 @@ extends SceneTree
 const Kit := preload("res://scripts/hall/kit.gd")
 const Greek := preload("res://scripts/hall/kit_greek.gd")
 const Rome := preload("res://scripts/hall/kit_rome.gd")
+const Areas := preload("res://scripts/hall/kit_greek_areas.gd")
+## Every piece a place can bring back: an area set piece is built with all of them, or none.
+const ALL_BACK := ["water", "leaves", "lamps", "walkway", "sun", "teacher", "household", "soldiers"]
 
 var _view: SubViewport
 var _stage: Node3D
@@ -68,6 +71,25 @@ static func pieces() -> Dictionary:
 		"farm": [1, func(s: Node3D, w: bool):
 			Greek.threshing_floor(s, Vector3(-3, 0, 0), 3.0, w)
 			Greek.hives(s, Vector3(2, 0, 0), 0.0, 5, w)],
+		# e1 props: the Rhetorica's court and memory images, Euclid's Alexandria
+		"court": [1, func(s: Node3D, w: bool):
+			Rome.tribunal(s, Vector3(0, 0, -3), 0.0, w)
+			Rome.subsellia(s, Vector3(-5, 0, 0), PI / 2.0, 5.0, 2, w)
+			Greek.clepsydra(s, Vector3(3, 0, 1), w)],
+		"memory_images": [1, func(s: Node3D, w: bool):
+			for k in 5:
+				Rome.memory_image(s, Vector3(-4.0 + k * 2.0, 0, 0), 0.0, ["poison", "bloodied", "crowned", "smeared", "golden_hand"][k], w)],
+		"armarium_palm": [1, func(s: Node3D, w: bool):
+			Greek.armarium(s, Vector3(-1.5, 0, 0), 0.0, w)
+			Greek.date_palm(s, Vector3(2.0, 0, 0), 7.0, w)],
+		"construction": [1, func(s: Node3D, w: bool): Greek.construction(s, Vector3.ZERO, 0.0, 5.0, w)],
+		"tiled_squares": [1, func(s: Node3D, w: bool): Greek.tiled_squares(s, Vector3.ZERO, 0.0, 1.0, w)],
+		# e1 areas
+		"area_law_court": [1, func(s: Node3D, w: bool): Areas.law_court(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_memory_house": [1, func(s: Node3D, w: bool): Areas.memory_house(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_museum_court": [1, func(s: Node3D, w: bool): Areas.museum_court(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_prop_one": [1, func(s: Node3D, w: bool): Areas.prop_one(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
+		"area_prop_forty_seven": [1, func(s: Node3D, w: bool): Areas.prop_forty_seven(s, Vector3.ZERO, 0.0, ALL_BACK if w else [])],
 		# Rome
 		"stone_pines": [2, func(s: Node3D, w: bool):
 			Rome.stone_pine(s, Vector3(-4, 0, 0), 1.0, w)
@@ -185,12 +207,14 @@ func _run() -> void:
 
 
 ## Puts the camera in front of the piece, a little to the right and above, far enough back to
-## see all of it.
+## see all of it (leaving out anything far off in the distance, like the Pharos over an area).
 func _frame(holder: Node3D) -> void:
 	var box := AABB()
 	var first := true
 	for mi in holder.find_children("*", "MeshInstance3D", true, false):
 		var b: AABB = (mi as MeshInstance3D).global_transform * (mi as MeshInstance3D).get_aabb()
+		if b.get_center().length() > 150.0 and b.size.length() < 400.0 and not first:
+			continue
 		box = b if first else box.merge(b)
 		first = false
 	var centre := box.get_center()

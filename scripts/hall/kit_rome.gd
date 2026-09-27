@@ -580,6 +580,98 @@ static func insula(parent: Node3D, at: Vector3, yaw: float, floors: int = 4, wid
 			Vector3(side * 0.34, 0, 0))
 
 
+# ---------- the law court (Rhetorica ad Herennium) ----------
+
+## The praetor's tribunal: a raised platform of stone with steps at its front (+Z), the curule
+## chair on it, a railing round it, and the spear (hasta) planted beside it as the sign of the
+## court. Lost: its corner fallen, the chair and spear gone. Returns where the judge sits.
+static func tribunal(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.75, 0), Vector3(5.0, 1.5, 3.4), "travertine")
+	for k in 4:  # the steps up its front, the last one level with the top
+		var h := 1.5 * (k + 1) / 4.0
+		Kit.box(g, Vector3(0, h / 2.0, 1.85 + (3 - k) * 0.3), Vector3(2.4, h, 0.3), "travertine")
+	if not whole:
+		Kit.box(g, Vector3(2.2, 0.3, 1.4), Vector3(1.2, 0.6, 1.0), "travertine", true, Vector3(0.3, 0.4, 0.5))  # the fallen corner
+		return g.transform * Vector3(0, 1.5, -0.4)
+	sella(g, Vector3(0, 1.5, -0.4), 0.0)
+	for x: float in [-2.4, 2.4]:
+		Kit.box(g, Vector3(x, 1.95, 0), Vector3(0.08, 0.9, 3.4), "bronze", false)
+	Kit.box(g, Vector3(1.7, 2.8, -1.2), Vector3(0.05, 2.6, 0.05), "wood", false)  # the hasta
+	Kit.box(g, Vector3(1.7, 4.2, -1.2), Vector3(0.08, 0.3, 0.03), "iron", false)
+	return g.transform * Vector3(0, 1.5, -0.4)
+
+
+## The benches of a court (subsellia): plain wooden benches without backs, in `rows` rows along X,
+## each a step higher, for the jurors or the advocates and their friends. Faces +Z. Lost: broken
+## boards, a bench fallen on its side.
+static func subsellia(parent: Node3D, at: Vector3, yaw: float, length: float = 6.0, rows: int = 2, whole: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	var wood := "wood" if whole else "deadwood"
+	for r in rows:
+		var z := -r * 0.9
+		var y := r * 0.3
+		if r > 0:
+			Kit.box(g, Vector3(0, y / 2.0, z), Vector3(length, y, 0.9), "stone")  # the step it stands on
+		var bench := Kit.group(g, Vector3(0, y, z))
+		if not whole and r == rows - 1:
+			bench.rotation.x = 1.4
+			bench.position.z += 0.4
+		Kit.box(bench, Vector3(0, 0.45, 0), Vector3(length, 0.08, 0.4), wood, false)
+		for x: float in [-length / 2.0 + 0.2, 0.0, length / 2.0 - 0.2]:
+			Kit.box(bench, Vector3(x, 0.22, 0), Vector3(0.1, 0.44, 0.34), wood, false)
+		var seat := BoxShape3D.new()
+		seat.size = Vector3(length, 0.5, 0.4)
+		Kit.solid(g, seat, Vector3(0, y + 0.25, z))
+
+
+## One of the striking pictures the Rhetorica ad Herennium tells you to set in each place of a
+## memory house (III.33-37): things out of the ordinary stay in the mind. "poison": the man lying
+## sick in bed, and at his side the accused with a cup in his right hand, tablets in his left, and
+## a ram's testicles on his fourth finger (for the witnesses: testes); "bloodied": a man in a
+## toga stained with blood; "crowned": a figure in a gold crown and a purple cloak; "smeared": a
+## figure daubed with red paint; "golden_hand": the golden hand on a post that marks every fifth
+## place (III.31). Faces +Z. Lost: pale shades of themselves, the hand gone green.
+static func memory_image(parent: Node3D, at: Vector3, yaw: float, kind: String, whole: bool = true) -> Node3D:
+	var g := Kit.group(parent, at, yaw)
+	match kind:
+		"poison":
+			Kit.bed(g, Vector3(0, 0, -0.6), 0.0)
+			Kit.blob(g, Vector3(-0.1, 0.72, -0.6), 0.22, "#6a5a4a", Vector3(3.2, 0.7, 1.4), 7)  # the sick man under his blanket
+			Kit.blob(g, Vector3(0.75, 0.78, -0.6), 0.12, "#c8a078")
+			var w := Kit.walker(g, Vector3(0.2, 0, 0.5), PI, {"robe": "5a4a6a"})
+			Greek.kylix(w["hand"], Vector3(0.3, 1.38, 0.42))
+			Kit.box(w["root"], Vector3(-0.32, 0.95, 0.12), Vector3(0.18, 0.02, 0.14), "#4a3420", false)  # the tablets
+			for dx: float in [-0.03, 0.03]:
+				Kit.blob(w["hand"], Vector3(0.3 + dx, 1.32, 0.4), 0.035, "#b89a80")  # on the fourth finger
+			if not whole:
+				Kit.shade(g, 0.35)
+		"bloodied", "crowned", "smeared":
+			var look := {"robe": "e8e2d2" if kind == "bloodied" else ("5a1a4a" if kind == "crowned" else "8a6a4a"),
+				"skin": "a83a2a" if kind == "smeared" else "c8a078"}
+			var w := Kit.walker(g, Vector3.ZERO, 0.0, look)
+			var head: Node3D = w["head"]
+			match kind:
+				"bloodied":
+					for p: Vector3 in [Vector3(0.1, 1.2, 0.24), Vector3(-0.08, 0.9, 0.25), Vector3(0.05, 0.6, 0.25)]:
+						Kit.box(w["root"], p, Vector3(0.14, 0.12, 0.02), "#8a1010", false, Vector3(0, 0, p.x * 4.0))
+				"crowned":
+					Kit.mesh(head, TorusMesh.new(), "gold", Vector3(0, 0.2, 0), Vector3.ZERO, Vector3(0.18, 0.3, 0.18))
+				"smeared":
+					for p: Vector3 in [Vector3(0.1, 1.3, 0.24), Vector3(-0.12, 1.0, 0.25)]:
+						Kit.box(w["root"], p, Vector3(0.2, 0.1, 0.02), "#a83a2a", false, Vector3(0, 0, 0.5))
+			if not whole:
+				Kit.shade(g, 0.35)
+		"golden_hand":
+			Kit.box(g, Vector3(0, 0.8, 0), Vector3(0.12, 1.6, 0.12), "stone")
+			var metal := "gold" if whole else "verdigris"
+			Kit.box(g, Vector3(0, 1.75, 0), Vector3(0.18, 0.22, 0.06), metal, false)  # the palm
+			for k in 4:
+				Kit.box(g, Vector3(-0.065 + k * 0.043, 1.95, 0), Vector3(0.03, 0.18, 0.04), metal, false)  # the fingers
+			Kit.box(g, Vector3(0.11, 1.78, 0), Vector3(0.04, 0.12, 0.04), metal, false, Vector3(0, 0, -0.7))  # the thumb
+	return g
+
+
 # ---------- statues ----------
 
 ## The she-wolf who suckled Romulus and Remus: the bronze wolf on a marble plinth, the twins

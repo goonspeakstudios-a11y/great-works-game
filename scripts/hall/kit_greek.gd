@@ -699,22 +699,175 @@ static func sand_tray(parent: Node3D, at: Vector3, yaw: float, whole: bool = tru
 	Kit.solid(g, body, Vector3(0, 0.45, 0))
 	if not whole:
 		return
-	const R := 0.3
-	var y := 0.885
-	var groove := "#8a7450"
-	for c: Vector3 in [Vector3(-R / 2.0, y, 0.05), Vector3(R / 2.0, y, 0.05)]:
-		for k in 28:  # each circle as a ring of little marks
-			var a := TAU * k / 28.0
-			Kit.box(g, c + Vector3(cos(a), 0, sin(a)) * R, Vector3(0.012, 0.004, 2.0 * PI * R / 28.0 + 0.004), groove, false,
-				Vector3(0, -a, 0))
-	var pts := [Vector3(-R / 2.0, y, 0.05), Vector3(R / 2.0, y, 0.05), Vector3(0, y, 0.05 - R * sqrt(3.0) / 2.0)]
-	for i in 3:  # the triangle
-		var a: Vector3 = pts[i]
-		var b: Vector3 = pts[(i + 1) % 3]
-		Kit.box(g, (a + b) / 2.0, Vector3(0.014, 0.005, a.distance_to(b)), groove, false, Vector3(0, atan2(b.x - a.x, b.z - a.z), 0))
+	prop_one_drawing(g, Vector3(0, 0.885, 0.05), 0.3, 0.012, "#8a7450")
 	for side: float in [-1.0, 1.0]:  # the dividers, open, lying on the board's rim
 		Kit.box(g, Vector3(0.55 + side * 0.04, 0.9, -0.3), Vector3(0.012, 0.012, 0.3), "bronze", false, Vector3(0, side * 0.15, 0))
 	Kit.box(g, Vector3(-0.5, 0.9, -0.35), Vector3(0.5, 0.015, 0.04), "wood", false, Vector3(0, 0.3, 0))  # the straightedge
+
+
+## Elements I.1 drawn flat at `centre`: two circles of radius `r`, each through the other's
+## centre, and the equal-sided triangle on the line between the centres, in lines `width` wide.
+## Returns the triangle's three corners (A, B, C). Used in the sand tray and on the ground.
+static func prop_one_drawing(parent: Node3D, centre: Vector3, r: float, width: float, mat: String,
+		circles: bool = true) -> Array:
+	var pts := [centre + Vector3(-r / 2.0, 0, 0), centre + Vector3(r / 2.0, 0, 0), centre + Vector3(0, 0, -r * sqrt(3.0) / 2.0)]
+	var marks := 28 if r < 1.0 else 48
+	if circles:
+		for c: Vector3 in [pts[0], pts[1]]:
+			for k in marks:  # each circle as a ring of short strokes
+				var a := TAU * k / marks
+				Kit.box(parent, c + Vector3(cos(a), 0, sin(a)) * r, Vector3(width, width * 0.35, 2.0 * PI * r / marks + width * 0.3),
+					mat, false, Vector3(0, -a, 0))
+	for i in 3:  # the triangle
+		var a: Vector3 = pts[i]
+		var b: Vector3 = pts[(i + 1) % 3]
+		Kit.box(parent, (a + b) / 2.0, Vector3(width * 1.2, width * 0.4, a.distance_to(b)), mat, false,
+			Vector3(0, atan2(b.x - a.x, b.z - a.z), 0))
+	return pts
+
+
+# ---------- Euclid's Alexandria ----------
+
+## Proposition I.1 at full size on the ground, the way it was laid out with pegs and a cord: a
+## peg at A, B and C, the two circles scored in the earth, and the cord pulled tight round the
+## triangle. `r` is the side. Lost: the pegs pulled up and lying about, the cord slack in the
+## dust, only the triangle's lines left faintly. Returns A, B, C (in the parent's space).
+static func construction(parent: Node3D, at: Vector3, yaw: float, r: float = 5.0, whole: bool = true) -> Array:
+	var g := Kit.group(parent, at, yaw)
+	var pts := prop_one_drawing(g, Vector3(0, 0.02, 0), r, 0.08, "#6a5a40" if whole else "#8a8272", whole)
+	var cord := "#c8b890"
+	for i in 3:
+		var p: Vector3 = pts[i]
+		if whole:
+			Kit.cylinder(g, p, 0.06, 0.7, "wood", true, 6)  # the peg
+			Kit.blob(g, p + Vector3(0, 0.72, 0), 0.08, "bronze")
+			var q: Vector3 = pts[(i + 1) % 3]
+			var mid := (p + q) / 2.0 + Vector3(0, 0.5, 0)
+			Kit.box(g, mid, Vector3(0.025, 0.025, p.distance_to(q)), cord, false, Vector3(0, atan2(q.x - p.x, q.z - p.z), 0))
+		else:
+			Kit.mesh(g, Kit._cyl(0.06, 0.7), "deadwood", p + Vector3(0.4, 0.06, 0.3), Vector3(PI / 2.0, 0.7 * i, 0))
+	if not whole:  # the cord in a slack heap
+		for k in 5:
+			Kit.box(g, Vector3(0.3 * k - 0.6, 0.03, 0.8 + 0.2 * (k % 2)), Vector3(0.03, 0.03, 0.9), cord, false, Vector3(0, 0.9 * k, 0))
+	return pts.map(func(p: Vector3) -> Vector3: return g.transform * p)
+
+
+## Proposition I.47 laid in tiles: a right triangle with sides 3, 4 and 5 (in `unit` metres), and
+## on each side its square: 9 blue tiles, 16 ochre, 25 white. The two small squares hold exactly
+## as many tiles as the big one. Lost: many tiles gone and the rest cracked out of line.
+## Returns {"root", "squares": {3: [tiles], 4: [tiles], 5: [tiles]}}.
+static func tiled_squares(parent: Node3D, at: Vector3, yaw: float, unit: float = 1.0, whole: bool = true) -> Dictionary:
+	var g := Kit.group(parent, at, yaw)
+	var a := Vector3(0, 0, 0)  # the right angle
+	var b := Vector3(4, 0, 0) * unit
+	var c := Vector3(0, 0, -3) * unit
+	var squares := {}
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 47
+	for side in [[3, a, c, Vector3(-1, 0, 0), "#4a6a8a"], [4, a, b, Vector3(0, 0, 1), "#b8863a"],
+			[5, c, b, Vector3(3, 0, -4).normalized(), "#e0d8c4"]]:
+		var n: int = side[0]
+		var p: Vector3 = side[1]
+		var q: Vector3 = side[2]
+		var out: Vector3 = side[3]  # which way the square grows, away from the triangle
+		var along := (q - p) / n
+		var across := out * unit
+		var tiles: Array = []
+		for i in n:
+			for j in n:
+				if not whole and rng.randf() < 0.35:
+					continue
+				var centre := p + along * (i + 0.5) + across * (j + 0.5)
+				var jitter := Vector3(rng.randf_range(-0.08, 0.08), 0, rng.randf_range(-0.08, 0.08)) * unit if not whole else Vector3.ZERO
+				var tile := Kit.box(g, centre + jitter + Vector3(0, 0.03, 0), Vector3(unit * 0.92, 0.06, unit * 0.92), side[4], false,
+					Vector3(0, atan2(along.x, along.z) + (rng.randf_range(-0.2, 0.2) if not whole else 0.0), 0))
+				tiles.append(tile)
+		squares[n] = tiles
+	for pair in [[a, b], [b, c], [c, a]]:  # the triangle's own edges in bronze strips
+		var p: Vector3 = pair[0]
+		var q: Vector3 = pair[1]
+		Kit.box(g, (p + q) / 2.0 + Vector3(0, 0.07, 0), Vector3(0.06, 0.04, p.distance_to(q)), "bronze" if whole else "verdigris", false,
+			Vector3(0, atan2(q.x - p.x, q.z - p.z), 0))
+	return {"root": g, "squares": squares}
+
+
+## A library cabinet (armarium) of the Library at Alexandria: a tall cupboard of pigeonholes, each
+## holding its papyrus rolls with their title tags hanging out, the two doors standing open. Faces
+## +Z. Lost: one door hanging off, most rolls gone and the rest grey.
+static func armarium(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	var wood := "wood" if whole else "deadwood"
+	Kit.box(g, Vector3(0, 1.1, -0.22), Vector3(1.6, 2.2, 0.06), wood)  # the back
+	for x: float in [-0.8, 0.8]:
+		Kit.box(g, Vector3(x, 1.1, 0), Vector3(0.06, 2.2, 0.5), wood, false)
+	for k in 6:  # the shelves
+		Kit.box(g, Vector3(0, 0.05 + k * 0.42, 0), Vector3(1.6, 0.05, 0.5), wood, false)
+	for k in 3:  # the uprights of the pigeonholes
+		Kit.box(g, Vector3(-0.4 + k * 0.4, 1.1, 0), Vector3(0.04, 2.1, 0.48), wood, false)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(at.x * 3.0 + at.z * 7.0)
+	for row in 5:
+		for col in 4:
+			for r in 3:
+				if not whole and rng.randf() < 0.75:
+					continue
+				var p := Vector3(-0.6 + col * 0.4 + (r - 1) * 0.1, 0.13 + row * 0.42 + (r % 2) * 0.08, 0.05)
+				Kit.mesh(g, Kit._cyl(0.045, 0.38), "papyrus" if whole else "ashbed", p, Vector3(PI / 2.0, 0, 0))
+				if whole and r == 1:
+					Kit.box(g, p + Vector3(0, -0.05, 0.2), Vector3(0.05, 0.07, 0.005), "#9a1e1a", false)  # the sillybos, its title
+	for side: float in [-1.0, 1.0]:  # the doors, open
+		var door := Kit.group(g, Vector3(side * 0.8, 0, 0.25), side * 1.9)
+		if not whole and side > 0.0:
+			door.rotation = Vector3(0.1, 0.9, 0.6)
+		Kit.box(door, Vector3(side * 0.4, 1.1, 0), Vector3(0.8, 2.1, 0.04), wood, false)
+	var body := BoxShape3D.new()
+	body.size = Vector3(1.6, 2.2, 0.5)
+	Kit.solid(g, body, Vector3(0, 1.1, 0))
+
+
+## A date palm, as by the harbour of Alexandria and the Nile: a tall ringed trunk leaning a
+## little, a crown of long arching fronds, clusters of dates under them. Dead: a bare trunk with a
+## few brown fronds hanging down. Returns the crown, which the breeze can stir.
+static func date_palm(parent: Node3D, at: Vector3, height: float = 8.0, alive: bool = true) -> Node3D:
+	var g := Kit.group(parent, at, at.x * 0.9 + at.z * 1.3)
+	var bark := "#7a6448" if alive else "deadwood"
+	var rings := int(height / 0.6)
+	for k in rings:  # the trunk, ring on ring, bending a little as it rises
+		var t := float(k) / rings
+		Kit.cylinder(g, Vector3(t * t * 0.8, k * 0.6, 0), 0.24 - t * 0.06, 0.62, bark, k == 0, 7, 0.2 - t * 0.06)
+	var crown := Kit.group(g, Vector3(0.8, height, 0))
+	var fronds := 12 if alive else 5
+	for k in fronds:
+		var a := TAU * k / fronds
+		var droop := 0.5 if alive else 1.4
+		var frond := Kit.group(crown, Vector3.ZERO, a)
+		frond.rotation.x = droop
+		Kit.box(frond, Vector3(0, 0, 1.4), Vector3(0.06, 0.06, 2.8), "#6a7a3a" if alive else "withered", false)  # the rib
+		Kit.box(frond, Vector3(0, -0.02, 1.4), Vector3(0.7 if alive else 0.3, 0.02, 2.6), "#5a7a34" if alive else "withered", false)
+	if alive:
+		for k in 3:
+			var a := TAU * k / 3.0 + 0.4
+			Kit.blob(crown, Vector3(cos(a) * 0.35, -0.5, sin(a) * 0.35), 0.18, "#b86a2a", Vector3(1.0, 1.6, 1.0), 6)
+	return crown
+
+
+## A water clock (klepsydra), as the courts timed each speech: a jar on a stand with a bronze
+## spout near its foot, running into a jar below; when the top one is empty the speaker's time is
+## up. Lost: both jars dry, the upper one cracked.
+static func clepsydra(parent: Node3D, at: Vector3, flowing: bool = true) -> void:
+	var g := Kit.group(parent, at)
+	Kit.box(g, Vector3(0, 0.45, -0.2), Vector3(0.6, 0.9, 0.5), "stone")  # the stand
+	Kit.cylinder(g, Vector3(0, 0.9, -0.2), 0.18, 0.12, "clay", false, 8, 0.28)
+	Kit.cylinder(g, Vector3(0, 1.02, -0.2), 0.28, 0.4, "clay", false, 8, 0.22)  # the upper jar
+	if flowing:
+		Kit.cylinder(g, Vector3(0, 1.41, -0.2), 0.2, 0.02, "water", false, 8)
+	else:
+		Kit.box(g, Vector3(0.18, 1.2, -0.02), Vector3(0.01, 0.35, 0.02), "dark", false, Vector3(0, 0, 0.3))  # the crack
+	Kit.box(g, Vector3(0, 0.98, 0.1), Vector3(0.04, 0.04, 0.16), "bronze" if flowing else "verdigris", false)  # the spout
+	if flowing:
+		Kit.box(g, Vector3(0, 0.7, 0.19), Vector3(0.02, 0.56, 0.02), "water", false)  # the thin stream
+	Kit.cylinder(g, Vector3(0, 0, 0.25), 0.22, 0.42, "clay", false, 8, 0.25)  # the jar below
+	Kit.cylinder(g, Vector3(0, 0.3, 0.25), 0.2, 0.02, "water" if flowing else "drybed", false, 8)
 
 
 # ---------- Plato ----------
