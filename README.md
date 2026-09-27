@@ -10,6 +10,7 @@ Now: the Hall of Greece with all 17 doors; room 1 (Porphyry, Isagoge) is open. D
 the reading-list map: `docs/greek-game-map.md`. The earlier 3D card slice is kept under tag `3d-slice-final`.
 
 ## Run it
+- Easiest: double-click `play.bat` (or point the desktop shortcut at it). It pulls the latest `main` from GitHub, imports new assets, and starts the game. Esc shows the version.
 - Game: `Desktop\Tools\godot\Godot_v4.7.2-stable_win64.exe --path .`
 - Controls: WASD/arrows walk, Shift sprints, Q/E (or left/right arrows) turn, mouse looks all around, F to use (read, ask, enter a gateway), Esc closes / frees the mouse / twice to quit.
 - Tests: `Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/run_tests.gd`
