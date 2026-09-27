@@ -37,13 +37,39 @@ func test_every_piece_in_the_gallery_builds() -> void:
 	var pieces: Dictionary = Gallery.pieces()
 	check(pieces.size() >= 45, "the gallery shows every piece (%d)" % pieces.size())
 	for name in pieces:
-		var holder := Node3D.new()
 		Kit.detail = pieces[name][0]
-		pieces[name][1].call(holder)
-		var meshes := holder.find_children("*", "MeshInstance3D", true, false)
-		check(meshes.size() > 0, "%s has something to see" % name)
-		holder.free()
+		for whole in [true, false]:
+			var holder := Node3D.new()
+			pieces[name][1].call(holder, whole)
+			check(holder.find_children("*", "MeshInstance3D", true, false).size() > 0,
+				"%s (%s) has something to see" % [name, "whole" if whole else "lost"])
+			holder.free()
 	Kit.detail = 1
+
+
+func test_every_piece_has_a_lost_version() -> void:
+	var pieces: Dictionary = Gallery.pieces()
+	for name in pieces:
+		Kit.detail = pieces[name][0]
+		var looks: Array = []
+		for whole in [true, false]:
+			var holder := Node3D.new()
+			pieces[name][1].call(holder, whole)
+			looks.append(_look(holder))
+			holder.free()
+		check(looks[0] != looks[1], "%s looks different once lost to the world" % name)
+	Kit.detail = 1
+
+
+## What a built thing looks like, roughly: each mesh's kind, size and stuff, sorted.
+static func _look(holder: Node) -> Array:
+	var out: Array = []
+	for mi in holder.find_children("*", "MeshInstance3D", true, false):
+		var m := mi as MeshInstance3D
+		var stuff := m.material_override.get_instance_id() if m.material_override else 0
+		out.append("%s %s %d" % [m.mesh.get_class(), str(m.mesh.get_aabb().size.snappedf(0.01)), stuff])
+	out.sort()
+	return out
 
 
 func test_rome_is_built_sharper_than_greece() -> void:

@@ -11,6 +11,11 @@ extends RefCounted
 const Kit := preload("res://scripts/hall/kit.gd")
 
 
+## What a statue's or a thing's stuff becomes when its place is lost to the world.
+## (Stone and marble keep their stuff: the place's own grey takes the colour out of them.)
+const LOST_STUFF := {"bronze": "verdigris", "gold": "verdigris", "wood": "deadwood", "iron": "rust", "fire": "ashbed"}
+
+
 # ---------- animals ----------
 
 ## Each animal's build, in metres: body length, height at the shoulder, body girth, neck length
@@ -34,10 +39,18 @@ const BEASTS := {
 
 ## An animal standing on four legs, facing +Z: "horse", "ox", "sheep", "goat", "dog" or "wolf".
 ## `mat` casts it in one stuff instead (bronze for a statue, wood for the horse of Troy); `scale`
-## sizes it up. Returns {"root", "legs": [front right, front left, hind right, hind left],
-## "head", "tail"}: legs are hips that swing about X, so the Hall can walk it.
-static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: String = "", scale: float = 1.0) -> Dictionary:
+## sizes it up. Lost to the world (alive = false) a living beast is its grey bones with a cold
+## light in the eyes, and a statue goes green (bronze) or grey and rotten (wood). Returns {"root",
+## "legs": [front right, front left, hind right, hind left], "head", "tail"}: legs are hips that
+## swing about X, so the Hall can walk it.
+static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: String = "", scale: float = 1.0,
+		alive: bool = true) -> Dictionary:
 	var b: Dictionary = BEASTS.get(kind, BEASTS["dog"])
+	var bones := not alive and mat == ""
+	if not alive and mat != "":
+		mat = str(LOST_STUFF.get(mat, mat))
+	if bones:
+		mat = "bone"
 	var coat: String = mat if mat != "" else str(b["coat"])
 	var dark: String = mat if mat != "" else str(b["dark"])
 	var nose: String = mat if mat != "" else str(b["nose"])
@@ -48,14 +61,22 @@ static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: St
 	var leg: float = b["leg"]
 	var girth: float = b["girth"]
 	var body_y := leg + girth * 0.55
-	Kit.blob(root, Vector3(0, body_y, 0), girth, coat, Vector3(1.0, 0.95, length / (girth * 2.0)), 8)
-	if b.get("wool", false):
+	if bones:  # a spine and the hoops of the ribs
+		Kit.box(root, Vector3(0, body_y + girth * 0.8, 0), Vector3(girth * 0.15, girth * 0.15, length), coat, false)
+		for k in 6:
+			var z := -length * 0.3 + k * length * 0.12
+			Kit.mesh(root, TorusMesh.new(), coat, Vector3(0, body_y + girth * 0.1, z), Vector3(PI / 2.0, 0, 0),
+				Vector3(girth, girth * 0.4, girth * 1.1))
+		Kit.blob(root, Vector3(0, body_y + girth * 0.3, -length * 0.42), girth * 0.6, coat, Vector3(1.2, 0.6, 0.8), 6)  # the hips
+	else:
+		Kit.blob(root, Vector3(0, body_y, 0), girth, coat, Vector3(1.0, 0.95, length / (girth * 2.0)), 8)
+	if b.get("wool", false) and not bones:
 		Kit.blob(root, Vector3(0, body_y + 0.03, 0), girth * 1.15, coat, Vector3(1.05, 0.95, length / (girth * 2.2)), 7)
 	var legs: Array = []
 	for end: float in [1.0, -1.0]:  # front, then hind
 		for side: float in [-1.0, 1.0]:
 			var hip := Kit.group(root, Vector3(girth * 0.55 * side, body_y - girth * 0.3, end * length * 0.36))
-			Kit.mesh(hip, Kit._cyl(girth * 0.2, leg), coat, Vector3(0, -leg / 2.0 + girth * 0.15, 0))
+			Kit.mesh(hip, Kit._cyl(girth * (0.1 if bones else 0.2), leg), coat, Vector3(0, -leg / 2.0 + girth * 0.15, 0))
 			Kit.box(hip, Vector3(0, -leg + girth * 0.18, 0.02), Vector3(girth * 0.36, girth * 0.22, girth * 0.42), dark, false)
 			legs.append(hip)
 	# the neck rises from the chest to the head; `lift` is how upright it stands (0 flat, 1 up)
@@ -64,9 +85,9 @@ static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: St
 	var chest := Vector3(0, body_y + girth * 0.3, length * 0.45)
 	var neck_dir := Vector3(0, lift, 1.0 - lift * 0.6).normalized()
 	var neck_top := chest + neck_dir * neck_len
-	Kit.mesh(root, Kit._cyl(girth * 0.42, neck_len + girth * 0.4), coat, (chest + neck_top) / 2.0,
+	Kit.mesh(root, Kit._cyl(girth * (0.14 if bones else 0.42), neck_len + girth * 0.4), coat, (chest + neck_top) / 2.0,
 		Quaternion(Vector3.UP, neck_dir).get_euler())
-	if b.get("mane", false):
+	if b.get("mane", false) and not bones:
 		Kit.box(root, (chest + neck_top) / 2.0 + Vector3(0, girth * 0.35, -girth * 0.2), Vector3(girth * 0.18, neck_len * 0.9, girth * 0.35),
 			dark, false, Quaternion(Vector3.UP, neck_dir).get_euler())
 	var head := Kit.group(root, neck_top)
@@ -80,7 +101,7 @@ static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: St
 	for side: float in [-1.0, 1.0]:
 		Kit.box(head, Vector3(hs * 0.55 * side, hs * 0.8, -hs * 0.2), Vector3(hs * 0.25, hs * 0.6, hs * 0.12), coat, false,
 			Vector3(-0.3, 0, 0.4 * side))  # ears
-		Kit.blob(head, Vector3(hs * 0.62 * side, hs * 0.2, hs * 0.45), hs * 0.12, "#141010" if mat == "" else mat)  # eyes
+		Kit.blob(head, Vector3(hs * 0.62 * side, hs * 0.2, hs * 0.45), hs * 0.12, "soulfire" if bones else ("#141010" if mat == "" else mat))  # eyes
 		match b.get("horns", ""):
 			"ox":  # out to the side, then curving up and forward
 				Kit.box(head, Vector3(hs * 1.05 * side, hs * 0.75, 0), Vector3(hs * 1.1, hs * 0.16, hs * 0.16), horn, false,
@@ -90,12 +111,14 @@ static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: St
 			"goat":  # swept back over the neck
 				Kit.box(head, Vector3(hs * 0.3 * side, hs * 1.1, -hs * 0.5), Vector3(hs * 0.14, hs * 1.1, hs * 0.14), horn, false,
 					Vector3(-0.9, 0, 0.12 * side))
-	if b.get("beard", false):
+	if b.get("beard", false) and not bones:
 		Kit.box(head, Vector3(0, -hs * 1.0, muzzle * 0.6), Vector3(hs * 0.2, hs * 0.6, hs * 0.2), dark, false)
 	var tail := Kit.group(root, Vector3(0, body_y + girth * 0.4, -length * 0.5))
 	var tail_len: float = b["tail"]
 	Kit.box(tail, Vector3(0, -tail_len / 2.0, -0.04), Vector3(girth * 0.14, tail_len, girth * 0.14),
 		dark if kind == "horse" else coat, false, Vector3(0.25, 0, 0))
+	if not alive and not bones:  # a lost statue is cracked through the neck
+		head.rotation.z = 0.25
 	var body := BoxShape3D.new()
 	body.size = Vector3(girth * 2.2, body_y + girth, length + muzzle)
 	Kit.solid(root, body, Vector3(0, (body_y + girth) / 2.0, muzzle * 0.3))
@@ -103,17 +126,23 @@ static func beast(parent: Node3D, at: Vector3, yaw: float, kind: String, mat: St
 
 
 ## Hesiod's plough team: two oxen under a wooden yoke drawing an ard (a scratch plough), the
-## ploughman's handle behind. Faces +Z. Returns the two oxen.
-static func plough_team(parent: Node3D, at: Vector3, yaw: float) -> Array:
+## ploughman's handle behind. Faces +Z. Lost: two ox skeletons, the yoke rotten, the plough fallen.
+## Returns the two oxen.
+static func plough_team(parent: Node3D, at: Vector3, yaw: float, alive: bool = true) -> Array:
 	var g := Kit.group(parent, at, yaw)
+	var wood := "wood" if alive else "deadwood"
 	var oxen: Array = []
 	for side: float in [-0.75, 0.75]:
-		oxen.append(beast(g, Vector3(side, 0, 1.4), 0.0, "ox"))
-	Kit.box(g, Vector3(0, 1.3, 2.25), Vector3(2.2, 0.14, 0.16), "wood", false)  # the yoke on their necks
-	Kit.box(g, Vector3(0, 0.95, 0.4), Vector3(0.1, 0.1, 3.8), "wood", false, Vector3(-0.2, 0, 0))  # the pole
-	Kit.box(g, Vector3(0, 0.18, -1.45), Vector3(0.12, 0.12, 0.9), "wood", false, Vector3(0.35, 0, 0))  # the share-beam
-	Kit.box(g, Vector3(0, 0.08, -1.05), Vector3(0.08, 0.06, 0.3), "#6a6a6a", false, Vector3(0.5, 0, 0))  # the iron tip
-	Kit.box(g, Vector3(0, 0.75, -1.9), Vector3(0.08, 1.2, 0.08), "wood", false, Vector3(-0.5, 0, 0))  # the handle
+		oxen.append(beast(g, Vector3(side, 0, 1.4), 0.0, "ox", "", 1.0, alive))
+	Kit.box(g, Vector3(0, 1.3, 2.25), Vector3(2.2, 0.14, 0.16), wood, false)  # the yoke on their necks
+	Kit.box(g, Vector3(0, 0.95, 0.4), Vector3(0.1, 0.1, 3.8), wood, false, Vector3(-0.2, 0, 0))  # the pole
+	var ard := Kit.group(g, Vector3.ZERO)
+	if not alive:  # fallen on its side
+		ard.rotation.z = 1.2
+		ard.position = Vector3(-0.3, 0.1, 0)
+	Kit.box(ard, Vector3(0, 0.18, -1.45), Vector3(0.12, 0.12, 0.9), wood, false, Vector3(0.35, 0, 0))  # the share-beam
+	Kit.box(ard, Vector3(0, 0.08, -1.05), Vector3(0.08, 0.06, 0.3), "#6a6a6a" if alive else "rust", false, Vector3(0.5, 0, 0))  # the tip
+	Kit.box(ard, Vector3(0, 0.75, -1.9), Vector3(0.08, 1.2, 0.08), wood, false, Vector3(-0.5, 0, 0))  # the handle
 	return oxen
 
 
@@ -258,14 +287,18 @@ static func achaean(parent: Node3D, at: Vector3, undead: bool = false) -> Array:
 ## outrigger, painted eyes and the stern curling up. "pentekonter": Homer's black ship, 24 m,
 ## one bank. With `sail` the mast is up with its square linen sail; with `oars` false they are
 ## shipped (the ship drawn up on a beach). The hull is solid; its deck is at about 2.2 m.
-## Returns {"root", "oars": [each oar's pivot, which rows about Y]}.
+## Lost (whole = false): a wreck listing on its side, the pitch gone grey, no paint, no sail, and
+## only stumps of half its oars. Returns {"root", "oars": [each oar's pivot, which rows about Y]}.
 static func ship(parent: Node3D, at: Vector3, yaw: float, kind: String = "trireme", sail: bool = false,
-		oars: bool = true) -> Dictionary:
+		oars: bool = true, whole: bool = true) -> Dictionary:
 	var g := Kit.group(parent, at, yaw)
+	if not whole:
+		g.rotation.z = 0.16
+		sail = false
 	var trireme := kind == "trireme"
 	var length := 36.0 if trireme else 24.0
 	var beam := 5.0 if trireme else 3.6
-	var pitch := "#24201c"  # the black of pitch
+	var pitch := "#24201c" if whole else "deadwood"  # the black of pitch
 	if trireme:  # decked over
 		Kit.box(g, Vector3(0, 1.1, 0), Vector3(beam, 2.2, length * 0.7), pitch)
 	else:  # open, the rowers on benches across it
@@ -284,8 +317,9 @@ static func ship(parent: Node3D, at: Vector3, yaw: float, kind: String = "trirem
 		"wood", false)  # the deck, or the floor of the open hull
 	Kit.box(g, Vector3(0, 0.35, length * 0.52), Vector3(0.5, 0.5, 1.8), "bronze", false)  # the ram at the waterline
 	for side: float in [-1.0, 1.0]:
-		Kit.box(g, Vector3(side * 0.9, 1.6, length * 0.44), Vector3(0.1, 0.5, 0.5), "#e8e0cc", false)  # the eyes
-		Kit.box(g, Vector3(side * 0.95, 1.6, length * 0.44), Vector3(0.05, 0.22, 0.22), "#1a1410", false)
+		if whole:
+			Kit.box(g, Vector3(side * 0.9, 1.6, length * 0.44), Vector3(0.1, 0.5, 0.5), "#e8e0cc", false)  # the eyes
+			Kit.box(g, Vector3(side * 0.95, 1.6, length * 0.44), Vector3(0.05, 0.22, 0.22), "#1a1410", false)
 		if trireme:  # the outrigger the top bank rows from
 			Kit.box(g, Vector3(side * (beam / 2.0 + 0.35), 2.0, 0), Vector3(0.7, 0.3, length * 0.6), "wood", false)
 	# the aphlaston: the stern sweeps up and back, then curls forward over the steersman
@@ -296,7 +330,10 @@ static func ship(parent: Node3D, at: Vector3, yaw: float, kind: String = "trirem
 		Kit.box(g, centre + Vector3(0, sin(th), -cos(th)) * curl, Vector3(maxf(0.25, beam * 0.35 - k * 0.12), 0.45, 0.3), pitch, false,
 			Vector3(th, 0, 0))
 	for side: float in [-1.0, 1.0]:  # the painted band along the sheer
-		Kit.box(g, Vector3(side * (beam / 2.0 + 0.01), 1.9, 0), Vector3(0.02, 0.25, length * 0.7), "#8a2a1a", false)
+		if whole:
+			Kit.box(g, Vector3(side * (beam / 2.0 + 0.01), 1.9, 0), Vector3(0.02, 0.25, length * 0.7), "#8a2a1a", false)
+	if not whole:  # a hole stove in the side
+		Kit.box(g, Vector3(beam / 2.0 + 0.01, 0.9, -length * 0.1), Vector3(0.04, 1.2, 3.0), "dark", false)
 	Kit.box(g, Vector3(0, 3.4, length * 0.5), Vector3(0.2, 2.4, 0.3), pitch, false, Vector3(0.35, 0, 0))  # the stem post
 	for side: float in [-1.0, 1.0]:  # the steering oars at the stern
 		Kit.box(g, Vector3(side * (beam / 2.0 + 0.1), 1.2, -length * 0.42), Vector3(0.08, 3.0, 0.3), "wood", false, Vector3(0.6, 0, 0))
@@ -313,7 +350,10 @@ static func ship(parent: Node3D, at: Vector3, yaw: float, kind: String = "trirem
 				var z := -length * 0.3 + k * (length * 0.6 / (per - 1))
 				var pivot := Kit.group(g, Vector3(side * (beam / 2.0 + (0.7 if trireme and bank == 2 else 0.0)), 0.9 + bank * 0.55, z))
 				var reach := 4.2 + bank * 0.8
-				if oars:  # out over the water, blades down
+				if not whole:  # half gone, the rest broken off short
+					if k % 2 == 0:
+						Kit.box(pivot, Vector3(side * 0.6, -0.1, 0), Vector3(1.2, 0.06, 0.06), "deadwood", false, Vector3(0, 0, side * -0.4))
+				elif oars:  # out over the water, blades down
 					Kit.box(pivot, Vector3(side * reach / 2.0, -0.4 - bank * 0.25, 0), Vector3(reach, 0.06, 0.06), "wood", false,
 						Vector3(0, 0, side * -(0.25 + bank * 0.08)))
 				else:  # shipped: drawn in along the side
@@ -326,23 +366,38 @@ static func ship(parent: Node3D, at: Vector3, yaw: float, kind: String = "trirem
 
 ## A stretch of the walls of Troy along X of the group, `length` long: a sloping stone footing,
 ## a sheer upper wall with a walk and battlements, and (with `gate`) a gate tower in the middle
-## with its dark opening, the Scaean Gate. Solid. Faces +Z (the plain). Returns the spot on the
-## plain just before the gate.
-static func troy_wall(parent: Node3D, at: Vector3, yaw: float, length: float, gate: bool = true) -> Vector3:
+## with its dark opening, the Scaean Gate. Solid. Faces +Z (the plain). Lost (whole = false): the
+## battlements are down, a breach is torn in the wall with its stones spilled on the plain, and
+## the towers are stumps. Returns the spot on the plain just before the gate.
+static func troy_wall(parent: Node3D, at: Vector3, yaw: float, length: float, gate: bool = true, whole: bool = true) -> Vector3:
 	var g := Kit.group(parent, at, yaw)
 	var gap := 4.0 if gate else 0.0
 	for side: float in [-1.0, 1.0]:
 		var seg := (length - gap) / 2.0
 		var cx := side * (gap / 2.0 + seg / 2.0)
 		Kit.box(g, Vector3(cx, 2.0, 0.6), Vector3(seg, 4.0, 3.4), "stone", true, Vector3(-0.12, 0, 0))  # the battered footing
-		Kit.box(g, Vector3(cx, 6.5, -0.2), Vector3(seg, 5.0, 2.4), "stone")
+		if whole or side > 0.0:
+			Kit.box(g, Vector3(cx, 6.5 if whole else 5.2, -0.2), Vector3(seg, 5.0 if whole else 2.4, 2.4), "stone")
+		else:  # the breach: the upper wall stands only at either end of this stretch
+			var piece := seg * 0.3
+			for end: float in [-1.0, 1.0]:
+				Kit.box(g, Vector3(cx + end * (seg - piece) / 2.0, 6.5, -0.2), Vector3(piece, 5.0, 2.4), "stone")
+			var rng := RandomNumberGenerator.new()
+			rng.seed = int(length)
+			for k in 8:
+				Kit.box(g, Vector3(cx + rng.randf_range(-seg * 0.3, seg * 0.3), 0.4, rng.randf_range(2.5, 6.0)),
+					Vector3.ONE * rng.randf_range(0.6, 1.2), "stone", true, Vector3(rng.randf(), rng.randf(), rng.randf()))
+		if not whole:
+			continue
 		var n := int(seg / 1.4)
 		for k in n:  # the battlements
 			Kit.box(g, Vector3(cx - seg / 2.0 + 0.7 + k * 1.4, 9.4, 0.8), Vector3(0.8, 0.8, 0.4), "stone", false)
 	if gate:
+		var tower := 11.0 if whole else 6.0
 		for side: float in [-1.0, 1.0]:
-			Kit.box(g, Vector3(side * 3.6, 5.5, 0.5), Vector3(3.2, 11.0, 4.6), "stone")  # the towers either side
-		Kit.box(g, Vector3(0, 8.5, 0.5), Vector3(4.0, 5.0, 4.6), "stone", false)  # over the gate
+			Kit.box(g, Vector3(side * 3.6, tower / 2.0, 0.5), Vector3(3.2, tower, 4.6), "stone")  # the towers either side
+		if whole:
+			Kit.box(g, Vector3(0, 8.5, 0.5), Vector3(4.0, 5.0, 4.6), "stone", false)  # over the gate
 		Kit.box(g, Vector3(0, 3.0, 2.3), Vector3(3.0, 6.0, 0.2), "dark", false)  # the dark opening
 		var door := BoxShape3D.new()
 		door.size = Vector3(3.0, 6.0, 1.0)
@@ -351,21 +406,27 @@ static func troy_wall(parent: Node3D, at: Vector3, yaw: float, length: float, ga
 
 
 ## The wooden horse the Greeks left on the shore: a horse of planks, ten metres high, on a
-## wheeled platform, with the trapdoor in its belly. Faces +Z.
-static func wooden_horse(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+## wheeled platform, with the trapdoor in its belly. Faces +Z. Lost: charred black and grey,
+## sagging on a broken wheel.
+static func wooden_horse(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
 	var g := Kit.group(parent, at, yaw)
-	Kit.box(g, Vector3(0, 0.5, 0), Vector3(3.6, 0.4, 8.0), "wood")
+	var wood := "wood" if whole else "deadwood"
+	if not whole:
+		g.rotation.z = 0.07
+	Kit.box(g, Vector3(0, 0.5, 0), Vector3(3.6, 0.4, 8.0), wood)
 	for x: float in [-1.9, 1.9]:
 		for z: float in [-3.0, 3.0]:
-			Kit.mesh(g, _prism(0.55, 0.3, 8), "wood", Vector3(x, 0.55, z), Vector3(0, 0, PI / 2.0))
-	var horse := beast(g, Vector3(0, 0.7, 0), 0.0, "horse", "wood", 5.0)
+			if whole or x < 0.0 or z < 0.0:
+				Kit.mesh(g, _prism(0.55, 0.3, 8), wood, Vector3(x, 0.55, z), Vector3(0, 0, PI / 2.0))
+	var horse := beast(g, Vector3(0, 0.7, 0), 0.0, "horse", "wood" if whole else "#2a2622", 5.0)
 	Kit.box(g, Vector3(0, 4.55, 0.3), Vector3(1.2, 0.05, 1.6), "dark", false)  # the trapdoor, under the belly
 	return horse
 
 
 ## The Lion Gate of Mycenae, Agamemnon's door: two huge upright stones and a lintel in walls of
 ## Cyclopean boulders, and over it the triangle carved with two lions rearing at a column. Faces +Z.
-static func lion_gate(parent: Node3D, at: Vector3, yaw: float) -> void:
+## Lost: the carved triangle has fallen and lies face down before the gate, the lintel cracked.
+static func lion_gate(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	for side: float in [-1.0, 1.0]:
 		Kit.box(g, Vector3(side * 1.9, 1.6, 0), Vector3(0.9, 3.2, 1.8), "stone")  # the door jambs
@@ -377,7 +438,11 @@ static func lion_gate(parent: Node3D, at: Vector3, yaw: float) -> void:
 				Kit.box(g, Vector3(side * (3.0 + k * 1.7), 0.8 + row * 1.5, rng.randf_range(-0.2, 0.2)),
 					Vector3(s, 1.5, 2.2), "rock", true, Vector3(0, rng.randf_range(-0.05, 0.05), rng.randf_range(-0.04, 0.04)))
 	Kit.box(g, Vector3(0, 3.55, 0), Vector3(4.8, 1.0, 2.0), "stone")  # the lintel, one stone of twenty tons
-	var relief := Kit.group(g, Vector3(0, 4.05, 0.7))
+	if not whole:
+		Kit.box(g, Vector3(0.4, 3.55, 1.01), Vector3(0.06, 1.0, 0.02), "dark", false, Vector3(0, 0, 0.3))  # the crack
+	var relief := Kit.group(g, Vector3(0, 4.05, 0.7) if whole else Vector3(0.8, 0.25, 3.2))
+	if not whole:
+		relief.rotation = Vector3(-PI / 2.0 + 0.1, 0.4, 0)
 	Kit.mesh(relief, _prism(1.8, 0.4, 3), "tufa", Vector3(0, 0.9, 0), Vector3(-PI / 2.0, 0, 0))  # the triangle, point up
 	Kit.cylinder(relief, Vector3(0, 0.2, 0.25), 0.12, 1.4, "tufa", false, 6, 0.18)  # the column
 	for side: float in [-1.0, 1.0]:
@@ -453,13 +518,17 @@ static func theatre(parent: Node3D, at: Vector3, yaw: float, rows: int = 12, who
 
 ## A theatre mask, faced +Z: "tragic" (pale, the brows drawn up in grief, the mouth wide and
 ## turned down, a tall crown of hair, the onkos) or "comic" (ruddy, a grinning trumpet mouth,
-## a snub nose). `size` 1.0 is worn on a head; hung on a wall it can be larger.
-static func mask(parent: Node3D, at: Vector3, yaw: float, kind: String = "tragic", size: float = 1.0) -> Node3D:
+## a snub nose). `size` 1.0 is worn on a head; hung on a wall it can be larger. Lost: its paint
+## faded to grey and a crack across it.
+static func mask(parent: Node3D, at: Vector3, yaw: float, kind: String = "tragic", size: float = 1.0,
+		whole: bool = true) -> Node3D:
 	var g := Kit.group(parent, at, yaw)
 	g.scale = Vector3.ONE * size
 	var comic := kind == "comic"
-	var face := "#c8805a" if comic else "#e8dcc4"
-	var hair := "#3a2418" if comic else "#2a1c14"
+	var face := ("#c8805a" if comic else "#e8dcc4") if whole else "#9a948a"
+	var hair := ("#3a2418" if comic else "#2a1c14") if whole else "#5a5650"
+	if not whole:
+		Kit.box(g, Vector3(0.03, 0.02, 0.075), Vector3(0.012, 0.3, 0.012), "dark", false, Vector3(0, 0, 0.5))  # the crack
 	Kit.blob(g, Vector3.ZERO, 0.16, face, Vector3(1.0, 1.25, 0.45), 8)
 	Kit.blob(g, Vector3(0, 0.14 if not comic else 0.1, -0.04), 0.17, hair, Vector3(1.05, 0.6 if comic else 1.3, 0.6), 8)
 	for side: float in [-1.0, 1.0]:
@@ -479,26 +548,37 @@ static func mask(parent: Node3D, at: Vector3, yaw: float, kind: String = "tragic
 
 
 ## An actor of tragedy or comedy: a long robe, the mask on his face, the tall boots of tragedy
-## (kothornoi). A walker, so he can pace the stage. Returns what kit.gd's walker returns.
-static func actor(parent: Node3D, at: Vector3, yaw: float, kind: String = "tragic", robe: String = "6a2a3a") -> Dictionary:
+## (kothornoi). A walker, so he can pace the stage. Undead: a pale shade behind a cracked mask.
+## Returns what kit.gd's walker returns.
+static func actor(parent: Node3D, at: Vector3, yaw: float, kind: String = "tragic", robe: String = "6a2a3a",
+		undead: bool = false) -> Dictionary:
 	var w := Kit.walker(parent, at, yaw, {"robe": robe, "skin": "c8a078", "hair_color": "2a1c14"})
-	mask(w["head"], Vector3(0, 0.09, 0.075), 0.0, kind, 1.0)
+	mask(w["head"], Vector3(0, 0.09, 0.075), 0.0, kind, 1.0, not undead)
 	if kind == "tragic":
 		for hip in w["legs"]:
 			Kit.box(hip, Vector3(0, -0.8, 0.04), Vector3(0.16, 0.14, 0.3), "#2a1c14", false)
+	if undead:
+		Kit.shade(w["root"], 0.4)
 	return w
 
 
 ## The theatre's crane (mechane): a timber mast with a swinging arm and a rope, for the god who
 ## arrives from above to settle everything, or Socrates hung in a basket to think about the sky.
-## Faces +Z; the arm reaches forward. Returns the hanging load (its basket, or empty for a god).
-static func crane(parent: Node3D, at: Vector3, yaw: float, basket: bool = true) -> Node3D:
+## Faces +Z; the arm reaches forward. Lost: the arm has snapped and hangs down the mast, the
+## basket lies on the ground. Returns the hanging load (its basket, or empty for a god).
+static func crane(parent: Node3D, at: Vector3, yaw: float, basket: bool = true, whole: bool = true) -> Node3D:
 	var g := Kit.group(parent, at, yaw)
-	Kit.box(g, Vector3(0, 3.0, 0), Vector3(0.35, 6.0, 0.35), "wood")
+	var wood := "wood" if whole else "deadwood"
+	Kit.box(g, Vector3(0, 3.0, 0), Vector3(0.35, 6.0, 0.35), wood)
 	var arm := Kit.group(g, Vector3(0, 5.8, 0))
-	Kit.box(arm, Vector3(0, 0, 2.2), Vector3(0.25, 0.25, 5.0), "wood", false, Vector3(-0.15, 0, 0))
-	Kit.box(arm, Vector3(0, -1.2, 4.3), Vector3(0.03, 2.4, 0.03), "#c8b890", false)  # the rope
-	var hung := Kit.group(arm, Vector3(0, -2.4, 4.3))
+	if not whole:
+		arm.rotation.x = 1.25  # hanging from the break
+	Kit.box(arm, Vector3(0, 0, 2.2), Vector3(0.25, 0.25, 5.0), wood, false, Vector3(-0.15, 0, 0))
+	if whole:
+		Kit.box(arm, Vector3(0, -1.2, 4.3), Vector3(0.03, 2.4, 0.03), "#c8b890", false)  # the rope
+	var hung := Kit.group(arm, Vector3(0, -2.4, 4.3)) if whole else Kit.group(g, Vector3(0.6, 0.6, 2.8))
+	if not whole:
+		hung.rotation.z = 1.4
 	if basket:
 		Kit.cylinder(hung, Vector3(0, -0.6, 0), 0.45, 0.6, "wicker", false, 8, 0.55)
 		for k in 3:
@@ -512,18 +592,19 @@ static func crane(parent: Node3D, at: Vector3, yaw: float, basket: bool = true) 
 # ---------- Delphi and Alexandria ----------
 
 ## Apollo's tripod at Delphi, where the Pythia sat: a bronze cauldron on three tall legs, ring
-## handles on its lip, and (with `vapour`) the breath rising from the chasm under it.
-static func tripod(parent: Node3D, at: Vector3, vapour: bool = false) -> void:
+## handles on its lip, and (with `vapour`) the breath rising from the chasm under it. Lost: green
+## with age, knocked over on its side, the god's breath gone.
+static func tripod(parent: Node3D, at: Vector3, vapour: bool = false, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
-	for k in 3:
-		var a := TAU * k / 3.0
-		Kit.box(g, Vector3(cos(a) * 0.38, 0.85, sin(a) * 0.38), Vector3(0.06, 1.75, 0.06), "bronze", false,
-			Vector3(sin(a) * 0.12, 0, -cos(a) * 0.12))
-	Kit.cylinder(g, Vector3(0, 1.55, 0), 0.25, 0.4, "bronze", false, 10, 0.5)  # the bowl
-	for k in 3:
-		var a := TAU * k / 3.0 + PI / 3.0
-		Kit.mesh(g, TorusMesh.new(), "bronze", Vector3(cos(a) * 0.48, 2.05, sin(a) * 0.48), Vector3(PI / 2.0, a, 0),
-			Vector3.ONE * 0.1)
+	if not whole:
+		var fallen := Kit.group(g, Vector3(0, 0.5, 0))
+		fallen.rotation.z = 1.45
+		_tripod_body(fallen, "verdigris")
+		var lying := BoxShape3D.new()
+		lying.size = Vector3(2.2, 1.0, 1.0)
+		Kit.solid(g, lying, Vector3(-0.8, 0.5, 0))
+		return
+	_tripod_body(g, "bronze")
 	var body := CylinderShape3D.new()
 	body.radius = 0.5
 	body.height = 2.0
@@ -534,11 +615,28 @@ static func tripod(parent: Node3D, at: Vector3, vapour: bool = false) -> void:
 		p.scale_amount_max = 1.8
 
 
+## The tripod itself: three legs, the bowl, the ring handles.
+static func _tripod_body(g: Node3D, metal: String) -> void:
+	for k in 3:
+		var a := TAU * k / 3.0
+		Kit.box(g, Vector3(cos(a) * 0.38, 0.85, sin(a) * 0.38), Vector3(0.06, 1.75, 0.06), metal, false,
+			Vector3(sin(a) * 0.12, 0, -cos(a) * 0.12))
+	Kit.cylinder(g, Vector3(0, 1.55, 0), 0.25, 0.4, metal, false, 10, 0.5)  # the bowl
+	for k in 3:
+		var a := TAU * k / 3.0 + PI / 3.0
+		Kit.mesh(g, TorusMesh.new(), metal, Vector3(cos(a) * 0.48, 2.05, sin(a) * 0.48), Vector3(PI / 2.0, a, 0),
+			Vector3.ONE * 0.1)
+
+
 ## The omphalos, the navel of the world at Delphi: a stone like an egg on a plinth, wrapped in a
-## carved net of woollen fillets.
-static func omphalos(parent: Node3D, at: Vector3) -> void:
+## carved net of woollen fillets. Lost: split in two, one half fallen off its plinth.
+static func omphalos(parent: Node3D, at: Vector3, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
 	Kit.box(g, Vector3(0, 0.2, 0), Vector3(1.2, 0.4, 1.2), "stone")
+	if not whole:
+		Kit.blob(g, Vector3(-0.15, 0.85, 0), 0.5, "marble", Vector3(0.5, 1.3, 1.0), 8)
+		Kit.blob(g, Vector3(0.9, 0.3, 0.3), 0.5, "marble", Vector3(0.5, 1.3, 1.0), 8).rotation = Vector3(0, 0.4, 1.3)
+		return
 	Kit.blob(g, Vector3(0, 0.95, 0), 0.5, "marble", Vector3(1.0, 1.4, 1.0), 10)
 	for k in 3:  # the net: rings round it, and bands over the top
 		Kit.cylinder(g, Vector3(0, 0.55 + k * 0.28, 0), 0.52 - absf(k - 1) * 0.06, 0.04, "stone", false, 10)
@@ -548,8 +646,9 @@ static func omphalos(parent: Node3D, at: Vector3) -> void:
 
 ## The Pharos of Alexandria seen across the harbour: a square tower on a wide base, then an
 ## octagon, then a round lantern with the fire burning at the top and a statue of Zeus above.
-## `size` 1.0 is about 110 m high. Not solid. Returns its fire's light, for the Hall to flicker.
-static func pharos(parent: Node3D, at: Vector3, size: float = 1.0) -> OmniLight3D:
+## `size` 1.0 is about 110 m high. Not solid. Lost: the fire is out and everything above the
+## square tower has fallen into the sea. Returns its fire's light (or null), for the Hall to flicker.
+static func pharos(parent: Node3D, at: Vector3, size: float = 1.0, whole: bool = true) -> OmniLight3D:
 	var g := Kit.group(parent, at)
 	g.scale = Vector3.ONE * size
 	Kit.box(g, Vector3(0, 4.0, 0), Vector3(40.0, 8.0, 40.0), "stone", false)  # the platform
@@ -557,6 +656,10 @@ static func pharos(parent: Node3D, at: Vector3, size: float = 1.0) -> OmniLight3
 	for k in 6:  # its rows of windows
 		for side: float in [-1.0, 1.0]:
 			Kit.box(g, Vector3(side * 10.05, 16.0 + k * 8.0, 0), Vector3(0.2, 2.2, 1.4), "dark", false)
+	if not whole:
+		for k in 5:  # the broken top of the tower
+			Kit.box(g, Vector3(-8.0 + k * 4.0, 66.0 + (k % 3) * 1.5, 0), Vector3(3.0, 2.0 + (k % 3) * 3.0, 20.0), "marble", false)
+		return null
 	Kit.box(g, Vector3(0, 66.5, 0), Vector3(22.0, 1.0, 22.0), "marble", false)
 	Kit.cylinder(g, Vector3(0, 67.0, 0), 8.0, 26.0, "marble", false, 8, 7.0)  # the octagon
 	Kit.cylinder(g, Vector3(0, 93.0, 0), 4.5, 8.0, "marble", false, 12, 4.0)  # the round lantern
@@ -578,15 +681,24 @@ static func pharos(parent: Node3D, at: Vector3, size: float = 1.0) -> OmniLight3
 ## Euclid's sand tray (abax): a board of fine sand on legs with the Elements' first
 ## proposition drawn in it (two circles through each other's centres, and the equal-sided
 ## triangle on the line between them), a pair of dividers and a straightedge beside it. Faces +Z.
-static func sand_tray(parent: Node3D, at: Vector3, yaw: float) -> void:
+## Lost: a leg gone, the board slumped, the sand grey and the figure wiped away.
+static func sand_tray(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
-	Kit.box(g, Vector3(0, 0.82, 0), Vector3(1.6, 0.08, 1.1), "wood")
+	var wood := "wood" if whole else "deadwood"
+	var board := Kit.group(g, Vector3.ZERO)
+	if not whole:
+		board.rotation.z = 0.35
+		board.position.y = -0.25
+	Kit.box(board, Vector3(0, 0.82, 0), Vector3(1.6, 0.08, 1.1), wood, false)
 	for p: Vector3 in [Vector3(-0.72, 0.4, -0.48), Vector3(0.72, 0.4, -0.48), Vector3(-0.72, 0.4, 0.48), Vector3(0.72, 0.4, 0.48)]:
-		Kit.box(g, p, Vector3(0.08, 0.8, 0.08), "wood", false)
-	Kit.box(g, Vector3(0, 0.87, 0), Vector3(1.45, 0.02, 0.95), "sand", false)
+		if whole or p.x < 0.0:
+			Kit.box(board, p, Vector3(0.08, 0.8, 0.08), wood, false)
+	Kit.box(board, Vector3(0, 0.87, 0), Vector3(1.45, 0.02, 0.95), "sand" if whole else "ashbed", false)
 	var body := BoxShape3D.new()
 	body.size = Vector3(1.6, 0.9, 1.1)
 	Kit.solid(g, body, Vector3(0, 0.45, 0))
+	if not whole:
+		return
 	const R := 0.3
 	var y := 0.885
 	var groove := "#8a7450"
@@ -610,10 +722,11 @@ static func sand_tray(parent: Node3D, at: Vector3, yaw: float) -> void:
 ## The cave of the Republic, seen from its mouth (+Z) looking in (-Z): the prisoners chained on a
 ## bench facing the back wall, the low wall behind them, bearers walking behind that wall with
 ## things held up on poles, the fire behind the bearers, and the shadows the things throw on the
-## back wall; a steep way climbs to the daylight behind it all. The rock encloses it. Returns
-## {"root", "fire", "bearers": [{node, from, to}], "shadows": [{node, bearer}]}: the Hall walks
-## the bearers along X and keeps each shadow under its bearer's thing.
-static func cave(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+## back wall; a steep way climbs to the daylight behind it all. The rock encloses it. Lost (lit =
+## false): the fires are cold, so the things pass in the dark and there are no shadows at all.
+## Returns {"root", "fire", "bearers": [{node, from, to}], "shadows": [{node, bearer}]}: the Hall
+## walks the bearers along X and keeps each shadow under its bearer's thing.
+static func cave(parent: Node3D, at: Vector3, yaw: float, lit: bool = true) -> Dictionary:
 	var g := Kit.group(parent, at, yaw)
 	const W := 16.0
 	Kit.box(g, Vector3(0, -0.1, 0), Vector3(W, 0.2, 22.0), "cave")  # the floor
@@ -638,9 +751,9 @@ static func cave(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
 		Kit.box(p, Vector3(0, 1.06, 0), Vector3(0.5, 0.05, 0.05), "#3a3a3e", false)  # the bar at the neck
 		Kit.box(p, Vector3(0, 0.05, 0.28), Vector3(0.5, 0.05, 0.05), "#3a3a3e", false)  # the chain at the legs
 	Kit.box(g, Vector3(0, 0.55, 0.5), Vector3(W - 1.0, 1.1, 0.4), "stone")  # the low wall, like a puppet screen
-	var fire := Kit.hearth(g, Vector3(0, 0, 5.0), true)
+	var fire := Kit.hearth(g, Vector3(0, 0, 5.0), lit)
 	for x: float in [-3.0, 3.0]:
-		Kit.hearth(g, Vector3(x, 0, 5.2), true)
+		Kit.hearth(g, Vector3(x, 0, 5.2), lit)
 	var things := ["horse", "jar", "man", "tree"]
 	var bearers: Array = []
 	var shadows: Array = []
@@ -651,6 +764,8 @@ static func cave(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
 		Kit.box(pole, Vector3(0, 1.8, 0), Vector3(0.04, 1.6, 0.04), "wood", false)
 		_idol(pole, Vector3(0, 2.75, 0), things[k], "wood")
 		bearers.append({"node": b["root"], "from": -6.5, "to": 6.5, "legs": b["legs"]})
+		if not lit:
+			continue
 		var sh := Kit.group(g, Vector3(from.x, 0, -8.95))  # thrown big on the wall by the fire behind
 		sh.scale = Vector3(2.2, 2.2, 0.02)
 		_idol(sh, Vector3(0, 1.9, 0), things[k], "shadow")
@@ -682,12 +797,17 @@ static func _idol(parent: Node3D, at: Vector3, thing: String, mat: String) -> vo
 
 
 ## A herm: a square pillar with a bearded head of Hermes on top, set up at crossroads, gates and
-## the Academy's paths. Faces +Z.
-static func herm(parent: Node3D, at: Vector3, yaw: float, mat: String = "marble") -> void:
+## the Academy's paths. Faces +Z. Lost: its head knocked off and lying at its foot (as the herms
+## of Athens were broken one night in 415 BC).
+static func herm(parent: Node3D, at: Vector3, yaw: float, mat: String = "marble", whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	Kit.box(g, Vector3(0, 0.7, 0), Vector3(0.36, 1.4, 0.32), mat)
 	for side: float in [-1.0, 1.0]:
 		Kit.box(g, Vector3(side * 0.22, 1.2, 0), Vector3(0.1, 0.12, 0.14), mat, false)  # the stumps of the arms
+	if not whole:  # the head on the ground: a pivot where it lies, the head hung under it as if on the pillar
+		var pivot := Kit.group(g, Vector3(0.4, 0.15, 0.45))
+		pivot.rotation = Vector3(0.3, 0.8, 1.5)
+		g = Kit.group(pivot, Vector3(0, -1.62, 0))
 	Kit.blob(g, Vector3(0, 1.62, 0.02), 0.16, mat, Vector3(1.0, 1.2, 1.1), 8)
 	Kit.blob(g, Vector3(0, 1.45, 0.1), 0.12, mat, Vector3(1.0, 1.5, 0.7), 6)  # the beard
 	Kit.blob(g, Vector3(0, 1.72, -0.02), 0.16, mat, Vector3(1.05, 0.7, 1.1), 8)  # the hair
@@ -698,24 +818,33 @@ static func herm(parent: Node3D, at: Vector3, yaw: float, mat: String = "marble"
 ## A warp-weighted loom, Penelope's, leaning against a wall (-Z): two uprights, the cloth beam at
 ## the top with the web wound on it, the warp threads hanging in rows, the heddle bar, and the
 ## clay weights that keep them taut. `woven` is how far down the web has grown (0 to 1). Faces +Z.
-static func loom(parent: Node3D, at: Vector3, yaw: float, woven: float = 0.4, cloth: String = "#e8e0d0") -> void:
+## Lost: the warp cut, its ends hanging short, the weights fallen on the floor, the web grey rags.
+static func loom(parent: Node3D, at: Vector3, yaw: float, woven: float = 0.4, cloth: String = "#e8e0d0",
+		whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
+	var wood := "wood" if whole else "deadwood"
 	var frame := Kit.group(g, Vector3.ZERO)
 	frame.rotation.x = -0.18  # it leans back against the wall
 	for x: float in [-0.95, 0.95]:
-		Kit.box(frame, Vector3(x, 1.2, 0), Vector3(0.1, 2.4, 0.1), "wood", false)
-	Kit.mesh(frame, Kit._cyl(0.07, 2.1), "wood", Vector3(0, 2.25, 0), Vector3(0, 0, PI / 2.0))  # the cloth beam
+		Kit.box(frame, Vector3(x, 1.2, 0), Vector3(0.1, 2.4, 0.1), wood, false)
+	Kit.mesh(frame, Kit._cyl(0.07, 2.1), wood, Vector3(0, 2.25, 0), Vector3(0, 0, PI / 2.0))  # the cloth beam
 	var web := 1.9 * clampf(woven, 0.0, 1.0)
 	if web > 0.0:
-		Kit.box(frame, Vector3(0, 2.2 - web / 2.0, 0.02), Vector3(1.7, web, 0.02), cloth, false)
+		for k in (1 if whole else 4):  # whole, or in torn strips
+			var w := 1.7 if whole else 0.3
+			var x := 0.0 if whole else -0.65 + k * 0.43
+			Kit.box(frame, Vector3(x, 2.2 - web * (0.5 if whole else 0.35), 0.02), Vector3(w, web * (1.0 if whole else 0.7), 0.02),
+				cloth if whole else "ashbed", false)
 	var threads := 24
-	for k in threads:  # the warp, from the web down to the weights
+	for k in threads:  # the warp, from the web down to the weights (cut short when lost)
 		var x := -0.8 + k * (1.6 / (threads - 1))
 		var top := 2.2 - web
-		Kit.box(frame, Vector3(x, (top + 0.35) / 2.0, 0.03), Vector3(0.006, top - 0.35, 0.006), "#d8d0b8", false)
-	Kit.box(frame, Vector3(0, 1.0, 0.1), Vector3(1.9, 0.05, 0.05), "wood", false)  # the heddle bar
-	for k in 8:  # the loom weights, in pairs
-		Kit.cylinder(frame, Vector3(-0.72 + k * 0.205, 0.2, 0.03), 0.06, 0.16, "clay", false, 6, 0.03)
+		var bottom := 0.35 if whole else top - 0.3 - (k % 3) * 0.1
+		Kit.box(frame, Vector3(x, (top + bottom) / 2.0, 0.03), Vector3(0.006, top - bottom, 0.006), "#d8d0b8", false)
+	Kit.box(frame, Vector3(0, 1.0, 0.1), Vector3(1.9, 0.05, 0.05), wood, false)  # the heddle bar
+	for k in 8:  # the loom weights, in pairs (or scattered on the floor)
+		var wp := Vector3(-0.72 + k * 0.205, 0.2, 0.03) if whole else Vector3(-0.8 + k * 0.23, 0.0, 0.3 + (k % 3) * 0.15)
+		Kit.cylinder(frame if whole else g, wp, 0.06, 0.16, "clay", false, 6, 0.03)
 	var body := BoxShape3D.new()
 	body.size = Vector3(2.1, 2.4, 0.5)
 	Kit.solid(g, body, Vector3(0, 1.2, -0.2))
@@ -723,28 +852,44 @@ static func loom(parent: Node3D, at: Vector3, yaw: float, woven: float = 0.4, cl
 
 ## A symposium couch (kline): a wooden frame on tall legs, a mattress, cushions to lean on at its
 ## head (+X end), and the low three-legged table in front with a cup. Long side along X, facing +Z.
-static func kline(parent: Node3D, at: Vector3, yaw: float) -> void:
+## Lost: collapsed at one end, the covers grey, the table over on its side and the cup broken.
+static func kline(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
-	Kit.box(g, Vector3(0, 0.7, 0), Vector3(2.0, 0.1, 0.9), "wood", false)
+	var wood := "wood" if whole else "deadwood"
+	var couch := Kit.group(g, Vector3.ZERO)
+	if not whole:
+		couch.rotation.z = 0.3
+		couch.position = Vector3(0.1, -0.28, 0)
+	Kit.box(couch, Vector3(0, 0.7, 0), Vector3(2.0, 0.1, 0.9), wood, false)
 	for p: Vector3 in [Vector3(-0.92, 0.33, -0.38), Vector3(0.92, 0.33, -0.38), Vector3(-0.92, 0.33, 0.38), Vector3(0.92, 0.33, 0.38)]:
-		Kit.box(g, p, Vector3(0.1, 0.66, 0.1), "wood", false)
-	Kit.box(g, Vector3(0, 0.82, 0), Vector3(1.9, 0.14, 0.85), "#d8c8a0", false)
-	Kit.box(g, Vector3(0, 0.9, 0), Vector3(1.9, 0.04, 0.87), "#6a2e4a", false)  # a purple cover
-	Kit.blob(g, Vector3(0.75, 1.02, 0), 0.2, "#b8863a", Vector3(1.0, 0.8, 1.6), 6)  # the cushions
-	Kit.box(g, Vector3(0.98, 1.05, 0), Vector3(0.08, 0.35, 0.85), "wood", false)  # the headrest
+		if whole or p.x > 0.0:
+			Kit.box(couch, p, Vector3(0.1, 0.66, 0.1), wood, false)
+	Kit.box(couch, Vector3(0, 0.82, 0), Vector3(1.9, 0.14, 0.85), "#d8c8a0" if whole else "ashbed", false)
+	Kit.box(couch, Vector3(0, 0.9, 0), Vector3(1.9, 0.04, 0.87), "#6a2e4a" if whole else "#4a4648", false)  # a purple cover
+	if whole:
+		Kit.blob(couch, Vector3(0.75, 1.02, 0), 0.2, "#b8863a", Vector3(1.0, 0.8, 1.6), 6)  # the cushions
+	Kit.box(couch, Vector3(0.98, 1.05, 0), Vector3(0.08, 0.35, 0.85), wood, false)  # the headrest
 	var body := BoxShape3D.new()
 	body.size = Vector3(2.0, 0.95, 0.9)
 	Kit.solid(g, body, Vector3(0, 0.47, 0))
-	Kit.box(g, Vector3(0, 0.5, 0.8), Vector3(0.9, 0.05, 0.45), "wood", false)  # the table
+	var table := Kit.group(g, Vector3.ZERO)
+	if not whole:
+		table.rotation.x = 1.4
+		table.position = Vector3(0, 0.25, 0.6)
+	Kit.box(table, Vector3(0, 0.5, 0.8), Vector3(0.9, 0.05, 0.45), wood, false)  # the table
 	for p: Vector3 in [Vector3(-0.35, 0.25, 0.65), Vector3(0.35, 0.25, 0.65), Vector3(0, 0.25, 0.95)]:
-		Kit.box(g, p, Vector3(0.05, 0.5, 0.05), "wood", false)
-	kylix(g, Vector3(0.15, 0.53, 0.8))
+		Kit.box(table, p, Vector3(0.05, 0.5, 0.05), wood, false)
+	kylix(g, Vector3(0.15, 0.53, 0.8) if whole else Vector3(0.4, 0.0, 1.3), whole)
 
 
 ## A krater, the great bowl where wine was mixed with water, painted black-figure, on a stand.
-static func krater(parent: Node3D, at: Vector3) -> void:
+## Lost: smashed, its sherds round the empty stand.
+static func krater(parent: Node3D, at: Vector3, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
 	Kit.cylinder(g, Vector3.ZERO, 0.2, 0.3, "stone", false, 8, 0.14)
+	if not whole:
+		_sherds(g, Vector3(0, 0, 0), 0.6, 7, 0.14)
+		return
 	Kit.cylinder(g, Vector3(0, 0.3, 0), 0.12, 0.12, "blackfigure", false, 10, 0.2)
 	Kit.cylinder(g, Vector3(0, 0.42, 0), 0.2, 0.45, "blackfigure", false, 10, 0.33)  # the bell
 	Kit.cylinder(g, Vector3(0, 0.87, 0), 0.33, 0.04, "#1a1410", false, 10)
@@ -756,9 +901,12 @@ static func krater(parent: Node3D, at: Vector3) -> void:
 	Kit.solid(g, body, Vector3(0, 0.45, 0))
 
 
-## A kylix, the shallow drinking cup on a stem with two handles.
-static func kylix(parent: Node3D, at: Vector3) -> void:
+## A kylix, the shallow drinking cup on a stem with two handles. Lost: in pieces.
+static func kylix(parent: Node3D, at: Vector3, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
+	if not whole:
+		_sherds(g, Vector3.ZERO, 0.15, 4, 0.04)
+		return
 	Kit.cylinder(g, Vector3.ZERO, 0.04, 0.01, "#1a1410", false, 8)
 	Kit.cylinder(g, Vector3(0, 0.01, 0), 0.015, 0.04, "#1a1410", false, 6)
 	Kit.cylinder(g, Vector3(0, 0.05, 0), 0.05, 0.035, "blackfigure", false, 10, 0.1)
@@ -767,41 +915,54 @@ static func kylix(parent: Node3D, at: Vector3) -> void:
 
 
 ## Sappho's barbitos: the lyre with long arms and a deep voice, standing on its sound box.
-static func barbitos(parent: Node3D, at: Vector3, yaw: float) -> void:
+## Lost: its strings gone, one arm and the crossbar broken off.
+static func barbitos(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
-	Kit.blob(g, Vector3(0, 0.12, 0), 0.14, "#6a4a2a", Vector3(1.1, 0.9, 0.5), 6)  # the shell
+	var wood := "wood" if whole else "deadwood"
+	Kit.blob(g, Vector3(0, 0.12, 0), 0.14, "#6a4a2a" if whole else "deadwood", Vector3(1.1, 0.9, 0.5), 6)  # the shell
 	for side: float in [-1.0, 1.0]:  # the long arms, bowing in then out
-		Kit.box(g, Vector3(0.1 * side, 0.45, 0), Vector3(0.035, 0.55, 0.035), "wood", false, Vector3(0, 0, -0.12 * side))
-		Kit.box(g, Vector3(0.1 * side, 0.85, 0), Vector3(0.035, 0.3, 0.035), "wood", false, Vector3(0, 0, 0.3 * side))
-	Kit.box(g, Vector3(0, 0.98, 0), Vector3(0.38, 0.035, 0.035), "wood", false)
+		Kit.box(g, Vector3(0.1 * side, 0.45, 0), Vector3(0.035, 0.55, 0.035), wood, false, Vector3(0, 0, -0.12 * side))
+		if whole or side < 0.0:
+			Kit.box(g, Vector3(0.1 * side, 0.85, 0), Vector3(0.035, 0.3, 0.035), wood, false, Vector3(0, 0, 0.3 * side))
+	if not whole:
+		return
+	Kit.box(g, Vector3(0, 0.98, 0), Vector3(0.38, 0.035, 0.035), wood, false)
 	for k in 7:
 		Kit.box(g, Vector3(-0.09 + k * 0.03, 0.58, 0.03), Vector3(0.005, 0.8, 0.005), "#e8e0c8", false)
 
 
 # ---------- the farm (Hesiod) ----------
 
-## A ploughed field, `size` metres, its furrows running along X (not solid: you walk it).
-static func field(parent: Node3D, at: Vector3, size: Vector2, yaw: float = 0.0) -> void:
-	Kit.box(parent, at + Vector3(0, 0.02, 0), Vector3(size.x, 0.04, size.y), "furrows", false, Vector3(0, yaw, 0))
+## A ploughed field, `size` metres, its furrows running along X (not solid: you walk it). Lost:
+## fallow, a dry grey crust.
+static func field(parent: Node3D, at: Vector3, size: Vector2, yaw: float = 0.0, alive: bool = true) -> void:
+	Kit.box(parent, at + Vector3(0, 0.02, 0), Vector3(size.x, 0.04, size.y), "furrows" if alive else "drybed", false,
+		Vector3(0, yaw, 0))
 
 
 ## A threshing floor: a round of flat stones with a low kerb, where the oxen trod the grain out.
-static func threshing_floor(parent: Node3D, at: Vector3, radius: float = 5.0) -> void:
-	Kit.cylinder(parent, at, radius, 0.08, "paving", false, 14)
+## Lost: cracked and dusty, half its kerb gone.
+static func threshing_floor(parent: Node3D, at: Vector3, radius: float = 5.0, whole: bool = true) -> void:
+	Kit.cylinder(parent, at, radius, 0.08, "paving" if whole else "drybed", false, 14)
 	for k in 20:
+		if not whole and k % 3 != 0:
+			continue
 		var a := TAU * k / 20.0
 		Kit.box(parent, at + Vector3(cos(a), 0, sin(a)) * radius + Vector3(0, 0.15, 0), Vector3(2.0 * PI * radius / 20.0, 0.3, 0.3),
 			"stone", false, Vector3(0, -a + PI / 2.0, 0))
 
 
 ## Clay beehives as the Greeks kept them: long tubes laid on their sides in a stack, the bees'
-## doors toward +Z.
-static func hives(parent: Node3D, at: Vector3, yaw: float, count: int = 5) -> void:
+## doors toward +Z. Lost: empty, the top row rolled off and broken on the ground.
+static func hives(parent: Node3D, at: Vector3, yaw: float, count: int = 5, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	for k in count:
 		var row := 0 if k < (count + 1) / 2 else 1
 		var col := k if row == 0 else k - (count + 1) / 2
 		var x := (col - (count + 1) / 4.0) * 0.5 + row * 0.25
+		if not whole and row == 1:
+			_sherds(g, Vector3(x, 0, 0.8), 0.4, 3, 0.12)
+			continue
 		Kit.mesh(g, _prism(0.2, 0.8, 8), "clay", Vector3(x, 0.22 + row * 0.42, 0), Vector3(PI / 2.0, 0, 0))
 		Kit.mesh(g, _prism(0.06, 0.02, 6), "dark", Vector3(x, 0.22 + row * 0.42, 0.4), Vector3(PI / 2.0, 0, 0))
 	var body := BoxShape3D.new()
@@ -812,12 +973,18 @@ static func hives(parent: Node3D, at: Vector3, yaw: float, count: int = 5) -> vo
 # ---------- sacred and civic ----------
 
 ## An altar: a stone block with rolled ends. "greek" plain; "roman" with a garland and horns at
-## the corners. `lit` burns an offering on it; returns the fire's light (or null).
-static func altar(parent: Node3D, at: Vector3, yaw: float, style: String = "greek", lit: bool = false) -> OmniLight3D:
+## the corners. `lit` burns an offering on it; returns the fire's light (or null). Lost (whole =
+## false): its top slab slid off and one bolster broken away, and it cannot be lit.
+static func altar(parent: Node3D, at: Vector3, yaw: float, style: String = "greek", lit: bool = false,
+		whole: bool = true) -> OmniLight3D:
 	var g := Kit.group(parent, at, yaw)
 	var stone := "marble" if style == "roman" else "stone"
 	Kit.box(g, Vector3(0, 0.1, 0), Vector3(1.6, 0.2, 1.0), stone)
 	Kit.box(g, Vector3(0, 0.6, 0), Vector3(1.3, 0.8, 0.8), stone)
+	if not whole:
+		Kit.box(g, Vector3(0.9, 0.3, 0.6), Vector3(1.45, 0.1, 0.9), stone, false, Vector3(0.2, 0.5, 0.5))  # the slab, slid off
+		Kit.mesh(g, _prism(0.13, 0.9, 8), stone, Vector3(-0.62, 1.1, 0), Vector3(PI / 2.0, 0, 0))
+		return null
 	Kit.box(g, Vector3(0, 1.05, 0), Vector3(1.45, 0.1, 0.9), stone, false)
 	for side: float in [-1.0, 1.0]:  # the bolsters rolled at each end
 		Kit.mesh(g, _prism(0.13, 0.9, 8), stone, Vector3(side * 0.62, 1.2, 0), Vector3(PI / 2.0, 0, 0))
@@ -843,13 +1010,26 @@ static func altar(parent: Node3D, at: Vector3, yaw: float, style: String = "gree
 
 
 ## A speaker's platform (bema), like the one cut from the rock of the Pnyx where Athens met:
-## a block with steps up its back (-Z), the speaker facing +Z.
-static func bema(parent: Node3D, at: Vector3, yaw: float) -> Vector3:
+## a block with steps up its back (-Z), the speaker facing +Z. Lost: worn down low, its steps
+## crumbled to one.
+static func bema(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
 	var g := Kit.group(parent, at, yaw)
-	Kit.box(g, Vector3(0, 0.6, 0), Vector3(2.4, 1.2, 2.0), "rock")
-	for k in 3:
+	var h := 1.2 if whole else 0.7
+	Kit.box(g, Vector3(0, h / 2.0, 0), Vector3(2.4, h, 2.0), "rock")
+	for k in (3 if whole else 1):
 		Kit.box(g, Vector3(0, 0.2 + k * 0.4, -1.2 - (2 - k) * 0.35), Vector3(1.0, 0.4 + k * 0.4, 0.35), "rock", true)
-	return at + Vector3(0, 1.2, 0)
+	return at + Vector3(0, h, 0)
+
+
+## Broken pottery: `count` curved pieces scattered round `centre`, within `spread`, each about `size`.
+static func _sherds(parent: Node3D, centre: Vector3, spread: float, count: int, size: float) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = count * 7 + int(spread * 100.0)
+	for k in count:
+		var a := TAU * k / count + rng.randf_range(-0.3, 0.3)
+		var r := rng.randf_range(0.2, 1.0) * spread
+		Kit.box(parent, centre + Vector3(cos(a) * r, size * 0.15, sin(a) * r), Vector3(size, size * 0.12, size * 0.7),
+			"clay" if k % 2 else "blackfigure", false, Vector3(rng.randf_range(-0.4, 0.4), rng.randf() * TAU, rng.randf_range(-0.4, 0.4)))
 
 
 ## A cylinder of `sides` sides centred on its middle (for wheels, beams and hives turned on

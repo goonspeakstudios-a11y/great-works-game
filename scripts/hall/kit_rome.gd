@@ -87,23 +87,31 @@ static func temple(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) 
 
 ## A triumphal arch like Titus's: one tall bay between piers faced with columns, the attic above
 ## carrying its inscription, and the bronze four-horse chariot of the triumph on top. Faces +Z;
-## you walk through it along Z.
-static func triumphal_arch(parent: Node3D, at: Vector3, yaw: float, chariot: bool = true) -> void:
+## you walk through it along Z. Lost: the chariot gone for its bronze, the inscription torn out,
+## half the attic fallen and two columns missing.
+static func triumphal_arch(parent: Node3D, at: Vector3, yaw: float, chariot: bool = true, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
+	if not whole:
+		chariot = false
 	const W := 13.5
 	const DEPTH := 4.8
 	for side: float in [-1.0, 1.0]:
 		Kit.box(g, Vector3(side * 4.9, 6.2, 0), Vector3(3.7, 12.4, DEPTH), "marble")
 		for z: float in [DEPTH / 2.0 + 0.3, -DEPTH / 2.0 - 0.3]:
 			for x: float in [side * 3.4, side * 6.4]:
-				column(g, Vector3(x, 1.4, z), 11.0, 0.38)
 				Kit.box(g, Vector3(x, 0.7, z), Vector3(1.2, 1.4, 1.2), "marble")  # the column's pedestal
+				if whole or not (side > 0.0 and z > 0.0):
+					column(g, Vector3(x, 1.4, z), 11.0, 0.38)
 	Kit.arch(g, Vector3(0, 8.4, DEPTH / 2.0 + 0.01), 3.05, 0.0, 180.0, 11, Vector3(0.9, 0.9, 0.2), ["marble"])
 	Kit.arch(g, Vector3(0, 8.4, -DEPTH / 2.0 - 0.01), 3.05, 0.0, 180.0, 11, Vector3(0.9, 0.9, 0.2), ["marble"])
 	Kit.box(g, Vector3(0, 11.95, 0), Vector3(6.2, 0.9, DEPTH), "marble", false)  # over the crown of the vault
 	Kit.box(g, Vector3(0, 12.9, 0), Vector3(W + 0.6, 1.0, DEPTH + 1.4), "marble", false)  # the cornice
-	Kit.box(g, Vector3(0, 15.4, 0), Vector3(W - 1.0, 4.0, DEPTH), "marble", false)  # the attic
-	Kit.box(g, Vector3(0, 15.4, DEPTH / 2.0 + 0.02), Vector3(7.5, 2.4, 0.05), "plaque", false)  # SENATVS POPVLVSQVE ROMANVS
+	if whole:
+		Kit.box(g, Vector3(0, 15.4, 0), Vector3(W - 1.0, 4.0, DEPTH), "marble", false)  # the attic
+		Kit.box(g, Vector3(0, 15.4, DEPTH / 2.0 + 0.02), Vector3(7.5, 2.4, 0.05), "plaque", false)  # SENATVS POPVLVSQVE ROMANVS
+	else:
+		Kit.box(g, Vector3(-3.0, 14.4, 0), Vector3(W * 0.5, 2.0, DEPTH), "marble", false)
+		Kit.box(g, Vector3(-2.2, 14.4, DEPTH / 2.0 + 0.02), Vector3(3.6, 1.2, 0.05), "dark", false)  # where the letters were
 	if chariot:
 		var top := Kit.group(g, Vector3(0, 17.4, 0))
 		for k in 4:
@@ -115,8 +123,9 @@ static func triumphal_arch(parent: Node3D, at: Vector3, yaw: float, chariot: boo
 
 
 ## An aqueduct striding from one point to another on arches: piers every 6 m, `tiers` rows of
-## arches one on another, and the covered water channel along the top. Solid piers.
-static func aqueduct(parent: Node3D, from: Vector3, to: Vector3, tiers: int = 1) -> Node3D:
+## arches one on another, and the covered water channel along the top. Solid piers. Lost: broken
+## into standing lengths with gaps between, the channel dry and open.
+static func aqueduct(parent: Node3D, from: Vector3, to: Vector3, tiers: int = 1, whole: bool = true) -> Node3D:
 	var mid := (from + to) / 2.0
 	var length := from.distance_to(to)
 	var g := Kit.group(parent, mid, atan2(to.x - from.x, to.z - from.z) - PI / 2.0)  # the run lies along X
@@ -127,53 +136,75 @@ static func aqueduct(parent: Node3D, from: Vector3, to: Vector3, tiers: int = 1)
 		var base := t * TIER
 		for k in n + 1:
 			var x := -n * SPAN / 2.0 + k * SPAN
-			Kit.box(g, Vector3(x, base + (TIER - 2.2) / 2.0, 0), Vector3(1.6, TIER - 2.2, 2.4), "tufa")
-			if k < n:
+			var standing := whole or k % 4 != 2  # lost: every fourth pier fallen, taking its arches
+			if standing:
+				Kit.box(g, Vector3(x, base + (TIER - 2.2) / 2.0, 0), Vector3(1.6, TIER - 2.2, 2.4), "tufa")
+			else:
+				Kit.box(g, Vector3(x, 0.5, 1.5), Vector3(1.6, 1.0, 2.4), "tufa", true, Vector3(0.2, 0.3, 1.2))
+			if k < n and (whole or (standing and (k + 1) % 4 != 2)):
 				Kit.arch(g, Vector3(x + SPAN / 2.0, base + TIER - 4.7, 0), 2.2, 0.0, 180.0, 9, Vector3(0.9, 0.7, 2.4), ["tufa", "brick"])
-		Kit.box(g, Vector3(0, base + TIER - 1.1, 0), Vector3(n * SPAN + 1.6, 2.2, 2.4), "tufa", false)
+				if not whole:
+					Kit.box(g, Vector3(x + SPAN / 2.0, base + TIER - 1.1, 0), Vector3(SPAN + 1.6, 2.2, 2.4), "tufa", false)
+		if whole:
+			Kit.box(g, Vector3(0, base + TIER - 1.1, 0), Vector3(n * SPAN + 1.6, 2.2, 2.4), "tufa", false)
 	var top := tiers * TIER
-	Kit.box(g, Vector3(0, top + 0.8, 0), Vector3(n * SPAN + 1.6, 1.6, 2.0), "brick", false)  # the channel's walls
-	Kit.box(g, Vector3(0, top + 1.7, 0), Vector3(n * SPAN + 1.8, 0.2, 2.2), "tufa", false)  # its cover
+	if whole:
+		Kit.box(g, Vector3(0, top + 0.8, 0), Vector3(n * SPAN + 1.6, 1.6, 2.0), "brick", false)  # the channel's walls
+		Kit.box(g, Vector3(0, top + 1.7, 0), Vector3(n * SPAN + 1.8, 0.2, 2.2), "tufa", false)  # its cover
 	return g
 
 
 ## The Rostra in the Forum: a high platform faced with the bronze beaks of captured warships,
-## with a balustrade, and steps up its back (-Z). Faces +Z. Returns where a speaker stands.
-static func rostra(parent: Node3D, at: Vector3, yaw: float) -> Vector3:
+## with a balustrade, and steps up its back (-Z). Faces +Z. Lost: the beaks torn off (their green
+## stumps left), the balustrade broken. Returns where a speaker stands.
+static func rostra(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
 	var g := Kit.group(parent, at, yaw)
 	Kit.box(g, Vector3(0, 1.6, 0), Vector3(20.0, 3.2, 8.0), "travertine")
 	Kit.box(g, Vector3(0, 0.25, 4.1), Vector3(20.4, 0.5, 0.3), "marble", false)
 	for k in 7:  # the beaks
 		var x := -8.1 + k * 2.7
 		var beak := Kit.group(g, Vector3(x, 1.6, 4.0))
+		if not whole:
+			Kit.box(beak, Vector3(0, 0, 0.1), Vector3(0.5, 0.4, 0.2), "verdigris", false)
+			continue
 		Kit.box(beak, Vector3(0, 0, 0.5), Vector3(0.7, 0.5, 1.0), "bronze", false)
 		Kit.box(beak, Vector3(0, 0.4, 0.35), Vector3(0.5, 0.3, 0.7), "bronze", false, Vector3(-0.3, 0, 0))
 		for fin: float in [-0.18, 0.18]:
 			Kit.box(beak, Vector3(0, fin, 1.05), Vector3(0.9, 0.1, 0.25), "bronze", false)  # the ram's blades
 	for k in 20:  # the balustrade
-		Kit.box(g, Vector3(-9.5 + k, 3.7, 3.8), Vector3(0.15, 1.0, 0.15), "marble", false)
-	Kit.box(g, Vector3(0, 4.25, 3.8), Vector3(20.0, 0.12, 0.3), "marble", false)
+		if whole or k % 3 == 0:
+			Kit.box(g, Vector3(-9.5 + k, 3.7, 3.8), Vector3(0.15, 1.0, 0.15), "marble", false)
+	if whole:
+		Kit.box(g, Vector3(0, 4.25, 3.8), Vector3(20.0, 0.12, 0.3), "marble", false)
 	for k in 8:
 		Kit.box(g, Vector3(0, 0.2 + k * 0.4, -4.2 - (7 - k) * 0.35), Vector3(4.0, 0.4 + k * 0.4, 0.35), "travertine")
 	return g.to_global(Vector3(0, 3.2, 2.5)) if g.is_inside_tree() else at + Vector3(0, 3.2, 0)
 
 
 ## A paved Roman road from one point to another: dark basalt blocks, raised kerbs, and packed
-## gravel walks either side. Walkable (not solid above the ground).
-static func via(parent: Node3D, from: Vector3, to: Vector3, width: float = 4.2) -> void:
+## gravel walks either side. Walkable (not solid above the ground). Lost: dust and dry earth have
+## drifted over it in long patches.
+static func via(parent: Node3D, from: Vector3, to: Vector3, width: float = 4.2, whole: bool = true) -> void:
 	var mid := (from + to) / 2.0
 	var length := from.distance_to(to)
 	var g := Kit.group(parent, Vector3(mid.x, 0, mid.z), atan2(to.x - from.x, to.z - from.z))
 	Kit.box(g, Vector3(0, 0.04, 0), Vector3(width, 0.08, length), "basalt", false)
+	if not whole:
+		for k in int(length / 8.0):
+			Kit.box(g, Vector3((k % 3 - 1) * 0.8, 0.09, -length / 2.0 + 4.0 + k * 8.0), Vector3(width * 0.7, 0.02, 4.5), "drybed", false)
 	for side: float in [-1.0, 1.0]:
 		Kit.box(g, Vector3(side * (width / 2.0 + 0.2), 0.12, 0), Vector3(0.4, 0.24, length), "stone", false)
 		Kit.box(g, Vector3(side * (width / 2.0 + 1.4), 0.03, 0), Vector3(2.0, 0.06, length), "path", false)
 
 
-## A milestone: a short column on a square base, the miles to Rome cut in a band.
-static func milestone(parent: Node3D, at: Vector3, yaw: float) -> void:
+## A milestone: a short column on a square base, the miles to Rome cut in a band. Lost: fallen
+## off its base into the grass.
+static func milestone(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	Kit.box(g, Vector3(0, 0.2, 0), Vector3(0.8, 0.4, 0.8), "stone")
+	if not whole:
+		Kit.mesh(g, Greek._prism(0.3, 1.6, 10), "travertine", Vector3(0.2, 0.3, 1.3), Vector3(PI / 2.0, 0.4, 0))
+		return
 	Kit.cylinder(g, Vector3(0, 0.4, 0), 0.3, 1.6, "travertine", true, 10)
 	Kit.box(g, Vector3(0, 1.4, 0.29), Vector3(0.36, 0.3, 0.03), "plaque", false)
 
@@ -181,17 +212,21 @@ static func milestone(parent: Node3D, at: Vector3, yaw: float) -> void:
 ## A tomb beside the road. "round": a great drum on a square base with a frieze of garlands
 ## and ox skulls (like Caecilia Metella's on the Appian Way), 20 m across. "altar": a tall
 ## altar-shaped monument on steps, with an inscription and an urn on top. Faces +Z (the road).
-static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar") -> void:
+## Lost: the round one's mound gone and its frieze broken; the altar one's urn fallen.
+static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar", whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	if kind == "round":
 		Kit.box(g, Vector3(0, 3.0, 0), Vector3(22.0, 6.0, 22.0), "tufa")
 		Kit.cylinder(g, Vector3(0, 6.0, 0), 10.0, 11.0, "travertine", true, 16)
 		Kit.cylinder(g, Vector3(0, 15.0, 0), 10.2, 1.6, "marble", false, 16)  # the frieze
 		for k in 16:
+			if not whole and k % 3 != 0:
+				continue
 			var a := TAU * k / 16.0
 			Kit.blob(g, Vector3(cos(a) * 10.25, 15.8, sin(a) * 10.25), 0.35, "bone", Vector3(1.0, 1.0, 0.5), 5)
 		Kit.box(g, Vector3(0, 13.0, 10.1), Vector3(3.0, 1.2, 0.1), "plaque", false)
-		Kit.cylinder(g, Vector3(0, 17.0, 0), 9.6, 3.0, "earth", false, 16, 4.0)  # the earth mound it was crowned with
+		if whole:
+			Kit.cylinder(g, Vector3(0, 17.0, 0), 9.6, 3.0, "earth", false, 16, 4.0)  # the earth mound it was crowned with
 		return
 	for k in 2:
 		Kit.box(g, Vector3(0, 0.2 + k * 0.4, 0), Vector3(3.0 - k * 0.5, 0.4, 3.0 - k * 0.5), "stone")
@@ -200,8 +235,11 @@ static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar"
 	Kit.box(g, Vector3(0, 3.5, 0), Vector3(2.1, 0.2, 2.1), "marble", false)
 	for side: float in [-1.0, 1.0]:
 		Kit.mesh(g, Greek._prism(0.18, 2.0, 8), "marble", Vector3(side * 0.8, 3.75, 0), Vector3(PI / 2.0, 0, 0))
-	Kit.cylinder(g, Vector3(0, 3.6, 0), 0.25, 0.5, "marble", false, 10, 0.4)  # the urn
-	Kit.blob(g, Vector3(0, 4.25, 0), 0.25, "marble", Vector3(1.0, 0.6, 1.0), 8)
+	var urn := Kit.group(g, Vector3(0, 3.6, 0) if whole else Vector3(1.4, 0.35, 1.5))
+	if not whole:
+		urn.rotation = Vector3(0, 0.6, PI / 2.0)
+	Kit.cylinder(urn, Vector3.ZERO, 0.25, 0.5, "marble", false, 10, 0.4)  # the urn
+	Kit.blob(urn, Vector3(0, 0.65, 0), 0.25, "marble", Vector3(1.0, 0.6, 1.0), 8)
 
 
 # ---------- people ----------
@@ -273,8 +311,8 @@ static func century(parent: Node3D, at: Vector3, rows: int = 10, files: int = 8,
 ## A Roman citizen in the toga, over his tunic. A walker (kit.gd's), so he can pace and turn and
 ## raise his hand. `look` as the walker's, plus: "stripe" (the broad purple stripe of a senator
 ## on his tunic), "praetexta" (the purple-bordered toga of a magistrate), "scroll" (a book roll
-## in his left hand). Returns what the walker returns.
-static func togatus(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -> Dictionary:
+## in his left hand). Undead: a pale shade of himself. Returns what the walker returns.
+static func togatus(parent: Node3D, at: Vector3, yaw: float, look: Dictionary, undead: bool = false) -> Dictionary:
 	var shaped := look.duplicate()
 	shaped["robe"] = "e8e2d2"
 	var w := Kit.walker(parent, at, yaw, shaped)
@@ -292,15 +330,21 @@ static func togatus(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -
 		Kit.box(fold, Vector3(0.14, 1.3, 0.2), Vector3(0.05, 0.4, 0.02), "#5a1a4a", false)
 	if look.get("scroll", false):
 		Kit.mesh(fold, Kit._cyl(0.04, 0.26), "parchment", Vector3(-0.3, 0.9, 0.12), Vector3(0, 0, PI / 2.0))
+	if undead:
+		Kit.shade(root, 0.4)
 	return w
 
 
 # ---------- the signs of office ----------
 
 ## The eagle standard of a legion: a staff with a spike, the gold eagle with wings raised in a
-## wreath at the top.
-static func aquila(parent: Node3D, at: Vector3) -> void:
+## wreath at the top. Lost: the eagle taken (as Varus's were), the staff snapped.
+static func aquila(parent: Node3D, at: Vector3, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
+	if not whole:
+		Kit.box(g, Vector3(0, 0.7, 0), Vector3(0.05, 1.4, 0.05), "deadwood")
+		Kit.box(g, Vector3(0.6, 0.05, 0.3), Vector3(0.05, 1.2, 0.05), "deadwood", false, Vector3(0, 0.5, PI / 2.0))
+		return
 	Kit.box(g, Vector3(0, 1.35, 0), Vector3(0.05, 2.7, 0.05), "wood")
 	Kit.box(g, Vector3(0, 2.75, 0), Vector3(0.35, 0.08, 0.08), "gold", false)  # the crossbar
 	Kit.blob(g, Vector3(0, 3.0, 0), 0.12, "gold", Vector3(0.9, 1.4, 1.0), 6)  # the eagle's body
@@ -313,9 +357,15 @@ static func aquila(parent: Node3D, at: Vector3) -> void:
 
 
 ## The fasces: a bundle of elm rods bound with red straps round an axe, carried before a
-## magistrate by his lictor as the sign that he could punish and put to death.
-static func fasces(parent: Node3D, at: Vector3) -> void:
+## magistrate by his lictor as the sign that he could punish and put to death. Lost: its straps
+## rotted, the rods fallen apart on the ground and the axe rusted.
+static func fasces(parent: Node3D, at: Vector3, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
+	if not whole:
+		for k in 8:
+			Kit.mesh(g, Kit._cyl(0.025, 1.5), "deadwood", Vector3(-0.3 + k * 0.08, 0.03, 0.1 * (k % 3)), Vector3(PI / 2.0, 0.2 * k, 0))
+		Kit.box(g, Vector3(0.4, 0.02, -0.2), Vector3(0.22, 0.02, 0.2), "rust", false)
+		return
 	for k in 8:
 		var a := TAU * k / 8.0
 		Kit.cylinder(g, Vector3(cos(a) * 0.07, 0, sin(a) * 0.07), 0.025, 1.5, "#8a6a44", false, 5)
@@ -330,10 +380,13 @@ static func fasces(parent: Node3D, at: Vector3) -> void:
 
 
 ## The curule chair (sella curulis): the ivory folding stool of the high magistrates, on
-## crossed curved legs. Faces +Z.
-static func sella(parent: Node3D, at: Vector3, yaw: float) -> void:
+## crossed curved legs. Faces +Z. Lost: folded shut and lying on its side, yellowed.
+static func sella(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
-	var ivory := "#e8dcc0"
+	var ivory := "#e8dcc0" if whole else "#9a9280"
+	if not whole:
+		g.rotation.z = PI / 2.0
+		g.position.y += 0.3
 	for x: float in [-0.3, 0.3]:
 		for tilt: float in [-0.55, 0.55]:
 			Kit.box(g, Vector3(x, 0.3, 0), Vector3(0.05, 0.7, 0.05), ivory, false, Vector3(tilt, 0, 0))
@@ -350,9 +403,10 @@ static func sella(parent: Node3D, at: Vector3, yaw: float) -> void:
 ## sloping in on four sides to the square opening to the sky (compluvium) over the marble pool
 ## that catches the rain (impluvium), the tablinum (the master's room) open at the back (-Z),
 ## the door to the street at the front (+Z), and small bedrooms along the sides. Solid walls.
-## Returns {"root", "pool": its centre, "tablinum": the tablinum's middle, "door": the street door}
-## (in the group's space).
-static func atrium(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+## Lost (whole = false): the roof has fallen in round the opening, its tiles on the floor, and the
+## pool is dry. Returns {"root", "pool": its centre, "tablinum": the tablinum's middle, "door": the
+## street door} (in the group's space).
+static func atrium(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
 	var g := Kit.group(parent, at, yaw)
 	const W := 12.0
 	const D := 14.0
@@ -376,13 +430,18 @@ static func atrium(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
 	var slope := 0.28
 	Kit.box(g, Vector3(0, H + 0.1, (D + OPEN.y) / 4.0), Vector3(W + 0.8, 0.25, (D - OPEN.y) / 2.0 + 0.4), "roof", false,
 		Vector3(-slope, 0, 0))
-	Kit.box(g, Vector3(0, H + 0.1, -(D + OPEN.y) / 4.0), Vector3(W + 0.8, 0.25, (D - OPEN.y) / 2.0 + 0.4), "roof", false,
-		Vector3(slope, 0, 0))
-	for side: float in [-1.0, 1.0]:
-		Kit.box(g, Vector3(side * (W + OPEN.x) / 4.0, H + 0.1, 0), Vector3((W - OPEN.x) / 2.0 + 0.4, 0.25, OPEN.y), "roof", false,
-			Vector3(0, 0, side * slope))
+	if whole:
+		Kit.box(g, Vector3(0, H + 0.1, -(D + OPEN.y) / 4.0), Vector3(W + 0.8, 0.25, (D - OPEN.y) / 2.0 + 0.4), "roof", false,
+			Vector3(slope, 0, 0))
+		for side: float in [-1.0, 1.0]:
+			Kit.box(g, Vector3(side * (W + OPEN.x) / 4.0, H + 0.1, 0), Vector3((W - OPEN.x) / 2.0 + 0.4, 0.25, OPEN.y), "roof", false,
+				Vector3(0, 0, side * slope))
+	else:  # the fallen roof: slabs of tiles on the floor, one still hanging from the wall
+		Kit.box(g, Vector3(-3.5, 0.4, -4.0), Vector3(4.0, 0.25, 3.0), "roof", false, Vector3(0.2, 0.3, 0.25))
+		Kit.box(g, Vector3(3.8, 0.3, 1.0), Vector3(3.0, 0.25, 3.5), "roof", false, Vector3(-0.15, 0.1, -0.2))
+		Kit.box(g, Vector3(5.0, H - 1.2, 0), Vector3(2.5, 0.25, OPEN.y), "roof", false, Vector3(0, 0, 1.0))
 	Kit.box(g, Vector3(0, 0.15, 0), Vector3(OPEN.x + 0.4, 0.3, OPEN.y + 0.4), "marble", false)  # the pool's rim
-	Kit.box(g, Vector3(0, 0.2, 0), Vector3(OPEN.x - 0.2, 0.22, OPEN.y - 0.2), "water", false)
+	Kit.box(g, Vector3(0, 0.2, 0), Vector3(OPEN.x - 0.2, 0.22, OPEN.y - 0.2), "water" if whole else "drybed", false)
 	var rim := BoxShape3D.new()
 	rim.size = Vector3(OPEN.x + 0.4, 0.4, OPEN.y + 0.4)
 	Kit.solid(g, rim, Vector3(0, 0.2, 0))
@@ -391,17 +450,25 @@ static func atrium(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
 
 
 ## A dining room (triclinium): three broad couches round three sides of a low round table laid
-## with bread, fruit, a jug and cups, on a mosaic floor. The open side is +Z.
-static func triclinium(parent: Node3D, at: Vector3, yaw: float) -> void:
+## with bread, fruit, a jug and cups, on a mosaic floor. The open side is +Z. Lost: the covers
+## grey, the table bare and knocked askew, the cups on the floor.
+static func triclinium(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	Kit.box(g, Vector3(0, 0.03, 0), Vector3(6.0, 0.06, 6.0), "mosaic", false)
 	for i in 3:  # left, back, right: each sloping up toward the table, where the diner leaned
 		var yaw_i: float = [PI / 2.0, 0.0, -PI / 2.0][i]
 		var c := Kit.group(g, [Vector3(-1.9, 0, 0), Vector3(0, 0, -1.9), Vector3(1.9, 0, 0)][i], yaw_i)
 		Kit.box(c, Vector3(0, 0.45, 0), Vector3(3.2, 0.5, 1.3), "wood")
-		Kit.box(c, Vector3(0, 0.76, 0), Vector3(3.1, 0.16, 1.25), "#6a2e34", false, Vector3(-0.12, 0, 0))
+		Kit.box(c, Vector3(0, 0.76, 0), Vector3(3.1, 0.16, 1.25), "#6a2e34" if whole else "#4a4648", false, Vector3(-0.12, 0, 0))
+		if not whole:
+			continue
 		for x: float in [-1.0, 0.0, 1.0]:  # a cushion for each of its three diners
 			Kit.blob(c, Vector3(x, 0.9, 0.45), 0.2, "#c8a050", Vector3(1.4, 0.6, 1.0), 6)
+	if not whole:
+		Kit.cylinder(g, Vector3(0.3, 0, 0.4), 0.6, 0.06, "marble", true, 12).rotation.z = 0.25
+		for p: Vector3 in [Vector3(0.9, 0.05, 1.0), Vector3(-0.6, 0.05, 1.3)]:
+			Kit.mesh(g, Greek._prism(0.045, 0.08, 8), "verdigris", p, Vector3(PI / 2.0, 0, 0))
+		return
 	Kit.cylinder(g, Vector3(0, 0, 0), 0.08, 0.55, "bronze", false, 6)
 	Kit.cylinder(g, Vector3(0, 0.55, 0), 0.6, 0.06, "marble", true, 12)
 	Kit.blob(g, Vector3(-0.2, 0.68, 0.1), 0.12, "#c8a060", Vector3(1.3, 0.7, 1.0), 6)  # bread
@@ -414,8 +481,9 @@ static func triclinium(parent: Node3D, at: Vector3, yaw: float) -> void:
 
 ## The household shrine (lararium): a little temple front on a pedestal against the wall (-Z),
 ## with the two dancing Lares and the Genius of the house as bronze statuettes, an offering
-## bowl, and the house's snake painted below.
-static func lararium(parent: Node3D, at: Vector3, yaw: float) -> void:
+## bowl, and the house's snake painted below. Lost: the gods of the house gone, the bowl empty
+## and cracked, the niche cold.
+static func lararium(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	Kit.box(g, Vector3(0, 0.6, 0), Vector3(1.2, 1.2, 0.6), "fresco")
 	Kit.box(g, Vector3(0, 1.25, 0.05), Vector3(1.3, 0.1, 0.7), "marble", false)
@@ -423,6 +491,9 @@ static func lararium(parent: Node3D, at: Vector3, yaw: float) -> void:
 	for x: float in [-0.5, 0.5]:
 		Kit.cylinder(g, Vector3(x, 1.3, 0.2), 0.05, 0.9, "marble", false, 8)
 	_pediment(g, Vector3(0, 2.2, 0.15), 1.3, 0.35, 0.2)
+	if not whole:
+		Kit.box(g, Vector3(0, 1.32, 0.25), Vector3(0.18, 0.03, 0.09), "clay", false, Vector3(0, 0.3, 0.2))  # half the bowl
+		return
 	for x: float in [-0.3, 0.3]:  # the Lares, each dancing with a drinking horn raised
 		Kit.cylinder(g, Vector3(x, 1.3, 0.0), 0.05, 0.35, "bronze", false, 6, 0.03)
 		Kit.blob(g, Vector3(x, 1.72, 0.0), 0.05, "bronze")
@@ -435,37 +506,43 @@ static func lararium(parent: Node3D, at: Vector3, yaw: float) -> void:
 
 
 ## A street fountain (lacus): a basin of four upright stone slabs, and a pillar at its back (-Z)
-## with a carved face whose mouth pours a steady stream into it.
-static func fountain(parent: Node3D, at: Vector3, yaw: float) -> void:
+## with a carved face whose mouth pours a steady stream into it. Lost: dry, the basin cracked
+## and full of dust.
+static func fountain(parent: Node3D, at: Vector3, yaw: float, flowing: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	for side: float in [-1.0, 1.0]:
 		Kit.box(g, Vector3(side * 0.9, 0.45, 0), Vector3(0.2, 0.9, 1.6), "basalt")
 		Kit.box(g, Vector3(0, 0.45, side * 0.7), Vector3(2.0, 0.9, 0.2), "basalt")
-	Kit.box(g, Vector3(0, 0.6, 0), Vector3(1.6, 0.05, 1.2), "water", false)
+	Kit.box(g, Vector3(0, 0.6 if flowing else 0.3, 0), Vector3(1.6, 0.05, 1.2), "water" if flowing else "drybed", false)
 	Kit.box(g, Vector3(0, 0.8, -0.95), Vector3(0.6, 1.6, 0.4), "basalt")
 	Kit.blob(g, Vector3(0, 1.3, -0.72), 0.16, "stone", Vector3(1.0, 1.2, 0.5), 6)  # the face
 	Kit.box(g, Vector3(0, 1.22, -0.64), Vector3(0.05, 0.03, 0.05), "bronze", false)  # the spout
-	Kit.box(g, Vector3(0, 0.92, -0.58), Vector3(0.04, 0.6, 0.04), "water", false, Vector3(-0.15, 0, 0))  # the stream
+	if flowing:
+		Kit.box(g, Vector3(0, 0.92, -0.58), Vector3(0.04, 0.6, 0.04), "water", false, Vector3(-0.15, 0, 0))  # the stream
 
 
 ## A vine pergola: two rows of posts along X, beams across, the vine's leaves over the top and
-## grapes hanging through. `length` along X. You walk under it.
-static func pergola(parent: Node3D, at: Vector3, yaw: float, length: float = 6.0) -> Node3D:
+## grapes hanging through. `length` along X. You walk under it. Dead: the vine withered to a few
+## brown tangles, no grapes, the timbers grey. Returns the leaves (for the breeze).
+static func pergola(parent: Node3D, at: Vector3, yaw: float, length: float = 6.0, alive: bool = true) -> Node3D:
 	var g := Kit.group(parent, at, yaw)
+	var wood := "wood" if alive else "deadwood"
 	var n := int(length / 2.0)
 	for k in n + 1:
 		var x := -length / 2.0 + k * (length / n)
 		for z: float in [-1.4, 1.4]:
-			Kit.cylinder(g, Vector3(x, 0, z), 0.08, 2.5, "wood", true, 6)
-		Kit.box(g, Vector3(x, 2.55, 0), Vector3(0.1, 0.1, 3.2), "wood", false)
+			Kit.cylinder(g, Vector3(x, 0, z), 0.08, 2.5, wood, true, 6)
+		Kit.box(g, Vector3(x, 2.55, 0), Vector3(0.1, 0.1, 3.2), wood, false)
 	for z: float in [-1.4, 1.4]:
-		Kit.box(g, Vector3(0, 2.5, z), Vector3(length + 0.4, 0.1, 0.1), "wood", false)
+		Kit.box(g, Vector3(0, 2.5, z), Vector3(length + 0.4, 0.1, 0.1), wood, false)
 	var leaves := Kit.group(g, Vector3(0, 2.75, 0))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(length * 10)
-	for k in int(length * 2.0):
+	for k in int(length * (2.0 if alive else 0.6)):
 		Kit.blob(leaves, Vector3(rng.randf_range(-length / 2.0, length / 2.0), rng.randf_range(-0.05, 0.15), rng.randf_range(-1.5, 1.5)),
-			rng.randf_range(0.5, 0.8), "plane", Vector3(1.2, 0.35, 1.0), 6)
+			rng.randf_range(0.5, 0.8) * (1.0 if alive else 0.5), "plane" if alive else "withered", Vector3(1.2, 0.35, 1.0), 6)
+	if not alive:
+		return leaves
 	for k in int(length):
 		var p := Vector3(rng.randf_range(-length / 2.0, length / 2.0), 2.35, rng.randf_range(-1.2, 1.2))
 		Kit.blob(g, p, 0.1, "#4a2a4a", Vector3(1.0, 1.5, 1.0), 5)
@@ -474,10 +551,13 @@ static func pergola(parent: Node3D, at: Vector3, yaw: float, length: float = 6.0
 
 ## An apartment block (insula) on a street: shops with wide openings on the ground floor, brick
 ## storeys above with small windows and a wooden balcony, a tiled roof. Faces +Z (the street).
-static func insula(parent: Node3D, at: Vector3, yaw: float, floors: int = 4, width: float = 14.0) -> void:
+## Lost: the roof and the top storey gone, the balcony fallen into the street.
+static func insula(parent: Node3D, at: Vector3, yaw: float, floors: int = 4, width: float = 14.0, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	const STOREY := 3.2
 	const DEPTH := 10.0
+	if not whole:
+		floors = maxi(1, floors - 1)
 	var h := floors * STOREY
 	Kit.box(g, Vector3(0, h / 2.0, 0), Vector3(width, h, DEPTH), "brick")
 	var shops := int(width / 3.5)
@@ -489,6 +569,9 @@ static func insula(parent: Node3D, at: Vector3, yaw: float, floors: int = 4, wid
 		for k in shops * 2:
 			var x := -width / 2.0 + (k + 0.5) * (width / (shops * 2))
 			Kit.box(g, Vector3(x, f * STOREY + 1.4, DEPTH / 2.0 + 0.01), Vector3(0.6, 0.9, 0.05), "dark", false)
+	if not whole:  # the balcony down in the street, the roof open to the sky
+		Kit.box(g, Vector3(0, 0.3, DEPTH / 2.0 + 1.8), Vector3(width * 0.8, 0.12, 1.4), "deadwood", false, Vector3(0.3, 0, 0.1))
+		return
 	Kit.box(g, Vector3(0, STOREY + 0.1, DEPTH / 2.0 + 0.7), Vector3(width * 0.8, 0.12, 1.4), "wood", false)  # the balcony
 	for k in 4:
 		Kit.box(g, Vector3(-width * 0.4 + k * width * 0.8 / 3.0, STOREY * 0.5, DEPTH / 2.0 + 1.3), Vector3(0.14, STOREY, 0.14), "wood", false)
@@ -500,11 +583,13 @@ static func insula(parent: Node3D, at: Vector3, yaw: float, floors: int = 4, wid
 # ---------- statues ----------
 
 ## The she-wolf who suckled Romulus and Remus: the bronze wolf on a marble plinth, the twins
-## beneath her. Faces +Z.
-static func she_wolf(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+## beneath her. Faces +Z. Lost: green with age, and the twins gone from under her.
+static func she_wolf(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
 	var g := Kit.group(parent, at, yaw)
 	Kit.box(g, Vector3(0, 0.6, 0), Vector3(1.2, 1.2, 2.0), "marble")
-	var wolf := Greek.beast(g, Vector3(0, 1.2, 0), 0.0, "wolf", "bronze", 1.1)
+	var wolf := Greek.beast(g, Vector3(0, 1.2, 0), 0.0, "wolf", "bronze", 1.1, whole)
+	if not whole:
+		return wolf
 	for x: float in [-0.12, 0.14]:  # the twins, kneeling under her, faces turned up
 		Kit.blob(g, Vector3(x, 1.35, 0.05 + x), 0.1, "bronze", Vector3(1.0, 1.3, 1.0), 6)
 		Kit.blob(g, Vector3(x, 1.52, 0.1 + x), 0.07, "bronze")
@@ -513,31 +598,42 @@ static func she_wolf(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
 
 ## Marcus Aurelius on his horse, as he still rides on the Capitol: the bronze horse stepping out,
 ## its right foreleg raised, the emperor bearded and cloaked, his right arm stretched out over the
-## people. On a marble plinth. Faces +Z. Returns {"horse", "rider"}.
-static func equestrian(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+## people. On a marble plinth. Faces +Z. Lost: green with age, and the emperor thrown from his
+## horse, lying on the plinth. Returns {"horse", "rider"}.
+static func equestrian(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Dictionary:
 	var g := Kit.group(parent, at, yaw)
+	var metal := "bronze" if whole else "verdigris"
 	Kit.box(g, Vector3(0, 1.1, 0), Vector3(2.2, 2.2, 4.2), "marble")
 	Kit.box(g, Vector3(0, 2.25, 0), Vector3(2.4, 0.1, 4.4), "marble", false)
-	var horse := Greek.beast(g, Vector3(0, 2.3, 0), 0.0, "horse", "bronze", 1.35)
+	var horse := Greek.beast(g, Vector3(0, 2.3, 0), 0.0, "horse", "bronze", 1.35, whole)
 	(horse["legs"][0] as Node3D).rotation.x = -0.9  # the right foreleg lifted
-	var rider := Kit.group(g, Vector3(0, 2.3 + 2.05, 0.05))
-	Kit.box(rider, Vector3(0, 0.1, 0), Vector3(0.5, 0.3, 0.6), "bronze", false)  # seat and thighs
+	var rider := Kit.group(g, Vector3(0, 2.3 + 2.05, 0.05) if whole else Vector3(0.7, 2.6, -1.2))
+	if not whole:
+		rider.rotation = Vector3(0.2, 0.6, 1.4)
+	Kit.box(rider, Vector3(0, 0.1, 0), Vector3(0.5, 0.3, 0.6), metal, false)  # seat and thighs
 	for side: float in [-1.0, 1.0]:
-		Kit.box(rider, Vector3(side * 0.34, -0.3, 0.1), Vector3(0.12, 0.7, 0.14), "bronze", false, Vector3(0.2, 0, 0))
-	Kit.cylinder(rider, Vector3(0, 0.2, 0), 0.24, 0.75, "bronze", false, 8, 0.2)
-	Kit.blob(rider, Vector3(0, 0.95, 0), 0.26, "bronze", Vector3(1.3, 0.55, 0.85), 8)
-	Kit.box(rider, Vector3(-0.1, 0.65, -0.2), Vector3(0.55, 0.7, 0.08), "bronze", false, Vector3(0.2, 0, 0))  # the cloak
-	Kit.box(rider, Vector3(-0.45, 1.05, 0.25), Vector3(0.1, 0.1, 0.75), "bronze", false, Vector3(0.25, 0.5, 0))  # the right arm held out
-	Kit.blob(rider, Vector3(-0.62, 1.14, 0.55), 0.07, "bronze")
-	Kit.blob(rider, Vector3(0, 1.25, 0.02), 0.14, "bronze", Vector3(1.0, 1.15, 1.05), 8)
-	Kit.blob(rider, Vector3(0, 1.12, 0.09), 0.12, "bronze", Vector3(1.0, 1.1, 0.7), 6)  # the philosopher's beard
+		Kit.box(rider, Vector3(side * 0.34, -0.3, 0.1), Vector3(0.12, 0.7, 0.14), metal, false, Vector3(0.2, 0, 0))
+	Kit.cylinder(rider, Vector3(0, 0.2, 0), 0.24, 0.75, metal, false, 8, 0.2)
+	Kit.blob(rider, Vector3(0, 0.95, 0), 0.26, metal, Vector3(1.3, 0.55, 0.85), 8)
+	Kit.box(rider, Vector3(-0.1, 0.65, -0.2), Vector3(0.55, 0.7, 0.08), metal, false, Vector3(0.2, 0, 0))  # the cloak
+	Kit.box(rider, Vector3(-0.45, 1.05, 0.25), Vector3(0.1, 0.1, 0.75), metal, false, Vector3(0.25, 0.5, 0))  # the right arm held out
+	Kit.blob(rider, Vector3(-0.62, 1.14, 0.55), 0.07, metal)
+	Kit.blob(rider, Vector3(0, 1.25, 0.02), 0.14, metal, Vector3(1.0, 1.15, 1.05), 8)
+	Kit.blob(rider, Vector3(0, 1.12, 0.09), 0.12, metal, Vector3(1.0, 1.1, 0.7), 6)  # the philosopher's beard
 	return {"horse": horse, "rider": rider}
 
 
 ## A box of book rolls (capsa), with its lid off and a label on each roll; beside it a set of
-## wax tablets bound as a little book, a stylus, an inkpot and a reed pen.
-static func capsa(parent: Node3D, at: Vector3) -> void:
+## wax tablets bound as a little book, a stylus, an inkpot and a reed pen. Lost: the box tipped
+## over, the rolls spilled out grey and rotten, the tablets' wax gone.
+static func capsa(parent: Node3D, at: Vector3, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
+	if not whole:
+		Kit.mesh(g, Greek._prism(0.22, 0.45, 10), "#4a3a30", Vector3(0, 0.22, 0), Vector3(PI / 2.0, 0.3, 0))
+		for k in 5:
+			Kit.mesh(g, Kit._cyl(0.045, 0.3), "ashbed", Vector3(0.1 + k * 0.1, 0.05, 0.35 + (k % 2) * 0.1), Vector3(0, 0.3 * k, PI / 2.0))
+		Kit.box(g, Vector3(-0.45, 0.02, 0.1), Vector3(0.3, 0.04, 0.22), "deadwood", false, Vector3(0, 0.3, 0))
+		return
 	Kit.cylinder(g, Vector3.ZERO, 0.22, 0.45, "#6a3a24", true, 10)
 	Kit.cylinder(g, Vector3(0, 0.44, 0), 0.23, 0.03, "bronze", false, 10)
 	for k in 7:
@@ -569,8 +665,8 @@ static func _pediment(parent: Node3D, base: Vector3, width: float, rise: float, 
 
 ## The Colosseum as seen across the city: an oval of four storeys, three of arches and the
 ## attic above with its windows and masts for the awning. About 190 x 156 m and 48 m high at
-## `size` 1. Not solid.
-static func colosseum(parent: Node3D, at: Vector3, size: float = 1.0) -> void:
+## `size` 1. Not solid. Lost: the outer ring fallen along its southern side (-Z), as it stands today.
+static func colosseum(parent: Node3D, at: Vector3, size: float = 1.0, whole: bool = true) -> void:
 	var g := Kit.group(parent, at)
 	g.scale = Vector3.ONE * size
 	const A := 94.0
@@ -584,9 +680,13 @@ static func colosseum(parent: Node3D, at: Vector3, size: float = 1.0) -> void:
 		var seg := Vector3(cos(TAU * (k + 1) / n) * A, 0, sin(TAU * (k + 1) / n) * B).distance_to(
 			Vector3(cos(TAU * k / n) * A, 0, sin(TAU * k / n) * B))
 		var panel := Kit.group(g, p, yaw)
-		Kit.box(panel, Vector3(0, 24.0, -2.0), Vector3(seg + 0.3, 48.0, 4.0), "travertine", false)
-		for storey in 3:
+		var fallen := not whole and sin(t) < -0.2  # the side toward -Z
+		var high := 48.0 if not fallen else 30.0 - 12.0 * absf(cos(t))
+		Kit.box(panel, Vector3(0, high / 2.0, -2.0), Vector3(seg + 0.3, high, 4.0), "travertine", false)
+		for storey in (3 if not fallen else 2):
 			Kit.box(panel, Vector3(0, 4.2 + storey * 11.0, 0.02), Vector3(seg * 0.55, 7.0, 0.1), "dark", false)
+		if fallen:
+			continue
 		Kit.box(panel, Vector3(0, 42.0, 0.02), Vector3(seg * 0.2, 1.8, 0.1), "dark", false)  # the attic's window
 		if k % 2 == 0:
 			Kit.box(panel, Vector3(0, 50.0, -0.5), Vector3(0.3, 5.0, 0.3), "wood", false)  # a mast for the awning
@@ -595,7 +695,8 @@ static func colosseum(parent: Node3D, at: Vector3, size: float = 1.0) -> void:
 
 ## The Pantheon: a porch of eight columns under a pediment, the great round drum behind, and
 ## the dome with its open eye (oculus). 43 m across at `size` 1. The drum is solid. Faces +Z.
-static func pantheon(parent: Node3D, at: Vector3, yaw: float, size: float = 1.0) -> void:
+## Lost: three columns of the porch gone, and the inscription.
+static func pantheon(parent: Node3D, at: Vector3, yaw: float, size: float = 1.0, whole: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
 	g.scale = Vector3.ONE * size
 	const R := 22.0
@@ -606,9 +707,10 @@ static func pantheon(parent: Node3D, at: Vector3, yaw: float, size: float = 1.0)
 	Kit.cylinder(g, Vector3(0, 22.0 + R * 0.95 - 0.8, 0), 4.5, 1.0, "dark", false, 14)  # the oculus
 	Kit.box(g, Vector3(0, 11.0, R + 3.0), Vector3(22.0, 22.0, 8.0), "brick")  # the block joining porch and drum
 	for x: float in [-14.0, -10.0, -6.0, -2.0, 2.0, 6.0, 10.0, 14.0]:
-		column(g, Vector3(x, 0, R + 12.0), 14.0, 0.75, "giallo" if absf(x) < 3.0 else "marble")
+		if whole or not x in [-10.0, 6.0, 14.0]:
+			column(g, Vector3(x, 0, R + 12.0), 14.0, 0.75, "giallo" if absf(x) < 3.0 else "marble")
 	Kit.box(g, Vector3(0, 15.0, R + 8.5), Vector3(33.0, 2.2, 9.5), "marble", false)  # the entablature
-	Kit.box(g, Vector3(0, 15.0, R + 13.3), Vector3(20.0, 0.9, 0.1), "plaque", false)  # M AGRIPPA L F COS TERTIVM FECIT
+	Kit.box(g, Vector3(0, 15.0, R + 13.3), Vector3(20.0, 0.9, 0.1), "plaque" if whole else "dark", false)  # M AGRIPPA L F COS TERTIVM FECIT
 	_pediment(g, Vector3(0, 16.1, R + 12.6), 33.0, 7.4, 1.0)
 	for side: float in [-1.0, 1.0]:
 		Kit.box(g, Vector3(side * 8.25, 19.9, R + 8.5), Vector3(18.0, 0.4, 10.0), "roof", false, Vector3(0, 0, -side * 0.42))
