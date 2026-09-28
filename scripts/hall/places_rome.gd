@@ -35,7 +35,8 @@ const PATROLS := {"republic": "lictor", "empire": "vigil", "late": "miles", "fal
 ## The jobs most of the city is at, met more often than the rest.
 const COMMON := ["proletarius", "servus", "ancilla", "peregrinus", "baiulus", "matrona", "aquarius", "mendicus"]
 ## When each kind of person is out: the carters by night, the watch and the innkeepers always.
-const SHIFTS := {"mulio": "night", "caupo": "always", "lictor": "day", "vigil": "always", "miles": "always"}
+const SHIFTS := {"mulio": "night", "caupo": "always", "lictor": "day", "vigil": "always", "miles": "always", "meretrix": "night",
+	"vespillo": "night"}
 ## How far each age has fallen: greyer, darker, thicker air (urbs_life.gd).
 const GLOOM := {"republic": 0.0, "empire": 0.05, "late": 0.3, "fall": 0.65}
 ## The music zone of each age (music.gd): the town by day and night, then the same tune gone

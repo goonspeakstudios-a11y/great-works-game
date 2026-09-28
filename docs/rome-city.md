@@ -147,6 +147,24 @@ Decided with BB1 (2026-09-28):
   into someone and they curse you. The words appear over their heads and fade.
 - Screenshots: `--talk` stops the nearest citizen and asks about their work.
 
+## Tone
+Rome is written for adults (decided with BB1, 2026-09-28: "whimsical and immature" was the wrong
+note). The city's people speak plainly of what their world takes for granted:
+- slavery: the auction block by the Temple of Castor, sold families, the collar and the lash;
+- debt, rent and eviction;
+- fever and early death: mothers in childbirth, children, the pits outside the Esquiline gate;
+- fires and collapsing blocks;
+- bought elections, informers and gangs;
+- prostitution in the Subura (registered, by night, never explicit);
+- executions outside the gate;
+- grain riots.
+
+The chatter, gossip, favours and regulars' stories follow suit: Felix the baker's daughter dies in
+childbirth, and Hilarus wins his freedom crippled. The city's events include a slave auction, an
+execution procession, evictions, fires and a grain riot. Claude's persona for the citizens says the
+same: ordinary adults, frank, of their time, not comic and not explicit. The town music stays the
+bright theme BB1 asked for; the later ages darken it.
+
 ## The city's days and memory
 These live in `scripts/hall/urbs_town.gd`, with the content in `content/rome/town.json`. Add to that
 file to add life; no code is needed.

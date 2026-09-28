@@ -139,7 +139,8 @@ func _run_events(hour: float, at: Vector3) -> void:
 				want[e["id"]] = e
 			elif _events.has(e["id"]) and _events[e["id"]].get("walking", false):
 				want[e["id"]] = e  # a procession goes on to the end of its street
-		elif hour >= float(e["from"]) and hour < float(e["to"]) and (not e.get("market", false) or market_day()):
+		elif hour >= float(e["from"]) and hour < float(e["to"]) and (not e.get("market", false) or market_day()) \
+				and day % int(e.get("every", 1)) == 0:
 			want[e["id"]] = e
 	for id: String in _events.keys():
 		if not want.has(id):
@@ -181,7 +182,13 @@ func _begin(e: Dictionary) -> Dictionary:
 			var offset := Vector3(0.9 * ((k % 2) * 2 - 1), 0, 0)
 			var path: Array = road.map(func(q: Vector3) -> Vector3: return q + offset)
 			var first: Vector3 = path[0]
-			var p: Dictionary = spawn.call(crew[k], first - (path[1] - first).normalized() * (k / 2) * 1.8, 0.0)
+			var condemned: bool = crew[k] == "condemned"  # a slave carrying his crossbeam out to the gate
+			var p: Dictionary = spawn.call("servus" if condemned else crew[k], first - (path[1] - first).normalized() * (k / 2) * 1.8, 0.0)
+			if condemned:
+				var beam := Kit.box(p["root"], Vector3(0, 1.45, -0.1), Vector3(1.9, 0.16, 0.16), "deadwood", false)
+				beam.rotation.z = 0.05
+				(p["citizen"] as Dictionary)["title"] = "condemned man"
+				(p["citizen"] as Dictionary)["regular_lines"] = ["...", "Water. Please.", "Tell my wife. On the Aventine. Tell her."]
 			p["path"] = path
 			p["speed"] = 0.8
 			p["leg"] = 1
