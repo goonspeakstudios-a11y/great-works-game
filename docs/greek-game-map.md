@@ -47,7 +47,7 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
 | 13 | Herodotus | Croesus, happiest king alive, until he isn't; Thermopylae |
 | 14 | Thucydides | Race to recall a ship sent to destroy a city; Melos, where nothing you say works |
 | 15 | Pre-Socratics | The river that changes every visit; the world that refuses to change |
-| 16 | Plato | The Cave; the invisibility ring; Socrates' last day. Next: the city in speech, semi-CK3 (`docs/republic-city.md`) |
+| 16 | Plato | The Cave; the invisibility ring; Socrates' last day. **Built in the Hall (sprint 5):** the Academy, with the city in speech governed season by season at the council table (`docs/republic-city.md`); the Republic's scenes round it as stones and beats |
 | 17 | Aristotle, Ethics | The middle path; habits that become your controls |
 
 Playable look preview: https://claude.ai/artifact/HDxwQCS9Ze3Z8YGY2Q6YAb (story and mood are right;

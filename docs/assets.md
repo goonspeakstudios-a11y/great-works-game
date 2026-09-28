@@ -137,3 +137,11 @@ The Rhetorica's place uses `Rome.atrium`, `lararium`, `capsa`, `pergola`, `fount
 ship that sails between the islands, `People.figure` and `People.hero_arms` for the beats. The
 places are built in `scripts/hall/places_greek.gd`; the beats are in `content/greece/beats.json`.
 
+## In use (sprint 5)
+Plato's Academy uses `Thinkers.city_in_speech` as the board of the city game (built to the saved
+city's stage; after the just city `FALLS` takes its pieces away and `DECLINE` dims the soul's parts),
+and round it `cephalus_house`, `gyges`, `the_line`, `cave` (with a way up added onto its hill), `er`,
+`court`, `symposium` and `prison`; `Greek.herm`, `Kit.olive` for the grove; `People.figure` for
+Socrates, Glaucon and Adeimantus at the council table; `People.hero_arms` with two new heroes,
+Gyges (the ring) and Socrates (the cup). The music zone `academy` gains `crowd` (the city) and
+`salpinx` (its guardians).

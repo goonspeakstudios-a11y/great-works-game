@@ -1,10 +1,20 @@
-# The Republic: the city in speech (design for the next sprint)
+# The Republic: the city in speech (built in sprint 5)
 
 Decided with BB1 (2026-09-28): the Republic's mini-game is "logical, almost semi-CK3 political
 planning": a city you found and govern, whose people have hidden natures, where every law has
 consequences you can read, and which turns out, at the end, to have been your own soul. Nothing
 here is built yet except the board (`Thinkers.city_in_speech`, round 2), which already has the
 stages, the slots for what comes next, the three orders and the soul.
+
+**Built in sprint 5:** the simulation is `scripts/hall/city.gd` with its data in
+`content/greece/republic.json` (names, trades, ten stages, ten laws, ten events); the council table
+is `scripts/hall/council.gd`; the Academy (`places_greek.gd`, `academy()`) builds the board to the
+saved city's stage. The lesson points became eight (the Academy's room in `rooms.json`): the city
+of pigs and the just city count as the city reaches them; the soul is a beat on the board once the
+city is just; the decline is played at the table ("Let the generations pass") and shown on the
+board, but is not a point. The existential threats of the dialogue's date (about 411 BC) and of its
+writing (about 375 BC) are among the events: the plague, the grain route cut, the neighbours' war,
+stasis and the coup, Persian gold.
 
 ## The frame
 - You are the founder: "we are founders of a city" (379a). Socrates walks beside you on the hillside
