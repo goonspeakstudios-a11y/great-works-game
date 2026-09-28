@@ -67,6 +67,20 @@ static func _held(hand: Node3D, what: String, side: float) -> Node3D:
 		"rope":  # the cord round the wrists and the mast
 			Kit.mesh(g, TorusMesh.new(), "#c8b890", Vector3(0, 0, 0.02), Vector3(0, 0, PI / 2.0), Vector3(0.06, 0.08, 0.06))
 			Kit.box(g, Vector3(-side * 0.12, 0, 0.1), Vector3(0.24, 0.02, 0.02), "#c8b890", false)
+		"sword":  # drawn, the bronze blade up and forward
+			Kit.box(g, Vector3(0, 0.02, 0.02), Vector3(0.1, 0.02, 0.03), "bronze", false)  # the guard
+			Kit.box(g, Vector3(0, 0.05, 0.08), Vector3(0.03, 0.03, 0.12), "#3a2a1e", false)  # the grip
+			Kit.box(g, Vector3(0, 0.12, -0.2), Vector3(0.045, 0.012, 0.5), "bronze", false, Vector3(0.45, 0, 0))
+		"sheathed":  # the hand resting on the hilt at the hip
+			Kit.box(g, Vector3(0, -0.08, 0.02), Vector3(0.03, 0.14, 0.03), "#3a2a1e", false)
+			Kit.box(g, Vector3(0, -0.01, 0.02), Vector3(0.1, 0.02, 0.03), "bronze", false)
+		"stake":  # the olive stake, its point hardened in the fire
+			Kit.box(g, Vector3(0, 0.05, -0.35), Vector3(0.07, 0.07, 1.2), "wood", false, Vector3(0.2, 0, 0))
+			Kit.blob(g, Vector3(0, 0.17, -0.94), 0.05, "fire", Vector3(1.0, 1.0, 1.6), 5)
+		"ransom":  # a fold of the robes Priam brings, over the arm
+			Kit.box(g, Vector3(0, -0.04, -0.05), Vector3(0.22, 0.08, 0.3), "#6a2e4a", false)
+	for mi in g.find_children("*", "MeshInstance3D", true, false):
+		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return g
 
 

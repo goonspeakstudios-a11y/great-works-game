@@ -23,6 +23,7 @@ const Worlds := preload("res://scripts/hall/worlds.gd")
 const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Lettering := preload("res://scripts/hall/lettering.gd")
+const Beat := preload("res://scripts/hall/beat.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -132,6 +133,9 @@ var _seat := {}  # the bench you are sitting on
 var boats: Array = []  # boats on the waterway: {root, oars, speed, junction, landings, landing, route, to}
 var _riding := {}  # the boat you are sitting in
 var _mouse_before := Input.MOUSE_MODE_CAPTURED  # how the mouse was before a panel opened
+var beat: RefCounted = null  # the moment being played, as its hero or as yourself (Beat)
+var _beat_it := {}  # the interactable that started it
+var _beat_mark: Node3D  # the glow over where a beat asks you to walk
 
 
 static func ensure_actions() -> void:
@@ -350,6 +354,8 @@ func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> 
 
 
 func _load_place(to: String, keep: bool = false) -> void:
+	if beat:
+		_end_beat(false)
 	var held := _where_everyone_is() if keep else {}
 	var area_target := ""
 	if not to in ["hub", "nexus"] and Rooms.room(to).get("area_of", "") != "":
@@ -1313,6 +1319,9 @@ func _process(delta: float) -> void:
 	_nexus_clock(delta)
 	if _nexus_due > 0.0 and _t >= _nexus_due and not travelling and not _any_panel():
 		_nexus_catch_up()
+	if beat and not _any_panel():
+		_play_beat(delta)
+		return
 	if player.frozen:
 		_prompt.text = ""
 		return
@@ -1560,6 +1569,8 @@ func activate(it: Dictionary) -> void:
 			take_boat(it)
 		"toad":
 			pat_toad()
+		"beat":
+			_start_beat(it)
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1571,6 +1582,64 @@ func _read_stone(it: Dictionary) -> void:
 		var note := _learned(it.get("work", here), [it["id"]])
 		if note != "":
 			_show_read(it["note"] + note)
+
+
+## A beat: a moment of the book played in the first person, as its hero (Beat). You stand where
+## it happens, the hero's arms come up before your eyes, and the moment goes one short line and one
+## act at a time. When it ends its point is read like a lesson stone's: for a Theoros it counts,
+## and a piece of the place comes back when you turn away.
+func _start_beat(it: Dictionary) -> void:
+	var def := Beat.find(it.get("work", here), it["beat"])
+	if def.is_empty():
+		push_error("No beat %s for %s" % [it["beat"], it.get("work", here)])
+		return
+	if it.has("start"):
+		var at: Vector3 = it["start"]
+		player.position = Vector3(at.x, player.position.y, at.z)
+		if it.has("face"):
+			var to: Vector3 = it["face"] - at
+			player.rotation.y = atan2(-to.x, -to.z)
+	_beat_it = it
+	beat = Beat.new(def, it.get("work", here), it.get("id", ""), it.get("cast", {}), it.get("marks", {}))
+	beat.start(player)
+	if _where and beat.title != "":
+		_where.text = beat.title
+	_beat_mark = Kit.group(world, Vector3.ZERO)
+	Kit.cylinder(_beat_mark, Vector3(0, 0, 0), 0.35, 3.0, "glow", false, 8, 0.05)
+	Kit.unsolid(_beat_mark)
+	_beat_mark.hide()
+
+
+func _play_beat(delta: float) -> void:
+	beat.update(delta, player, Input.is_action_pressed("interact"))
+	if beat.done:
+		_end_beat(true)
+		return
+	player.frozen = not beat.free_to_walk()
+	var mark: Variant = beat.next_mark()
+	if is_instance_valid(_beat_mark):
+		_beat_mark.visible = mark != null
+		if mark != null:
+			_beat_mark.position = mark
+	_prompt.text = beat.prompt()
+
+
+## The moment ends: finished (its point is read, and counts for a Theoros) or left with Esc.
+func _end_beat(finished: bool) -> void:
+	var it := _beat_it
+	beat.finish(player)
+	beat = null
+	_beat_it = {}
+	if is_instance_valid(_beat_mark):
+		_beat_mark.queue_free()
+	player.frozen = _any_panel()
+	if _where:
+		_where.text = here_name
+	_prompt.text = ""
+	if finished and it.has("id") and it.has("note"):
+		_read_stone(it)
+	elif finished and it.has("after"):
+		_show_read(it["after"])
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.
@@ -1657,6 +1726,8 @@ func _input(event: InputEvent) -> void:
 			get_tree().quit()
 		elif _choice.visible:
 			pass  # a world's question has to be answered
+		elif beat and not _any_panel():
+			_end_beat(false)  # leave the moment; it can be played again
 		elif _any_panel():
 			_close_panels()
 		else:
@@ -1681,7 +1752,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
-		if _read_panel.visible or _map_panel.visible or _tree_panel.visible:
+		if beat and not _any_panel():
+			beat.press(player)
+		elif _read_panel.visible or _map_panel.visible or _tree_panel.visible:
 			_close_panels()
 		elif player.seated:
 			stand_up()
