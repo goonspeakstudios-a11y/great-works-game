@@ -11,23 +11,27 @@ if not exist "%GODOT%" (
 	exit /b 1
 )
 
+if not exist ".git" (
+	echo Not a git checkout ^(for example a GitHub "Download ZIP"^): starting the files here.
+	goto import
+)
 echo Updating from GitHub...
 git fetch origin main
 if errorlevel 1 (
 	echo Could not reach GitHub; starting the version already here.
-	goto run
+	goto import
 )
 git checkout main
 if errorlevel 1 (
 	echo Could not switch to main; you have local changes. Starting the version already here.
-	goto run
+	goto import
 )
 git pull --ff-only origin main
 if errorlevel 1 echo Could not update cleanly; you have local changes. Starting the version already here.
 
-echo Importing new assets...
+:import
+echo Importing new assets ^(the first time takes a minute^)...
 "%GODOT%" --headless --path . --import >nul 2>&1
 
-:run
 start "" "%GODOT%" --path .
 endlocal
