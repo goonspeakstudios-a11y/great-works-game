@@ -429,7 +429,7 @@
     "open": true,
     "place": "domus",
     "zone": "rome",
-    "where": "A house in Rome",
+    "where": "The Forum, under the Palatine",
     "when": "about 85 BC",
     "map": "85bc",
     "map_note": "About 85 BC the Roman Republic rules Italy, Spain's coasts, southern Gaul, Greece and the west of Asia Minor, but it is tearing itself apart: Sulla has just beaten King Mithridates in the East, while Marius's party holds Rome. Speeches in the courts can decide who lives.",
@@ -535,7 +535,8 @@
         "what": "household",
         "line": "The people of Rome are back: the crowd round the court, and your images on their places."
       }
-    ]
+    ],
+    "rome_zone": "palatine_forum"
   },
   "euclid-elements": {
     "open": true,

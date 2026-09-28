@@ -1,0 +1,546 @@
+{
+ "about": "Ancient Rome as the game's city, laid out on W. R. Shepherd's 'Plan of Republican Rome' (Historical Atlas, 1911; about 40 BC; public domain, docs/shepherd-republican-rome.jpg). Everything is in real metres east and north of the Roman Forum; the game shrinks it by 'scale' (game metres per real metre), north to -Z. Positions marked 'wikipedia' are from Wikipedia's coordinates; the rest are read off the plan and modern Rome and are approximate.",
+ "origin": [
+  41.8922,
+  12.4852
+ ],
+ "scale": 0.35,
+ "landmarks": {
+  "forum": {
+   "at": [
+    0,
+    0
+   ],
+   "source": "wikipedia"
+  },
+  "palatine": {
+   "at": [
+    144,
+    -431
+   ],
+   "source": "wikipedia"
+  },
+  "capitoline": {
+   "at": [
+    -177,
+    126
+   ],
+   "source": "wikipedia"
+  },
+  "circus_maximus": {
+   "at": [
+    41,
+    -701
+   ],
+   "source": "wikipedia"
+  },
+  "aventine": {
+   "at": [
+    -155,
+    -987
+   ],
+   "source": "wikipedia"
+  },
+  "quirinal": {
+   "at": [
+    259,
+    992
+   ],
+   "source": "wikipedia"
+  },
+  "porta_capena": {
+   "at": [
+    481,
+    -913
+   ],
+   "source": "wikipedia"
+  },
+  "lupercal": {
+   "at": [
+    -66,
+    -456
+   ],
+   "source": "wikipedia"
+  },
+  "temple_of_saturn": {
+   "at": [
+    -76,
+    50
+   ]
+  },
+  "curia_and_comitium": {
+   "at": [
+    -41,
+    67
+   ]
+  },
+  "rostra": {
+   "at": [
+    -58,
+    22
+   ]
+  },
+  "basilica_aemilia": {
+   "at": [
+    41,
+    56
+   ]
+  },
+  "basilica_sempronia": {
+   "at": [
+    -33,
+    -45
+   ]
+  },
+  "temple_of_castor": {
+   "at": [
+    41,
+    -45
+   ]
+  },
+  "temple_of_vesta": {
+   "at": [
+    78,
+    -59
+   ]
+  },
+  "regia": {
+   "at": [
+    91,
+    -45
+   ]
+  },
+  "velia": {
+   "at": [
+    265,
+    -167
+   ]
+  },
+  "via_nova_houses": {
+   "at": [
+    60,
+    -120
+   ],
+   "note": "where the orators lived in the 80s BC, under the Palatine's north slope above the Forum"
+  },
+  "temple_of_jupiter": {
+   "at": [
+    -190,
+    90
+   ]
+  },
+  "tiber_island": {
+   "at": [
+    -638,
+    -178
+   ]
+  },
+  "forum_boarium": {
+   "at": [
+    -290,
+    -367
+   ]
+  },
+  "theatre_of_pompey": {
+   "at": [
+    -1003,
+    345
+   ],
+   "note": "built 55 BC"
+  },
+  "flaminian_circus": {
+   "at": [
+    -760,
+    200
+   ]
+  },
+  "subura": {
+   "at": [
+    522,
+    367
+   ]
+  },
+  "carinae": {
+   "at": [
+    688,
+    145
+   ]
+  }
+ },
+ "hills": [
+  {
+   "name": "Capitoline",
+   "at": [
+    -177,
+    126
+   ],
+   "radius": 110,
+   "height": 33
+  },
+  {
+   "name": "Palatine",
+   "at": [
+    144,
+    -431
+   ],
+   "radius": 180,
+   "height": 38
+  },
+  {
+   "name": "Aventine",
+   "at": [
+    -155,
+    -986
+   ],
+   "radius": 280,
+   "height": 35
+  },
+  {
+   "name": "Caelian",
+   "at": [
+    895,
+    -579
+   ],
+   "radius": 300,
+   "height": 35
+  },
+  {
+   "name": "Esquiline",
+   "at": [
+    1144,
+    423
+   ],
+   "radius": 380,
+   "height": 40
+  },
+  {
+   "name": "Viminal",
+   "at": [
+    895,
+    757
+   ],
+   "radius": 200,
+   "height": 40
+  },
+  {
+   "name": "Quirinal",
+   "at": [
+    261,
+    988
+   ],
+   "radius": 300,
+   "height": 40
+  },
+  {
+   "name": "Janiculum",
+   "at": [
+    -1592,
+    -356
+   ],
+   "radius": 420,
+   "height": 70
+  }
+ ],
+ "tiber": {
+  "width": 100,
+  "course": [
+   [
+    -700,
+    2300
+   ],
+   [
+    -1000,
+    1500
+   ],
+   [
+    -1250,
+    900
+   ],
+   [
+    -1050,
+    300
+   ],
+   [
+    -700,
+    -60
+   ],
+   [
+    -560,
+    -420
+   ],
+   [
+    -700,
+    -1100
+   ],
+   [
+    -900,
+    -1700
+   ]
+  ],
+  "island": {
+   "at": [
+    -638,
+    -178
+   ],
+   "radius": 70
+  }
+ },
+ "wall": {
+  "name": "the Servian wall",
+  "height": 10,
+  "gates": [
+   {
+    "name": "Colline Gate",
+    "at": [
+     1020,
+     1625
+    ]
+   },
+   {
+    "name": "Viminal Gate",
+    "at": [
+     1351,
+     1147
+    ]
+   },
+   {
+    "name": "Esquiline Gate",
+    "at": [
+     1310,
+     490
+    ]
+   },
+   {
+    "name": "Querquetulan Gate",
+    "at": [
+     1144,
+     -300
+    ]
+   },
+   {
+    "name": "Caelimontane Gate",
+    "at": [
+     1103,
+     -746
+    ]
+   },
+   {
+    "name": "Capene Gate",
+    "at": [
+     481,
+     -913
+    ],
+    "source": "wikipedia"
+   },
+   {
+    "name": "Naevian Gate",
+    "at": [
+     315,
+     -1247
+    ]
+   },
+   {
+    "name": "Raudusculan Gate",
+    "at": [
+     25,
+     -1191
+    ]
+   },
+   {
+    "name": "Lavernal Gate",
+    "at": [
+     -348,
+     -1135
+    ]
+   },
+   {
+    "name": "Trigemina Gate",
+    "at": [
+     -514,
+     -579
+    ]
+   },
+   {
+    "name": "Flumentan Gate",
+    "at": [
+     -514,
+     -189
+    ]
+   },
+   {
+    "name": "Carmental Gate",
+    "at": [
+     -332,
+     -22
+    ]
+   },
+   {
+    "name": "Fontinal Gate",
+    "at": [
+     -116,
+     334
+    ]
+   },
+   {
+    "name": "Sanqual Gate",
+    "at": [
+     25,
+     701
+    ]
+   },
+   {
+    "name": "Salutary Gate",
+    "at": [
+     108,
+     902
+    ]
+   },
+   {
+    "name": "Quirinal Gate",
+    "at": [
+     232,
+     1091
+    ]
+   }
+  ]
+ },
+ "circus_maximus": {
+  "at": [
+   41,
+   -701
+  ],
+  "length": 600,
+  "width": 140,
+  "axis": [
+   0.8,
+   -0.6
+  ]
+ },
+ "zones": [
+  {
+   "id": "palatine_forum",
+   "name": "The Forum, under the Palatine",
+   "region": "Palatina",
+   "polygon": [
+    [
+     -110,
+     80
+    ],
+    [
+     60,
+     90
+    ],
+    [
+     230,
+     -40
+    ],
+    [
+     270,
+     -150
+    ],
+    [
+     190,
+     -230
+    ],
+    [
+     -40,
+     -200
+    ],
+    [
+     -100,
+     -100
+    ]
+   ],
+   "opens_with": "rhetorica-ad-herennium",
+   "note": "The Forum and the houses of the Via Nova under the Palatine's north slope: where the orators lived and the courts sat, about 85 BC."
+  },
+  {
+   "id": "capitolium",
+   "name": "The Capitol",
+   "region": "",
+   "at": [
+    -177,
+    126
+   ],
+   "radius": 150,
+   "opens_with": null
+  },
+  {
+   "id": "palatina",
+   "name": "The Palatine and the Velia",
+   "region": "Palatina",
+   "at": [
+    144,
+    -431
+   ],
+   "radius": 200,
+   "opens_with": null
+  },
+  {
+   "id": "suburana",
+   "name": "The Subura, the Carinae and the Caelian",
+   "region": "Suburana",
+   "at": [
+    650,
+    0
+   ],
+   "radius": 450,
+   "opens_with": null
+  },
+  {
+   "id": "esquilina",
+   "name": "The Esquiline",
+   "region": "Esquilina",
+   "at": [
+    1150,
+    450
+   ],
+   "radius": 350,
+   "opens_with": null
+  },
+  {
+   "id": "collina",
+   "name": "The Quirinal and the Viminal",
+   "region": "Collina",
+   "at": [
+    500,
+    1000
+   ],
+   "radius": 450,
+   "opens_with": null
+  },
+  {
+   "id": "aventinus",
+   "name": "The Aventine, the Circus and the river port",
+   "region": "",
+   "at": [
+    -100,
+    -850
+   ],
+   "radius": 450,
+   "opens_with": null
+  },
+  {
+   "id": "campus_martius",
+   "name": "The Campus Martius",
+   "region": "",
+   "at": [
+    -900,
+    900
+   ],
+   "radius": 700,
+   "opens_with": null
+  },
+  {
+   "id": "trans_tiberim",
+   "name": "Across the Tiber, the Janiculum",
+   "region": "",
+   "at": [
+    -1500,
+    -300
+   ],
+   "radius": 500,
+   "opens_with": null
+  }
+ ]
+}

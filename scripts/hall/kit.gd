@@ -203,6 +203,12 @@ static func plateau(parent: Node3D, radius: float, top: String = "earth", wall: 
 		solid(parent, fence, at + Vector3(0, 4.0, 0), Vector3(0, -a + PI / 2.0, 0))
 
 
+## A rounded hill `radius` across at its foot and `height` high: a flattened dome sunk to its middle in
+## the ground, so it rises gently instead of standing up in a point.
+static func hill(parent: Node3D, at: Vector3, radius: float, height: float, mat: String = "rock") -> MeshInstance3D:
+	return blob(parent, at, radius, mat, Vector3(1.0, height / radius, 1.0), 12)
+
+
 static func mountain(parent: Node3D, at: Vector3, radius: float, height: float, smoke: bool) -> void:
 	cylinder(parent, at, radius, height, "rock", false, 10, radius * 0.08)
 	cylinder(parent, at + Vector3(0, height * 0.78, 0), radius * 0.3, height * 0.22, "snow", false, 10, radius * 0.08)

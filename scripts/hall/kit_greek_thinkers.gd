@@ -506,8 +506,8 @@ static func prison(parent: Node3D, at: Vector3, yaw: float, back: Array) -> Dict
 		Areas._folk(area, g, Vector3(-2.2 + k * 3.6, 0, -2.2), Vector3(-1.2, 0, -5.5), {"robe": ["6a5a4a", "8a7a5a"][k], "beard": "short"}, back)
 	Areas._person(area, g, Vector3(0.6, 0, -0.2), Vector3(0, 0, -5.0), "jailer", back)
 	Areas._person(area, g, Vector3(6.0, 0, 5.0), Vector3(8.0, 0, 12.0), "xanthippe", back)
-	Kit.cylinder(g, Vector3(-30.0, 0, -70.0), 30.0, 22.0, "rock", false, 10, 2.4)  # the hills in the evening sun
-	Kit.cylinder(g, Vector3(35.0, 0, -80.0), 26.0, 16.0, "rock", false, 10, 2.0)
+	Kit.hill(g, Vector3(-30.0, 0, -70.0), 30.0, 14.0, "earth")  # the hills in the evening sun
+	Kit.hill(g, Vector3(35.0, 0, -80.0), 26.0, 10.0, "earth")
 	return Areas._spots(area, g, back, Vector3(3.0, 0, 1.5), Vector3(0, 0, 5.5), 4.0,
 		[Vector3(-8.0, 0, 1.0), Vector3(-8.0, 0, 4.0)], Vector3(8.0, 0, -2.0), -PI / 2.0, Vector3(-7.0, 0, -5.5), PI / 2.0)
 

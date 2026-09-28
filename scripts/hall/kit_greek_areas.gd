@@ -757,7 +757,7 @@ static func crossroads(parent: Node3D, at: Vector3, yaw: float, back: Array) -> 
 		Kit.box(g, Vector3(cos(a), 0, sin(a)) * 14.0 + Vector3(0, 0.03, 0), Vector3(2.5, 0.04, 28.0), "path", false,
 			Vector3(0, -a + PI / 2.0, 0))
 		var hill := Vector3(cos(a + PI / 3.0), 0, sin(a + PI / 3.0)) * 24.0
-		Kit.cylinder(g, hill + Vector3(0, -2.0, 0), 12.0, 16.0, "rock", false, 7, 3.0)  # the mountains between
+		Kit.hill(g, hill, 13.0, 12.0, "rock")  # the mountains between
 	Kit.box(g, Vector3(0, 0.8, 0), Vector3(0.6, 1.6, 0.6), "stone")  # the shrine-stone at the meeting
 	var cart := Kit.group(g, Vector3(3.0, 0.4, 3.0), 0.8)
 	cart.rotation.z = 1.4
