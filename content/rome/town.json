@@ -3,150 +3,773 @@
   "year_days": 24,
   "market_every": 8,
   "festivals": [
-    {"name": "the Saturnalia", "day": 22, "ages": ["republic", "empire", "late"], "at": [0, 10], "crowd": 12,
+    {
+      "name": "the Saturnalia",
+      "day": 22,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        0,
+        10
+      ],
+      "crowd": 12,
       "news": "It's the Saturnalia! No work, gifts, dice in the street, and the slaves sit at table with their masters. Io Saturnalia!",
-      "cries": ["Io Saturnalia!", "Dice! Who'll throw with me?", "A gift for you, a candle, cheap!", "Today I'm the master!"]},
-    {"name": "the Lupercalia", "day": 4, "ages": ["republic", "empire", "late"], "at": [60, -120], "crowd": 10,
+      "cries": [
+        "Io Saturnalia!",
+        "Dice in the open, and no aedile to stop it!",
+        "Today the slaves eat first. Tomorrow they don't.",
+        "Drink, it's the Saturnalia!"
+      ]
+    },
+    {
+      "name": "the Lupercalia",
+      "day": 4,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        60,
+        -120
+      ],
+      "crowd": 10,
       "news": "The Lupercalia! The young men run round the Palatine in goatskins and strike the women with thongs, for luck with children.",
-      "cries": ["Here they come!", "Strike me, strike me!", "Round the Palatine!"]},
-    {"name": "the Parilia, Rome's birthday", "day": 10, "ages": ["republic", "empire", "late"], "at": [-40, 20], "crowd": 10,
+      "cries": [
+        "Here they come, the Luperci!",
+        "Strike me, for a child this year!",
+        "Round the Palatine, naked as wolves!"
+      ]
+    },
+    {
+      "name": "the Parilia, Rome's birthday",
+      "day": 10,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        -40,
+        20
+      ],
+      "crowd": 10,
       "news": "The Parilia today: Rome's birthday. Bonfires tonight, and the shepherds leap over them.",
-      "cries": ["Happy birthday, Rome!", "Jump the fire!", "Straw for the fires!"]},
-    {"name": "the Roman Games", "day": 16, "ages": ["republic", "empire", "late"], "at": [41, -600], "crowd": 14,
+      "cries": [
+        "Jump the fire, for purity!",
+        "Happy birthday, Rome!",
+        "Straw for the fires!"
+      ]
+    },
+    {
+      "name": "the Roman Games",
+      "day": 16,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        41,
+        -600
+      ],
+      "crowd": 14,
       "news": "The Roman Games! Races in the Circus all week. The whole city's going.",
-      "cries": ["To the Circus!", "Red! Red!", "White to win!", "Seats, seats!"]},
-    {"name": "Easter", "day": 6, "ages": ["late", "fall"], "at": [0, 10], "crowd": 10,
+      "cries": [
+        "To the Circus!",
+        "Red! Red! Put a curse on the Whites!",
+        "Seats! Seats for a copper!"
+      ]
+    },
+    {
+      "name": "Easter",
+      "day": 6,
+      "ages": [
+        "late",
+        "fall"
+      ],
+      "at": [
+        0,
+        10
+      ],
+      "crowd": 10,
       "news": "Easter. Christ is risen. The new Christians are baptised tonight, all in white.",
-      "cries": ["Christ is risen!", "Alleluia!", "To the church, quickly!"]}
+      "cries": [
+        "Christ is risen!",
+        "Alleluia!",
+        "To the church, quickly!"
+      ]
+    }
   ],
   "events": [
-    {"id": "funeral", "kind": "procession", "hour": 9.0, "every": 3, "ages": ["republic", "empire", "late", "fall"], "road": 0,
-      "crew": ["tibicen", "tibicen", "libitinarius", "matrona", "matrona", "proletarius", "proletarius", "servus", "servus"],
-      "cries": ["Ah! Ah! Ah!", "He was a good man!", "Make way for the dead!", "Go gently, father!"], "torches": false},
-    {"id": "wedding", "kind": "procession", "hour": 19.4, "every": 4, "ages": ["republic", "empire", "late"], "road": 3,
-      "crew": ["tibicen", "matrona", "matrona", "proletarius", "proletarius", "proletarius", "servus"],
-      "cries": ["Talasse! Talasse!", "Hymen, Hymenaee!", "Nuts for the children!", "Lift her over the threshold!"], "torches": true},
-    {"id": "sacrifice", "kind": "procession", "hour": 11.0, "every": 2, "ages": ["republic", "empire", "late"], "road": 1,
-      "crew": ["victimarius", "victimarius", "tibicen", "aedituus", "haruspex", "senator"],
-      "cries": ["Favete linguis! Keep holy silence!", "A white ox for the god!", "Garlands! Garlands!"], "torches": false, "ox": true},
-    {"id": "speech", "kind": "gathering", "from": 10.0, "to": 12.5, "ages": ["republic", "empire", "late"], "at": [-58, 30],
-      "speaker": "senator", "crowd": 8,
-      "cries": {"republic": ["Citizens! The grain must come before the games!", "Who will stand for the people, if not I?", "The Senate is the Republic!"],
-        "empire": ["Citizens! The Emperor's generosity feeds us all!", "Praise to the Senate and the Roman people!"],
-        "late": ["The city has its walls and its bread. Be grateful!", "The Emperor, far away, thinks of Rome!"]}},
-    {"id": "crier", "kind": "gathering", "from": 11.5, "to": 13.5, "ages": ["republic", "empire", "late"], "at": [20, 40],
-      "speaker": "praeco", "crowd": 3,
-      "cries": {"republic": ["Auction at the Temple of Castor! A house on the Carinae!", "Lost! A slave boy, Syrian, answers to Eros!"],
-        "empire": ["Games at the Amphitheatre, the Kalends! Fifty pairs of gladiators!", "Auction! Wine from Campania, a hundred jars!"],
-        "late": ["By order of the Prefect: bread at the steps at the ninth hour!", "Races at the Circus! Greens against Blues!"]}},
-    {"id": "market", "kind": "gathering", "from": 7.0, "to": 14.0, "market": true, "ages": ["republic", "empire", "late"], "at": [-290, -367],
-      "speaker": "holitor", "crowd": 12,
-      "cries": {"republic": ["It's market day! The country's come to town!", "Chickens! Eggs! Cheese from Tusculum!"],
-        "empire": ["Market day! Everything from the farms!", "Honey! Fresh honey!"],
-        "late": ["Market day, what there is of it.", "Beans, cheap!"]}},
-    {"id": "alms", "kind": "gathering", "from": 9.0, "to": 12.0, "ages": ["late", "fall"], "at": [-688, 690],
-      "speaker": "diaconus", "crowd": 8,
-      "cries": {"late": ["Bread for the poor, one each!", "God bless the bishop!"], "fall": ["Bread from the Pope's farms! One loaf each!", "Wait your turn!"]}}
+    {
+      "id": "funeral",
+      "kind": "procession",
+      "hour": 9.0,
+      "every": 3,
+      "ages": [
+        "republic",
+        "empire",
+        "late",
+        "fall"
+      ],
+      "road": 0,
+      "crew": [
+        "tibicen",
+        "tibicen",
+        "libitinarius",
+        "matrona",
+        "matrona",
+        "proletarius",
+        "proletarius",
+        "servus",
+        "servus"
+      ],
+      "cries": [
+        "Ah! Ah! Ah!",
+        "He was thirty-one.",
+        "Make way for the dead!",
+        "Who'll feed his children now?"
+      ],
+      "torches": false
+    },
+    {
+      "id": "wedding",
+      "kind": "procession",
+      "hour": 19.4,
+      "every": 4,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "road": 3,
+      "crew": [
+        "tibicen",
+        "matrona",
+        "matrona",
+        "proletarius",
+        "proletarius",
+        "proletarius",
+        "servus"
+      ],
+      "cries": [
+        "Talasse! Talasse!",
+        "Hymen, Hymenaee!",
+        "She's fourteen. He's forty. A good match, they say.",
+        "Lift her over the threshold, don't let her stumble!"
+      ],
+      "torches": true
+    },
+    {
+      "id": "sacrifice",
+      "kind": "procession",
+      "hour": 11.0,
+      "every": 2,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "road": 1,
+      "crew": [
+        "victimarius",
+        "victimarius",
+        "tibicen",
+        "aedituus",
+        "haruspex",
+        "senator"
+      ],
+      "cries": [
+        "Favete linguis! Keep holy silence!",
+        "A white ox for the god!",
+        "Garlands! Garlands!"
+      ],
+      "torches": false,
+      "ox": true
+    },
+    {
+      "id": "speech",
+      "kind": "gathering",
+      "from": 10.0,
+      "to": 12.5,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        -58,
+        30
+      ],
+      "speaker": "senator",
+      "crowd": 8,
+      "cries": {
+        "republic": [
+          "Citizens! The Senate buys your votes and starves your children!",
+          "Who paid you to stand there, Rufus?",
+          "Grain! Grain before games!",
+          "Pompey's soldiers in the Forum! Is this the Republic?"
+        ],
+        "empire": [
+          "Citizens, the Emperor's generosity feeds you all!",
+          "Praise to the Senate and the Roman people!",
+          "(muttering) Say it louder, he's paying."
+        ],
+        "late": [
+          "The city has its walls and its bread. Be grateful!",
+          "The Emperor in the east thinks of Rome!",
+          "(a voice) Then let him send bread!"
+        ]
+      }
+    },
+    {
+      "id": "crier",
+      "kind": "gathering",
+      "from": 11.5,
+      "to": 13.5,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        20,
+        40
+      ],
+      "speaker": "praeco",
+      "crowd": 3,
+      "cries": {
+        "republic": [
+          "Auction at the Temple of Castor! A house on the Carinae!",
+          "Lost! A slave boy, Syrian, answers to Eros!"
+        ],
+        "empire": [
+          "Games at the Amphitheatre, the Kalends! Fifty pairs of gladiators!",
+          "Auction! Wine from Campania, a hundred jars!"
+        ],
+        "late": [
+          "By order of the Prefect: bread at the steps at the ninth hour!",
+          "Races at the Circus! Greens against Blues!"
+        ]
+      }
+    },
+    {
+      "id": "market",
+      "kind": "gathering",
+      "from": 7.0,
+      "to": 14.0,
+      "market": true,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        -290,
+        -367
+      ],
+      "speaker": "holitor",
+      "crowd": 12,
+      "cries": {
+        "republic": [
+          "It's market day! The country's come to town!",
+          "Chickens! Eggs! Cheese from Tusculum!"
+        ],
+        "empire": [
+          "Market day! Everything from the farms!",
+          "Honey! Fresh honey!"
+        ],
+        "late": [
+          "Market day, what there is of it.",
+          "Beans, cheap!"
+        ]
+      }
+    },
+    {
+      "id": "alms",
+      "kind": "gathering",
+      "from": 9.0,
+      "to": 12.0,
+      "ages": [
+        "late",
+        "fall"
+      ],
+      "at": [
+        -688,
+        690
+      ],
+      "speaker": "diaconus",
+      "crowd": 8,
+      "cries": {
+        "late": [
+          "Bread for the poor, one each!",
+          "God bless the bishop!"
+        ],
+        "fall": [
+          "Bread from the Pope's farms! One loaf each!",
+          "Wait your turn!"
+        ]
+      }
+    },
+    {
+      "id": "auction",
+      "kind": "gathering",
+      "from": 9.0,
+      "to": 12.0,
+      "every": 2,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        45,
+        -25
+      ],
+      "speaker": "mango",
+      "crowd": 9,
+      "cries": {
+        "republic": [
+          "Fresh from Gaul, strong backs, taken this summer! Chalk on their feet, placards round their necks, read them!",
+          "A girl, fifteen, Greek, can read and sew! Healthy! Do I hear two thousand?",
+          "A cook, trained! Warranted not a runaway!"
+        ],
+        "empire": [
+          "Syrians, Thracians, a Briton! Warranted sound!",
+          "A scribe, Greek, writes a fair hand! Three thousand!",
+          "Two boys, brothers, sold together or apart!"
+        ],
+        "late": [
+          "A Goth, taken on the Danube! Strong!",
+          "A girl, twelve, from Cappadocia!",
+          "Cheap today, the war's brought plenty!"
+        ]
+      }
+    },
+    {
+      "id": "execution",
+      "kind": "procession",
+      "hour": 14.0,
+      "every": 5,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "road": 3,
+      "crew": [
+        "lictor",
+        "lictor",
+        "condemned",
+        "miles",
+        "miles"
+      ],
+      "cries": [
+        "Out to the Esquiline gate with him!",
+        "A slave who struck his master.",
+        "Don't look, children, don't look.",
+        "The birds will have him by tomorrow."
+      ],
+      "torches": false
+    },
+    {
+      "id": "eviction",
+      "kind": "gathering",
+      "from": 8.0,
+      "to": 10.0,
+      "every": 3,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        560,
+        330
+      ],
+      "speaker": "faenerator",
+      "crowd": 5,
+      "cries": {
+        "republic": [
+          "Out! The rent was due at the Kalends!",
+          "Where will we go? The baby's sick!",
+          "Take the bed, take the pots, that settles half of it."
+        ],
+        "empire": [
+          "By the owner's order, out by noon!",
+          "We've lived here nine years!",
+          "The furniture's forfeit. The door's forfeit."
+        ],
+        "late": [
+          "Out, all of you!",
+          "The Church will take us, or nobody will.",
+          "Sell the loom, it's all we have."
+        ]
+      }
+    },
+    {
+      "id": "fire",
+      "kind": "gathering",
+      "from": 15.0,
+      "to": 17.5,
+      "every": 4,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        480,
+        420
+      ],
+      "speaker": "proletarius",
+      "crowd": 10,
+      "cries": {
+        "republic": [
+          "Water! Buckets, from the fountain!",
+          "The top floors! Nobody got down from the top floors!",
+          "The speculators are here already, offering to buy the block while it burns."
+        ],
+        "empire": [
+          "The vigiles! Pull the wall down before it spreads!",
+          "My children were on the fifth floor!",
+          "Blankets, vinegar, here!"
+        ],
+        "late": [
+          "Fire in the Subura!",
+          "Get the old man out!",
+          "It's all gone. Everything."
+        ]
+      }
+    },
+    {
+      "id": "night_trade",
+      "kind": "gathering",
+      "from": 20.0,
+      "to": 24.0,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        520,
+        400
+      ],
+      "speaker": "meretrix",
+      "crowd": 4,
+      "cries": {
+        "republic": [
+          "Two asses, handsome.",
+          "Come in out of the street.",
+          "Not him, he never pays."
+        ],
+        "empire": [
+          "Two asses. Come in.",
+          "The room's warm.",
+          "Mind the pimp, he's in a mood."
+        ],
+        "late": [
+          "Two asses.",
+          "Come in, come in.",
+          "The priests walk past quicker every year."
+        ]
+      }
+    },
+    {
+      "id": "grain_riot",
+      "kind": "gathering",
+      "from": 12.0,
+      "to": 14.0,
+      "every": 7,
+      "ages": [
+        "republic",
+        "late"
+      ],
+      "at": [
+        20,
+        0
+      ],
+      "speaker": "proletarius",
+      "crowd": 14,
+      "cries": {
+        "republic": [
+          "Bread! Bread or blood!",
+          "The ships are late, the prices are up, and the Senate eats!",
+          "Stone them! Stone the aedile!"
+        ],
+        "late": [
+          "Bread! The Prefect hoards it!",
+          "Burn the Prefect's house!",
+          "The soldiers are coming!"
+        ]
+      }
+    }
   ],
-  "rain": {"chance": 0.3, "cries": ["Rain! Under the portico, quick!", "Mind the gutters!", "There goes the washing!", "Jupiter's pissing on us again."]},
+  "rain": {
+    "chance": 0.3,
+    "cries": [
+      "Rain. Under the portico.",
+      "The gutters will flood the low streets tonight.",
+      "There goes the washing.",
+      "The Tiber'll be up by morning. Mind the low flats."
+    ]
+  },
   "chatter": [
-    ["Salve, {b}! Busy?", "Always, {a}. You?"],
-    ["Did you hear about the fire on the Esquiline?", "Three floors. The landlord was asleep in Tibur, of course."],
-    ["{b}, you still owe me for the figs.", "Tomorrow, {a}, tomorrow."],
-    ["Hot today.", "Hotter up on the fifth floor, believe me."],
-    ["How's the wife, {b}?", "Louder than ever, {a}, thank you."],
-    ["Going to the baths?", "After the eighth hour. Save me a place."],
-    ["The price of oil!", "Don't start me, {a}. Don't start me."],
-    ["Who's giving the games this year?", "Some aedile with more money than sense. Thank the gods."],
-    ["Your boy's grown, {b}.", "Eats like a legion, {a}."],
-    ["Seen the new shrine at the crossroads?", "Fresh paint and all. The neighbourhood paid."]
+    [
+      "Salve, {b}. Paid your rent?",
+      "Half of it, {a}. The other half's a promise."
+    ],
+    [
+      "Did you hear about the fire on the Esquiline?",
+      "Three floors. The landlord was at his villa. Nobody from the top got out."
+    ],
+    [
+      "{b}, you still owe me for the oil.",
+      "After the Nones, {a}. Swear on my mother."
+    ],
+    [
+      "How's your wife, {b}?",
+      "The fever broke last night. The baby didn't make it."
+    ],
+    [
+      "They sold Syrus.",
+      "After twenty years in the house? Where to? Some farm in Apulia. Chained gangs, they say."
+    ],
+    [
+      "Who are you voting for?",
+      "Whoever's paying most. Same as you."
+    ],
+    [
+      "The price of bread!",
+      "Don't, {a}. Just don't."
+    ],
+    [
+      "Your boy's joined the legions?",
+      "Twenty-five years. If he comes back, he'll be older than me."
+    ],
+    [
+      "There was a body by the fountain this morning.",
+      "Knifed. Nobody saw anything. Nobody ever does."
+    ],
+    [
+      "My cousin's selling her daughter to a household on the Palatine.",
+      "Better than starving, {a}. At least she'll eat."
+    ]
   ],
   "gossip": [
-    "You met {other}? The {title}? Keep an eye on your purse, that's all I'll say.",
-    "{other} the {title}? Owes half the street money. Charming, though.",
-    "Oh, {other}. The {title}. Their {kin} ran off with a Greek, did you know?",
-    "{other} the {title} is saving to buy a shop of their own. Good luck to them.",
-    "If {other} the {title} says prices are going up, they're going up. They always know."
+    "You met {other}? The {title}? Owes money to a lender on the Sacred Way. The kind who sends men round.",
+    "{other} the {title}? Buried two children this year. Doesn't talk about it.",
+    "{other}. The {title}. Their {kin} sleeps elsewhere most nights, and everyone knows where but them.",
+    "{other} the {title} is an informer. I'm not saying. I'm just saying, watch what you tell them.",
+    "{other} the {title} was a slave until two years ago. Bought their freedom with every coin they had. Look at them now."
   ],
   "favours": {
-    "asks": ["Do me a kindness, stranger. Tell {target}, the {title}, that {msg}. They'll know what it means.",
-      "If you pass {target} the {title}, tell them {msg}. I can't leave the shop."],
-    "messages": ["the money's ready", "the wife wants them home for dinner", "the jars came in", "the landlord's asking questions",
-      "the dog's back", "the party's tonight after all"],
-    "thanks": ["{from} sent you? Thank the gods. Tell them I'll be round.", "Ha! From {from}? Good news. Here, you're a friend now."],
-    "after": ["You told {target}? You're a good sort, stranger.", "Thanks for the message. They came by."]
+    "asks": [
+      "Do me a kindness, stranger. Tell {target}, the {title}, that {msg}. They'll know what it means.",
+      "If you pass {target} the {title}, tell them {msg}. I can't leave the shop."
+    ],
+    "messages": [
+      "the lender wants his money by the Ides",
+      "his brother's been taken by the watch",
+      "the midwife says come now",
+      "the landlord's men are coming tomorrow",
+      "the fever's in the house, keep the children away",
+      "don't come to the tavern tonight, you know why"
+    ],
+    "thanks": [
+      "{from} sent you? Gods. Thank you. I'll go now.",
+      "From {from}? Then it's worse than I thought. Thank you, stranger."
+    ],
+    "after": [
+      "You told {target}? Good. You're decent, for a foreigner.",
+      "Thank you for the message. It came in time. This time."
+    ]
   },
-  "sounds": {"faber": "forge", "textrix": "loom", "caupo": "crowd", "popinarius": "crowd", "pistor": "fire", "fullo": "fountain"},
+  "sounds": {
+    "faber": "forge",
+    "textrix": "loom",
+    "caupo": "crowd",
+    "popinarius": "crowd",
+    "pistor": "fire",
+    "fullo": "fountain"
+  },
   "regulars": [
-    {"id": "baker", "job": "pistor", "at": [150, 150],
-      "names": {"republic": "Lucius Numisius Felix", "empire": "Titus Numisius Felix", "late": "Numisia Prima", "fall": "Iohannes, a beggar"},
-      "jobs": {"fall": "mendicus"},
+    {
+      "id": "baker",
+      "job": "pistor",
+      "at": [
+        150,
+        150
+      ],
+      "names": {
+        "republic": "Lucius Numisius Felix",
+        "empire": "Titus Numisius Felix",
+        "late": "Numisia Prima",
+        "fall": "Iohannes, a beggar"
+      },
+      "jobs": {
+        "fall": "mendicus"
+      },
       "lines": {
-        "republic": ["Felix, baker, like my father. This oven's been going since before Hannibal. Well, near enough.",
-          "My girl's to be married at the Kalends. I'm baking the cake myself, and it'll be the best in Rome.",
-          "The wedding was grand. She cried, I cried, the donkeys cried. Now who's going to keep my accounts?"],
-        "empire": ["Numisius Felix. Four generations in this bakery. My great-grandfather baked the cake for his own daughter's wedding here.",
-          "The state buys our bread for the dole now. Steady money. The Felixes have never had it so good.",
-          "We've put the family name on the lintel in marble. Let them remember us."],
-        "late": ["Numisia. I run the bakery now: my husband's dead and my brothers took the guild posts. Bread's baked bread, whoever bakes it.",
-          "The guild of bakers is bound to the trade now, by law. Our children must be bakers too. Well. It's a living.",
-          "The old marble over the door says Felix. Nobody remembers who he was."],
-        "fall": ["See that doorway? There was a bakery there, they say. The Felixes. Bread for the whole street, once.",
-          "No flour, no oven, no Felixes. The Goths took the last of the grain.",
-          "Spare a crust, stranger? For the old baker's sake."]}},
-    {"id": "gladiator", "job": "gladiator", "at": [300, -120],
-      "names": {"republic": "Hilarus the Thracian", "empire": "Callistus the retiarius", "late": "Nicias, once a gladiator"},
+        "republic": [
+          "Felix, baker, like my father. The oven, the mill, three slaves, and the loan I took to buy them.",
+          "My girl's to be married at the Kalends. Fourteen. He's a good man, a fuller, twice her age. I'm baking the cake myself.",
+          "She died in childbirth, in the spring. The boy lived. He's with us now. I bake at night so I don't have to think."
+        ],
+        "empire": [
+          "Numisius Felix. Four generations in this bakery. My great-great-grandfather raised his grandson here when his daughter died.",
+          "The state buys our bread for the dole. Steady money, and the guild tells us what to charge and whom to hire.",
+          "We put the family name on the lintel in marble. So it outlasts us."
+        ],
+        "late": [
+          "Numisia. I run the bakery: my husband's dead, and the law binds bakers' children to the trade. My sons can't leave it if they want to.",
+          "The guild owns us now more than we own it. The Prefect's men count every loaf.",
+          "The name over the door says Felix. Nobody remembers who he was."
+        ],
+        "fall": [
+          "See that doorway? A bakery, once. The Felixes, four hundred years of them, they say.",
+          "The last of them starved in the siege, with the rest of the street.",
+          "Spare a crust, stranger? For the old baker's sake."
+        ]
+      }
+    },
+    {
+      "id": "gladiator",
+      "job": "gladiator",
+      "at": [
+        300,
+        -120
+      ],
+      "names": {
+        "republic": "Hilarus the Thracian",
+        "empire": "Callistus the retiarius",
+        "late": "Nicias, once a gladiator"
+      },
       "lines": {
-        "republic": ["Hilarus. Twelve fights, twelve alive. Three more and I get the wooden sword.",
-          "Fourteen now. The crowd shouted my name. One more, stranger. One more.",
-          "Free! The wooden sword, see? I'm going to open a tavern. You'll come."],
-        "empire": ["Callistus. Net and trident. The crowd loves a retiarius, and the murmillones hate us.",
-          "Hilarus's Tavern, down the Subura? My grandfather drank there. Some freed Thracian started it.",
-          "Twenty-one fights. The emperor himself nodded to me. Nodded!"],
-        "late": ["Nicias. I fought, when there were fights worth the name. Constantine doesn't like the games. The bishops don't either.",
-          "Now I teach young fools to hold a sword for the beast hunts. It's not the same.",
-          "When I'm gone, who'll remember how it was done?"]}},
-    {"id": "senator", "job": "senator", "at": [-30, 60],
-      "names": {"republic": "Quintus Caecilius Rufus", "empire": "Caecilius Rufus Antoninus", "late": "Caecilius Rufus Symmachianus", "fall": "Caecilius Rufus, of the Senate"},
+        "republic": [
+          "Hilarus. Twelve fights, twelve alive. Three more and they give me the wooden sword.",
+          "Fourteen. The last one was a boy from the same school. We shared bread for a year. The crowd wanted it finished.",
+          "Free, with the wooden sword. And a hand that won't close, and a leg that won't bend. I'll open a tavern. What else is there?"
+        ],
+        "empire": [
+          "Callistus. Net and trident. The crowd likes a retiarius who loses slowly.",
+          "Hilarus's tavern, in the Subura? My grandfather drank there. The old Thracian's scars were a legend.",
+          "Twenty-one fights. I've stopped counting the men. The emperor nodded to me once."
+        ],
+        "late": [
+          "Nicias. The emperors don't like the games now, and the bishops call it murder. They're not wrong. It was my life.",
+          "Now I train men for the beast hunts. The beasts don't pray.",
+          "When I'm gone, nobody will know how it was done. Maybe that's for the best."
+        ]
+      }
+    },
+    {
+      "id": "senator",
+      "job": "senator",
+      "at": [
+        -30,
+        60
+      ],
+      "names": {
+        "republic": "Quintus Caecilius Rufus",
+        "empire": "Caecilius Rufus Antoninus",
+        "late": "Caecilius Rufus Symmachianus",
+        "fall": "Caecilius Rufus, of the Senate"
+      },
       "lines": {
-        "republic": ["Caecilius Rufus. That theatre of Pompey's is a disgrace. A temple on top so it can't be pulled down! Clever. Disgraceful.",
-          "My son went to the theatre. My son! Next he'll be wearing Greek slippers.",
-          "Very well, I went. The seats are comfortable. Tell no one."],
-        "empire": ["Caecilius Rufus. My family has sat in the Senate since the Republic. We used to decide things. Now we agree beautifully.",
-          "My ancestor refused to set foot in Pompey's theatre. I have a box in it.",
-          "The emperor asked my advice today. I gave it. He did the opposite. We all smiled."],
-        "late": ["Caecilius Rufus. My family keeps the old gods, at home, quietly. Jupiter has been good to the Caecilii for five hundred years.",
-          "The emperor lives in the east. The bishop lives in the Lateran. We live in our libraries.",
-          "When I die, my grandson will be baptised. I know it. I shan't watch."],
-        "fall": ["Caecilius Rufus. Of the Senate. Such as it is. Totila took half of us to Campania as hostages.",
-          "My house on the Caelian has no roof now. We live by the river like everyone.",
-          "Six hundred years of Caecilii. I may be the last one who remembers the name meant something."]}},
-    {"id": "fishwife", "job": "cetarius", "at": [-470, -300], "gender": "f",
-      "names": {"republic": "Fabia Tertulla", "empire": "Fabia Procula", "late": "Fabia Maria", "fall": "Maria of the river"},
+        "republic": [
+          "Caecilius Rufus. My family has held the consulship four times. This year I'm buying a praetorship for my son. The price is outrageous.",
+          "Clodius's gangs, Milo's gangs, Pompey's soldiers in the Forum. Is this still the Republic? I vote with whoever will leave my estates alone.",
+          "My son won the praetorship. We're in debt for twenty years. He'll get a province and make it back, one way or another."
+        ],
+        "empire": [
+          "Caecilius Rufus. My family ran the Republic. Now we agree beautifully with the Emperor, and keep our heads.",
+          "A cousin was denounced last year. An informer, a lie about a statue. His estates went to the treasury. He opened his veins.",
+          "The Emperor asked my advice. I gave the answer he wanted. That's what advice is now."
+        ],
+        "late": [
+          "Caecilius Rufus. We keep the old gods at home, quietly. The laws forbid the sacrifices. The Prefect is my cousin.",
+          "The Christians are in the Senate now. They were burned in my grandfather's day. They remember.",
+          "When I die, my grandson will be baptised. I know it. I won't watch."
+        ],
+        "fall": [
+          "Caecilius Rufus, of the Senate, such as it is. Totila took half of us as hostages. Some didn't come back.",
+          "My house on the Caelian has no roof. My sons are dead in the war, one on each side.",
+          "Six hundred years of Caecilii. I may be the last one who remembers the name meant anything."
+        ]
+      }
+    },
+    {
+      "id": "fishwife",
+      "job": "cetarius",
+      "at": [
+        -470,
+        -300
+      ],
+      "gender": "f",
+      "names": {
+        "republic": "Fabia Tertulla",
+        "empire": "Fabia Procula",
+        "late": "Fabia Maria",
+        "fall": "Maria of the river"
+      },
       "lines": {
-        "republic": ["Fabia. Fish. My mother sold fish on this bank and so will my daughters, if I can keep them off the boats.",
-          "The mullet are running. Rich men's cooks fight over them. I let them.",
-          "My eldest has a fisherman. Very handsome. Smells like me."],
-        "empire": ["Fabia. Fish, like all the Fabiae on this bank since forever.",
-          "Oysters from Lake Lucrinus now. The rich eat them by the hundred. I sell them by the hundred.",
-          "The bridge downstream's new. Still the same river."],
-        "late": ["Fabia Maria. I was baptised last Easter, but I still pour a bit of wine for the river god. Just in case.",
-          "Fish on Fridays now, for the Christians. Business has never been better.",
-          "The river's older than any god. I'll keep them both happy."],
-        "fall": ["Maria. The river feeds us now that the aqueducts are cut. Fish and water, that's Rome.",
-          "The mill boats scare the fish. But bread is bread.",
-          "My grandmother's grandmother sold fish right here. The river doesn't care who rules."]}},
-    {"id": "barber", "job": "tonsor", "at": [220, 250],
-      "names": {"republic": "Stephanus the barber", "empire": "Stephanus the younger", "late": "Stephanus, barber of the Subura"},
+        "republic": [
+          "Fabia. Fish. My husband fished, till the river took him. I kept the stall and his debts.",
+          "The lender came again. I gave him half. He looked at my daughter. I'll sell the stall before I give him her.",
+          "My eldest's married a fisherman. I hope the river's kinder to her than it was to me."
+        ],
+        "empire": [
+          "Fabia. Fish, like all the Fabiae on this bank. Widows, most of us. The river takes the men.",
+          "Oysters now, from Lake Lucrinus, for the rich. I sell a hundred and eat none.",
+          "A child washed up by the bridge. Nobody claimed it. Nobody ever does."
+        ],
+        "late": [
+          "Fabia Maria. Baptised at Easter. I still pour wine for the river. It's older than any god.",
+          "Fish on the fast days for the Christians. Business has never been better, which tells you something.",
+          "The priest says the poor are blessed. The poor would like a word with him."
+        ],
+        "fall": [
+          "Maria. The river feeds us now the aqueducts are cut. Fish and water. And the fevers that come with it.",
+          "In the siege we ate the fish before they were dead, and then there weren't any.",
+          "My grandmother's grandmother sold fish right here. The river doesn't care who rules."
+        ]
+      }
+    },
+    {
+      "id": "barber",
+      "job": "tonsor",
+      "at": [
+        220,
+        250
+      ],
+      "names": {
+        "republic": "Stephanus the barber",
+        "empire": "Stephanus the younger",
+        "late": "Stephanus, barber of the Subura"
+      },
       "lines": {
-        "republic": ["Stephanus. Sit! You'll hear everything worth hearing in this chair, and some things that aren't.",
-          "Did you hear? The aedile's wife and the gladiator. No? Sit down, sit down.",
-          "You're a regular now, stranger. Regulars get the good gossip and the sharp razor."],
-        "empire": ["Stephanus, like my father and his father. The chair's the same. Mind the crack.",
-          "Everyone wants a beard like the emperor's now. Hadrian did that. Ruined barbers for a generation.",
-          "You again! You look like you need a trim and a story."],
-        "late": ["Stephanus. Same chair, same crack, four hundred years. Well, I tell people four hundred.",
-          "The monks want their heads shaved on top. Easy money. They don't tip.",
-          "Stay a while. There aren't so many to talk to as there were."]}}
+        "republic": [
+          "Stephanus. A freedman. Sit. You'll hear everything worth hearing in this chair, and more that isn't.",
+          "The aedile's wife and the gladiator. Everyone knows. The aedile knows. He's paid for the games anyway.",
+          "Careful what you say near the man two chairs down. He sells what he hears."
+        ],
+        "empire": [
+          "Stephanus, like my father. Same chair. Informers get their hair cut too, so I talk about the weather.",
+          "Everyone wants the Emperor's beard. Everyone wants the Emperor's favour. The beard's easier.",
+          "A man was taken from that chair last month. Treason, they said. He'd complained about the tax."
+        ],
+        "late": [
+          "Stephanus. Same chair, four hundred years, or so I tell people.",
+          "The monks want their crowns shaved. They don't tip, and they don't gossip, which is worse.",
+          "Stay a while. There are fewer to talk to every year."
+        ]
+      }
+    }
   ]
 }

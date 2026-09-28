@@ -110,10 +110,10 @@ sources, and from the late-antique guild and church records.
 | tabernarius | shopkeeper | every ground floor | R E L F | |
 | argentarius | banker | the shops of the Basilicas and the Forum | R E L | |
 | nummularius | money changer, assayer of coins | tables in the Forum | R E L | ● |
-| faenerator | moneylender | everywhere | R E L | |
+| faenerator | moneylender | everywhere | R E L | ● |
 | coactor, coactor argentarius | collector of auction payments | the auctions | R E L | |
 | praeco | crier, auctioneer, herald | the Forum, auctions, the games | R E L | ● |
-| mango, venalicius | slave dealer | the slave market near the Temple of Castor | R E L | |
+| mango, venalicius | slave dealer | the slave market near the Temple of Castor | R E L | ● |
 | unguentarius | perfumer | the Vicus Unguentarius | R E L | ● |
 | thurarius | incense dealer | the Vicus Turarius | R E L | |
 | librarius | bookseller, copyist | the Argiletum, the Vicus Sandalarius | R E L | ● |
@@ -171,7 +171,7 @@ sources, and from the late-antique guild and church records.
 | fictor | maker of sacrificial cakes | the priesthoods | R E L | |
 | astrologus, mathematicus | astrologer (expelled from the city now and then) | the Circus, street corners | R E L | |
 | libitinarius | undertaker | the grove of Libitina on the Esquiline | R E L F | ● |
-| vespillo | corpse bearer (by night) | the undertakers | R E L F | |
+| vespillo | corpse bearer (by night) | the undertakers | R E L F | ● |
 | pollinctor | embalmer, washer of the dead | the undertakers | R E L | |
 | praefica | hired mourner | funerals | R E L | |
 | designator | master of funerals and of seats at the games | the undertakers | R E L | |
@@ -201,6 +201,7 @@ sources, and from the late-antique guild and church records.
 |---|---|---|---|---|
 | servus, ancilla | slave, maid | everywhere; perhaps a third of the city in the late Republic (unverified) | R E L F | ● |
 | libertus, liberta | freedman, freedwoman (in every trade above) | everywhere | R E L F | ● |
+| veteranus | discharged soldier, often maimed, often in debt despite the promised land | everywhere | R E L F | ● |
 | atriensis, ianitor, ostiarius | steward of the hall, doorkeeper | great houses | R E L | |
 | cubicularius | chamberlain | great houses, the palace | R E L | |
 | cellarius, dispensator | storekeeper, steward | households | R E L | |
@@ -231,5 +232,5 @@ sources, and from the late-antique guild and church records.
 |---|---|---|
 | peregrinus | the free foreigner in the city: Greeks, Syrians, Egyptians, Jews, Gauls, Spaniards, Africans, Germans | ● |
 | proletarius | the propertyless citizen, counted only by his children; the grain dole's crowd | ● |
-| meretrix, leno | prostitute, pimp (registered with the aediles, taxed from Caligula) | |
+| meretrix, leno | prostitute, pimp (registered with the aediles, taxed from Caligula) | ● meretrix, by night |
 | latro, fur | bandit, thief | |

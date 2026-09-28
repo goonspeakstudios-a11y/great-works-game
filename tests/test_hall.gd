@@ -1169,7 +1169,7 @@ func test_the_city_has_its_days_and_remembers_you() -> void:
 	check(hall._talk_panel._log.contains("Felix, baker"), "Felix begins his story")
 	hall._close_panels()
 	hall.activate(felix)
-	check(hall._talk_panel._log.contains("married"), "and goes on with it next time")
+	check(hall._talk_panel._log.contains("married"), "and goes on with it next time (his daughter's marriage)")
 	hall._close_panels()
 	var someone: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "citizen" and not i["citizen"].has("regular"))[5]
 	hall.activate(someone)
