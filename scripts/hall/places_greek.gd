@@ -16,6 +16,7 @@ extends RefCounted
 ##   argos()   #9 Aeschylus: the house of Atreus, the hill of Ares, and the theatre it was played in
 ##   thebes()  #10 Sophocles: Thebes in the plague, where three roads meet, Antigone's tomb, the theatre
 ##   cithaeron() #11 Euripides: Pentheus's palace, Mount Cithaeron and its maenads, the theatre
+##   thinkery() #12 Aristophanes: Strepsiades' house, Socrates' Thinkery across the street, the theatre
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1306,4 +1307,85 @@ static func _cithaeron_lessons(world: Node3D, work: String, room: Dictionary, ou
 		"marks": {"glade": Areas._at(mr, Vector3(-4.0, 0, 9.0)), "fir": Areas._at(mr, Vector3(0, 14.0, -6.0)),
 			"agave": Areas._at(mr, Vector3(5.0, 1.6, 2.0))}})
 	spots["agave"] = Areas._at(mr, Vector3(-3.0, 0, 12.0))
+	return flicker
+
+
+# ---------- #12 Aristophanes, the Clouds ----------
+
+## A street in Athens, 423 BC: Strepsiades' house at night (the son asleep, the horse in its stall,
+## the lamp), and across the street the Thinkery, its pupils bent over the ground, Socrates in his
+## basket in the air, the Clouds come down as women, the two Arguments in their cages; behind, the
+## theatre where the comedy was played, and Aristophanes by the way in. Lost, the lamps are out,
+## the Thinkery a burned shell, the pupils shades.
+static func thinkery(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 45.0)
+	Kit.plateau(world, 80.0, "earth", false)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 0), 5, 14.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 72.0, 44.0, "path")
+	var poet := _teacher(world, room, b, stage, Vector3(0, 0, 38.0), 0.0, Vector3(0, 0, 40.8), out, spots)
+	Greek.mask(world, Vector3(0.9, 1.0, 38.2), 0.0, "comic", 0.6, b.has("teacher"))
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 39.5), 0.0, Vector3(-4.2, 0, 41.1)]],
+		Vector3(-7.0, 1.6, 36.5), 0.3, Vector3(-6.4, 0, 38.3), Vector3(6.5, 0, 37.0), Vector3(6.5, 0, 38.2))
+	for p: Vector3 in [Vector3(-10, 0, 32), Vector3(12, 0, 30), Vector3(-34, 0, 0), Vector3(36, 0, -6)]:
+		sway.append(Kit.plane_tree(world, p, 1.0, b.has("leaves")))
+	Kit.box(world, Vector3(0, 0.012, 12.0), Vector3(6.0, 0.02, 30.0), "paving" if b.has("walkway") else "path", false)  # the street
+	var house := Areas.strepsiades_house(world, Vector3(-16, 0, 14), 0.0, b)
+	take.call(house)
+	var school := Areas.thinkery(world, Vector3(17, 0, 6), 0.0, b)
+	take.call(school)
+	var play := Greek.theatre(world, Vector3(0, 0, -48), 0.0, 12, b.has("walkway"))
+	for k in 6:  # the chorus of Clouds in the orchestra
+		var at: Vector3 = (play["root"] as Node3D).transform * Vector3(-3.0 + (k % 3) * 3.0, 0, 1.0 + (k / 3) * 2.5)
+		people.append(People.figure(world, at, 0.0, "cloud", not b.has("household")))
+	_way(world, [Vector3(0, 0, 34), Vector3(0, 0, 28)])
+	_way(world, [Vector3(0, 0, -4), Vector3(0, 0, -26)])
+	out.append(Places.seat(world, Vector3(16.0, 0, 38.0), Vector3(0, 0, -1), "Sit and watch the street"))
+	flicker.append_array(_thinkery_lessons(world, work, room, out, spots, house, school, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 69.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [poet] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## The Clouds' six points: the debts (a beat, a night in Strepsiades' bed), the Thinkery's pupils,
+## the man in the basket (a beat, at the Thinkery's door), the two Arguments in their cages, the son
+## who learns too well, and the fire (a beat: burn the Thinkery down).
+static func _thinkery_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, house: Dictionary,
+		school: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var hr: Node3D = house["root"]
+	var sr: Node3D = school["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("thinkery", Areas._at(sr, Vector3(-5.0, 0, 3.0)), Areas._at(sr, Vector3(-2.0, 0, 0.0)), "Watch the pupils at their studies")
+	stele_stone.call("arguments", Areas._at(sr, Vector3(-6.5, 0, 11.0)), Areas._at(sr, Vector3(-8.0, 0, 8.0)), "Look at the two Arguments")
+	stele_stone.call("consequences", Areas._at(hr, Vector3(4.0, 0, 3.0)), Areas._at(hr, Vector3(3.0, 0, -4.5)), "Look at the son's bed")
+
+	var door := Areas._at(sr, Vector3(0, 0, -3.0))
+	out.append({"kind": "beat", "pos": Areas._at(hr, Vector3(-1.0, 0, 3.0)), "start": Areas._at(hr, Vector3(-3.0, 0, -2.4)),
+		"face": Areas._at(hr, Vector3(3.0, 0, -4.5)), "work": work, "id": "debts", "beat": "the_debts",
+		"text": "Lie awake, as Strepsiades", "note": note.call("debts"), "cast": {}, "marks": {"door": door + Vector3(0, 1.6, 0),
+			"son": Areas._at(hr, Vector3(3.0, 0.6, -4.5))}})
+	spots["debts"] = Areas._at(hr, Vector3(-1.0, 0, 3.0))
+	out.append({"kind": "beat", "pos": door + Vector3(-2.0, 0, 5.0), "work": work, "id": "basket", "beat": "the_basket",
+		"text": "Knock at the Thinkery", "note": note.call("basket"), "cast": {},
+		"marks": {"door": door + Vector3(0, 0, 2.0), "basket": _in_world(school["basket"], world)}})
+	spots["basket"] = door + Vector3(-2.0, 0, 5.0)
+	out.append({"kind": "beat", "pos": door + Vector3(3.0, 0, 5.0), "work": work, "id": "laughter", "beat": "the_fire",
+		"text": "Take the ladder and the torch", "note": note.call("laughter"), "cast": {},
+		"marks": {"ladder": door + Vector3(4.0, 0, 1.5), "roof": door + Vector3(0, 5.0, -3.0)}})
+	spots["laughter"] = door + Vector3(3.0, 0, 5.0)
 	return flicker

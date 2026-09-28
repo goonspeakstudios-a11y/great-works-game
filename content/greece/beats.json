@@ -1663,5 +1663,117 @@
     }
    ]
   }
+ },
+ "aristophanes-the-comedies": {
+  "the_debts": {
+   "hero": "",
+   "title": "Strepsiades, the Clouds",
+   "point": "debts",
+   "steps": [
+    {
+     "eye": -0.6
+    },
+    {
+     "line": "“Ah me! Ah me! O King Jupiter, of what a terrible length the nights are! Will it never be day?”"
+    },
+    {
+     "line": "“I am not able, miserable man, to sleep, being tormented by my expenses, and my stud of horses, and my debts.”"
+    },
+    {
+     "act": "Light the lamp and count your debts",
+     "hold": 1.5
+    },
+    {
+     "line": "“What do I owe? Twelve minæ to Pasias. Why twelve minæ to Pasias? ... When I bought the blood-horse. Ah me!”"
+    },
+    {
+     "look": "son"
+    },
+    {
+     "line": "Your son, asleep in five blankets, dreams of the races: “You are acting unfairly, Philo! Drive on your own course.”"
+    },
+    {
+     "eye": 0.6
+    },
+    {
+     "look": "door"
+    },
+    {
+     "line": "“Do you see this little door and little house? ... This is a thinking-shop of wise spirits.”"
+    },
+    {
+     "line": "They teach, you hear, the worse argument, the one that wins though it speaks on the unjust side. No more debts."
+    }
+   ]
+  },
+  "the_basket": {
+   "hero": "",
+   "title": "At the Thinkery, the Clouds",
+   "point": "basket",
+   "steps": [
+    {
+     "go": "door",
+     "text": "Go to the Thinkery's door"
+    },
+    {
+     "act": "Knock"
+    },
+    {
+     "line": "A pupil tells you the mysteries: Socrates lately worked out how many of its own feet a flea can jump."
+    },
+    {
+     "look": "basket"
+    },
+    {
+     "line": "“Socrates! My little Socrates!” “Why callest thou me, thou creature of a day?”"
+    },
+    {
+     "line": "“I am walking in the air, and speculating about the sun.”"
+    },
+    {
+     "line": "“Who is it that compels them to borne along? Is it not Jupiter?” “By no means, but æthereal Vortex.”"
+    },
+    {
+     "act": "Sit on the sacred couch, and meet the Clouds",
+     "hold": 1.5
+    },
+    {
+     "line": "“Will you not, pray, now believe in no god, except what we believe in—this Chaos, and the Clouds, and the Tongue?”"
+    }
+   ]
+  },
+  "the_fire": {
+   "hero": "",
+   "title": "Strepsiades, the Clouds",
+   "point": "laughter",
+   "steps": [
+    {
+     "line": "Your son has beaten you, and proved it just. The Clouds tell you: this is what comes of loving what is wicked."
+    },
+    {
+     "line": "“Come forth with a ladder and with a mattock and then mount upon the thinking-shop and dig down the roof.”"
+    },
+    {
+     "go": "ladder",
+     "text": "Set up the ladder"
+    },
+    {
+     "look": "roof"
+    },
+    {
+     "act": "Tear at the roof with the mattock",
+     "hold": 2.0
+    },
+    {
+     "act": "Set the torch to it"
+    },
+    {
+     "line": "The pupils run out coughing. Socrates chokes in the smoke. The audience laughs; the play is over."
+    },
+    {
+     "line": "In 399 BC, on trial for his life, Socrates told the jurors his oldest accusers were not his prosecutors, but this play."
+    }
+   ]
+  }
  }
 }

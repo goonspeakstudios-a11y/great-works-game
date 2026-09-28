@@ -1431,5 +1431,112 @@
         "line": "Euripides is himself again."
       }
     ]
+  },
+  "aristophanes-the-comedies": {
+    "open": true,
+    "place": "thinkery",
+    "zone": "theatre",
+    "where": "Athens: a debtor's house and the Thinkery",
+    "when": "staged 423 BC",
+    "map": "431bc",
+    "map_note": "In 423 BC Athens is eight years into its war with Sparta. The countryside has been burned again and again, and farmers like Strepsiades crowd into the city. The demagogue Cleon leads the assembly; the sophists sell cleverness to the sons of the rich; and Socrates, not yet fifty, questions everyone in the marketplace.",
+    "statues": [
+      {
+        "name": "Cleon",
+        "beard": "short",
+        "note": "Cleon, the loud leather-seller who led the Athenian assembly after Pericles. Aristophanes mocked him so savagely that Cleon took him to court. In the Clouds the Moon complains that Athens has elected him general."
+      }
+    ],
+    "greeting": "Ha! A visitor. Sit, sit. Today we laugh at the cleverest men in Athens, and at the fools who pay them. You will laugh too. Then, perhaps, you will stop laughing.",
+    "greeting_lost": "A shade in an empty theatre. Nobody laughs any more. The Thinkery is ash; I lit the fire myself, in a way. Sit down anyway: a comedy is still a comedy.",
+    "gift": "Aristophanes gives you a comic mask, its mouth wide open in a grin. \"Wear it when you make fun of someone. And remember a joke can outlive the man it's about, and follow him into court.\"",
+    "author": "Aristophanes",
+    "life": "about 446 - 386 BC",
+    "book": "The Clouds",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "4a3a2a",
+      "beard": "short",
+      "beard_color": "4a3a2a",
+      "robe": "7a3a2a",
+      "trim": "d8b060",
+      "old": false
+    },
+    "persona": "You are Aristophanes of Athens, about 423 BC, the greatest comic poet of Athens, young, sharp, bawdy, patriotic and conservative. You wrote the Clouds: old Strepsiades, ruined by his son Phidippides' horses, sends him (and then goes himself) to Socrates' Thinkery to learn the Unjust Argument that can beat his creditors; the pupils measure fleas and stare at the ground; Socrates hangs in a basket, walking in the air and speculating about the sun; the Clouds are the new gods and Vortex has replaced Zeus; the Just and Unjust Arguments fight and the Unjust wins; the son learns so well that he beats his father and proves it just; Strepsiades burns the Thinkery down. The play came third, and you revised it. You mock Socrates together with the natural philosophers and sophists, whatever the real man was. You speak with jokes, puns and outrageous comparisons, and quote the play in William James Hickie's prose translation.",
+    "summary": "A comedy. Strepsiades, a farmer crushed by the debts his son's racehorses have run up, hears that at the Thinkery next door Socrates teaches the Unjust Argument, which can win any case. He enrols himself, fails, and sends his son. There the pupils measure fleas' jumps, Socrates hangs in a basket in the air, the Clouds are worshipped and Zeus is replaced by Vortex. The Just and Unjust Arguments fight over the boy, and the Unjust wins. The son cheats the creditors, then beats his father and proves it is right to. Strepsiades, too late, burns the Thinkery down.",
+    "facts": [
+      "The Clouds came third of three at the Dionysia of 423 BC. The version we read was partly revised afterwards.",
+      "In Plato's Apology Socrates names the play's picture of him as the oldest and most dangerous slander against him.",
+      "Socrates is said to have stood up in the theatre during the play, so the audience could compare him with his mask.",
+      "Aristophanes wrote about forty comedies. Eleven survive.",
+      "In Plato's Symposium Aristophanes and Socrates dine together as friends, the story goes, years after the Clouds."
+    ],
+    "questions": [
+      "Why does Strepsiades go to Socrates?",
+      "What is the Unjust Argument?",
+      "Was it fair to make fun of Socrates?",
+      "Why does he burn the Thinkery down?"
+    ],
+    "home": "theatre",
+    "props": "Strepsiades' house at night with the son asleep and the horse in its stall, the Thinkery across the street with its pupils bent over the ground, its map of the world, Socrates in his basket, the Clouds come down as women, the two Arguments in their cages, and the theatre where it was played",
+    "lesson": [
+      {
+        "id": "debts",
+        "label": "Debts",
+        "point": "Old Strepsiades, a farmer who married a grand city wife, is ruined by his son's racehorses. Awake at night counting his debts, he has an idea: learn from the Thinkery how to talk his way out of them."
+      },
+      {
+        "id": "thinkery",
+        "label": "The Thinkery",
+        "point": "In the Thinkery pupils measure how far a flea jumps and study what is under the earth with their heads down. Aristophanes lumps Socrates with the scientists and sophists: clever talk about useless things."
+      },
+      {
+        "id": "basket",
+        "label": "The man in the basket",
+        "point": "Socrates hangs in a basket, walking in the air and speculating about the sun. The new learning has no gods: the Clouds make the rain, and Vortex has taken the place of Zeus."
+      },
+      {
+        "id": "arguments",
+        "label": "The two Arguments",
+        "point": "The Just and the Unjust Argument fight over the young. The Unjust wins by mocking old-fashioned virtue: making the weaker argument the stronger, which is what the sophists were said to sell."
+      },
+      {
+        "id": "consequences",
+        "label": "The son learns",
+        "point": "The son learns too well. He cheats the creditors, then beats his father and proves it just. The cleverness Strepsiades wanted for his money turns on him, and he has nothing to answer it with."
+      },
+      {
+        "id": "laughter",
+        "label": "A joke that kills",
+        "point": "Strepsiades burns the Thinkery down. Twenty-four years later, on trial for his life, Socrates said the old slanders of the comic stage were his most dangerous accusers."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "Strepsiades' lamp is lit, and the Thinkery's too."
+      },
+      {
+        "what": "walkway",
+        "line": "The houses of the street stand, and the theatre with them."
+      },
+      {
+        "what": "household",
+        "line": "The pupils are back at their studies, and the Clouds come down."
+      },
+      {
+        "what": "leaves",
+        "line": "The cicadas sing in the trees again."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over Athens."
+      },
+      {
+        "what": "teacher",
+        "line": "Aristophanes is himself again, and laughing."
+      }
+    ]
   }
 }
