@@ -177,6 +177,22 @@ BOOKS = {
              "start": r"201\. King Xerxes", "end": r"\Zx", "chapter": r"^(\d+)\. ", "chapter_label": "chapter"},
         ],
     },
+    "thucydides-the-peloponnesian-war": {  # the four passages the reading takes (Crawley numbers no sections)
+        "title": "Thucydides",
+        "translation": "tr. Richard Crawley (1874), public domain",
+        "parts": [
+            {"title": "History of the Peloponnesian War", "urls": [["https://www.gutenberg.org/cache/epub/7142/pg7142.txt", ""]],
+             "segments": [
+                 {"start": r"^Having now given the result of my inquiries", "end": r"possession for all time\.", "heading": "Book I", "once": True},
+                 {"start": r"^In the same winter the Athenians", "end": r"A Dorian war shall come and with it death\.", "heading": "Book II",
+                  "once": True},
+                 {"start": r"^So bloody was the march of the revolution", "end": r"(?=^While the revolutionary passions thus)",
+                  "heading": "Book III", "once": True},
+                 {"start": r"^The next summer Alcibiades sailed", "end": r"inhabited the place themselves\.", "heading": "Book V", "once": True},
+             ],
+             "start": r"Book I", "end": r"\Zx", "chapter": r"^Book ([IV]+)\s*$", "chapter_label": "Book"},
+        ],
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",

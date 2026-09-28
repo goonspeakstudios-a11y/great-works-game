@@ -147,6 +147,7 @@ const ZONES := {
 		{"file": "kerameikos_drone", "db": -10.0, "music": true, "needs": "sun"},
 		{"file": "kerameikos_aulos", "db": -10.0, "music": true, "needs": "teacher"},
 		{"file": "kerameikos_lament", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "crickets", "db": -26.0, "needs": "leaves"},
 		{"file": "fire", "db": -26.0, "needs": "lamps"},
 		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
 	# Ephesus and Elea (the Pre-Socratics): Heraclitus's river and fire, Parmenides' one tone.

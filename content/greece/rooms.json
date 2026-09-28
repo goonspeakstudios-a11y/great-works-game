@@ -1645,5 +1645,112 @@
         "line": "Herodotus is himself, and has a story for you."
       }
     ]
+  },
+  "thucydides-the-peloponnesian-war": {
+    "open": true,
+    "place": "athens_war",
+    "zone": "kerameikos",
+    "where": "Athens at war, Corcyra and Melos",
+    "when": "431 - 416 BC",
+    "map": "431bc",
+    "map_note": "In 431 BC Athens, with its empire of islands and its fleet, went to war with Sparta and its allies of the Peloponnese. The war lasted twenty-seven years, drew in almost every Greek city from Sicily to Asia Minor, and ended in 404 with Athens defeated, its walls pulled down and its empire gone.",
+    "statues": [
+      {
+        "name": "Pericles",
+        "beard": "short",
+        "note": "Pericles, who led Athens into the war with a plan: stay behind the walls, let the Spartans burn the fields, and win at sea. He died of the plague in 429. Thucydides thought no one after him could lead the city."
+      }
+    ],
+    "greeting": "Sit down. I will not entertain you. I will tell you exactly what happened, as well as I could find it out, because it will happen again, in some form, as long as men are what they are.",
+    "greeting_lost": "A shade among graves. Athens lost the war; I told you it would, if you read carefully. The dead are still here. Ask me what you like.",
+    "gift": "Thucydides gives you a bronze stylus, worn smooth. \"Write what was done, not what you wish had been done. And when you write what men said, write what the moment demanded they say.\"",
+    "author": "Thucydides",
+    "life": "about 460 - 400 BC",
+    "book": "History of the Peloponnesian War",
+    "portrait": {
+      "skin": "c09070",
+      "hair": "short",
+      "hair_color": "3a2a1e",
+      "beard": "short",
+      "beard_color": "3a2a1e",
+      "robe": "3a3a3a",
+      "trim": "8a6a3a",
+      "old": false
+    },
+    "persona": "You are Thucydides son of Olorus, an Athenian, about 410 BC, writing the history of the war between Athens and Sparta, which you began as soon as it broke out, believing it would be the greatest war yet. You were a general, failed to save Amphipolis in 424, and were exiled for twenty years, which let you talk to both sides. You caught the plague and recovered. You wrote your method (checking eyewitnesses against each other; speeches giving what the occasion demanded; a possession for all time, not a prize essay); Pericles' Funeral Oration over the first year's dead (Athens the school of Hellas, heroes with the whole earth for their tomb); the plague of Athens, which you describe exactly; the civil war at Corcyra, where words changed their meanings; and the Melian dialogue, where the Athenians tell the Melians that the strong do what they can and the weak suffer what they must. You are austere, precise, unsentimental, and you believe human nature does not change. You quote your history in Richard Crawley's translation.",
+    "summary": "The history of the great war between Athens and Sparta (431-404 BC), written by an Athenian general who lived through it, as an exact account for those who want to understand what happens when men and cities fight, because human nature does not change. Its most famous passages: Pericles' Funeral Oration, praising Athens as the school of Hellas; the plague that killed a third of the city and dissolved its morals; the civil war at Corcyra, where words lost their meanings; and the Melian dialogue, in which Athens tells a small neutral island that justice is only for equals, and then destroys it.",
+    "facts": [
+      "Thucydides began writing as soon as the war began, expecting it to be the greatest war yet.",
+      "He caught the plague of 430 BC himself, recovered, and described it so it could be recognized again.",
+      "As a general he failed to save Amphipolis in 424 BC, and was exiled for twenty years.",
+      "His history stops in the middle of a sentence, in 411 BC. The war went on until 404.",
+      "He never lets the gods explain anything. Every cause in his book is human."
+    ],
+    "questions": [
+      "Why did Athens and Sparta go to war?",
+      "What did Pericles say Athens was?",
+      "What did the plague do to people?",
+      "Were the Athenians right at Melos?"
+    ],
+    "home": "city",
+    "props": "the public cemetery of the Kerameikos with the cypress coffins, the empty bier and Pericles' platform; a street of Athens in the plague with the dying at the fountain and the pyres; the square of Corcyra with Hera's temple and houses burning; the walled town of Melos with the Athenian envoys, the Melian magistrates, the ships and the siege wall",
+    "lesson": [
+      {
+        "id": "method",
+        "label": "A possession for all time",
+        "point": "Thucydides writes an exact account for those who want to understand the past, since the future will resemble it. He checked eyewitnesses against each other; his speeches give what each moment demanded. A possession for all time."
+      },
+      {
+        "id": "funeral",
+        "label": "The Funeral Oration",
+        "point": "Over the first year's dead Pericles praises what they died for: a democracy, open and free, the school of Hellas. Heroes have the whole earth for their tomb. Within a year he is dead of the plague."
+      },
+      {
+        "id": "plague",
+        "label": "The plague",
+        "point": "The plague kills a third of Athens. Thucydides had it and describes it exactly. Despair kills as much as the disease; seeing all die alike, men lose all fear of gods and law and live for the moment."
+      },
+      {
+        "id": "stasis",
+        "label": "Civil war",
+        "point": "In Corcyra's civil war each side massacres the other. Words change their meanings: reckless daring is called loyalty, caution cowardice. War, Thucydides says, is a violent teacher."
+      },
+      {
+        "id": "melos",
+        "label": "The strong and the weak",
+        "point": "The Athenians tell the neutral Melians that justice is only a question between equals in power: the strong do what they can and the weak suffer what they must. They do not even pretend otherwise."
+      },
+      {
+        "id": "hope",
+        "label": "Hope, danger's comforter",
+        "point": "The Melians trust hope, the gods and Sparta, and refuse. Athens takes the island, kills the men, and sells the women and children as slaves. Hope is a comfort only to those who can afford to lose."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The funeral pyres and the torches burn."
+      },
+      {
+        "what": "walkway",
+        "line": "The city stands: its roads, its walls, its graves."
+      },
+      {
+        "what": "household",
+        "line": "The mourners are back, and the women's lament."
+      },
+      {
+        "what": "leaves",
+        "line": "The cypresses of the Kerameikos are dark and green."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over Athens."
+      },
+      {
+        "what": "teacher",
+        "line": "Thucydides is himself again."
+      }
+    ]
   }
 }

@@ -1910,5 +1910,128 @@
     }
    ]
   }
+ },
+ "thucydides-the-peloponnesian-war": {
+  "the_oration": {
+   "hero": "",
+   "title": "The Funeral Oration, Book II",
+   "point": "funeral",
+   "steps": [
+    {
+     "line": "The first winter of the war. The bones of the dead lie three days in a tent; then the procession to the public grave."
+    },
+    {
+     "go": "coffins",
+     "text": "Follow the coffins"
+    },
+    {
+     "line": "“Cypress coffins are borne in cars, one for each tribe ... one empty bier decked for the missing.”"
+    },
+    {
+     "go": "crowd",
+     "text": "Stand with the crowd below the platform"
+    },
+    {
+     "look": "pericles"
+    },
+    {
+     "line": "“Our constitution does not copy the laws of neighbouring states; we are rather a pattern to others than imitators ourselves.”"
+    },
+    {
+     "line": "“We cultivate refinement without extravagance and knowledge without effeminacy.”"
+    },
+    {
+     "line": "“In short, I say that as a city we are the school of Hellas.”"
+    },
+    {
+     "act": "Listen for your own dead",
+     "hold": 2.0
+    },
+    {
+     "line": "“For heroes have the whole earth for their tomb.”"
+    },
+    {
+     "line": "The next summer, the plague. Within two years Pericles is dead of it."
+    }
+   ]
+  },
+  "the_plague": {
+   "hero": "",
+   "title": "The plague, Book II",
+   "point": "plague",
+   "steps": [
+    {
+     "line": "“I had the disease myself, and watched its operation in the case of others.” The refugees are crammed inside the walls."
+    },
+    {
+     "go": "street",
+     "text": "Walk down the street"
+    },
+    {
+     "line": "“Half-dead creatures reeled about the streets and gathered round all the fountains in their longing for water.”"
+    },
+    {
+     "go": "fountain",
+     "text": "Go to the fountain"
+    },
+    {
+     "act": "Give water to the sick",
+     "hold": 2.0
+    },
+    {
+     "line": "“Neither were the physicians at first of any service ... but they died themselves the most thickly.”"
+    },
+    {
+     "line": "“The despair into which they instantly fell took away their power of resistance.”"
+    },
+    {
+     "look": "pyres"
+    },
+    {
+     "line": "Some throw their own dead on a stranger's pyre and run. “Fear of gods or law of man there was none to restrain them.”"
+    }
+   ]
+  },
+  "the_dialogue": {
+   "hero": "",
+   "title": "The Melian dialogue, Book V",
+   "point": "melos",
+   "steps": [
+    {
+     "line": "You are a magistrate of Melos, a small island that has stayed neutral. Thirty Athenian ships are in your bay."
+    },
+    {
+     "look": "envoys"
+    },
+    {
+     "line": "The envoys will not speak before the people, only to you. They will not pretend to have any right on their side."
+    },
+    {
+     "act": "Appeal to justice"
+    },
+    {
+     "line": "Right, they say, is only in question between equals in power: “the strong do what they can and the weak suffer what they must.”"
+    },
+    {
+     "act": "Appeal to the gods, and to Sparta"
+    },
+    {
+     "line": "“Hope, danger’s comforter, may be indulged in by those who have abundant resources.”"
+    },
+    {
+     "look": "ships"
+    },
+    {
+     "act": "Give your answer",
+     "hold": 1.5
+    },
+    {
+     "line": "“We will not in a moment deprive of freedom a city that has been inhabited these seven hundred years.”"
+    },
+    {
+     "line": "The siege; treachery inside. Athens “put to death all the grown men whom they took, and sold the women and children for slaves.”"
+    }
+   ]
+  }
  }
 }

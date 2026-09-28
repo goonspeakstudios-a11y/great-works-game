@@ -18,6 +18,7 @@ extends RefCounted
 ##   cithaeron() #11 Euripides: Pentheus's palace, Mount Cithaeron and its maenads, the theatre
 ##   thinkery() #12 Aristophanes: Strepsiades' house, Socrates' Thinkery across the street, the theatre
 ##   sardis()  #13 Herodotus: Croesus's Sardis, Delphi, and the pass of Thermopylae
+##   athens_war() #14 Thucydides: the Kerameikos, Athens in the plague, Corcyra, Melos
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1473,4 +1474,88 @@ static func _sardis_lessons(world: Node3D, work: String, room: Dictionary, out: 
 		"marks": {"wall": Areas._at(pr, Vector3(1.0, 0, -1.5)), "persians": Areas._at(pr, Vector3(0, 1.6, 26.0)),
 			"mountain": Areas._at(pr, Vector3(-9.0, 16.0, 10.0)), "hillock": Areas._at(pr, Vector3(-2.0, 0, -8.0))}})
 	spots["thermopylae"] = Areas._at(pr, Vector3(2.0, 0, -12.0))
+	return flicker
+
+
+# ---------- #14 Thucydides, the Peloponnesian War ----------
+
+## Athens at war and two places the war reached: the Kerameikos, the public cemetery, with the
+## cypress coffins, the empty bier and Pericles' platform; a street of Athens in the plague; the
+## square of Corcyra in civil war; and the walled town of Melos, the Athenian envoys and the Melian
+## magistrates meeting before it, the siege wall going up round it. Thucydides sits by the way in
+## with his stylus. Lost, the cypresses are dead and the mourners shades.
+static func athens_war(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 55.0)
+	Kit.plateau(world, 100.0, "earth", false)
+	Kit.sea(world, -6.0)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 0), 5, 18.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 90.0, 60.0, "path")
+	var writer := _teacher(world, room, b, stage, Vector3(0, 0, 50.0), 0.0, Vector3(0, 0, 52.8), out, spots)
+	flicker.append(Kit.desk(world, Vector3(0, 0, 48.8), PI, false, b.has("lamps")))
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 51.5), 0.0, Vector3(-4.2, 0, 53.1)]],
+		Vector3(-7.0, 1.6, 48.5), 0.3, Vector3(-6.4, 0, 50.3), Vector3(6.5, 0, 49.0), Vector3(6.5, 0, 50.2))
+	var graves := Areas.kerameikos(world, Vector3(0, 0, 12), 0.0, b)
+	take.call(graves)
+	var sick := Areas.plague(world, Vector3(-54, 0, -22), 0.0, b)
+	take.call(sick)
+	var faction := Areas.corcyra(world, Vector3(56, 0, -25), 0.0, b)
+	take.call(faction)
+	var island := Areas.melos(world, Vector3(-4, 0, -64), 0.0, b)
+	take.call(island)
+	_way(world, [Vector3(0, 0, 46), Vector3(0, 0, 32)])
+	_way(world, [Vector3(-16, 0, 0), Vector3(-44, 0, -8)])
+	_way(world, [Vector3(16, 0, 0), Vector3(44, 0, -10)])
+	_way(world, [Vector3(0, 0, -8), Vector3(0, 0, -40)])
+	out.append(Places.seat(world, Vector3(18.0, 0, 50.0), Vector3(0, 0, -1), "Sit among the graves"))
+	flicker.append_array(_athens_war_lessons(world, work, room, out, spots, graves, sick, faction, island, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 87.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [writer] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## Thucydides' six points: his method (by his desk), the Funeral Oration (a beat, among the
+## mourners), the plague (a beat, in the street), Corcyra, the Melian dialogue (a beat, as a
+## Melian magistrate), and hope, at the siege wall.
+static func _athens_war_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, graves: Dictionary,
+		sick: Dictionary, faction: Dictionary, island: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var gr: Node3D = graves["root"]
+	var sr: Node3D = sick["root"]
+	var ir: Node3D = island["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("method", Vector3(4.0, 0, 46.0), Vector3(0, 0, 49.0), "Read what he wrote of his method")
+	stele_stone.call("stasis", Areas._at(faction["root"], Vector3(-4.0, 0, 4.0)), Areas._at(faction["root"], Vector3(0, 0, -6.0)),
+		"Look at the temple of Hera")
+	stele_stone.call("hope", Areas._at(ir, Vector3(6.0, 0, 6.5)), Areas._at(ir, Vector3(6.0, 0, 4.0)), "Look at the siege wall")
+
+	out.append({"kind": "beat", "pos": Areas._at(gr, Vector3(-4.0, 0, 8.0)), "work": work, "id": "funeral", "beat": "the_oration",
+		"text": "Stand among the mourners", "note": note.call("funeral"), "cast": {},
+		"marks": {"coffins": Areas._at(gr, Vector3(-9.0, 0, 3.0)), "pericles": Areas._at(gr, Vector3(10.0, 2.8, 0)),
+			"crowd": Areas._at(gr, Vector3(2.0, 0, 3.0))}})
+	spots["funeral"] = Areas._at(gr, Vector3(-4.0, 0, 8.0))
+	out.append({"kind": "beat", "pos": Areas._at(sr, Vector3(0, 0, 11.0)), "work": work, "id": "plague", "beat": "the_plague",
+		"text": "Walk the street in the plague", "note": note.call("plague"), "cast": {},
+		"marks": {"fountain": Areas._at(sr, Vector3(0, 0, 0)), "pyres": Areas._at(sr, Vector3(0, 1.0, 12.0)),
+			"street": [Areas._at(sr, Vector3(-8.0, 0, 4.0)), Areas._at(sr, Vector3(8.0, 0, -4.0))]}})
+	spots["plague"] = Areas._at(sr, Vector3(0, 0, 11.0))
+	out.append({"kind": "beat", "pos": Areas._at(ir, Vector3(-3.0, 0, -9.5)), "start": Areas._at(ir, Vector3(0.5, 0, -7.6)),
+		"face": Areas._at(ir, Vector3(0, 0, -3.0)), "work": work, "id": "melos", "beat": "the_dialogue",
+		"text": "Meet the Athenian envoys, as a Melian", "note": note.call("melos"), "cast": {},
+		"marks": {"envoys": Areas._at(ir, Vector3(0, 1.6, -3.0)), "ships": Areas._at(ir, Vector3(20.0, 1.0, 20.0))}})
+	spots["melos"] = Areas._at(ir, Vector3(-3.0, 0, -9.5))
 	return flicker
