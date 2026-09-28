@@ -1134,6 +1134,53 @@ func test_the_city_has_day_and_night() -> void:
 	hall.free()
 
 
+## The city's calendar and memory: a funeral goes by at its hour and is gone again, rain comes and
+## the music hears it, the regulars keep their places and their stories, people know you again,
+## and pigeons, dogs and trades fill the streets.
+func test_the_city_has_its_days_and_remembers_you() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_hour": 8.9, "rome_day": 3}
+	hall.travel("urbs")
+	var town: RefCounted = hall.life.town
+	check(town != null, "the city keeps a calendar")
+	var regulars: Array = hall.interactables.filter(func(i): return i["kind"] == "citizen" and i["citizen"].has("regular"))
+	check(regulars.size() >= 4, "the regulars are in their places (%d)" % regulars.size())
+	check(regulars.any(func(i): return i["citizen"]["name"] == "Lucius Numisius Felix"), "the baker Felix among them")
+	var before: int = hall.people.size()
+	for k in 60:
+		hall.life.step(0.2, hall.player.global_position)
+	check(town._events.has("funeral"), "a funeral sets out at its hour on its day")
+	check(hall.people.size() > before + 6, "its mourners and pipers join the street")
+	town._events["funeral"]["walking"] = false
+	hall.life.hour = 12.8
+	town._run_events(12.8, hall.player.global_position)
+	check(not town._events.has("funeral"), "and when it has passed they are gone")
+	town._rain_from = 12.0
+	town._rain_to = 14.0
+	town.step(0.1, hall.player.global_position, 13.0, false)
+	check(town.raining and hall.life.music_back().has("rain"), "rain comes, and the music hears it")
+	check(town.today_news() != "", "and people talk about it")
+	check(hall.people.any(func(p): return not p.has("citizen") and p.has("legs") and p["legs"].size() == 2 and p.has("path")), "dogs trot along the streets")
+	check(not town._pigeons.is_empty(), "pigeons peck about the Forum")
+	var felix: Dictionary = regulars.filter(func(i): return i["citizen"]["name"] == "Lucius Numisius Felix")[0]
+	hall.activate(felix)
+	check(hall._talk_panel._log.contains("Felix, baker"), "Felix begins his story")
+	hall._close_panels()
+	hall.activate(felix)
+	check(hall._talk_panel._log.contains("married"), "and goes on with it next time")
+	hall._close_panels()
+	var someone: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "citizen" and not i["citizen"].has("regular"))[5]
+	hall.activate(someone)
+	hall._close_panels()
+	hall.activate(someone)
+	check(hall._talk_panel._log.contains("You again") or not hall._favour.is_empty() or hall._talk_panel._log.contains("sent you"), "and anyone knows you the second time")
+	hall._close_panels()
+	check(hall.progress.data["rome_met"].size() >= 2, "the city remembers who you have met")
+	hall.free()
+
+
 ## Each monument stands from the year it was built, as a ruin from its fall, and is gone after.
 func test_the_monuments_keep_their_years() -> void:
 	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")

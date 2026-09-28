@@ -18,6 +18,7 @@ const Places := preload("res://scripts/hall/places.gd")
 const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const Citizen := preload("res://scripts/hall/citizen.gd")
 const Life := preload("res://scripts/hall/urbs_life.gd")
+const Town := preload("res://scripts/hall/urbs_town.gd")
 
 ## Where the city crowds together in each age: [map position, share of the people].
 const HOTSPOTS := {
@@ -115,7 +116,29 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	var regions: Array = _regions(c, id)
 	var homes: Array = regions.map(func(r: Dictionary) -> String: return str(r["name"]).split(", ")[-1])
 	var life := Life.new()
-	_people(world, c, age, fab, people, out, homes, life)
+	var spawn: Callable = _people(world, c, age, fab, people, out, homes, life)
+	var town := Town.new()
+	town.streets = fab["streets"]
+	town.life = life
+	town.spawn = func(job: String, at: Vector3, yaw: float) -> Dictionary:
+		var p: Dictionary = spawn.call(job, at, yaw)
+		_cull([p])
+		return p
+	town.unspawn = func(p: Dictionary) -> void:
+		people.erase(p)
+		for k in range(out.size() - 1, -1, -1):
+			if out[k].get("follow") == p["root"]:
+				out.remove_at(k)
+		if is_instance_valid(p["root"]):
+			(p["root"] as Node3D).queue_free()
+	town.sound = DisplayServer.get_name() != "headless"
+	_regulars(spawn, id, out)
+	town.setup(world, id, int(progress.data.get("rome_day", 1)) if progress != null else 1, people)
+	life.town = town
+	if progress != null:
+		if not progress.data.has("rome_met"):
+			progress.data["rome_met"] = {}
+		life.met = progress.data["rome_met"]
 	_cull(people)
 	var sky := Node3D.new()  # the stars, over the city at night
 	world.add_child(sky)
@@ -179,7 +202,7 @@ static func _front(s: Dictionary) -> Vector3:
 ## their clients at their heels, people at their work at the river and the temples, people walking
 ## and standing about, and knots of them arguing by the monuments and the fountains.
 static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictionary, people: Array, out: Array, homes: Array,
-		life: RefCounted) -> void:
+		life: RefCounted) -> Callable:
 	var id: String = age["id"]
 	var talks: Array = c.get("talks", {}).get(id, [])
 	var total := int(age.get("people", 100))
@@ -234,6 +257,7 @@ static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictiona
 		p["citizen"] = who
 		p["shift"] = SHIFTS.get(job_id, "night" if rng.randf() < 0.05 else "day")
 		p["lot"] = rng.randf()
+		p["ground"] = ground
 		people.append(p)
 		out.append({"kind": "citizen", "pos": at, "follow": p["root"], "citizen": who,
 			"text": "Talk to %s, the %s" % [who["call"], who["title"]]})
@@ -339,6 +363,29 @@ static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictiona
 							client["speed"] = p["speed"]
 							client["ground"] = ground
 	life.people = people
+	return citizen
+
+
+## The regulars (town.json): the same few people in the same places, visit after visit, and their
+## families after them in the later ages.
+static func _regulars(spawn: Callable, age: String, out: Array) -> void:
+	for r: Dictionary in Town.data().get("regulars", []):
+		var names: Dictionary = r["names"]
+		if not names.has(age):
+			continue
+		var at := RomeMap.on_ground(r["at"])
+		var p: Dictionary = spawn.call(str(r.get("jobs", {}).get(age, r["job"])), at, 0.0)
+		var who: Dictionary = p["citizen"]
+		who["id"] = "regular_%s_%s" % [r["id"], age]
+		who["name"] = names[age]
+		who["call"] = str(names[age]).split(" ")[0].trim_suffix(",")
+		who["regular"] = r["id"]
+		who["regular_lines"] = r["lines"].get(age, [])
+		p["shift"] = "day"
+		p.erase("path")
+		for it: Dictionary in out:
+			if it.get("follow") == p["root"]:
+				it["text"] = "Talk to %s, the %s" % [who["call"], who["title"]]
 
 
 ## A crowd far down the street is not drawn, and casts no shadows.

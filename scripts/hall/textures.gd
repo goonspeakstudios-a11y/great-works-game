@@ -208,6 +208,11 @@ static func material(kind: String) -> Material:
 			world_tex.call(_r_slab(), 0.3)
 		"leaves":  # a garden's leaves: box, myrtle, vines
 			world_tex.call(_noise(Color("4a6a34"), Color("36522a"), Color("6a8a44"), 197), 1.0)
+		"graffiti_republic", "graffiti_empire", "graffiti_late":  # writing on the walls: red painted election notices and scratched words; later, the chi-rho
+			m.albedo_texture = _graffiti(kind.trim_prefix("graffiti_"))
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+			m.alpha_scissor_threshold = 0.5
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"awning":  # a shop's striped awning
 			world_tex.call(_stripes(Color("a8342a"), Color("e0d0b0")), 1.0)
 		"terracotta":
@@ -633,6 +638,39 @@ static func _r_slab() -> ImageTexture:
 			elif rng.randf() < 0.18:
 				c = c.darkened(0.06)
 			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## Writing on a wall, 64 x 32: lines of rough capitals (letter-like marks, painted red for the
+## election notices of the Republic and the Empire, scratched grey-black for graffiti), and in the
+## late city the chi-rho scratched beside them. Clear elsewhere.
+static func _graffiti(age: String) -> ImageTexture:
+	var img := Image.create(64, 32, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = age.length() * 13 + 7
+	var ink := Color("a8281e") if age != "late" else Color("3a3028")
+	var lines := 2 if age != "late" else 1
+	for row in lines:
+		var y0 := 3 + row * 12
+		var x := 2
+		while x < 58:
+			if rng.randf() < 0.18:
+				x += 3  # a space between words
+				continue
+			for dy in 7:  # one letter: a random stroke pattern on a 4 x 7 grid, like a rough capital
+				for dx in 4:
+					var edge := dx == 0 or dy == 0 or dy == 6 or dy == 3
+					if edge and rng.randf() < 0.55:
+						img.set_pixel(x + dx, y0 + dy, ink)
+			x += 6
+	if age == "late":  # the chi-rho
+		for k in 10:
+			img.set_pixel(40 + k, 16 + k, ink)
+			img.set_pixel(49 - k, 16 + k, ink)
+			img.set_pixel(45, 13 + k, ink)
+		for k in 4:
+			img.set_pixel(46 + (1 if k in [1, 2] else 0), 13 + k, ink)
 	return ImageTexture.create_from_image(img)
 
 

@@ -781,7 +781,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
 				if fallen:
 					floors = rng.randi_range(1, 2)
-				_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors)
+				_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors, id)
 	out["doors"] = doors
 	_draw(world, parts)
 	_trees(world, trees, fallen)
@@ -825,7 +825,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 ## One house of a block. `kind`: "insula" (flats over shops), "horreum" (a warehouse), "row" (a
 ## single storey of shops).
 static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floors: int, kind: String, rng: RandomNumberGenerator,
-		palette: Array, republic: bool, fallen: bool, trees: Array, doors: Array) -> void:
+		palette: Array, republic: bool, fallen: bool, trees: Array, doors: Array, age_id: String = "republic") -> void:
 	var y := ground(c)
 	var low := minf(y, minf(ground(c + b * Vector3(w / 2.0, 0, d / 2.0)), ground(c - b * Vector3(w / 2.0, 0, d / 2.0)))) - 1.0
 	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
@@ -895,6 +895,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.1, 1.5)), Vector3(c.x, y + 0.02, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.75))))
 		if fallen:
 			continue
+		if rng.randf() < 0.2:  # painted slogans and scratched words by the shop doors
+			add.call("quad", "graffiti_" + age_id, _face(b, c, Vector3(rng.randf_range(-w * 0.3, w * 0.3), 2.9 + y - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.6, 0.8)))
 		if rng.randf() < 0.4:
 			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled(Vector3(w * 0.6, 0.06, 1.8)),
 				Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 3.3, s * (d / 2.0 + 0.9))))
