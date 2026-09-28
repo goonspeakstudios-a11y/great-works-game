@@ -6,11 +6,11 @@
       "id": "e1",
       "title": "How to Read and Argue",
       "style": "puzzle",
-      "intro": "The classical tools for reading and arguing: definition, the syllogism, the common fallacies, the parts of a speech, and the geometric proof. These are enough to follow the arguments in every later module.",
+      "intro": "The classical tools for reading and arguing: definition, the syllogism, the common fallacies, and the geometric proof. These are enough to follow the arguments in every later module. (The art of the speech itself is learned in Rome, with the Rhetorica ad Herennium.)",
       "takeaways": [
         "Classification comes before argument. Genus, species, and difference are the basis of a definition.",
         "A syllogism is valid because of its form, whatever its content. Fallacies are arguments that only look valid.",
-        "Rhetoric has five parts: invention, arrangement, style, memory, and delivery. Euclid's method of building from axioms became the model of certain knowledge."
+        "Euclid's method of building from axioms became the model of certain knowledge."
       ]
     },
     {
@@ -80,17 +80,6 @@
       "read": "Prior Analytics I.1-7 (the syllogism) and Sophistical Refutations 4-5 (the thirteen fallacies).",
       "edition": "The Complete Works of Aristotle, ed. Jonathan Barnes, vol. 1 (Princeton); Prior Analytics tr. Robin Smith (Hackett)",
       "match": "1:Aristotle — the rest of the Organon"
-    },
-    {
-      "id": "rhetorica-ad-herennium",
-      "author": "",
-      "title": "Rhetorica ad Herennium",
-      "module": "e1",
-      "style": "puzzle",
-      "hours": 2,
-      "read": "Book I.2-4 (the five canons and the parts of a speech) and Book III.16-24 (the art of memory).",
-      "edition": "Tr. Harry Caplan (Loeb Classical Library 403)",
-      "match": "1:Rhetorica ad Herennium"
     },
     {
       "id": "euclid-elements",

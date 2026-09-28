@@ -17,6 +17,8 @@ const Choice := preload("res://scripts/hall/choice.gd")
 const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
+const Talk := preload("res://scripts/hall/talk.gd")
+const Citizen := preload("res://scripts/hall/citizen.gd")
 const Player := preload("res://scripts/hall/player.gd")
 const Progress := preload("res://scripts/hall/progress.gd")
 const Worlds := preload("res://scripts/hall/worlds.gd")
@@ -24,8 +26,6 @@ const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Lettering := preload("res://scripts/hall/lettering.gd")
 const Beat := preload("res://scripts/hall/beat.gd")
-const City := preload("res://scripts/hall/city.gd")
-const Council := preload("res://scripts/hall/council.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -52,7 +52,8 @@ const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give
 
 var offline := false  # tests: no music, no mouse capture, instant travel
 var doors: Array = []
-var here := ""  # "nexus", "hub" or a work id
+var here := ""  # "nexus", "hub" (Greece's Shore), "urbs" (the city of Rome) or a work id
+var regions: Array = []  # the parts of a city you walk through, named in the corner: {c: Vector2, r, name}
 var areas: Array = []  # other books with ground in this place: {work, c: Vector2, r, name}
 var backs := {}  # work -> the pieces of its part of this place that are back
 var area := ""  # the book whose ground you stand on (here, or one of the areas)
@@ -109,6 +110,11 @@ var _fade: ColorRect
 var _read_panel: PanelContainer
 var _read_text: RichTextLabel
 var _ask_panel: Panel
+var _talk_panel: Talk  # talking with someone in the city
+var _talking := {}  # the citizen you are talking with (their interactable)
+var life: RefCounted  # the city's day and its voices (urbs_life.gd), where there is one
+var landmarks: Array = []  # what stands in the city, for saying what's around: {name, pos}
+var _here_zone := ""  # the music zone the place asks for, when it is not the room's (the city's age)
 var _ask_portrait: TextureRect
 var _ask_name: Label
 var _ask_life: Label
@@ -126,8 +132,6 @@ var _map_note: Label
 var _tree_panel: Panel
 var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
 var _choice: PanelContainer  # a world asks who you are there (Choice)
-var _council: Panel  # the council table of the city in speech (Council)
-var _council_board := -1  # the city's stage when you sat down, to rebuild the board if it changed
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -199,12 +203,10 @@ func _ready() -> void:
 	_choice = Choice.new()
 	_choice.chosen.connect(_on_chosen)
 	_root.add_child(_choice)
-	_council = Council.new()
-	_council.acted.connect(_on_council_acted)
-	_root.add_child(_council)
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
+	author.chatted.connect(_on_chatted)
 	add_child(author)
 	if not offline:
 		music = Music.new()
@@ -236,10 +238,13 @@ func _ready() -> void:
 ## Any book's place from any spot: --view=place --work=<work id> --at=x,y,z --look=x,y,z [--stage=N]
 ## [--city=N: the city in speech at stage N, 0-9, on the Academy's board]
 func _stage_shot(view: String) -> void:
+	if _args.has("age"):  # --age=N: the city of Rome in its Nth age (0 Republic ... 3 the fall)
+		progress.data["rome_age"] = clampi(int(_args["age"]), 0, ROME_AGES - 1)
+		progress.data["rome_reached"] = ROME_AGES - 1
+	if _args.has("hour"):  # --hour=H: the city at that hour of its day
+		progress.data["rome_hour"] = float(_args["hour"])
 	if _args.has("city"):
-		var c: RefCounted = City.found(380)
-		c.stage = clampi(int(_args["city"]), 0, City.LAST_STAGE)
-		progress.data["city"] = c.to_dict()
+		progress.data["city_stage"] = clampi(int(_args["city"]), 0, CITY_LAST)
 	if view == "place" and _args.has("stage"):
 		var w: String = _args.get("work", "")
 		progress.learn(w, Rooms.room(w).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
@@ -262,6 +267,16 @@ func _stage_shot(view: String) -> void:
 	match view:
 		"place":
 			_stand(_vec(_args.get("at", "0,0,20")), _vec(_args.get("look", "0,0,0")))
+			if _args.has("talk"):  # --talk: stop the nearest citizen and ask about their work
+				var near: Array = interactables.filter(func(i): return i["kind"] == "citizen")
+				near.sort_custom(func(a, b): return player.position.distance_to(a["pos"]) < player.position.distance_to(b["pos"]))
+				if not near.is_empty():
+					activate(near[0])
+					_on_said("work", "What's your work like?")
+			if _args.has("fly"):  # --fly: hang where --at says (no falling) and look down at --look
+				player.seated = true
+				var to := _vec(_args.get("look", "0,0,0")) - player.position
+				player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
 			if _args.has("beat"):  # --beat=<name> [--press=N]: start that beat and go N steps into it
 				var it: Array = interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == _args["beat"])
 				if not it.is_empty():
@@ -394,6 +409,8 @@ func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> 
 func _load_place(to: String, keep: bool = false) -> void:
 	if beat:
 		_end_beat(false)
+	if here == "urbs" and life:
+		progress.data["rome_hour"] = life.hour  # the city's day goes on where you left it
 	var held := _where_everyone_is() if keep else {}
 	var area_target := ""
 	if not to in ["hub", "nexus"] and Rooms.room(to).get("area_of", "") != "":
@@ -410,6 +427,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 	var world_id: String = "greece"
 	if to == "nexus":
 		world_id = Nexus.world_reached(progress)
+	elif to == "urbs":
+		world_id = "rome"
 	elif not to in ["hub", "asset_test"]:
 		world_id = Rooms.room(to).get("world", "greece")
 	_view.size = Worlds.render_size(world_id, DisplayServer.window_get_size())
@@ -419,6 +438,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 		built = Nexus.build(world, Worlds.all(), doors, _nexus_shown(keep))
 	elif to == "hub":
 		built = Places.hub(world, doors, progress)
+	elif to == "urbs":
+		built = load("res://scripts/hall/places_rome.gd").urbs(world, Rooms.doors_of("rome"), progress, rome_age(), rome_age_reached())
 	elif to == "asset_test":
 		built = Places.asset_test(world)
 	else:
@@ -427,18 +448,22 @@ func _load_place(to: String, keep: bool = false) -> void:
 			if Rooms.room(d["work"]).get("area_of", "") == to:
 				stages[d["work"]] = _stage(d["work"])
 		if Rooms.room(to).get("place", "") == "academy":
-			stages["city"] = city().stage  # the city in speech stands on its board as far as you have governed it
+			stages["city"] = city_stage()  # the city in speech stands on its board as far as the talk has gone
 		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
-	if not to in ["hub", "nexus", "asset_test"] and not keep:
+	if not to in ["hub", "urbs", "nexus", "asset_test"] and not keep:
 		progress.visit(to)
 		progress.save()
 	here = to
 	restored_here = built.get("back", [])
 	areas = built.get("areas", [])
+	regions = built.get("regions", [])
+	landmarks = built.get("landmarks", [])
+	life = built.get("life")
+	_here_zone = str(built.get("zone", ""))
 	backs = built.get("backs", {})
 	area = ""  # worked out again on the next frame
 	if music:
-		music.play(_zone(to), restored_here)
+		music.play(_zone(to), life.music_back() if life else restored_here)
 	people = built.get("people", [])
 	squads = built.get("squads", [])
 	boats = built.get("boats", [])
@@ -478,6 +503,9 @@ func _load_place(to: String, keep: bool = false) -> void:
 		_where.text = here_name
 	if to == "nexus" and not keep:
 		_arrive_in_nexus()
+	if str(built.get("line", "")) != "":  # the city says what year it is
+		_quip = str(built["line"])
+		_quip_until = _t + 8.0
 	if not keep:
 		_ask_mode()
 
@@ -494,6 +522,9 @@ func _work_here() -> String:
 ## Crossing from one book's ground to another's: its name in the corner, its teacher at his age,
 ## and its music as far as its part of the place is back.
 func _check_area() -> void:
+	if not regions.is_empty():
+		_check_region()
+		return
 	var now := _work_here()
 	if now == area:
 		return
@@ -511,12 +542,31 @@ func _check_area() -> void:
 		music.play(_zone(area), backs.get(area, restored_here))
 
 
+## Walking a city: the name of the part of it you are in, in the corner (the nearest region's).
+func _check_region() -> void:
+	var at := Vector2(player.position.x, player.position.z)
+	var best := ""
+	var best_d := INF
+	for r in regions:
+		var d: float = at.distance_to(r["c"]) / float(r["r"])
+		if d < best_d:
+			best_d = d
+			best = r["name"]
+	if best == area:
+		return
+	area = best
+	if _where:
+		_where.text = "%s\n%s" % [here_name, best] if best != "" else here_name
+
+
 ## The world a place belongs to ("" for the Nexus, which is above them all).
 func _world_of(place: String) -> String:
 	if place == "nexus":
 		return ""
 	if place == "hub":
 		return "greece"
+	if place == "urbs":
+		return "rome"
 	return str(Rooms.room(place).get("world", "greece"))
 
 
@@ -564,8 +614,12 @@ func _switch_mode() -> void:
 
 
 func _zone(place: String) -> String:
+	if place == here and _here_zone != "":
+		return _here_zone
 	if place == "hub":
 		return "shore"
+	if place == "urbs":
+		return "rome"
 	if place == "nexus":
 		return "nexus"
 	return Rooms.room(place).get("zone", "shore")
@@ -920,6 +974,10 @@ func _build_ui() -> void:
 	_read_text.add_theme_color_override("default_color", Color("e8dcc0"))
 	_read_panel.add_child(_read_text)
 	_build_ask_panel()
+	_talk_panel = Talk.new()
+	_talk_panel.build(_style, _label, Citizen.data().get("topics", []))
+	_talk_panel.said.connect(_on_said)
+	_root.add_child(_talk_panel)
 	_build_map_panel()
 	_build_tree_panel()
 	_fade = ColorRect.new()
@@ -1241,6 +1299,10 @@ func _learned(work: String, ids: Array) -> String:
 func _tablet_text() -> String:
 	if here == "hub":
 		return "[color=#e0b660]Your tablet[/color]\n\nBooks mastered: %d of %d." % [progress.mastered_count(), doors.size()]
+	if here == "urbs":
+		var rome: Array = Rooms.doors_of("rome")
+		var done: int = rome.filter(func(d): return progress.is_mastered(d["work"])).size()
+		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nRoman books mastered: %d of %d." % [here_name, area, done, rome.size()]
 	if here == "nexus":
 		var now := Nexus.now(progress, doors)
 		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nIdeas understood: %d\nBooks mastered: %d of %d" % [
@@ -1319,19 +1381,19 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible \
-		or _council.visible
+	return _talk_panel.visible or _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	var rebuild: bool = _council.visible and _city != null and _city.stage != _council_board
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _council]:
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _talk_panel]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
+	_talk_panel.release()
+	_talking = {}
 	player.frozen = false
 	if not offline:
 		Input.mouse_mode = _mouse_before
@@ -1339,8 +1401,6 @@ func _close_panels() -> void:
 	_restore_pending = ""
 	if due:
 		_restore()
-	elif rebuild:
-		_load_place(here, true)  # the city on the board has grown
 
 
 # ---------- moment to moment ----------
@@ -1358,6 +1418,10 @@ func _process(delta: float) -> void:
 		if is_instance_valid(f["light"]):
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
 	_check_area()
+	if life:
+		var turned: String = life.step(delta, player.global_position)
+		if turned != "" and music:
+			music.play(_zone(here), life.music_back())  # the day's music, or the night's
 	_animate_people(delta)
 	_animate_life(delta)
 	_catch_fall()
@@ -1387,7 +1451,7 @@ F: Yes" if _ready_to_land() else ""
 	elif target["kind"] == "gate" and not target["open"]:
 		_prompt.text = target["text"] + "\n(not open yet)"
 	elif target["kind"] == "gate":
-		_prompt.text = target["text"] + ("\nF: Enter" if target["to"] != "hub" else "\nF: Go")
+		_prompt.text = target["text"] + ("\nF: Enter" if not target["to"] in ["hub", "urbs"] else "\nF: Go")
 	else:
 		_prompt.text = "F: " + target["text"]
 
@@ -1490,6 +1554,8 @@ func _walk(person: Dictionary, to: Vector3, delta: float, t: float) -> void:
 		person["leg"] = (leg_i + 1) % path.size()
 		return
 	root.position += d.normalized() * minf(d.length(), person.get("speed", 1.0) * delta)
+	if person.has("ground"):  # up and down the hills of a city
+		root.position.y = person["ground"].call(root.position)
 	root.rotation.y = lerp_angle(root.rotation.y, atan2(d.x, d.z), k)
 	for j in legs.size():
 		legs[j].rotation.x = sin(t * 6.0 + j * PI) * 0.45
@@ -1591,6 +1657,8 @@ func _nearest() -> Dictionary:
 	var at := player.global_position
 	for it in interactables:
 		if it.has("follow") and is_instance_valid(it["follow"]):
+			if not it["follow"].visible:
+				continue  # gone home for the night
 			it["pos"] = it["follow"].global_position  # someone who moves about
 		var to: Vector3 = it["pos"] - at
 		to.y = 0.0
@@ -1611,7 +1679,7 @@ func _nearest() -> Dictionary:
 
 
 func activate(it: Dictionary) -> void:
-	if it.has("needs_city") and city().board_stage() < int(it["needs_city"]):
+	if it.has("needs_city") and mini(city_stage(), CITY_JUST) < int(it["needs_city"]):
 		_show_read(it.get("not_yet", "Not yet."))  # a stone of the city in speech, before the city has got so far
 		return
 	match it.get("kind", ""):
@@ -1643,8 +1711,12 @@ func activate(it: Dictionary) -> void:
 			pat_toad()
 		"beat":
 			_start_beat(it)
-		"council":
-			_open_council()
+		"city_again":
+			_set_city_stage(0)
+		"citizen":
+			_open_talk(it)
+		"rome_age":
+			_set_rome_age(int(it["to"]))
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1714,41 +1786,120 @@ func _end_beat(finished: bool) -> void:
 		_read_stone(it)
 	elif finished and it.has("after"):
 		_show_read(it["after"])
+	if finished and it.has("city_to"):
+		_set_city_stage(int(it["city_to"]))  # the step of the city is done: it stands on the board now
 
 
-## The city in speech you are founding with Socrates (city.gd): kept in your progress, founded the
-## first time you sit at the council table.
-func city() -> RefCounted:
-	var saved: Variant = progress.data.get("city")
-	if not saved is Dictionary:
-		var c: RefCounted = City.found(380)
-		progress.data["city"] = c.to_dict()
-		return c
-	return City.from_dict(saved)
+## The city in speech (the Republic, at the Academy): how far the talk has built it, 0 (the bare
+## site) to CITY_JUST (the just city), then on to CITY_LAST as it falls; kept in your progress.
+const CITY_JUST := 5
+const CITY_LAST := 9
 
 
-var _city: RefCounted  # the city while you sit at the table
+## The city of Rome stands in one of four ages (content/rome/city.json): the Republic, the Empire at
+## its height, the late Empire, and the emptied city after the Gothic War. The navel of the city in
+## the Forum lets the years pass, and brings you back to the Republic at the end.
+const ROME_AGES := 4
 
 
-func _open_council() -> void:
-	_city = city()
-	_council_board = _city.stage
-	_council.open(_city)
-	_show_panel(_council)
+func rome_age() -> int:
+	return clampi(int(progress.data.get("rome_age", 0)), 0, rome_age_reached())
 
 
-## Something was decided at the table: keep the city, and as it reaches the book's stages its
-## points count (for a Theoros; a Mathetes must still explain them to the teacher).
-func _on_council_acted() -> void:
-	progress.data["city"] = _city.to_dict()
+## How far the years have gone: the age of the latest Roman book you have begun (the Rhetorica
+## belongs to the Republic, so for now Rome stays young). "rome_reached" in the save can open more.
+func rome_age_reached() -> int:
+	var ids: Array = load("res://scripts/hall/rome_map.gd").ages().map(func(a): return a["id"])
+	var reached := int(progress.data.get("rome_reached", 0))
+	for d in Rooms.doors_of("rome"):
+		if not progress.understood(d["work"]).is_empty():
+			reached = maxi(reached, ids.find(d.get("age", "republic")))
+	return clampi(reached, 0, ROME_AGES - 1)
+
+
+func _set_rome_age(to: int) -> void:
+	progress.data["rome_age"] = posmod(to, ROME_AGES)
+	progress.save()
+	if here == "urbs":  # the city is built again in its new age round where you stand
+		if offline:
+			_rebuild_where_you_stand()
+		else:
+			_fade_through(Color.WHITE, 1.2, 2.5, _rebuild_where_you_stand)
+
+
+func _rebuild_where_you_stand() -> void:
+	var at := player.position
+	var yaw := player.rotation.y
+	_load_place(here)
+	player.position = at
+	player.rotation.y = yaw
+
+
+func city_stage() -> int:
+	return int(progress.data.get("city_stage", 0))
+
+
+## A step of the city is done (or the city founded again): keep it, count the book's points it
+## reaches (for a Theoros), and build the Academy again round the city as it now stands.
+func _set_city_stage(to: int) -> void:
+	progress.data["city_stage"] = clampi(to, 0, CITY_LAST)
 	var work := "plato-republic"
 	if progress.mode(_world_of(here)) == "zen":
-		for pair in [[1, "one_work"], [City.JUST_CITY, "just_city"]]:
-			if _city.stage >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
-				var note := _learned(work, [pair[1]])
-				if note != "":
-					_council._socrates.append_text(note)  # what goes on your tablet, under what Socrates said
+		for pair in [[1, "one_work"], [CITY_JUST, "just_city"]]:
+			if to >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
+				_learned(work, [pair[1]])
 	progress.save()
+	if here == work:
+		if offline:
+			_load_place(here, true)
+		else:
+			_load_place.call_deferred(here, true)  # after the beat that asked for it has finished its frame
+
+
+# ---------- talking with the people of a city ----------
+
+## Stop someone in the street and talk: their name, their trade, their first words.
+func _open_talk(it: Dictionary) -> void:
+	_talking = it
+	var c: Dictionary = it["citizen"]
+	var trade := "%s (%s)" % [c["title"], c["latin"]]
+	if c["origin"] != "Roman":
+		trade += ", %s" % c["origin"]
+	_talk_panel.open(c["name"], trade, _esc(Citizen.greeting(c)))
+	_show_panel(_talk_panel)
+
+
+## What stands nearest you in the city, by name, nearest first.
+func near_names(count: int = 2) -> Array:
+	var at := player.global_position
+	var sorted := landmarks.duplicate()
+	sorted.sort_custom(func(a, b): return at.distance_to(a["pos"]) < at.distance_to(b["pos"]))
+	return sorted.slice(0, count).map(func(l): return str(l["name"]))
+
+
+## You asked something (a topic) or said something (typed). With Claude on the line, typed words go
+## to the citizen in character; otherwise, and for the topics, they answer from their own lines.
+func _on_said(topic: String, text: String) -> void:
+	if _talking.is_empty():
+		return
+	var c: Dictionary = _talking["citizen"]
+	_talk_panel.show_you(_esc(text))
+	if topic == "" and AuthorAI.api_key() != "" and not author.chat_busy:
+		author.chat(c["id"], Citizen.persona(c, here_name, near_names()), text)
+		return
+	if topic == "":
+		topic = Citizen.heard(text)
+	_talk_panel.show_reply(c["name"], _esc(Citizen.reply(c, topic, near_names())))
+
+
+func _on_chatted(id: String, reply: Dictionary) -> void:
+	if _talking.is_empty() or _talking["citizen"]["id"] != id:
+		return
+	var c: Dictionary = _talking["citizen"]
+	var line: String = reply.get("text", "")
+	if line == "":  # no one on the line after all: they answer from their own lines
+		line = Citizen.reply(c, "", near_names())
+	_talk_panel.show_reply(c["name"], _esc(line))
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.
@@ -1850,14 +2001,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and not player.frozen and not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		return
-	if event.is_action_pressed("tablet") and not _ask_panel.visible:
+	if event.is_action_pressed("tablet") and not _ask_panel.visible and not _talk_panel.visible:
 		get_viewport().set_input_as_handled()
 		if _read_panel.visible:
 			_close_panels()
 		else:
 			_show_read(_tablet_text())
 		return
-	if _ask_panel.visible or _menu.visible or _choice.visible:
+	if _ask_panel.visible or _talk_panel.visible or _menu.visible or _choice.visible:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()

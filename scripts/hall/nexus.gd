@@ -3,7 +3,8 @@ extends RefCounted
 ## pieces. Islands of stone hang in nothing. On the Heart in the middle stands the cracked base
 ## of the Tower of the Reformed Man, under the ghost of the Tower that once stood. Round it hangs
 ## one door per world, each in its world's style. Only Greece's door is joined to the Heart, by
-## a broken bridge; the other nine drift out of reach, sealed. Understanding mends it: every idea
+## a broken bridge; the other nine drift out of reach, sealed, except where a world's hub is built
+## (Rome's city): its stele on the rim takes you there. Understanding mends it: every idea
 ## lights a star, every book mastered raises a column, and the named pieces in content/nexus.json
 ## come back in order (the altar fire, the path, Greece's warm door, colour, the shades' song,
 ## the Greek tier).
@@ -32,7 +33,7 @@ const BRIDGE_FROM := Vector3(0, 0, -15.2)
 const BRIDGE_TO := Vector3(0, 0, -25.2)
 const BRIDGE_W := 3.2
 const PLINTH_TOP := 1.05
-const SLOTS := 17  # one column for each Greek book
+const SLOTS := 16  # one column for each Greek book (the Rhetorica is Rome's)
 const SLOT_R := 4.9
 const POINTS_PER_BOOK := 6  # about as many ideas as a book's lesson has today (for_stage)
 
@@ -129,7 +130,7 @@ static func for_stage(k: int, doors: Array) -> Dictionary:
 
 
 ## The furthest world you have begun (an idea understood in one of its books) that has a hub:
-## the Nexus takes its sharpness. Today that is always Greece, the only world with a hub.
+## the Nexus takes its sharpness (Greece, or Rome once a Roman book is begun).
 static func world_reached(progress: RefCounted) -> String:
 	var worlds := _worlds({})
 	var order: Array = worlds.keys()
@@ -156,7 +157,8 @@ static func _worlds(worlds: Dictionary) -> Dictionary:
 	return data if data is Dictionary else {"greece": {"name": "Greece"}}
 
 
-## Where a world's door leads: its hub ("hub" for Greece's Shore), or "" while it has none.
+## Where a world's door leads: its hub ("hub" for Greece's Shore, "urbs" for the city of Rome), or ""
+## while it has none.
 static func _hub(worlds: Dictionary, id: String) -> String:
 	return str(worlds.get(id, {}).get("hub", "hub" if id == "greece" else ""))
 
@@ -207,6 +209,7 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 	var others: Array = []
 	var shades: Array = []
 	var columns_seen: Array = []
+	var arrivals := {"hub": [ARRIVAL, PI]}
 
 	# the void: dark, dead stars, one warm star per idea
 	Kit.the_void(world, saturation)
@@ -297,7 +300,8 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 		frag.rotation.x = lean * (0.6 if i % 2 == 0 else -0.6)
 		frag.rotation.z = lean * (0.8 if i % 3 == 0 else -0.8)
 		Kit.shard(frag, Vector3.ZERO, 5.0, rng.randf_range(8.0, 11.0), false, "voidstone", 100 + i, 12)
-		var d := _door(frag, Vector3(0, 0, -0.5), 0.0, id, worlds, "sealed")
+		var hub := _hub(worlds, id)  # a world with its hub built opens its door: its stele takes you there
+		var d := _door(frag, Vector3(0, 0, -0.5), 0.0, id, worlds, "sealed" if hub == "" else "cold")
 		var cold := OmniLight3D.new()
 		cold.position = Vector3(0, 2.5, 3.0)
 		cold.light_color = Color("8a94b0")
@@ -310,8 +314,10 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 		clear.append([at + Vector3(0, 3, 0), 8.0])
 		var stele_at := Kit.sky_point(bearing, 0.0, 14.3)
 		var reader := Kit.stele(world, stele_at, Kit.face_yaw(stele_at, Vector3.ZERO))
-		gates.append({"kind": "gate", "pos": reader, "world": id, "to": "", "open": false,
+		gates.append({"kind": "gate", "pos": reader, "world": id, "to": hub, "open": hub != "",
 			"text": str(worlds[id].get("name", id))})
+		if hub != "":  # coming back from that world, you stand at its stele, facing the Heart
+			arrivals[hub] = [stele_at.lerp(Vector3.ZERO, 0.12) + Vector3(0, 0.05, 0), Places.look_yaw(-stele_at)]
 		drift.append_array(Kit.stub(world, bearing, at))
 		for r in [21.0, 24.5, 28.0, 31.5]:
 			clear.append([Kit.sky_point(bearing, 0.0, r) + Vector3(0, lerpf(0.0, at.y, (r - 17.5) / (ring[0] - 17.5)), 0), 4.0])
@@ -386,7 +392,7 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 		"ghost_columns": tower["ghost_columns"]}
 	return {"name": str(c.get("name", "The Nexus")), "interactables": out, "spawn": SPAWN,
 		"yaw": Places.look_yaw(Vector3(-2, 0, -24) - SPAWN), "pitch": 0.15, "spots": spots, "flicker": flicker,
-		"people": [], "sway": [], "birds": [], "back": b, "restored": 0, "arrivals": {"hub": [ARRIVAL, PI]},
+		"people": [], "sway": [], "birds": [], "back": b, "restored": 0, "arrivals": arrivals,
 		"drift": drift, "ground": ground, "rails": rails, "columns": columns_seen, "looks": looks}
 
 

@@ -103,6 +103,15 @@ const MOODS := {
 	"morning": {"top": "2c5aa8", "horizon": "c8d8e8", "curve": 0.16, "ground": "a8b090", "bottom": "3a4a3a",
 		"ambient": "8a94a0", "ambient_energy": 0.8, "fog": "d0dce8", "fog_density": 0.0011,
 		"sun": [-38.0, 70.0], "sun_color": "fff4e0", "sun_energy": 1.3, "stars": false},
+	"desert": {"top": "2a5aa0", "horizon": "f2d8a2", "curve": 0.14, "ground": "c8a870", "bottom": "3a3020",
+		"ambient": "a09482", "ambient_energy": 0.75, "fog": "e2c896", "fog_density": 0.0014,
+		"sun": [-22.0, -115.0], "sun_color": "ffe8c4", "sun_energy": 1.15, "stars": false},
+	"noon": {"top": "2a64b8", "horizon": "d8e4ee", "curve": 0.18, "ground": "b0a490", "bottom": "3a3a34",
+		"ambient": "98a0aa", "ambient_energy": 0.85, "fog": "d8e0e8", "fog_density": 0.0009,
+		"sun": [-62.0, -30.0], "sun_color": "fff8ec", "sun_energy": 1.35, "stars": false},
+	"twilight": {"top": "141a34", "horizon": "8a5a5e", "curve": 0.08, "ground": "4e4040", "bottom": "0e1018",
+		"ambient": "4c5068", "ambient_energy": 0.55, "fog": "5a5260", "fog_density": 0.004,
+		"sun": [-3.0, -80.0], "sun_color": "c87a5a", "sun_energy": 0.45, "stars": true},
 	"ashen": {"top": "3a3e4c", "horizon": "8c8a90", "curve": 0.1, "ground": "5c5a5a", "bottom": "1c1e24",
 		"ambient": "6c7080", "ambient_energy": 0.6, "fog": "7e7e86", "fog_density": 0.0045,
 		"sun": [-22.0, 60.0], "sun_color": "b8bccc", "sun_energy": 0.45, "stars": false},
@@ -198,6 +207,12 @@ static func plateau(parent: Node3D, radius: float, top: String = "earth", wall: 
 		var fence := BoxShape3D.new()
 		fence.size = Vector3(seg, 8.0, 0.5)
 		solid(parent, fence, at + Vector3(0, 4.0, 0), Vector3(0, -a + PI / 2.0, 0))
+
+
+## A rounded hill `radius` across at its foot and `height` high: a flattened dome sunk to its middle in
+## the ground, so it rises gently instead of standing up in a point.
+static func hill(parent: Node3D, at: Vector3, radius: float, height: float, mat: String = "rock") -> MeshInstance3D:
+	return blob(parent, at, radius, mat, Vector3(1.0, height / radius, 1.0), 12)
 
 
 static func mountain(parent: Node3D, at: Vector3, radius: float, height: float, smoke: bool) -> void:

@@ -68,13 +68,14 @@ func test_the_game_starts_in_the_nexus() -> void:
 	hall.free()
 
 
-func test_a_door_per_world_in_order_and_only_greece_open() -> void:
+func test_a_door_per_world_in_order_and_only_greece_and_rome_open() -> void:
 	var hall := _hall()
 	var doors: Array = hall.interactables.filter(func(i): return i.has("world"))
 	check_eq(doors.map(func(d): return d["world"]), WORLD_ORDER, "one door per world, in the order of the worlds")
 	if doors.size() == WORLD_ORDER.size():
 		check(doors[0]["open"] and doors[0]["to"] == "hub", "Greece's door opens, onto the Shore")
-		for d in doors.slice(1):
+		check(doors[1]["open"] and doors[1]["to"] == "urbs", "Rome's stele opens onto the city")
+		for d in doors.slice(2):
 			check(not d["open"], "%s's door is sealed" % d["world"])
 			check_eq(d["text"], Worlds.all()[d["world"]]["name"], "the sealed door names its world")
 	hall.free()
@@ -85,7 +86,7 @@ func test_worlds_json_pins_the_ring() -> void:
 	check_eq(worlds.keys(), WORLD_ORDER, "the worlds, in order")
 	for id in worlds:
 		check(STYLES.has(worlds[id].get("door", "")), "%s has a door style" % id)
-		check_eq(worlds[id].get("hub", ""), "hub" if id == "greece" else "", "%s: only Greece has a hub yet" % id)
+		check_eq(worlds[id].get("hub", ""), {"greece": "hub", "rome": "urbs"}.get(id, ""), "%s: only Greece and Rome have hubs yet" % id)
 
 
 func test_every_door_style_builds() -> void:
@@ -138,11 +139,11 @@ func test_each_idea_lights_a_star_and_each_book_raises_a_column() -> void:
 	var before := _build({"points": 4, "mastered": []})
 	check_eq(before["looks"]["stars"], 4, "four ideas, four new stars")
 	check_eq(before["columns"], [], "no column stands yet")
-	check_eq(before["looks"]["ghost_columns"], 17, "seventeen ghosts of columns")
+	check_eq(before["looks"]["ghost_columns"], 16, "sixteen ghosts of columns, one for each Greek book")
 	before["holder"].free()
 	var after := _build({"points": 6, "mastered": ["porphyry-isagoge"]})
 	check_eq(after["columns"], ["porphyry-isagoge"], "the Isagoge's column stands again")
-	check_eq(after["looks"]["ghost_columns"], 16, "and its ghost is gone")
+	check_eq(after["looks"]["ghost_columns"], 15, "and its ghost is gone")
 	check(after["interactables"].any(func(i): return i["kind"] == "look" and i["text"].contains("Isagoge")), "you can look at its column")
 	after["holder"].free()
 
@@ -301,7 +302,7 @@ func test_the_nexus_tablet() -> void:
 	var hall := _hall()
 	var text: String = hall._tablet_text()
 	check(text.contains("Ideas understood: 0"), "the tablet counts your ideas")
-	check(text.contains("Books mastered: 0 of 17"), "and your books")
+	check(text.contains("Books mastered: 0 of 16"), "and your books")
 	hall.free()
 
 

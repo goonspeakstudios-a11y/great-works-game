@@ -63,6 +63,36 @@ const ZONES := {
 		{"file": "fountain", "db": -26.0, "needs": "water"},
 		{"file": "birds", "db": -24.0, "needs": "leaves"},
 		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# The city of Rome, the Rome world's hub: a town theme, bright as a village square on a fine
+	# day (ocarina, marimba, plucked bass, shaker), the crowd and the birds by day; by night the
+	# same tune on a music box, the fountains and the crickets. Its "back" is the hour: "day" or
+	# "night" (urbs_life.gd).
+	"urbs": {"bells": false, "layers": [
+		{"file": "urbs_bass", "db": -11.0, "music": true, "needs": "day"},
+		{"file": "urbs_keys", "db": -9.0, "music": true, "needs": "day"},
+		{"file": "urbs_lead", "db": -10.0, "music": true, "needs": "day"},
+		{"file": "urbs_perc", "db": -13.0, "music": true, "needs": "day"},
+		{"file": "urbs_night", "db": -8.0, "music": true, "needs": "night"},
+		{"file": "crowd", "db": -23.0, "needs": "day"},
+		{"file": "birds", "db": -25.0, "needs": "day"},
+		{"file": "crickets", "db": -22.0, "needs": "night"},
+		{"file": "fountain", "db": -30.0},
+		{"file": "wind", "db": -32.0}]},
+	# The late Empire: the same tune in F minor and a little out of true; a thinner crowd.
+	"urbs_late": {"bells": false, "layers": [
+		{"file": "urbs_late_bass", "db": -12.0, "music": true, "needs": "day"},
+		{"file": "urbs_late_keys", "db": -11.0, "music": true, "needs": "day"},
+		{"file": "urbs_late_lead", "db": -11.0, "music": true, "needs": "day"},
+		{"file": "urbs_late_perc", "db": -17.0, "music": true, "needs": "day"},
+		{"file": "urbs_late_night", "db": -9.0, "music": true, "needs": "night"},
+		{"file": "crowd", "db": -29.0, "needs": "day"},
+		{"file": "crickets", "db": -22.0, "needs": "night"},
+		{"file": "wind", "db": -24.0}]},
+	# The emptied city: only the echo of Rome's old tune, the wind, and the crickets at night.
+	"urbs_fall": {"bells": false, "layers": [
+		{"file": "rome_ghost", "db": -9.0, "music": true},
+		{"file": "crickets", "db": -24.0, "needs": "night"},
+		{"file": "wind", "db": -17.0}]},
 	# Troy (Homer): a phorminx to the hexameter, the bard's hum, the camp's slow war drum, the sea.
 	"troy": {"bells": false, "layers": [
 		{"file": "troy_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},

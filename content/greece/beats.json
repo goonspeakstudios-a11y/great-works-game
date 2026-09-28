@@ -1,96 +1,4 @@
 {
- "rhetorica-ad-herennium": {
-  "memory_walk": {
-   "hero": "",
-   "title": "Your memory house",
-   "point": "order",
-   "steps": [
-    {
-     "line": "Tomorrow you speak in court, five charges to answer in order. Keep them here, not on a scroll."
-    },
-    {
-     "line": "Walk the colonnade from the door. At each place, set one strange picture of one charge."
-    },
-    {
-     "go": "loc0",
-     "text": "Go to the first empty place"
-    },
-    {
-     "act": "Set the first image: a man on fire (the arson)"
-    },
-    {
-     "show": "img0"
-    },
-    {
-     "go": "loc1",
-     "text": "The next place"
-    },
-    {
-     "act": "Set the second: a goat in a toga (the forged will)"
-    },
-    {
-     "show": "img1"
-    },
-    {
-     "go": "loc2",
-     "text": "The next place"
-    },
-    {
-     "act": "Set the third: a huge ear (the witness who overheard)"
-    },
-    {
-     "show": "img2"
-    },
-    {
-     "go": "loc3",
-     "text": "The next place"
-    },
-    {
-     "act": "Set the fourth: a bloody knife (the assault)"
-    },
-    {
-     "show": "img3"
-    },
-    {
-     "go": "loc4",
-     "text": "The next place, by the golden hand"
-    },
-    {
-     "act": "Set the fifth: a donkey in a crown (the bribe)"
-    },
-    {
-     "show": "img4"
-    },
-    {
-     "line": "Five places, five pictures. The stranger they are, the longer they stay."
-    },
-    {
-     "go": "court",
-     "text": "Go to the court in the Forum, and stand where the advocate stands"
-    },
-    {
-     "line": "The praetor nods. Speak. Walk your house again, from the door, and read your pictures in order."
-    },
-    {
-     "go": [
-      "loc0",
-      "loc1",
-      "loc2",
-      "loc3",
-      "loc4"
-     ],
-     "text": "Walk your places again, in order"
-    },
-    {
-     "act": "Speak the fifth charge, and close",
-     "hold": 1.5
-    },
-    {
-     "line": "Every charge answered, in order, without a scroll. Do it again tomorrow, and the next day."
-    }
-   ]
-  }
- },
  "euclid-elements": {
   "rope_and_pegs": {
    "hero": "",
@@ -960,6 +868,303 @@
     },
     {
      "eye": 1.2
+    }
+   ]
+  },
+  "found_1": {
+   "hero": "",
+   "title": "The city of pigs, Republic II",
+   "point": "",
+   "steps": [
+    {
+     "line": "“A State, I said, arises, as I conceive, out of the needs of mankind; no one is self-sufficing, but all of us have many wants.”"
+    },
+    {
+     "line": "First food, then a dwelling, then clothing: “one man is a husbandman, another a builder, some one else a weaver.”"
+    },
+    {
+     "act": "Set a farmer to his field"
+    },
+    {
+     "show": "piece0"
+    },
+    {
+     "look": "piece0"
+    },
+    {
+     "act": "A builder, and a weaver"
+    },
+    {
+     "show": "piece1"
+    },
+    {
+     "look": "piece1"
+    },
+    {
+     "act": "A shoemaker, a smith, a herdsman"
+    },
+    {
+     "show": "piece2"
+    },
+    {
+     "look": "piece2"
+    },
+    {
+     "act": "And a merchant, to trade with other cities"
+    },
+    {
+     "show": "piece3"
+    },
+    {
+     "look": "piece3"
+    },
+    {
+     "line": "“To him and to every other worker was assigned one work for which he was by nature fitted.”"
+    },
+    {
+     "line": "They feast on barley cakes and live in peace. Glaucon laughs: “if you were providing for a city of pigs ...”"
+    }
+   ]
+  },
+  "found_2": {
+   "hero": "",
+   "title": "The fevered city, Republic II",
+   "point": "",
+   "steps": [
+    {
+     "line": "Glaucon wants more: “they should have sauces and sweets in the modern style.”"
+    },
+    {
+     "line": "“If you wish also to see a State at fever-heat, I have no objection.”"
+    },
+    {
+     "act": "Let in the couches, the cooks and the painters"
+    },
+    {
+     "show": "piece0"
+    },
+    {
+     "look": "piece0"
+    },
+    {
+     "act": "And the doctors, and the swine"
+    },
+    {
+     "show": "piece1"
+    },
+    {
+     "look": "piece1"
+    },
+    {
+     "line": "“Then a slice of our neighbours’ land will be wanted by us for pasture and tillage.”"
+    },
+    {
+     "act": "Push the boundary out onto the neighbours' land"
+    },
+    {
+     "show": "piece2"
+    },
+    {
+     "look": "piece2"
+    },
+    {
+     "line": "“And so we shall go to war, Glaucon. Shall we not?” “Most certainly, he replied.”"
+    }
+   ]
+  },
+  "found_3": {
+   "hero": "",
+   "title": "The army, Republic II",
+   "point": "",
+   "steps": [
+    {
+     "line": "“And our State must once more enlarge.” A whole army; and by the rule of one work, men who do nothing else."
+    },
+    {
+     "act": "Raise the army's camp on the land you took",
+     "hold": 1.5
+    },
+    {
+     "show": "piece0"
+    },
+    {
+     "look": "piece0"
+    },
+    {
+     "line": "But soldiers are dangerous. They must be “dangerous to their enemies, and gentle to their friends.”"
+    },
+    {
+     "line": "Like a good watchdog: fierce to strangers, gentle to those it knows. Such natures must be found, and trained."
+    }
+   ]
+  },
+  "found_4": {
+   "hero": "",
+   "title": "The guardians, Republic II-III",
+   "point": "",
+   "steps": [
+    {
+     "line": "The guardians are raised on music and gymnastics, and told only true and good stories of the gods."
+    },
+    {
+     "act": "Build the guardians' common house and their training ground"
+    },
+    {
+     "show": "piece0"
+    },
+    {
+     "look": "piece0"
+    },
+    {
+     "act": "Set the young to their training"
+    },
+    {
+     "show": "piece1"
+    },
+    {
+     "look": "piece1"
+    },
+    {
+     "line": "Then “the audacious fiction”, told “first to the rulers, then to the soldiers, and lastly to the people.”"
+    },
+    {
+     "line": "God made some of gold, to rule; “others he has made of silver, to be auxiliaries”; the rest of brass and iron."
+    },
+    {
+     "act": "Seat the rulers on the height"
+    },
+    {
+     "show": "piece2"
+    },
+    {
+     "look": "piece2"
+    },
+    {
+     "line": "“None of them should have any property of his own beyond what is absolutely necessary.”"
+    }
+   ]
+  },
+  "found_5": {
+   "hero": "",
+   "title": "The just city, Republic IV-V",
+   "point": "",
+   "steps": [
+    {
+     "line": "Now look for justice in the city you have built. Wisdom is in the rulers, courage in the soldiers, temperance in all."
+    },
+    {
+     "line": "And justice? “Justice was doing one’s own business, and not being a busybody.”"
+    },
+    {
+     "act": "Wall the city, each order in its place"
+    },
+    {
+     "show": "piece0"
+    },
+    {
+     "look": "piece0"
+    },
+    {
+     "line": "“Until philosophers are kings, or the kings and princes of this world have the spirit and power of philosophy ...”"
+    },
+    {
+     "act": "Turn the city round",
+     "hold": 2.0
+    },
+    {
+     "show": "soul"
+    },
+    {
+     "look": "soul"
+    },
+    {
+     "line": "“The same principles which exist in the State exist also in the individual, and ... they are three in number.”"
+    }
+   ]
+  },
+  "decline_6": {
+   "hero": "",
+   "title": "Timocracy, Republic VIII",
+   "point": "",
+   "steps": [
+    {
+     "line": "Generations pass. The rulers miss the right season for births, the wrong metals rise, and the city begins to fall."
+    },
+    {
+     "line": "First, the rule of honour: “I know of no name for such a government other than timocracy, or perhaps timarchy.”"
+    },
+    {
+     "act": "Let a generation pass",
+     "hold": 2.0
+    },
+    {
+     "look": "soul"
+    },
+    {
+     "line": "Soldiers rule who love victory more than wisdom. The lamps of learning go out; in the soul, spirit burns over reason."
+    }
+   ]
+  },
+  "decline_7": {
+   "hero": "",
+   "title": "Oligarchy, Republic VIII",
+   "point": "",
+   "steps": [
+    {
+     "line": "“A government resting on a valuation of property, in which the rich have power and the poor man is deprived of it.”"
+    },
+    {
+     "act": "Let a generation pass",
+     "hold": 2.0
+    },
+    {
+     "look": "soul"
+    },
+    {
+     "line": "“Such a State is not one, but two States, the one of poor, the other of rich men.” Appetite grows fat."
+    }
+   ]
+  },
+  "decline_8": {
+   "hero": "",
+   "title": "Democracy, Republic VIII",
+   "point": "",
+   "steps": [
+    {
+     "line": "The poor win, and every citizen may live as he likes."
+    },
+    {
+     "act": "Let a generation pass",
+     "hold": 2.0
+    },
+    {
+     "look": "soul"
+    },
+    {
+     "line": "“A charming form of government, full of variety and disorder, and dispensing a sort of equality to equals and unequals alike.”"
+    }
+   ]
+  },
+  "decline_9": {
+   "hero": "",
+   "title": "Tyranny, Republic VIII-IX",
+   "point": "",
+   "steps": [
+    {
+     "line": "“The excess of liberty, whether in States or individuals, seems only to pass into excess of slavery.”"
+    },
+    {
+     "act": "Let a generation pass",
+     "hold": 2.0
+    },
+    {
+     "line": "“And so tyranny naturally arises out of democracy.” The people's champion takes a bodyguard, and never gives it back."
+    },
+    {
+     "look": "soul"
+    },
+    {
+     "line": "The tyrant's soul: the worst desire rules alone, reason is its slave. Socrates calls it the most wretched life there is."
     }
    ]
   }

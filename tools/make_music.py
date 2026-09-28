@@ -1309,6 +1309,130 @@ def render_shades(seconds: int = 16, seed: int = 191) -> list[float]:
 
 
 
+# The city of Rome: a town theme, bright and bouncy (a village square in a game, all good
+# weather), in F major at 120 beats a minute, sixteen bars in a 32 s loop. An ocarina carries the
+# tune over a marimba's off-beat chords, a plucked bass and a shaker; by night the same tune on a
+# music box, slower in feel, over a soft pad. Under the late emperors the same tune turns to F
+# minor and goes a little out of true.
+URBS_BEAT = 0.5
+URBS_CHORDS = [  # one chord a bar (a list of two means half a bar each)
+    ["F"], ["C"], ["Dm"], ["Bb"], ["F"], ["C"], ["Bb", "C"], ["F"],
+    ["Dm"], ["Am"], ["Bb"], ["F"], ["Gm"], ["C"], ["Bb", "C"], ["F"],
+]
+URBS_CHORD_NOTES = {"F": [53, 57, 60], "C": [48, 52, 55], "Dm": [50, 53, 57], "Bb": [46, 50, 53], "Am": [45, 48, 52],
+                    "Gm": [43, 46, 50]}
+# The tune: (beat it starts on, length in beats, MIDI note), bar by bar.
+URBS_TUNE = [
+    (0, 1, 69), (1, 0.5, 72), (1.5, 1, 77), (2.5, 0.5, 76), (3, 0.5, 74), (3.5, 0.5, 72),
+    (4, 1.5, 76), (5.5, 0.5, 74), (6, 1, 72), (7, 1, 67),
+    (8, 0.5, 69), (8.5, 0.5, 70), (9, 1, 72), (10, 1, 74), (11, 1, 77),
+    (12, 1.5, 74), (13.5, 0.5, 72), (14, 1, 70), (15, 1, 69),
+    (16, 1, 69), (17, 0.5, 72), (17.5, 1, 77), (18.5, 0.5, 79), (19, 1, 81),
+    (20, 1, 79), (21, 1, 76), (22, 1, 72), (23, 1, 76),
+    (24, 1, 74), (25, 1, 70), (26, 1, 72), (27, 1, 76),
+    (28, 3, 77),
+    (32, 0.5, 74), (32.5, 0.5, 76), (33, 1, 77), (34, 1, 81), (35, 1, 77),
+    (36, 1.5, 76), (37.5, 0.5, 72), (38, 2, 69),
+    (40, 0.5, 70), (40.5, 0.5, 72), (41, 1, 74), (42, 1, 77), (43, 1, 74),
+    (44, 1.5, 72), (45.5, 0.5, 69), (46, 2, 65),
+    (48, 0.5, 67), (48.5, 0.5, 69), (49, 1, 70), (50, 1, 74), (51, 1, 79),
+    (52, 1, 76), (53, 1, 79), (54, 1, 72), (55, 1, 76),
+    (56, 1, 74), (57, 1, 77), (58, 1, 76), (59, 1, 79),
+    (60, 2, 77), (62, 1, 72), (63, 1, 69),
+]
+MINOR = {9: 8, 2: 1, 4: 3}  # F major to F minor: A, D and E fall a semitone
+
+
+def midi(m: float) -> float:
+    return 440.0 * 2 ** ((m - 69) / 12)
+
+
+def _minor(m: int) -> int:
+    return m - 1 if (m % 12) in MINOR else m
+
+
+def ocarina(buf: list[float], freq: float, level: float, start: int, seconds: float, rng: random.Random,
+            wobble: float = 0.0) -> None:
+    """An ocarina: a round, hollow flute tone, a breath at the start, a gentle vibrato that comes in
+    late. `wobble` puts it a little out of true (the late city)."""
+    total = int(seconds * RATE)
+    phase = 0.0
+    air = 0.0
+    for n in range(total):
+        if start + n >= len(buf):
+            break
+        t = n / RATE
+        env = min(1.0, n / (0.03 * RATE)) * min(1.0, (total - n) / (0.06 * RATE))
+        vib = 1.0 + (0.005 + wobble) * math.sin(TAU * 5.2 * t) * min(1.0, max(0.0, t - 0.15) / 0.3)
+        phase += freq * vib * TABLE_SIZE / RATE
+        air += (rng.uniform(-1, 1) - air) * 0.25
+        tone = SINE[int(phase) % TABLE_SIZE] + 0.12 * SINE[int(phase * 2) % TABLE_SIZE] + 0.05 * SINE[int(phase * 3) % TABLE_SIZE]
+        buf[start + n] += (tone + air * 0.05 * math.exp(-t * 8.0)) * level * env
+
+
+def marimba(buf: list[float], freq: float, level: float, start: int) -> None:
+    """A marimba: a warm wooden note that dies quickly, its bright overtone gone first."""
+    for mult, lvl, decay in ((1.0, 1.0, 6.0), (4.0, 0.3, 22.0), (10.0, 0.06, 45.0)):
+        osc(buf, freq * mult, level * lvl, start,
+            lambda n, d=decay: -1 if n >= int(0.9 * RATE) else math.exp(-d * n / RATE) * min(1.0, n / 30))
+
+
+def shaker(buf: list[float], start: int, level: float, rng: random.Random) -> None:
+    last = 0.0
+    for n in range(int(0.06 * RATE)):
+        if start + n >= len(buf):
+            break
+        x = rng.uniform(-1, 1)
+        hp = x - last  # only the hiss
+        last = x
+        buf[start + n] += hp * level * math.exp(-n / (0.018 * RATE))
+
+
+def woodblock(buf: list[float], start: int, level: float) -> None:
+    for f, lvl in ((1180.0, 1.0), (1720.0, 0.4)):
+        osc(buf, f, level * lvl, start, lambda n: -1 if n >= int(0.12 * RATE) else math.exp(-45.0 * n / RATE))
+
+
+def render_urbs(seed: int = 211, minor: bool = False) -> dict[str, list[float]]:
+    """The city's day (bass, keys, lead, perc) and its night (a music box over a pad)."""
+    rng = random.Random(seed)
+    seconds = 32
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 3 * RATE) for k in ("bass", "keys", "lead", "perc", "night")}
+    note = (lambda m: midi(_minor(m))) if minor else midi
+    wobble = 0.012 if minor else 0.0
+    for bar, chords in enumerate(URBS_CHORDS):
+        for half, name in enumerate(chords):
+            beat0 = bar * 4 + half * (4 / len(chords))
+            tones = URBS_CHORD_NOTES[name]
+            root = tones[0]
+            beats = 4 // len(chords)
+            for b in range(beats):  # the bass: root on the beat, the fifth on the off-beat
+                t = (beat0 + b) * URBS_BEAT
+                m = root - 12 if b % 2 == 0 else tones[2] - 12
+                pluck(stems["bass"], note(m), 0.26, int(t * RATE), 0.45, rng, 0.45, 0.994)
+                for k, m2 in enumerate(tones):  # the marimba's chord on the off-beat ("and")
+                    marimba(stems["keys"], note(m2 + 12), 0.06 - k * 0.008, int((t + URBS_BEAT / 2) * RATE))
+            span = beats * URBS_BEAT
+            for m2 in tones:
+                osc(stems["night"], note(m2 + 12), 0.018, int(beat0 * URBS_BEAT * RATE),
+                    lambda n, s=span: -1 if n >= int((s + 0.4) * RATE) else min(1.0, n / (0.25 * RATE)) * min(1.0, (s + 0.4 - n / RATE) / 0.4))
+    for start, length, m in URBS_TUNE:
+        t = start * URBS_BEAT
+        ocarina(stems["lead"], note(m), 0.17, int(t * RATE), length * URBS_BEAT * 0.92, rng, wobble)
+        if start == int(start) and int(start) % 2 == 0:  # the music box plays the tune's strong notes
+            chime(stems["night"], note(m + 12), 0.1, int(t * RATE), 2.5)
+    for k in range(64):  # the percussion: soft kick on 1 and 3, a woodblock on 2 and 4, a shaker in eighths
+        t = k * URBS_BEAT
+        if k % 2 == 0:
+            drum(stems["perc"], int(t * RATE), 0.16, rng, base=58.0)
+        else:
+            woodblock(stems["perc"], int(t * RATE), 0.05)
+        for e in range(2):
+            shaker(stems["perc"], int((t + e * URBS_BEAT / 2) * RATE), 0.12 if e else 0.07, rng)
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
 def write_wav(path: Path, samples: list[float], peak: float, top: float | None = None) -> None:
     """Write a mono 16-bit file, scaled so `top` (by default its own loudest sample) hits `peak`."""
     top = top or max(1e-9, max(abs(s) for s in samples))
@@ -1382,6 +1506,8 @@ JOBS: dict[str, Callable[[], None]] = {
     "void": _one("void", render_void, 0.35),
     # Rome, and the Greek places still to come
     "rome": _track("rome", render_rome, ("drone", "organ", "tibia"), ROME_SCALE, 73.42, "reed", 63),
+    "urbs": lambda: write_stems("urbs", render_urbs(), 0.7, core=("bass", "keys", "lead", "perc")),
+    "urbs_late": lambda: write_stems("urbs_late", render_urbs(223, minor=True), 0.62, core=("bass", "keys", "lead", "perc")),
     "troy": _track("troy", render_troy, ("drone", "phorminx", "voice"), TROY_SCALE, 73.42, "lyre", 69),
     "theatre": _track("theatre", render_theatre, ("drone", "aulos", "chorus"), THEATRE_SCALE, 61.74, "reed", 75),
     "lesbos": _track("lesbos", render_lesbos, (), LESBOS_SCALE, 110.0, "lyre", 77),

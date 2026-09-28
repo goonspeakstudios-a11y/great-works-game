@@ -1,0 +1,116 @@
+{
+  "rhetorica-ad-herennium": {
+    "world": "rome",
+    "open": true,
+    "place": "domus",
+    "zone": "rome",
+    "where": "The Forum, under the Palatine",
+    "when": "about 85 BC",
+    "map": "85bc",
+    "map_note": "About 85 BC the Roman Republic rules Italy, Spain's coasts, southern Gaul, Greece and the west of Asia Minor, but it is tearing itself apart: Sulla has just beaten King Mithridates in the East, while Marius's party holds Rome. Speeches in the courts can decide who lives.",
+    "statues": [
+      {
+        "name": "Demosthenes",
+        "beard": "short",
+        "note": "Demosthenes (384 - 322 BC), the greatest speaker of Athens. The Greeks worked out the art of speaking; this book brings it into Latin for a Roman."
+      },
+      {
+        "name": "Crassus",
+        "beard": "none",
+        "note": "Lucius Licinius Crassus (140 - 91 BC), the finest Roman speaker of the last generation. Young Romans learned by watching men like him in the Forum, as much as from any book."
+      }
+    ],
+    "greeting": "Ah, Herennius sent you? Sit. I have little time, between the family's affairs and my philosophy, but a speech is a thing you can learn to build. Five tasks. Shall we begin?",
+    "greeting_lost": "You found the house. It is grey, and I am what is left of the man who wrote here. Nobody even remembers my name. Ask, if you came about speaking.",
+    "gift": "The Author presses a small golden hand into your palm, the kind he told you to set at every fifth place. \"For the tenth place, and the twentieth. You will not need me now.\"",
+    "author": "the Author",
+    "life": "wrote about 85 BC",
+    "book": "Rhetorica ad Herennium",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "4a3a2a",
+      "beard": "none",
+      "beard_color": "4a3a2a",
+      "robe": "e8e2d2",
+      "trim": "8a1e3a",
+      "old": false
+    },
+    "persona": "You are the unknown author of the Rhetorica ad Herennium, a Roman writing in Latin about 85 BC, in your house in Rome, for your friend or relative Gaius Herennius. You say you are busy with family business and prefer to spend your spare time on philosophy, but you wrote this handbook because he asked. For fifteen centuries people thought you were Cicero; you are not, and nobody knows your name. You are practical, brisk, a little impatient with Greek writers who pile up rules for show, and you love Roman examples. You teach the five tasks of a speaker, the six parts of a speech, the three styles, and above all the art of memory: places in order, and striking images set on them. The passages you are given are your own Latin; quote the Latin briefly and always say plainly in English what it means.",
+    "summary": "The oldest complete handbook of rhetoric in Latin, in four books. A speaker must master five tasks: invention, arrangement, style, memory and delivery. A speech in court has six parts: the introduction, the statement of facts, the division, the proof, the refutation and the conclusion. There are three styles, grand, middle and simple, each with a fault beside it. Book III gives the oldest surviving account of the art of memory: fix a series of places in a building in your mind, in order, and set on each a striking image of what you must remember; then walk the places again to find it.",
+    "facts": [
+      "Written in Latin about 85 BC for a young Roman, Gaius Herennius. Its author never gives his name.",
+      "For fifteen hundred years it was thought to be Cicero's. It is not: scholars call its author simply the Auctor.",
+      "It is the oldest complete book on rhetoric in Latin, and the oldest account of the art of memory to survive.",
+      "Its five tasks of a speaker, invention, arrangement, style, memory and delivery, were taught in schools into modern times.",
+      "In 85 BC Rome is at war with itself: Sulla's army is in the East, Marius's party holds the city."
+    ],
+    "questions": [
+      "What are the five tasks of a speaker?",
+      "How do I remember a long speech?",
+      "Why should my images be strange?",
+      "What is the grand style?"
+    ],
+    "home": "house",
+    "props": "the atrium with its rain pool, the busts of Demosthenes and Crassus, the colonnade of the memory house with its places and images, the law court in the Forum with its tribunal, benches and water clock",
+    "lesson": [
+      {
+        "id": "five_canons",
+        "label": "The five tasks",
+        "point": "A speaker has five tasks: find what to say (invention), put it in order (arrangement), say it well (style), keep it in your head (memory), and speak it with voice and body (delivery)."
+      },
+      {
+        "id": "parts_of_speech",
+        "label": "The six parts of a speech",
+        "point": "A speech in court has six parts: the introduction wins the listeners, the statement of facts tells what happened, the division says what is agreed and what is not, the proof argues your side, the refutation answers theirs, and the conclusion sums up and moves them."
+      },
+      {
+        "id": "three_styles",
+        "label": "Three styles",
+        "point": "There are three ways to speak: grand (weighty words, bold figures), middle (plainer, but not low) and simple (everyday speech, made clear). Each has a fault beside it: the swollen, the slack and the dry. A good speaker uses all three."
+      },
+      {
+        "id": "places",
+        "label": "Places",
+        "point": "Trained memory needs places: rooms, a colonnade, a corner, an arch, fixed in your mind in order, not too alike, not too dark or too bright, a fair walk apart. The places stay; what you put on them changes, like letters on a wax tablet."
+      },
+      {
+        "id": "images",
+        "label": "Striking images",
+        "point": "On each place you set an image of what you must remember. Ordinary things slip away; the rare, the ugly, the beautiful, the bloody or the funny stay. So make your images strange and doing something."
+      },
+      {
+        "id": "order",
+        "label": "Walking the places",
+        "point": "Because the places are in order, you can start anywhere and walk forward or back, and each image gives back what you left there. A golden hand at every fifth place keeps count. And practise every day: the art works only with training."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "Rain falls into the pool of the atrium again, the roof is whole over it, and the garden is green."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit in the house and along the colonnade."
+      },
+      {
+        "what": "walkway",
+        "line": "The court in the Forum stands whole, its portico roofed."
+      },
+      {
+        "what": "sun",
+        "line": "It is afternoon in Rome."
+      },
+      {
+        "what": "teacher",
+        "line": "The Author is himself."
+      },
+      {
+        "what": "household",
+        "line": "The people of Rome are back: the crowd round the court, and your images on their places."
+      }
+    ],
+    "rome_zone": "palatine_forum"
+  }
+}

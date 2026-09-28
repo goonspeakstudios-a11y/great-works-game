@@ -118,7 +118,7 @@ func test_rooms_follow_the_reading_list() -> void:
 	check(c.load_all(), "content loads")
 	var doors := Rooms.doors()
 	check_eq(doors.map(func(d): return d["work"]), c.work_order, "doors come straight from the reading list")
-	check_eq(doors.size(), 17, "one door for every Greek work")
+	check_eq(doors.size(), 16, "one door for every Greek work")
 	check_eq(doors[0]["work"], "porphyry-isagoge", "the first door is the Isagoge")
 	check(doors[0]["open"] and doors[1]["open"], "the Isagoge and the Categories have their places")
 	for d in doors:
@@ -137,7 +137,7 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	check_eq(hall.here, "hub", "Greece's hub is the Shore")
 	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and not i["to"] in ["nexus", "asset_test"])
 	var places: Array = Rooms.doors().filter(func(d): return Rooms.room(d["work"]).get("area_of", "") == "")
-	check_eq(gates.size(), 15, "one gateway for every place (Aristotle's three books share one)")
+	check_eq(gates.size(), 14, "one gateway for every place (Aristotle's three books share one)")
 	check_eq(gates.map(func(g): return g["to"]), places.map(func(d): return d["work"]), "gateways follow the reading list")
 	for g in gates:
 		check_eq(g["open"], OPEN_WORKS.has(g["to"]), "the gateway to %s is %s" % [g["to"], "open" if OPEN_WORKS.has(g["to"]) else "sealed"])
@@ -289,7 +289,7 @@ const Kit := preload("res://scripts/hall/kit.gd")
 
 func test_the_world_sharpens_as_history_moves_on() -> void:
 	check_eq(Worlds.render_size("greece", Vector2i(1280, 720)), Vector2i(320, 180), "Greece is PS1-sharp")
-	check_eq(Worlds.render_size("rome", Vector2i(1280, 720)), Vector2i(640, 360), "Rome is PS2-sharp")
+	check_eq(Worlds.render_size("rome", Vector2i(1280, 720)), Vector2i(854, 480), "Rome is sharper than Greece")
 	check(Worlds.detail("rome") > Worlds.detail("greece"), "Rome's shapes are rounder than Greece's")
 	var hall: Node = Hall.new()
 	hall.offline = true
@@ -387,8 +387,6 @@ func test_the_villa_feels_lived_in() -> void:
 
 
 const Lettering := preload("res://scripts/hall/lettering.gd")
-const City := preload("res://scripts/hall/city.gd")
-const CityTest := preload("res://tests/test_city.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 
@@ -409,7 +407,6 @@ func test_every_word_on_screen_uses_our_lettering() -> void:
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	hall.progress.data = {"works": {}}
 	hall.travel("plato-republic")
-	hall._open_council()  # the council table's people, laws and choices too
 	hall._open_ask("plato-republic")
 	var cheap: Array = []
 	var stack: Array = [hall._ui]
@@ -849,7 +846,8 @@ func test_the_new_places_are_built_like_the_first() -> void:
 		var kinds: Array = hall.interactables.map(func(i): return i["kind"])
 		for k in ["author", "book", "map", "gate"]:
 			check(kinds.has(k), "%s has its %s" % [work, k])
-		check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == "hub"), "%s: a way back to the Shore" % work)
+		var home: String = "urbs" if room.get("world", "greece") == "rome" else "hub"  # the Shore, or the city of Rome
+		check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == home), "%s: a way back to %s" % [work, home])
 		check_eq(hall.interactables.filter(func(i): return i["kind"] == "fact").size(), room["facts"].size(), "%s: a stone for each fact" % work)
 		for p in room["lesson"]:
 			var stones: Array = hall.interactables.filter(func(i): return i.get("id", "") == p["id"] and i.get("work", work) == work)
@@ -883,7 +881,7 @@ func test_the_memory_walk_can_be_walked() -> void:
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	hall.progress.data = {"works": {}}
-	hall.progress.set_mode("greece", "zen")
+	hall.progress.set_mode("rome", "zen")
 	hall.travel("rhetorica-ad-herennium")
 	var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == "memory_walk")[0]
 	hall.activate(it)
@@ -926,15 +924,16 @@ static func _play_through(hall: Node, it: Dictionary) -> int:
 	return -1
 
 
-## The Republic's heart: at the Academy's council table you found and govern the city in speech. Its
-## board stands as far as you have governed it; its stones and the soul over it wait until the city
-## has got that far; the city is kept; and after the just city it falls, regime by regime.
-func test_the_city_in_speech_is_governed_at_the_academy() -> void:
+## The Republic's heart: at the table on the Academy's terrace you found the city in speech with
+## Socrates, one step of the argument at a time, and each step's buildings rise on the board below
+## as you play it; the city is kept; its stones and the soul over it wait until it has got that
+## far; after the just city it falls, regime by regime; and then it can be founded again.
+func test_the_city_in_speech_rises_step_by_step_at_the_academy() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	var work := "plato-republic"
-	hall.progress.data = {"works": {}, "city": City.found(7).to_dict()}
+	hall.progress.data = {"works": {}}
 	hall.progress.set_mode("greece", "zen")
 	hall.travel(work)
 	var find := func(id: String) -> Dictionary:
@@ -945,28 +944,213 @@ func test_the_city_in_speech_is_governed_at_the_academy() -> void:
 	hall.activate(find.call("soul"))
 	check(hall.beat == null, "the soul does not rise over a city that is not yet just")
 	hall._close_panels()
-	var table: Array = hall.interactables.filter(func(i): return i["kind"] == "council")
-	check_eq(table.size(), 1, "there is a council table")
-	hall.activate(table[0])
-	check(hall._council.visible, "you sit down at it")
-	check(CityTest._govern(hall._city, 80) >= 0, "a careful founder makes the city just")
-	hall._on_council_acted()
-	check(hall.progress.understood(work).has("one_work") and hall.progress.understood(work).has("just_city"),
-		"for a Theoros the city's stages count as they are reached")
-	hall._close_panels()
-	check_eq(hall.here, work, "the Academy is rebuilt round the grown city")
-	check_eq(hall.city().stage, City.JUST_CITY, "the city is kept")
-	check(_play_through(hall, find.call("soul")) >= 0, "now the soul can be looked into")
-	hall._close_panels()
-	check(hall.progress.understood(work).has("soul"), "and it counts")
-	hall.activate(hall.interactables.filter(func(i): return i["kind"] == "council")[0])
-	for k in City.LAST_STAGE - City.JUST_CITY:
-		hall._city.let_generations_pass()
-	hall._on_council_acted()
-	hall._close_panels()
-	check_eq(hall.city().stage, City.LAST_STAGE, "the generations pass, and the city falls to tyranny")
-	check_eq(hall.here, work, "the Academy stands round the fallen city")
+	check(hall.interactables.all(func(i): return i["kind"] != "council"), "there is no council game any more")
+	for step in range(1, 10):
+		var talk: Array = hall.interactables.filter(func(i): return i.has("city_to"))
+		check_eq(talk.size(), 1, "one step of the argument waits at the table (%d)" % step)
+		if talk.is_empty():
+			break
+		check_eq(int(talk[0]["city_to"]), step, "and it is the next one")
+		check(not Beat.find(work, talk[0]["beat"]).is_empty(), "its talk is written: %s" % talk[0]["beat"])
+		var hidden: Array = talk[0]["cast"].values()
+		if step <= 5:
+			check(not hidden.is_empty() and hidden.all(func(n): return not (n as Node3D).visible), "what step %d builds waits hidden" % step)
+		check(_play_through(hall, talk[0]) >= 0, "step %d plays to its end" % step)
+		hall._close_panels()
+		check_eq(hall.city_stage(), step, "the city has come to step %d, and is kept" % step)
+		check_eq(hall.here, work, "the Academy is built again round it")
+		if step == 5:
+			check(hall.progress.understood(work).has("one_work") and hall.progress.understood(work).has("just_city"),
+				"for a Theoros the city of pigs and the just city count as they are reached")
+			check(_play_through(hall, find.call("soul")) >= 0, "now the soul can be looked into")
+			hall._close_panels()
+			check(hall.progress.understood(work).has("soul"), "and it counts")
+	var again: Array = hall.interactables.filter(func(i): return i["kind"] == "city_again")
+	check_eq(again.size(), 1, "after tyranny, the city can be founded again")
+	if not again.is_empty():
+		hall.activate(again[0])
+		check_eq(hall.city_stage(), 0, "and it is back to the bare site")
 	hall.free()
+
+
+## The Rhetorica is the first zone of Rome: its place is laid out on the map of Republican Rome
+## (rome_map.gd), everything you can reach stands inside its zone and a fence runs round it, and
+## the rest of the city's zones wait on the same map, sealed, for the Rome world.
+func test_the_rhetorica_is_the_first_zone_of_rome() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var zones: Array = RomeMap.data()["zones"]
+	check(zones.size() >= 8, "Rome is laid out in zones (%d)" % zones.size())
+	check_eq(zones.filter(func(z): return z["opens_with"] != null).map(func(z): return z["id"]), ["palatine_forum"],
+		"only the Forum under the Palatine is open, with the Rhetorica")
+	check_eq(Rooms.room("rhetorica-ad-herennium").get("rome_zone", ""), "palatine_forum", "the room knows its zone")
+	check(RomeMap.data()["wall"]["gates"].size() >= 12, "the Servian wall has its gates")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.travel("rhetorica-ad-herennium")
+	var outline: Array = RomeMap.outline("palatine_forum")
+	var outside: Array = hall.interactables.filter(func(i): return not RomeMap.inside(outline, i["pos"]))
+	check(outside.is_empty(), "everything to do stands inside the zone: %s" % str(outside.map(func(i): return i.get("text", ""))))
+	check(RomeMap.inside(outline, hall.player.position), "you arrive inside it")
+	check(not RomeMap.inside(outline, RomeMap.landmark("circus_maximus")), "the Circus Maximus is beyond it, not yet open")
+	hall.free()
+
+
+## The Rhetorica has left Greece for Rome: it is not on the Shore or among the Nexus's columns, but
+## the first book of Rome's own reading list, in the Rome world.
+func test_the_rhetorica_is_rome_s_book() -> void:
+	check(not Rooms.doors().any(func(d): return d["work"] == "rhetorica-ad-herennium"), "not a Greek door")
+	var rome := Rooms.doors_of("rome")
+	check_eq(rome.map(func(d): return d["work"]), ["rhetorica-ad-herennium"], "Rome's reading list begins with it")
+	check_eq(Rooms.room("rhetorica-ad-herennium").get("world", ""), "rome", "its room is in the Rome world")
+	check(Rooms.doors().any(func(d): return d["work"] == "porphyry-isagoge"), "the Isagoge stays in Greece")
+
+
+## The city of Rome is the Rome world's hub: the whole city, its ground brick-paved and dusty (no
+## grass underfoot), full of named citizens at their trades who talk, its monuments telling their
+## stories, the Rhetorica's gateway in the Forum, and (once the books have brought you so far) the
+## navel of the city letting the years pass through its four ages to the emptied city and back.
+func test_rome_is_a_city_that_lives_through_its_ages() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_reached": 3}
+	hall.travel("urbs")
+	check_eq(hall.here, "urbs", "the city is a place of its own")
+	check_eq(hall._world_of("urbs"), "rome", "in the Rome world")
+	check_eq(hall.rome_age(), 0, "it begins in the Republic")
+	check(hall.here_name.contains("50 BC"), "the corner says when: %s" % hall.here_name)
+	var gate: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and i["to"] == "rhetorica-ad-herennium")
+	check(gate.size() == 1 and gate[0]["open"], "the Rhetorica's gateway is open")
+	check(RomeMap.inside(RomeMap.outline("palatine_forum"), gate[0]["pos"]), "and it stands in the Rhetorica's zone")
+	var people_then: int = hall.people.size()
+	check(people_then >= 150, "the Republic's streets are full (%d people)" % people_then)
+	var citizens: Array = hall.interactables.filter(func(i): return i["kind"] == "citizen")
+	check(citizens.size() >= 150, "and they are citizens you can talk to (%d)" % citizens.size())
+	check(citizens.all(func(i): return str(i["citizen"]["name"]).length() > 2 and i["text"].begins_with("Talk to")), "every one with a name")
+	var trades := {}
+	for i in citizens:
+		trades[i["citizen"]["job"]] = true
+	check(trades.size() >= 30, "at many trades (%d)" % trades.size())
+	check(hall.interactables.filter(func(i): return i["kind"] == "statue").size() >= 25, "the monuments tell their stories")
+	var ground: Array = hall.world.find_children("Ground", "MeshInstance3D", true, false)
+	check(ground.size() == 1 and ground[0].material_override == RomeMap.tinted("r_ground"), "the ground is the city's trodden street")
+	check(hall.world.find_children("TreePines", "MultiMeshInstance3D", true, false).size() == 1, "stone pines stand in the city")
+	check(not hall.regions.is_empty(), "the city has its regions")
+	check(hall.life != null, "the city has its day")
+	var names: Array = [hall.here_name]
+	for k in 3:
+		hall.activate(hall.interactables.filter(func(i): return i["kind"] == "rome_age")[0])
+		names.append(hall.here_name)
+		check_eq(hall.here, "urbs", "still in the city after the years pass")
+	check_eq(hall.rome_age(), 3, "through the Empire and the late Empire to the fall")
+	check(names[1].contains("150") and names[2].contains("330") and names[3].contains("552"), "each age says its year: %s" % str(names))
+	check(hall.people.size() < people_then / 3, "the emptied city has few people left (%d)" % hall.people.size())
+	var fallen: Array = hall.world.find_children("Ground", "MeshInstance3D", true, false)
+	check(fallen.size() == 1 and fallen[0].material_override == RomeMap.tinted("rubble"), "its ground is rubble")
+	hall.activate(hall.interactables.filter(func(i): return i["kind"] == "rome_age")[0])
+	check_eq(hall.rome_age(), 0, "and the navel brings you back to the Republic")
+	hall.travel("rhetorica-ad-herennium")
+	check_eq(hall.here, "rhetorica-ad-herennium", "through the gateway, the Rhetorica's Forum")
+	check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == "urbs"), "and a way back into the city")
+	hall.free()
+
+
+## The first act: until the Roman books bring the years on, Rome is the Republic, and the navel of
+## the city only says so.
+func test_rome_stays_young_until_the_books_move_it_on() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_age": 2}
+	hall.travel("urbs")
+	check_eq(hall.rome_age_reached(), 0, "no Roman book has moved the years on")
+	check_eq(hall.rome_age(), 0, "so the city is the Republic, whatever was saved")
+	check(not hall.interactables.any(func(i): return i["kind"] == "rome_age"), "the navel does not pass the years yet")
+	check(hall.interactables.any(func(i): return i["kind"] == "statue" and i["text"].contains("navel")), "it only says what it is")
+	hall.free()
+
+
+## You can stop anyone and talk: they say who they are, what their work is like, how life is, the
+## news, their gods and what's around, in their own words; what you type finds its topic.
+func test_citizens_talk_like_people() -> void:
+	var Citizen: GDScript = load("res://scripts/hall/citizen.gd")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 3
+	for age in ["republic", "empire", "late", "fall"]:
+		check(Citizen.jobs_for(age).size() >= 12, "%s has its trades" % age)
+	for j in Citizen.data()["jobs"]:
+		var c: Dictionary = Citizen.make(rng, j["id"], j["ages"][0], ["Subura"])
+		check(c["name"] != "" and c["title"] != "", "%s gets a name" % j["id"])
+		for topic in ["who", "work", "life", "news", "gods", "around"]:
+			var line: String = Citizen.reply(c, topic, ["the Temple of Saturn"])
+			check(line.length() > 5 and not line.contains("{"), "%s answers '%s': %s" % [j["id"], topic, line])
+		check(Citizen.persona(c, "about 50 BC", []).contains(c["name"]), "%s can be played by Claude" % j["id"])
+	check_eq(Citizen.heard("What do you sell here?"), "work", "a question about their trade")
+	check_eq(Citizen.heard("Where is the temple of Saturn?"), "around", "a question of the way")
+	check_eq(Citizen.heard("Have you a wife?"), "life", "a question about their life")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.travel("urbs")
+	var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "citizen")[0]
+	hall.activate(it)
+	check(hall._talk_panel.visible, "the talk opens")
+	var before: String = hall._talk_panel._log
+	hall._on_said("work", "What's your work like?")
+	check(hall._talk_panel._log.length() > before.length() + 20, "and they answer")
+	hall._close_panels()
+	check(not hall._talk_panel.visible, "Esc and you go on your way")
+	hall.free()
+
+
+## The day goes round: dark comes at dusk, lamps light in the windows, most people go home and the
+## night's people come out; the music turns from the day's to the night's.
+func test_the_city_has_day_and_night() -> void:
+	var Life: GDScript = load("res://scripts/hall/urbs_life.gd")
+	check(Life.out_at("day", 12.0, 0.9) and not Life.out_at("day", 23.0, 0.9), "people are out by day, home by night")
+	check(Life.out_at("night", 23.0, 0.9) and not Life.out_at("night", 12.0, 0.9), "the carters by night")
+	check(Life.out_at("always", 3.0, 0.9), "the watch always")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_hour": 19.8}
+	hall.travel("urbs")
+	var out_by_day: int = hall.people.filter(func(p): return p["root"].visible).size()
+	var turned := ""
+	for k in 200:  # about the half hour past dusk
+		var t: String = hall.life.step(0.2, hall.player.global_position)
+		if t != "":
+			turned = t
+	check_eq(turned, "night", "night falls")
+	check(hall.life.windows.emission_energy_multiplier > 0.5, "the windows light up")
+	var out_by_night: int = hall.people.filter(func(p): return p["root"].visible).size()
+	check(out_by_night < out_by_day / 2, "most people go home (%d of %d)" % [out_by_night, out_by_day])
+	check(out_by_night > 0, "but not everyone")
+	check_eq(hall.life.music_back(), ["night"], "and the music is the night's")
+	hall.free()
+
+
+## Each monument stands from the year it was built, as a ruin from its fall, and is gone after.
+func test_the_monuments_keep_their_years() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var by_id := {}
+	for m in RomeMap.city_data()["monuments"]:
+		by_id[m["id"]] = m
+	for want in ["saturn", "jupiter", "venus_genetrix", "mars_ultor", "venus_roma", "mars_in_circo", "castor", "vesta", "concord",
+			"colosseum", "pantheon", "trajan_column", "caracalla_baths", "lateran", "st_peter", "circus", "pompey"]:
+		check(by_id.has(want), "Rome has %s" % want)
+	check_eq(RomeMap.state(by_id["colosseum"], -50), "", "no Colosseum in the Republic")
+	check_eq(RomeMap.state(by_id["colosseum"], 150), "whole", "the Colosseum under the Antonines")
+	check_eq(RomeMap.state(by_id["colosseum"], 552), "ruin", "and cracked by 552")
+	check_eq(RomeMap.state(by_id["curia_hostilia"], 150), "gone", "the old Senate House is gone under the emperors")
+	check_eq(RomeMap.state(by_id["lateran"], 150), "", "no churches before Constantine")
+	check_eq(RomeMap.state(by_id["lateran"], 552), "whole", "the Lateran stands in the emptied city")
+	for m in RomeMap.city_data()["monuments"]:
+		check(int(m.get("ruin", 9999)) > int(m["from"]) and int(m.get("gone", 9999)) > int(m["from"]), "%s falls after it is built" % m["id"])
 
 
 ## Every beat of every new place can be played to its end, and in Zen each counts its point.
@@ -977,6 +1161,7 @@ func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
 	for work in NEW_PLACES:
 		hall.progress.data = {"works": {}}
 		hall.progress.set_mode("greece", "zen")
+		hall.progress.set_mode("rome", "zen")
 		hall.travel(work)
 		var beats: Array = hall.interactables.filter(func(i): return i["kind"] == "beat")
 		for k in beats.size():

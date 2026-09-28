@@ -6,7 +6,7 @@ const Content := preload("res://scripts/content.gd")
 func test_real_content_loads_and_is_valid() -> void:
 	var c := Content.new()
 	check(c.load_all(), "content loads")
-	check_eq(c.works.size(), 17, "all 17 Greek works from Essentials modules 1-4")
+	check_eq(c.works.size(), 16, "all 16 Greek works from Essentials modules 1-4 (the Rhetorica is Rome's)")
 	check_eq(c.work_order[0], "porphyry-isagoge", "the game starts with the Isagoge")
 	check_eq(c.works[c.work_order[0]]["module"], "e1", "Isagoge opens module 1")
 	check_eq(c.work_order[-1], "aristotle-nicomachean-ethics", "Aristotle closes the Greek part")

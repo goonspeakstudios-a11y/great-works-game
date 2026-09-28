@@ -5,10 +5,12 @@ extends RefCounted
 ## kit_greek_areas.gd, and their people and props. Where a book is played, its moments are beats
 ## (beat.gd, content/greece/beats.json): an interactable {"kind": "beat"} that also carries its
 ## lesson point, so it counts like a stone.
-##   domus()   #4 the Rhetorica ad Herennium: a house in Rome, its memory house, the court in the Forum
-##   museum()  #5 Euclid: the Museum at Alexandria, Proposition 1 on the sand, Proposition 47 in tiles
+##   domus()   #4 the Rhetorica ad Herennium: the first zone of Rome (rome_map.gd): the Forum, and under
+##             the Palatine the Author's house and a memory house
+##   museum()  #5 Euclid: the Museum at Alexandria in Egypt (pyramids, sphinxes, a pylon), Proposition 1 on
+##             the sand, Proposition 47 in tiles
 ##   troy()    #6 Homer: the camp by the ships, the walls of Troy, and the voyage home to Ithaca
-##   academy() #7 Plato's Republic: the grove, the council table over the city in speech, and round it
+##   academy() #7 Plato's Republic: the grove, the terrace where the city in speech is founded, and round it
 ##             the Republic's scenes (Cephalus's house, Gyges' chasm, the line, the cave, Er's meadow)
 ##             with Socrates' trial, Agathon's dinner and the prison
 ##   ascra()   #7 Hesiod: the farm at Ascra and Mount Helicon above it, the Muses, Chaos, Kronos
@@ -29,7 +31,8 @@ const Areas := preload("res://scripts/hall/kit_greek_areas.gd")
 const People := preload("res://scripts/hall/kit_greek_people.gd")
 const Props := preload("res://scripts/hall/kit_greek_props.gd")
 const Thinkers := preload("res://scripts/hall/kit_greek_thinkers.gd")
-const City := preload("res://scripts/hall/city.gd")
+const Egypt := preload("res://scripts/hall/kit_egypt.gd")
+const RomeMap := preload("res://scripts/hall/rome_map.gd")
 
 
 ## A place's name as the corner shows it.
@@ -97,67 +100,151 @@ static func _stone(out: Array, work: String, room: Dictionary, id: String, at: V
 
 # ---------- #4 the Rhetorica ad Herennium ----------
 
-## A house in Rome, about 85 BC, where the unnamed Author writes for Gaius Herennius. The path from
-## the gateway runs north to the street door of an atrium house: the rain pool under the opening in
-## the roof, the household shrine, the busts, the map, and the tablinum at the back where he sits at
-## his desk. West along the street is a memory house, a quiet peristyle whose colonnade is marked
-## out in twenty places, the first four holding their striking images; east is a court in the
-## Forum, the praetor on his tribunal, the jurors on their benches, the water clock, the crowd.
-## Lost, the roof of the atrium has fallen into the dry pool, the court's portico is down, the lamps
-## are cold and the crowd are shades; it comes back piece by piece.
+## A house in Rome, about 85 BC, where the unnamed Author writes for Gaius Herennius: the first
+## zone of the city of Rome (rome_map.gd), laid out on Shepherd's plan of Republican Rome. You come
+## down the Sacred Way over the Velia into the Forum: the Temple of Saturn and the Capitol at its
+## west end, the Rostra, the Senate House and the Comitium, the Basilicas Aemilia and Sempronia,
+## Castor's temple, the round Temple of Vesta and the Regia, and in the open Forum the court, the
+## praetor on his tribunal. Under the Palatine's north slope, on the Via Nova where the orators
+## lived, stand the Author's atrium house and beside it a quiet peristyle, the memory house. The
+## zone is fenced; beyond it the rest of Rome stands to be seen (the hills, the Tiber, the wall), to
+## be opened when the Rome world is. Lost, the roofs have fallen, the lamps are cold and the crowd
+## are shades; it comes back piece by piece.
 static func domus(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
-	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 8), 34.0)
+	var b := Places._sky(world, room, stage, "golden", Vector3(20, 0, 20), 60.0)
 	var ab: Array = b.duplicate()  # what the kit pieces see: the garden is green once the water is back
 	if b.has("water"):
 		ab.append("leaves")
 	var leaves := ab.has("leaves")
 	var lamps := b.has("lamps")
-	Kit.plateau(world, 70.0, "earth", false)
-	Rome.far_city(world, Vector3.ZERO, 85.0, 170.0, 60, 85)  # Rome all round, roofs to the hills
+	var whole := b.has("walkway")
+	RomeMap.plain(world, whole)
+	RomeMap.city(world, ZONE_OF_RHETORICA, whole)
+	RomeMap.fence(world, ZONE_OF_RHETORICA)
 	var flicker: Array = []
 	var out: Array = []
 	var spots := {}
 	var sway: Array = []
 	var people: Array = []
-	var birds: Array = Kit.flock(world, Vector3(0, 0, 10), 5, 14.0, 12.0) if leaves else []
-	_arrival(world, room, out, spots, flicker, 42.0, 20.0, "basalt")
-	Kit.box(world, Vector3(0, 0.01, 24.0), Vector3(76.0, 0.02, 4.0), "basalt", false)  # the street, west to east
-	Rome.fountain(world, Vector3(5.0, 0, 26.6), PI, b.has("water"))
-	sway.append(Rome.pergola(world, Vector3(-10.0, 0, 30.0), 0.0, 6.0, leaves))
-	for p: Vector3 in [Vector3(-14, 0, 34), Vector3(12, 0, 33), Vector3(-6, 0, 36)]:
-		sway.append(Rome.stone_pine(world, p, 0.9, leaves))
+	var birds: Array = Kit.flock(world, Vector3(10, 0, 10), 5, 14.0, 12.0) if leaves else []
 
-	# the house: the atrium, and the tablinum where he sits at his desk
-	var house := Vector3(0, 0, 12)
-	Rome.atrium(world, house, 0.0, b.has("water"))
-	flicker.append(Kit.desk(world, Vector3(0, 0, 3.7), PI, false, lamps))
-	var author := _teacher(world, room, b, stage, Vector3(0, 0, 2.9), 0.0, Vector3(0, 0, 5.8), out, spots)
-	people.append(author)
-	Rome.capsa(world, Vector3(1.3, 0, 2.6), b.has("teacher"))
-	Rome.lararium(world, Vector3(-5.6, 0, 10.5), PI / 2.0, b.has("household"))
+	# the way in: down the Sacred Way from the Velia
+	var gate := RomeMap.landmark("velia") + Vector3(-5.0, 0, -4.0)
+	var gate_to := gate.lerp(RomeMap.landmark("regia"), 0.45)
+	_arrival_toward(world, room, out, spots, flicker, gate, gate_to, "basalt", "urbs")
+	Rome.via(world, gate_to, RomeMap.landmark("regia"), 4.2, whole)
+	Rome.via(world, RomeMap.landmark("regia"), RomeMap.landmark("temple_of_saturn"), 4.2, whole)
+	_forum(world, b, flicker, people)
+
+	# the house on the Via Nova, under the Palatine, its door toward the Forum; built in its own frame
+	var hg := Kit.group(world, RomeMap.landmark("via_nova_houses"), PI)
+	var w := func(local: Vector3) -> Vector3: return hg.transform * local
+	Kit.box(hg, Vector3(0, 0.01, 12.0), Vector3(58.0, 0.02, 4.0), "basalt", false)  # the Via Nova
+	Rome.fountain(hg, Vector3(5.0, 0, 14.6), PI, b.has("water"))
+	sway.append(Rome.pergola(hg, Vector3(-10.0, 0, 18.0), 0.0, 6.0, leaves))
+	for p: Vector3 in [Vector3(-14, 0, 22), Vector3(12, 0, 21), Vector3(-6, 0, 24)]:
+		sway.append(Rome.stone_pine(hg, p, 0.9, leaves))
+	Rome.atrium(hg, Vector3.ZERO, 0.0, b.has("water"))
+	flicker.append(Kit.desk(hg, Vector3(0, 0, -8.3), PI, false, lamps))
+	var author := _teacher(world, room, b, stage, w.call(Vector3(0, 0, -9.1)), PI, w.call(Vector3(0, 0, -6.2)), out, spots)
+	people.push_front(author)  # the teacher comes first
+	Rome.capsa(hg, Vector3(1.3, 0, -9.4), b.has("teacher"))
+	Rome.lararium(hg, Vector3(-5.6, 0, -1.5), PI / 2.0, b.has("household"))
 	for x: float in [-4.6, 4.6]:
-		flicker.append(Kit.lamp_stand(world, Vector3(x, 0, 14.8), lamps))
-	_study(world, room, out, spots, [[Vector3(-4.6, 0, 6.2), 0.0, Vector3(-4.6, 0, 7.8)], [Vector3(4.6, 0, 6.2), 0.0, Vector3(4.6, 0, 7.8)]],
-		Vector3(-3.9, 2.3, 18.95), PI, Vector3(-3.9, 0, 17.4), Vector3(3.9, 0, 17.6), Vector3(3.9, 0, 16.4))
-	spots["atrium"] = house + Vector3(0, 0, 5.0)
+		flicker.append(Kit.lamp_stand(hg, Vector3(x, 0, 2.8), lamps))
+	_study(world, room, out, spots, [[w.call(Vector3(-4.6, 0, -5.8)), PI, w.call(Vector3(-4.6, 0, -4.2))], [w.call(Vector3(4.6, 0, -5.8)), PI,
+		w.call(Vector3(4.6, 0, -4.2))]], w.call(Vector3(-3.9, 2.3, 6.95)), 0.0, w.call(Vector3(-3.9, 0, 5.4)), w.call(Vector3(3.9, 0, 5.6)),
+		w.call(Vector3(3.9, 0, 4.4)))
+	spots["atrium"] = w.call(Vector3(0, 0, 5.0))
 
-	# the memory house, west along the street
-	var mem_at := Vector3(-30, 0, 6)
-	var mem := Areas.memory_house(world, mem_at, 0.0, ab)
+	# the memory house beside it on the Via Nova, and the court in the open Forum
+	Kit.box(hg, Vector3(-21, 0.012, 8.0), Vector3(3.0, 0.02, 4.0), "basalt", false)  # up to its door
+	var mem := Areas.memory_house(world, w.call(Vector3(-21, 0, -6)), PI, ab)
 	flicker.append_array(mem["flicker"])
 	sway.append_array(mem["sway"])
-	Kit.box(world, Vector3(-30, 0.012, 20.0), Vector3(3.0, 0.02, 4.0), "basalt", false)  # up to its door
-	# the east court in the Forum
-	var court_at := Vector3(30, 0, 4)
-	var court := Areas.law_court(world, court_at, 0.0, ab)
+	var court := Areas.law_court(world, RomeMap.at([-5, 15]), FORUM_YAW, ab)
 	flicker.append_array(court["flicker"])
 	people.append_array(court["people"])
-	Kit.box(world, Vector3(30, 0.012, 18.5), Vector3(3.0, 0.02, 7.0), "basalt", false)
 
 	flicker.append_array(_domus_lessons(world, work, room, out, spots, mem, court, b))
-	out.append(Places.seat(world, Vector3(-10.0, 0, 28.0), Vector3(0, 0, 1), "Sit under the vine"))
-	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 39.0), "yaw": 0.0, "spots": spots,
-		"flicker": flicker, "people": people, "restored": 0, "sway": sway, "birds": birds, "back": b}
+	out.append(Places.seat(world, w.call(Vector3(-10.0, 0, 16.0)), Vector3(0, 0, -1), "Sit under the vine and look at the Forum"))
+	return {"name": _name(room), "interactables": out, "spawn": gate + (gate_to - gate).normalized() * 3.0 + Vector3(0, 0.05, 0),
+		"yaw": Places.look_yaw(gate_to - gate), "spots": spots, "flicker": flicker, "people": people, "restored": 0, "sway": sway,
+		"birds": birds, "back": b}
+
+
+## The zone of Rome the Rhetorica stands in (content/rome/republican_rome.json), and the line of the
+## Forum from the Capitol to the Velia, which its buildings and its court follow.
+const ZONE_OF_RHETORICA := "palatine_forum"
+const FORUM_YAW := -0.617
+
+
+## The Forum of about 85 BC round the court: the Temple of Saturn under the Capitol, the Rostra, the
+## Senate House over the round Comitium, the Basilica Aemilia on the north side and the Basilica
+## Sempronia on the south, the Temple of Castor, the round Temple of Vesta and the Regia.
+static func _forum(world: Node3D, b: Array, flicker: Array, people: Array) -> void:
+	var whole := b.has("walkway")
+	var centre := RomeMap.at([0, 0])
+	var facing := func(at: Vector3) -> float: return Kit.face_yaw(at, centre)
+	var saturn := RomeMap.landmark("temple_of_saturn")
+	Rome.temple(world, saturn, facing.call(saturn), whole)
+	var castor := RomeMap.landmark("temple_of_castor")
+	Rome.temple(world, castor, facing.call(castor), whole)
+	var rostra := RomeMap.landmark("rostra")
+	Rome.rostra(world, rostra, facing.call(rostra), whole)
+	var curia := RomeMap.landmark("curia_and_comitium")
+	Kit.box(world, curia + Vector3(0, 4.0, -3.0), Vector3(9.0, 8.0, 7.0), "brick" if whole else "ashbed")  # the Senate House
+	Kit.box(world, curia + Vector3(0, 8.3, -3.0), Vector3(9.6, 0.6, 7.6), "roof", false)
+	for k in 3:  # the Comitium's steps, a round assembly place before it
+		Kit.cylinder(world, curia + Vector3(0, k * 0.3, 4.0), 6.0 - k * 1.2, 0.3, "stone" if k == 0 else "marble", k == 2, 16)
+	for spec: Array in [["basilica_aemilia", 0.0], ["basilica_sempronia", PI]]:
+		var at := RomeMap.landmark(spec[0])
+		Kit.stoa(world, at, FORUM_YAW + PI / 2.0 + float(spec[1]), 22.0, 7.0, whole)
+	var vesta := RomeMap.landmark("temple_of_vesta")
+	Kit.cylinder(world, vesta, 3.4, 0.8, "marble", true, 16)
+	for k in 12:  # the round temple's columns, its sacred fire inside
+		var a := TAU * k / 12.0
+		Rome.column(world, vesta + Vector3(cos(a) * 3.0, 0.8, sin(a) * 3.0), 4.2, 0.18)
+	Kit.cylinder(world, vesta + Vector3(0, 5.0, 0), 3.5, 1.6, "roof", false, 16, 0.4)
+	if b.has("lamps"):
+		var fire := OmniLight3D.new()
+		fire.position = vesta + Vector3(0, 1.6, 0)
+		fire.light_color = Color("ff9a48")
+		fire.omni_range = 6.0
+		world.add_child(fire)
+		flicker.append(fire)
+	var regia := RomeMap.landmark("regia")
+	Kit.box(world, regia + Vector3(0, 2.2, 0), Vector3(8.0, 4.4, 6.0), "plaster")
+	Kit.box(world, regia + Vector3(0, 4.6, 0), Vector3(8.6, 0.4, 6.6), "roof", false)
+	Kit.box(world, centre + Vector3(0, 0.005, 0), Vector3(70.0, 0.01, 30.0), "basalt", false, Vector3(0, FORUM_YAW + PI / 2.0, 0))  # the Forum's paving
+	for k in 6:  # townsmen in the Forum
+		var at := centre + Vector3(-18.0 + k * 7.0, 0, 8.0 - (k % 3) * 6.0)
+		people.append(Rome.togatus(world, at, k * 1.1, {"beard": "short" if k % 2 else "none", "hair_color": "3a2a1e"}, not b.has("household")))
+
+
+## The gateway back to the Shore at `gate`, and the way from it toward `to`, with the room's facts on
+## steles either side (the arrival of _arrival, in any direction).
+static func _arrival_toward(world: Node3D, room: Dictionary, out: Array, spots: Dictionary, flicker: Array, gate: Vector3,
+		to: Vector3, path_mat: String = "path", back_to: String = "hub") -> void:
+	var dir := (to - gate).normalized()
+	var side := Vector3(dir.z, 0, -dir.x)
+	if back_to == "urbs":
+		flicker.append(Rome.gateway(world, gate, Kit.face_yaw(gate, to), true))
+	else:
+		flicker.append(Kit.gateway(world, gate, Kit.face_yaw(gate, to), true))
+	out.append({"kind": "gate", "pos": gate + dir * 1.7, "to": back_to, "open": true,
+		"text": "Back into the city" if back_to == "urbs" else "Back to the Shore"})
+	Kit.box(world, (gate + to) / 2.0 + Vector3(0, 0.01, 0), Vector3(3.0, 0.02, gate.distance_to(to)), path_mat, false,
+		Vector3(0, Kit.face_yaw(gate, to), 0))
+	var facts: Array = room.get("facts", [])
+	for k in facts.size():
+		var s := -1.0 if k % 2 == 0 else 1.0
+		var along := gate + dir * (4.0 + k * 2.9)
+		var at := along + side * 2.7 * s
+		var reader := along + side * 0.9 * s
+		Kit.stele(world, at, Kit.face_yaw(at, reader))
+		spots["fact%d" % k] = reader
+		out.append({"kind": "fact", "pos": reader, "text": facts[k]})
 
 
 ## The Rhetorica's six stones: the five tasks and the six parts of a speech in the court, the three
@@ -166,12 +253,16 @@ static func domus(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 static func _domus_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, mem: Dictionary,
 		court: Dictionary, b: Array) -> Array:
 	var flicker: Array = []
+	var cr: Node3D = court["root"]
+	var mr: Node3D = mem["root"]
+	var c := func(local: Vector3) -> Vector3: return cr.transform * local
+	var m := func(local: Vector3) -> Vector3: return mr.transform * local
 
 	# the five tasks: five plinths in an arc before the tribunal, each with its sign
-	var fc := Vector3(30, 0, 1.2)
+	var fc := Vector3(0, 0, -2.8)
 	for k in 5:
 		var a := deg_to_rad(200.0 + k * 35.0)
-		var p := fc + Vector3(cos(a), 0, -sin(a) * 0.6) * 3.0
+		var p: Vector3 = c.call(fc + Vector3(cos(a), 0, -sin(a) * 0.6) * 3.0)
 		if k != 3:
 			Kit.box(world, p + Vector3(0, 0.45, 0), Vector3(0.5, 0.9, 0.5), "marble")
 		var on := p + Vector3(0, 0.9, 0)
@@ -189,55 +280,54 @@ static func _domus_lessons(world: Node3D, work: String, room: Dictionary, out: A
 				Rome.memory_image(world, p, 0.0, "golden_hand", b.has("household"))
 			4:  # delivery: a speaker's raised hand
 				Places._figure(world, on, 0.0, "#e8e2d2", 0.3)
-	_stone(out, work, room, "five_canons", fc + Vector3(0, 0, 1.2), "Look at the five plinths")
-	spots["five_canons"] = fc + Vector3(0, 0, 1.2)
+	var fs: Vector3 = c.call(fc + Vector3(0, 0, 1.2))
+	_stone(out, work, room, "five_canons", fs, "Look at the five plinths")
+	spots["five_canons"] = fs
 
 	# the six parts of a speech: six small steles across the floor where the advocate walks
 	for k in 6:
-		var at := Vector3(24.5 + k * 2.2, 0, 7.4)
-		Kit.stele(world, at, 0.0)
-	_stone(out, work, room, "parts_of_speech", Vector3(30, 0, 9.0), "Walk the six stones of a speech")
-	spots["parts_of_speech"] = Vector3(30, 0, 9.0)
+		Kit.stele(world, c.call(Vector3(-5.5 + k * 2.2, 0, 3.4)), cr.rotation.y)
+	_stone(out, work, room, "parts_of_speech", c.call(Vector3(0, 0, 5.0)), "Walk the six stones of a speech")
+	spots["parts_of_speech"] = c.call(Vector3(0, 0, 5.0))
 
 	# the three styles: three speakers by the court's way in, grand on a high plinth, middle on a
 	# low one, simple on the ground
-	var sc := Vector3(21.0, 0, 21.0)
 	for k in 3:
 		var h: float = [1.2, 0.5, 0.0][k]
-		var p := sc + Vector3(k * 1.8, 0, 0)
+		var p: Vector3 = c.call(Vector3(-1.8 + k * 1.8, 0, 13.5))
 		if h > 0.0:
 			Kit.box(world, p + Vector3(0, h / 2.0, 0), Vector3(1.0, h, 1.0), "marble")
-		Rome.togatus(world, p + Vector3(0, h, 0), 0.0, [{"praetexta": true, "beard": "none", "hair_color": "3a2a1e"},
+		Rome.togatus(world, p + Vector3(0, h, 0), cr.rotation.y, [{"praetexta": true, "beard": "none", "hair_color": "3a2a1e"},
 			{"stripe": true, "beard": "none", "hair_color": "5a4a3a"}, {"beard": "short", "hair_color": "4a3a2a"}][k], not b.has("household"))
-	_stone(out, work, room, "three_styles", sc + Vector3(1.8, 0, 2.0), "Look at the three speakers")
-	spots["three_styles"] = sc + Vector3(1.8, 0, 2.0)
+	_stone(out, work, room, "three_styles", c.call(Vector3(0, 0, 15.5)), "Look at the three speakers")
+	spots["three_styles"] = c.call(Vector3(0, 0, 15.5))
 
 	# the places: a stele at the memory house's door, and the colonnade itself
 	var loci: Array = mem["loci"]
-	var door := Vector3(-30, 0, 18.0)
-	Kit.stele(world, door + Vector3(-2.2, 0, 0), PI / 2.0)
-	_stone(out, work, room, "places", door + Vector3(-1.0, 0, 0), "Read the stone at the door")
-	spots["places"] = door + Vector3(-1.0, 0, 0)
+	var door: Vector3 = m.call(Vector3(0, 0, 12.0))
+	Kit.stele(world, m.call(Vector3(-2.2, 0, 12.0)), mr.rotation.y + PI / 2.0)
+	_stone(out, work, room, "places", m.call(Vector3(-1.0, 0, 12.0)), "Read the stone at the door")
+	spots["places"] = m.call(Vector3(-1.0, 0, 12.0))
 
 	# the images: the first four places hold theirs
 	var img_at: Vector3 = (loci[1] + loci[2]) / 2.0
-	var inward := (Vector3(-30, 0, 6) - img_at).normalized()
+	var inward := (mr.position - img_at).normalized()
 	_stone(out, work, room, "images", img_at + inward * 1.6, "Look at the strange images")
 	spots["images"] = img_at + inward * 1.6
 
 	# walking the places: your own five images, set and walked (the memory walk)
 	var cast := {}
-	var marks := {"court": Vector3(30, 0, 7.4)}
+	var marks := {"court": c.call(Vector3(0, 0, 3.4))}
 	var kinds := ["burning", "goat", "ear", "knife", "crowned_ass"]
 	for k in 5:
 		var at: Vector3 = loci[5 + k]
 		marks["loc%d" % k] = at
-		var node := _strange(world, at + (Vector3(-30, 0, 6) - at).normalized() * 0.8, kinds[k])
+		var node := _strange(world, at + (mr.position - at).normalized() * 0.8, kinds[k])
 		node.visible = false
 		cast["img%d" % k] = node
-	out.append({"kind": "beat", "pos": door + Vector3(0, 0, -1.0), "work": work, "id": "order", "beat": "memory_walk",
+	out.append({"kind": "beat", "pos": m.call(Vector3(0, 0, 11.0)), "work": work, "id": "order", "beat": "memory_walk",
 		"text": "Build your own memory house", "note": Places._lesson(room, "order").get("point", ""), "cast": cast, "marks": marks})
-	spots["order"] = door + Vector3(0, 0, -1.0)
+	spots["order"] = m.call(Vector3(0, 0, 11.0))
 	return flicker
 
 
@@ -285,18 +375,20 @@ static func _in_world(node: Node3D, world: Node3D) -> Vector3:
 ## Proposition 47 in tiles. Lost, the palms are dead, the colonnades broken, sand drifts over the
 ## figures, and the scholars are shades.
 static func museum(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
-	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 8), 34.0)  # the low sun, so the figures on the sand show
-	Kit.plateau(world, 70.0, "earth", false)
-	Kit.sea(world, -2.0)
+	var b := Places._sky(world, room, stage, "desert", Vector3(0, 0, 8), 34.0)  # the sun not too high, so the figures on the sand show
+	Kit.plateau(world, 58.0, "dune", false)
+	Kit.sea(world, -2.0)  # the harbour and the open sea, to the north under the Pharos
+	Kit.box(world, Vector3(0, -1.3, 330.0), Vector3(1600.0, 0.2, 960.0), "dune", false)  # the desert, everywhere else
 	var flicker: Array = []
 	var out: Array = []
 	var spots := {}
 	var sway: Array = []
 	var people: Array = []
 	var birds: Array = Kit.flock(world, Vector3(0, 0, 6), 5, 16.0, 12.0) if b.has("leaves") else []
-	_arrival(world, room, out, spots, flicker, 44.0, 25.0, "paving")
+	_arrival(world, room, out, spots, flicker, 50.0, 30.0, "limestone")
+	_egypt(world, b, flicker, sway, people)
 
-	var court := Areas.museum_court(world, Vector3(0, 0, 8), 0.0, b)
+	var court := Areas.museum_court(world, Vector3(0, 0, 8), 0.0, b)  # the Museum: Egyptian porticos round a Greek garden
 	flicker.append_array(court["flicker"])
 	sway.append_array(court["sway"])
 	people.append_array(court["people"])
@@ -306,19 +398,52 @@ static func museum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	_study(world, room, out, spots, [[Vector3(-8.5, 0, 22.0), PI, Vector3(-8.5, 0, 20.4)], [Vector3(8.5, 0, 22.0), PI, Vector3(8.5, 0, 20.4)]],
 		Vector3(-15.2, 2.2, 4.5), PI / 2.0, Vector3(-13.6, 0, 4.5), Vector3(9.5, 0, 17.0), Vector3(9.5, 0, 15.8))
 
-	var one := Areas.prop_one(world, Vector3(-38, 0, 6), 0.0, b)
+	var one := Areas.prop_one(world, Vector3(-34, 0, 4), 0.0, b)
 	flicker.append_array(one["flicker"])
 	sway.append_array(one["sway"])
-	Kit.box(world, Vector3(-19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "paving" if b.has("walkway") else "sand", false)
-	var tiles := Areas.prop_forty_seven(world, Vector3(38, 0, 6), 0.0, b)
+	Kit.box(world, Vector3(-17.5, 0.012, 4.0), Vector3(3.0, 0.02, 6.0), "limestone" if b.has("walkway") else "sand", false)
+	var tiles := Areas.prop_forty_seven(world, Vector3(31, 0, 4), 0.0, b)
 	flicker.append_array(tiles["flicker"])
 	sway.append_array(tiles["sway"])
-	Kit.box(world, Vector3(19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "paving" if b.has("walkway") else "sand", false)
+	Kit.box(world, Vector3(18.0, 0.012, 4.0), Vector3(3.0, 0.02, 6.0), "limestone" if b.has("walkway") else "sand", false)
 
 	flicker.append_array(_museum_lessons(world, work, room, out, spots, one, tiles, b))
-	out.append(Places.seat(world, Vector3(0, 0, 30.0), Vector3(0, 0, 1), "Sit and look out to sea"))
-	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 41.0), "yaw": 0.0, "spots": spots,
+	out.append(Places.seat(world, Vector3(-11.0, 0, 40.0), Vector3(-1, 0, 0.2), "Sit and look out at the pyramids"))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 47.0), "yaw": 0.0, "spots": spots,
 		"flicker": flicker, "people": people, "restored": 0, "sway": sway, "birds": birds, "back": b}
+
+
+## Egypt round the Museum: the desert with its dunes and, far off to the west, the pyramids; the
+## way in as an avenue of sphinxes to a temple pylon, with obelisks and two colossal Ptolemies in
+## front of it (such statues stood by the harbour of Alexandria); a lotus pool with papyrus; and the
+## palms. The Ptolemies ruled Egypt as pharaohs, and their Greek city looked it.
+static func _egypt(world: Node3D, b: Array, flicker: Array, sway: Array, people: Array) -> void:
+	var whole := b.has("walkway")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 305
+	for i in 40:  # the dunes of the desert round the plateau
+		var a := rng.randf_range(-0.15 * PI, 1.15 * PI)
+		var r := rng.randf_range(75.0, 420.0)
+		var at := Vector3(cos(a) * r, -1.2, sin(a) * r)
+		if at.z < -120.0:
+			continue
+		Egypt.dune(world, at, rng.randf_range(18.0, 55.0), rng.randf() * PI)
+	for p: Array in [[Vector3(-300, -1.2, 40), 150.0, 96.0], [Vector3(-410, -1.2, 150), 118.0, 76.0], [Vector3(-230, -1.2, 230), 64.0, 42.0]]:
+		Egypt.pyramid(world, p[0], p[1], p[2], 0.2, whole)
+	Egypt.sphinx(world, Vector3(-205, -1.2, 70), PI / 2.0 + 0.3, 5.0, whole)  # the great one, by the pyramids
+	for k in 3:  # the avenue of sphinxes along the way in
+		var z := 36.0 + k * 4.5
+		for side: float in [-1.0, 1.0]:
+			Egypt.sphinx(world, Vector3(side * 5.2, 0, z), -side * PI / 2.0, 0.8, whole)
+	Egypt.pylon(world, Vector3(0, 0, 26.5), 0.0, 26.0, 12.0, whole)
+	for side: float in [-1.0, 1.0]:
+		Egypt.obelisk(world, Vector3(side * 16.0, 0, 30.0), 17.0, whole)
+		Egypt.colossus(world, Vector3(side * 4.4, 0, 31.2), 0.0, 8.0, whole)
+		sway.append(Greek.date_palm(world, Vector3(side * 10.0, 0, 46.0), 8.5, b.has("leaves")))
+		sway.append(Greek.date_palm(world, Vector3(side * 21.0, 0, 34.0), 9.5, b.has("leaves")))
+	Egypt.lotus_pool(world, Vector3(12.0, 0, 40.0), 3.0, b.has("water"), b.has("leaves"))
+	for p: Vector3 in [Vector3(-24, 0, 30), Vector3(26, 0, 30), Vector3(-20, 0, -14), Vector3(20, 0, -14)]:
+		Egypt.papyrus(world, p, b.has("leaves"), 11)
 
 
 ## Euclid's six stones: the definitions, the postulates and the common notions in the court, the
@@ -388,8 +513,8 @@ static func _museum_lessons(world: Node3D, work: String, room: Dictionary, out: 
 	var routes := {}
 	for n in [3, 4, 5]:
 		routes["sq%d" % n] = (sq[n] as Array).map(func(t): return _in_world(t, world))
-	var t0: Vector3 = (routes["sq3"] as Array)[0] if not (routes["sq3"] as Array).is_empty() else Vector3(38, 0, 6)
-	out.append({"kind": "beat", "pos": Vector3(38, 0, 13.5), "work": work, "id": "prop_47", "beat": "count_the_tiles",
+	var t0: Vector3 = (routes["sq3"] as Array)[0] if not (routes["sq3"] as Array).is_empty() else Vector3(31, 0, 4)
+	out.append({"kind": "beat", "pos": Vector3(31, 0, 11.5), "work": work, "id": "prop_47", "beat": "count_the_tiles",
 		"text": "Count the three squares", "note": Places._lesson(room, "prop_47").get("point", ""), "marks": routes})
 	spots["prop_47"] = t0
 	return flicker
@@ -606,6 +731,57 @@ static func _troy_beats(world: Node3D, work: String, room: Dictionary, out: Arra
 
 # ---------- #7 Plato, the Republic ----------
 
+const JUST := 5  # the just city: the last stage of the founding, when the soul rises over it
+const LAST := 9  # tyranny: the last of the fall
+## Each step of the city in speech, as the talk at the table takes it: what it is, and what is read
+## when it is done. 1-5 are the founding (Republic II-V), 6-9 the fall (VIII-IX).
+const FOUNDING := {
+	1: ["the city of pigs", "The city of pigs stands on the board: each person doing the one work he is fitted for, and enough for all."],
+	2: ["the fevered city", "The fevered city: couches, cooks, painters, doctors and pigs, and the boundary pushed out onto the neighbours' land."],
+	3: ["the army", "The army camps on the land it took. Now the city needs guardians who are gentle to their own and fierce to their enemies."],
+	4: ["the guardians", "The guardians have their common houses and their training ground, own nothing, and believe the story of the metals."],
+	5: ["the just city", "The just city: each order doing its own work. And over it, the same three parts in one soul."],
+	6: ["timocracy", "Honour rules: the lamps of learning go out. Reason dims in the soul, and spirit burns."],
+	7: ["oligarchy", "Wealth rules, and the city is two cities, rich and poor. The land is drained for gold; appetite grows."],
+	8: ["democracy", "Freedom rules, every desire equal to every other. The walls and the ways fall into disorder."],
+	9: ["tyranny", "One man, the worst desire, rules. The people are shades. Reason is almost out; appetite burns alone."],
+}
+## How many parts of each step's buildings rise one by one as its founding is played.
+const PIECES := {1: 4, 2: 3, 3: 1, 4: 3, 5: 1}
+const BOARD_SCALE := 1.3  # the city in speech, larger than life
+
+
+## Hide what the next step of the founding adds to the board, in PIECES[stage] parts in the order
+## they were built, and give them to the beat (`talk`) to raise: "piece0", "piece1", ..., and at the
+## just city "soul". Each part gets a mark at its middle, to look at as it rises. `site` is the
+## scaled group the board stands in.
+static func _hide_next(board: Dictionary, stage: int, talk: Dictionary, site: Node3D) -> void:
+	var root: Node3D = board["root"]
+	var added: Array = board["added"].get(stage, [])
+	var n: int = PIECES[stage]
+	for k in n:
+		var holder := Kit.group(root, Vector3.ZERO)
+		var middle := Vector3.ZERO
+		var count := 0
+		for i in added.size():
+			if i * n / added.size() != k:
+				continue
+			var node: Node = added[i]
+			if node is Node3D:
+				middle += (node as Node3D).position
+				count += 1
+			root.remove_child(node)
+			holder.add_child(node)
+		holder.visible = false
+		talk["cast"]["piece%d" % k] = holder
+		talk["marks"]["piece%d" % k] = site.transform * Areas._at(root, middle / maxf(1.0, count) + Vector3(0, 1.0, 0))
+	if stage == JUST:
+		var soul: Node3D = board["soul"]["root"]
+		soul.visible = false
+		talk["cast"]["soul"] = soul
+		talk["marks"]["soul"] = site.transform * Areas._at(root, soul.position + Vector3(0, 20.0, 0))
+
+
 ## What of the board goes as the city falls after the just city (Republic VIII-IX), a piece a
 ## regime: the lamps of learning (timocracy), the green of the land, drained for gold (oligarchy),
 ## the order of its walls and ways (democracy), and its people, shades under the tyrant.
@@ -630,17 +806,18 @@ static func _way(world: Node3D, points: Array) -> void:
 
 
 ## The Academy, about 380 BC: Plato's grove of olives outside Athens, where he sits on a curved
-## bench by the spring; before him the council table, where you sit with Socrates, Glaucon and
-## Adeimantus and found the city in speech (city.gd, council.gd), and beyond it the board where
-## the city stands as far as you have governed it, the soul rising over it once it is just and
-## burning down with it as it falls. Round about stand the Republic's scenes: Cephalus's house in
-## the Piraeus, Gyges' chasm, the divided line, the cave, Er's meadow, and with them the court
-## where Socrates was tried, Agathon's dinner and the prison. `city_stage` is the city's stage
-## (City.stage: 0 the bare site to 5 the just city, then 6 to 9 its fall). Lost, the olives are
+## bench by the spring; before him, up on a terrace, the table where you sit with Socrates, Glaucon
+## and Adeimantus and found the city in speech, and below it the board where the city rises as the
+## argument goes on, one step at a time (the city of pigs, the fevered city, the army, the
+## guardians, the just city with the soul over it), and after that falls, regime by regime (Book
+## VIII). Round about stand the Republic's scenes: Cephalus's house in the Piraeus, Gyges' chasm,
+## the divided line, the cave, Er's meadow, and with them the court where Socrates was tried,
+## Agathon's dinner and the prison. `city_stage` is how far the city has come (0 the bare site to
+## 5 the just city, then 6 to 9 its fall), kept in your progress. Lost, the olives are
 ## dead, the herms broken, the city's people and Socrates' company shades.
 static func academy(world: Node3D, work: String, room: Dictionary, stage: int = 0, city_stage: int = 0) -> Dictionary:
 	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 70), 60.0)
-	Kit.plateau(world, 150.0, "earth", false)
+	Kit.plateau(world, 140.0, "earth", false)
 	Kit.sea(world, -0.4)
 	var flicker: Array = []
 	var out: Array = []
@@ -648,82 +825,102 @@ static func academy(world: Node3D, work: String, room: Dictionary, stage: int = 
 	var sway: Array = []
 	var people: Array = []
 	var squads: Array = []
-	var birds: Array = Kit.flock(world, Vector3(0, 0, 118), 6, 18.0, 14.0) if b.has("leaves") else []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 108), 6, 18.0, 14.0) if b.has("leaves") else []
 	var take := func(a: Dictionary) -> void:
 		flicker.append_array(a["flicker"])
 		sway.append_array(a["sway"])
 		people.append_array(a["people"])
 		squads.append_array(a["squads"])
 		birds.append_array(a["birds"])
-	_arrival(world, room, out, spots, flicker, 146.0, 124.0, "path")
+	_arrival(world, room, out, spots, flicker, 126.0, 110.0, "path")
 
 	# the grove of Academus: the olives, the herms at the way in, the spring, and Plato on his bench
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 387
-	var clear := [Vector3(14, 0, 122), Vector3(8.6, 0, 112.4), Vector3(-8.6, 0, 112.0), Vector3(17, 0, 113)]  # the spring, the book, the map, the seat
+	var clear := [Vector3(14, 0, 112), Vector3(8.6, 0, 102.4), Vector3(-8.6, 0, 102.0), Vector3(17, 0, 103)]  # the spring, the book, the map, the seat
 	for k in 22:
 		var side := -1.0 if k % 2 == 0 else 1.0
-		var p := Vector3(side * rng.randf_range(10.0, 30.0), 0, rng.randf_range(100.0, 138.0))
+		var p := Vector3(side * rng.randf_range(10.0, 26.0), 0, rng.randf_range(92.0, 124.0))
 		if clear.any(func(c: Vector3) -> bool: return c.distance_to(p) < 4.0):
 			continue
 		sway.append(Kit.olive(world, p, rng.randf_range(1.1, 1.6), b.has("leaves")))
 	for x: float in [-2.6, 2.6]:
-		Greek.herm(world, Vector3(x, 0, 124.0), 0.0, "marble", b.has("walkway"))
-	var spring := Vector3(14.0, 0, 122.0)
+		Greek.herm(world, Vector3(x, 0, 110.0), 0.0, "marble", b.has("walkway"))
+	var spring := Vector3(14.0, 0, 112.0)
 	Kit.cylinder(world, spring + Vector3(0, 0.02, 0), 2.2, 0.05, "water" if b.has("water") else "drybed", false, 14)
 	for k in 12:
 		var a := TAU * k / 12.0
 		Kit.blob(world, spring + Vector3(cos(a) * 2.4, 0.15, sin(a) * 2.4), 0.3, "stone", Vector3(1.3, 0.6, 1.0), 5)
-	var exedra := Vector3(0, 0, 114.0)
+	var exedra := Vector3(0, 0, 104.0)
 	for k in 7:  # the curved marble bench behind him
 		var a := deg_to_rad(200.0 + k * 140.0 / 6.0)
 		Kit.box(world, exedra + Vector3(cos(a), 0, sin(a)) * 3.4 + Vector3(0, 0.23, 0), Vector3(1.7, 0.46, 0.55), "marble", true,
 			Vector3(0, -a + PI / 2.0, 0))
-	var plato := _teacher(world, room, b, stage, Vector3(0, 0, 113.6), 0.0, Vector3(0, 0, 116.2), out, spots)
-	_study(world, room, out, spots, [[Vector3(-4.8, 0, 115.0), 0.0, Vector3(-4.8, 0, 116.6)], [Vector3(4.8, 0, 115.0), 0.0, Vector3(4.8, 0, 116.6)]],
-		Vector3(-8.6, 1.6, 112.0), 0.35, Vector3(-8.0, 0, 113.8), Vector3(8.6, 0, 112.4), Vector3(8.6, 0, 113.6))
-	out.append(Places.seat(world, Vector3(17.0, 0, 113.0), Vector3(0, 0, 1), "Sit in the shade of the olives"))
+	var plato := _teacher(world, room, b, stage, Vector3(0, 0, 103.6), 0.0, Vector3(0, 0, 106.2), out, spots)
+	_study(world, room, out, spots, [[Vector3(-4.8, 0, 105.0), 0.0, Vector3(-4.8, 0, 106.6)], [Vector3(4.8, 0, 105.0), 0.0, Vector3(4.8, 0, 106.6)]],
+		Vector3(-8.6, 1.6, 102.0), 0.35, Vector3(-8.0, 0, 103.8), Vector3(8.6, 0, 102.4), Vector3(8.6, 0, 103.6))
+	out.append(Places.seat(world, Vector3(17.0, 0, 103.0), Vector3(0, 0, 1), "Sit in the shade of the olives"))
 
-	# the terrace above the board, "the hillside" where you walk with Socrates, and on it the council
-	# table where he and the brothers found the city with you
+	# the terrace above the board, "the hillside" where you walk with Socrates, with the table where he
+	# and the brothers found the city in speech, one step of the argument at a time
 	const UP := 6.0
-	Kit.box(world, Vector3(0, UP / 2.0, 90.0), Vector3(26.0, UP, 12.0), "stone")
-	Kit.box(world, Vector3(0, UP + 0.02, 90.0), Vector3(26.0, 0.04, 12.0), "paving" if b.has("walkway") else "ashbed", false)
-	Kit.box(world, Vector3(0, UP / 2.0, 103.0), Vector3(4.0, 0.4, sqrt(14.0 * 14.0 + UP * UP)), "path", true, Vector3(atan2(UP, 14.0), 0, 0))
-	var tc := Vector3(0, UP, 88.5)
+	Kit.box(world, Vector3(0, UP / 2.0, 80.0), Vector3(26.0, UP, 12.0), "stone")
+	Kit.box(world, Vector3(0, UP + 0.02, 80.0), Vector3(26.0, 0.04, 12.0), "paving" if b.has("walkway") else "ashbed", false)
+	Kit.box(world, Vector3(0, UP / 2.0, 93.0), Vector3(4.0, 0.4, sqrt(14.0 * 14.0 + UP * UP)), "path", true, Vector3(atan2(UP, 14.0), 0, 0))
+	var tc := Vector3(0, UP, 78.5)
 	var wood := "wood" if b.has("walkway") else "deadwood"
 	Kit.box(world, tc + Vector3(0, 0.72, 0), Vector3(3.2, 0.08, 1.3), wood)
 	for p: Vector3 in [Vector3(-1.4, 0.35, -0.5), Vector3(1.4, 0.35, -0.5), Vector3(-1.4, 0.35, 0.5), Vector3(1.4, 0.35, 0.5)]:
 		Kit.box(world, tc + p, Vector3(0.1, 0.7, 0.1), wood, false)
-	for k in 4:  # the counters: gold, silver, bronze and iron
-		Kit.blob(world, tc + Vector3(-1.0 + k * 0.25, 0.8, 0.25), 0.05, ["gold", "#c8ccd4", "bronze", "iron"][k])
 	Kit.box(world, tc + Vector3(0.7, 0.77, 0.1), Vector3(0.5, 0.02, 0.35), "wood", false)  # a wax tablet
 	Kit.box(world, tc + Vector3(0.7, 0.785, 0.1), Vector3(0.42, 0.01, 0.28), "#3a2a1e", false)
-	for c: Array in [["socrates", Vector3(-1.4, 0, -1.2)], ["glaucon", Vector3(2.3, 0, -0.4)], ["adeimantus", Vector3(-2.3, 0, 0.3)]]:
-		var at: Vector3 = tc + c[1]
-		people.append(People.figure(world, at, Kit.face_yaw(at, tc), str(c[0]), not b.has("household")))
+	for c: Array in [["socrates", Vector3(-2.3, 0, 0.9)], ["glaucon", Vector3(2.3, 0, 0.9)], ["adeimantus", Vector3(3.1, 0, -0.2)]]:
+		var at: Vector3 = tc + c[1]  # beside you, all looking down at the board
+		people.append(People.figure(world, at, Kit.face_yaw(at, Vector3(0, 0, 22.0)), str(c[0]), not b.has("household")))
 	Kit.bench(world, tc + Vector3(0, 0, 1.3), PI)  # your seat, facing the board
-	out.append({"kind": "council", "pos": tc + Vector3(0, 0, 2.2), "work": work, "text": "Sit at the council table and govern the city"})
-	spots["council"] = tc + Vector3(0, 0, 2.2)
 
-	# the city in speech, as far as you have governed it; as it falls, the board loses its pieces
+	# the city in speech, built as far as the talk has gone; the next step's buildings stand hidden, and
+	# rise one by one as that step is played at the table; after the just city it falls, regime by regime
 	var board_back: Array = b.duplicate()
-	if city_stage > City.JUST_CITY:
-		for piece in FALLS.slice(0, city_stage - City.JUST_CITY):
+	if city_stage > JUST:
+		for piece in FALLS.slice(0, city_stage - JUST):
 			board_back.erase(piece)
-	var board := Thinkers.city_in_speech(world, Vector3(0, 0, 44), 0.0, mini(city_stage, City.JUST_CITY), board_back)
+	var raising := city_stage < JUST
+	var shown := city_stage + 1 if raising else mini(city_stage, JUST)
+	var site := Kit.group(world, Vector3(0, 0, 22))
+	site.scale = Vector3.ONE * BOARD_SCALE  # half as big again as life, to be read from the terrace
+	var board := Thinkers.city_in_speech(site, Vector3.ZERO, 0.0, shown, board_back)
 	take.call(board)
 	_fall(board["soul"], city_stage)
+	var seat := tc + Vector3(0, 0, 2.2)
+	var talk := {"kind": "beat", "pos": seat, "start": seat, "face": Vector3(0, 0, 22.0), "work": work, "cast": {}, "marks": {}}
+	if raising:
+		_hide_next(board, shown, talk, site)
+		talk["beat"] = "found_%d" % shown
+		talk["city_to"] = shown
+		talk["text"] = "Go on with the argument: %s" % FOUNDING[shown][0]
+		talk["after"] = FOUNDING[shown][1]
+		out.append(talk)
+	elif city_stage < LAST:
+		talk["beat"] = "decline_%d" % (city_stage + 1)
+		talk["city_to"] = city_stage + 1
+		talk["text"] = "Let a generation pass: %s" % FOUNDING[city_stage + 1][0]
+		talk["after"] = FOUNDING[city_stage + 1][1]
+		talk["marks"] = {"soul": _in_world(board["soul"]["root"], world) + Vector3(0, 18.0, 0)}
+		out.append(talk)
+	else:
+		out.append({"kind": "city_again", "pos": seat, "text": "Found the city again, from the bare site"})
+	spots["table"] = seat
 	flicker.append_array(_academy_lessons(world, work, room, out, spots, board, b, take))
 
-	_way(world, [Vector3(0, 0, 124), Vector3(0, 0, 108)])
-	_way(world, [Vector3(0, 0, 108), Vector3(-20, 0, 100), Vector3(-44, 0, 90), Vector3(-104, 0, 62)])  # to Cephalus's house
-	_way(world, [Vector3(-44, 0, 90), Vector3(-44, 0, -46), Vector3(-6, 0, -56)])  # past the line, to Er's meadow
-	_way(world, [Vector3(-44, 0, 2), Vector3(-104, 0, 0)])  # to the court
-	_way(world, [Vector3(-44, 0, -46), Vector3(-104, 0, -54)])  # to the prison
-	_way(world, [Vector3(0, 0, 108), Vector3(20, 0, 100), Vector3(44, 0, 92), Vector3(75, 0, 116)])  # to the cave
-	_way(world, [Vector3(44, 0, 92), Vector3(44, 0, 18), Vector3(90, 0, 16)])  # to Gyges' pasture
-	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 143.0), "yaw": 0.0, "spots": spots,
+	_way(world, [Vector3(0, 0, 110), Vector3(0, 0, 98)])
+	_way(world, [Vector3(0, 0, 98), Vector3(-20, 0, 92), Vector3(-48, 0, 84), Vector3(-94, 0, 52)])  # to Cephalus's house
+	_way(world, [Vector3(-48, 0, 84), Vector3(-48, 0, -44), Vector3(-8, 0, -40)])  # past the line, to Er's meadow
+	_way(world, [Vector3(-48, 0, 16), Vector3(-100, 0, 14)])  # to the court
+	_way(world, [Vector3(-48, 0, -44), Vector3(-96, 0, -40)])  # to the prison
+	_way(world, [Vector3(0, 0, 98), Vector3(20, 0, 92), Vector3(50, 0, 84), Vector3(70, 0, 104)])  # to the cave
+	_way(world, [Vector3(50, 0, 84), Vector3(50, 0, 18), Vector3(78, 0, 18)])  # to Gyges' pasture
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 123.0), "yaw": 0.0, "spots": spots,
 		"flicker": flicker, "people": [plato] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
 
 
@@ -739,7 +936,7 @@ static func _fall(soul: Dictionary, city_stage: int) -> void:
 		node.scale = Vector3.ONE * float(spec[1])
 		for l in node.find_children("*", "OmniLight3D", false, false):
 			(l as OmniLight3D).light_energy = float(spec[0])
-	if city_stage == City.LAST_STAGE:
+	if city_stage == LAST:
 		var appetite: Node3D = parts["appetite"]
 		for mi in appetite.find_children("*", "MeshInstance3D", false, false):
 			var m := Thinkers._glow(Color("a01818"))
@@ -766,7 +963,7 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 		return it
 
 	# Book I: what justice is, argued at Cephalus's house in the Piraeus
-	var ceph := Thinkers.cephalus_house(world, Vector3(-115, 0, 60), PI / 2.0, b)
+	var ceph := Thinkers.cephalus_house(world, Vector3(-104, 0, 52), PI / 2.0, b)
 	take.call(ceph)
 	var ca: Vector3 = ceph["spots"]["teacher"]
 	Kit.stele(world, ca + Vector3(0, 0, -1.0), Kit.face_yaw(ca + Vector3(0, 0, -1.0), ca))
@@ -774,7 +971,7 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 	spots["justice"] = ca
 
 	# Book II: the ring of Gyges, down in the chasm and back among the shepherds
-	var gy := Thinkers.gyges(world, Vector3(90, 0, -30), 0.0, b)
+	var gy := Thinkers.gyges(world, Vector3(78, 0, -28), 0.0, b)
 	take.call(gy)
 	var chasm: Array = gy["chasm"]
 	var shepherd: Node3D = gy["people"][0]["root"]
@@ -783,16 +980,16 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 
 	# Books II-IV: the city of pigs and the just city, on the board you build at the table
 	var lines := {
-		"one_work": [Vector3(-39.5, 0, 62.0), Vector3(-38.0, 0, 62.0), "Look at the city of pigs",
-			"Only the boundary stones stand here yet. Sit at the council table and found the city: the board shows it as far as you have governed it."],
-		"just_city": [Vector3(39.5, 0, 62.0), Vector3(38.0, 0, 62.0), "Look at the just city",
-			"The city is not yet just. Govern it at the council table until each order does its own work."],
+		"one_work": [Vector3(-50.5, 0, 44.0), Vector3(-49.0, 0, 44.0), "Look at the city of pigs",
+			"Only the boundary stones stand here yet. Go up to the table on the terrace, and found the city with Socrates."],
+		"just_city": [Vector3(50.5, 0, 44.0), Vector3(49.0, 0, 44.0), "Look at the just city",
+			"The city is not yet just. Go on with the argument at the table on the terrace."],
 	}
 	for id: String in lines:
 		var spec: Array = lines[id]
 		Kit.stele(world, spec[0], Kit.face_yaw(spec[0], spec[1]))
 		var it := _stone(out, work, room, id, spec[1], spec[2])
-		it["needs_city"] = 1 if id == "one_work" else City.JUST_CITY
+		it["needs_city"] = 1 if id == "one_work" else JUST
 		it["not_yet"] = spec[3]
 		spots[id] = spec[1]
 
@@ -801,16 +998,16 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 	var soul_marks := {}
 	for part: String in parts:
 		soul_marks[part] = _in_world(parts[part], world)
-	var sa := Vector3(-26.0, 0, 18.0)
+	var sa := Vector3(-36.0, 0, -2.0)
 	Kit.stele(world, sa + Vector3(-1.2, 0, 0.6), Kit.face_yaw(sa + Vector3(-1.2, 0, 0.6), sa))
 	var soul: Dictionary = beat.call("soul", "the_soul", sa, "Look up into the soul", {}, soul_marks)
 	soul["start"] = sa
-	soul["face"] = Vector3(0, 0, 8.0)
-	soul["needs_city"] = City.JUST_CITY
-	soul["not_yet"] = "The soul rises over the city only when the city is just. Govern it at the council table until it is."
+	soul["face"] = Vector3(0, 0, -25.0)
+	soul["needs_city"] = JUST
+	soul["not_yet"] = "The soul rises over the city only when the city is just. Found it, with Socrates, at the table on the terrace."
 
 	# Book VI: the divided line, walked from the shadows to the sun
-	var line := Thinkers.the_line(world, Vector3(-62, 0, -10), 0.0, b)
+	var line := Thinkers.the_line(world, Vector3(-64, 0, -8), 0.0, b)
 	take.call(line)
 	var lm := {"sun": Areas._at(line["root"], Vector3(0, 40.0, -90.0)), "pool": Areas._at(line["root"], Vector3(4.0, 0, 24.0))}
 	for seg: Dictionary in line["segments"]:
@@ -818,7 +1015,7 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 	beat.call("line", "the_line", (line["segments"][0]["from"] as Vector3) + Vector3(0, 0, 1.2), "Walk the divided line", {}, lm)
 
 	# Book VII: the cave, and a way up onto its hill from the grove
-	var cave := Thinkers.cave(world, Vector3(75, 0, 58), 0.0, b)
+	var cave := Thinkers.cave(world, Vector3(70, 0, 50), 0.0, b)
 	take.call(cave)
 	var cr: Node3D = cave["root"]
 	Kit.box(cr, Vector3(0, 2.4, 48.0), Vector3(5.0, 0.4, 16.7), "path", true, Vector3(atan2(4.8, 16.0), 0, 0))
@@ -832,7 +1029,7 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 	den["face"] = Areas._at(cr, Vector3(0, 0, -9.0))
 
 	# Book X: Er's meadow, the lots, the lives and the river
-	var meadow := Thinkers.er(world, Vector3(-5, 0, -95), 0.0, b)
+	var meadow := Thinkers.er(world, Vector3(-8, 0, -76), 0.0, b)
 	take.call(meadow)
 	var lives: Array = meadow["lives"]
 	var banks: Array = meadow["banks"]
@@ -841,17 +1038,17 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 		"lethe": Areas._at(meadow["root"], banks[2])})
 
 	# not points: the trial, the dinner, the last day
-	var court := Thinkers.court(world, Vector3(-110, 0, -18), 0.0, b)
+	var court := Thinkers.court(world, Vector3(-100, 0, -12), 0.0, b)
 	take.call(court)
 	var trial: Dictionary = beat.call("", "apology", court["spots"]["teacher"], "Stand trial, as Socrates", {"socrates": court["people"][0]["root"]},
 		{"platform": court["platform"], "urns": court["urns"]})
 	trial["after"] = "Plato was in the court that day. Everything he wrote afterwards is, in a way, an answer to it."
-	var dinner := Thinkers.symposium(world, Vector3(-50, 0, 102), 0.0, b)
+	var dinner := Thinkers.symposium(world, Vector3(-44, 0, 96), 0.0, b)
 	take.call(dinner)
 	out.append({"kind": "look", "pos": dinner["spots"]["teacher"], "text": "Listen to Socrates at Agathon's dinner",
 		"note": "Socrates tells the guests what Diotima taught him about love: begin from one beautiful body and climb, \"using these as steps only, and from one going on to two, and from two to all fair forms, and from fair forms to fair practices, and from fair practices to fair notions, until from fair notions he arrives at the notion of absolute beauty.\""})
 	spots["symposium"] = dinner["spots"]["teacher"]
-	var jail := Thinkers.prison(world, Vector3(-110, 0, -72), 0.0, b)
+	var jail := Thinkers.prison(world, Vector3(-96, 0, -58), 0.0, b)
 	take.call(jail)
 	var cell: Dictionary = jail["cell"]
 	var last: Dictionary = beat.call("", "the_cup", jail["spots"]["teacher"], "Spend the last day, as Socrates",

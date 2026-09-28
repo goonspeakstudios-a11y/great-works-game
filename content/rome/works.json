@@ -1,0 +1,32 @@
+{
+  "source": "essentials",
+  "title": "The Roman World",
+  "note": "Rome's books, in reading order. Each stands in a zone of the city (content/rome/republican_rome.json) and belongs to one of the city's four ages (content/rome/city.json): the city you walk is the age of the latest book you have begun.",
+  "modules": [
+    {
+      "id": "r1",
+      "title": "The Speaker in the Forum",
+      "style": "puzzle",
+      "intro": "The Roman art of the speech, as it was taught in the last generation of the Republic: the five canons, the parts of a speech, the three styles, and the memory palace.",
+      "takeaways": [
+        "Rhetoric has five parts: invention, arrangement, style, memory, and delivery.",
+        "A trained memory is a house of places walked in order, with a striking image set in each."
+      ]
+    }
+  ],
+  "works": [
+    {
+      "id": "rhetorica-ad-herennium",
+      "author": "",
+      "title": "Rhetorica ad Herennium",
+      "module": "r1",
+      "style": "puzzle",
+      "hours": 2,
+      "read": "Book I.2-4 (the five canons and the parts of a speech) and Book III.16-24 (the art of memory).",
+      "edition": "Tr. Harry Caplan (Loeb Classical Library 403)",
+      "match": "1:Rhetorica ad Herennium",
+      "age": "republic",
+      "rome_zone": "palatine_forum"
+    }
+  ]
+}

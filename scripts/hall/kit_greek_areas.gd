@@ -17,6 +17,7 @@ extends RefCounted
 const Kit := preload("res://scripts/hall/kit.gd")
 const Greek := preload("res://scripts/hall/kit_greek.gd")
 const Rome := preload("res://scripts/hall/kit_rome.gd")
+const Egypt := preload("res://scripts/hall/kit_egypt.gd")
 const People := preload("res://scripts/hall/kit_greek_people.gd")
 const Props := preload("res://scripts/hall/kit_greek_props.gd")
 
@@ -148,7 +149,7 @@ static func memory_house(parent: Node3D, at: Vector3, yaw: float, back: Array) -
 
 # ---------- e1: Euclid ----------
 
-## The court of the Museum at Alexandria, about 300 BC: a garden of date palms inside colonnades,
+## The court of the Museum at Alexandria, about 300 BC: a garden of date palms inside Egyptian porticos,
 ## library cabinets of papyrus rolls under them, scholars at sand trays, and the Pharos over the
 ## roofs to the north (-Z). The definitions, postulates and common notions have their stones round
 ## the garden.
@@ -157,11 +158,11 @@ static func museum_court(parent: Node3D, at: Vector3, yaw: float, back: Array) -
 	var area := _area(g)
 	var whole := back.has("walkway")
 	const S := 26.0
-	Kit.box(g, Vector3(0, 0.02, 0), Vector3(S + 8.0, 0.04, S + 8.0), "paving", false)
+	Kit.box(g, Vector3(0, 0.02, 0), Vector3(S + 8.0, 0.04, S + 8.0), "limestone", false)
 	Kit.box(g, Vector3(0, 0.03, 0), Vector3(S - 8.0, 0.04, S - 8.0), "grass" if back.has("leaves") else "ashbed", false)
-	for side in range(1, 4):  # colonnades on three sides; the fourth (+Z) is the way in
+	for side in range(1, 4):  # Egyptian porticos on three sides (the Ptolemies built in the pharaohs' manner); +Z is the way in
 		var a := side * PI / 2.0
-		Kit.stoa(g, Vector3(sin(a), 0, cos(a)) * (S / 2.0), a + PI, S, 5.0, whole)
+		Egypt.portico(g, Vector3(sin(a), 0, cos(a)) * (S / 2.0), a + PI, S, 5.0, whole)
 		for k in 3:  # the cabinets along the back wall
 			var along := Vector3(cos(a), 0, -sin(a)) * (-7.0 + k * 7.0)
 			Greek.armarium(g, Vector3(sin(a), 0, cos(a)) * (S / 2.0 + 2.0) + along, a + PI, whole)
@@ -214,7 +215,7 @@ static func prop_forty_seven(parent: Node3D, at: Vector3, yaw: float, back: Arra
 	var g := Kit.group(parent, at, yaw)
 	var area := _area(g)
 	var whole := back.has("walkway")
-	Kit.box(g, Vector3(0, 0.02, 0), Vector3(24.0, 0.04, 22.0), "paving", false)
+	Kit.box(g, Vector3(0, 0.02, 0), Vector3(24.0, 0.04, 22.0), "limestone", false)
 	var tiles := Greek.tiled_squares(g, Vector3(-1.5, 0, 1.0), 0.0, 1.5, whole)
 	area["squares"] = tiles["squares"]
 	for x: float in [-11.0, 11.0]:
@@ -756,7 +757,7 @@ static func crossroads(parent: Node3D, at: Vector3, yaw: float, back: Array) -> 
 		Kit.box(g, Vector3(cos(a), 0, sin(a)) * 14.0 + Vector3(0, 0.03, 0), Vector3(2.5, 0.04, 28.0), "path", false,
 			Vector3(0, -a + PI / 2.0, 0))
 		var hill := Vector3(cos(a + PI / 3.0), 0, sin(a + PI / 3.0)) * 24.0
-		Kit.cylinder(g, hill + Vector3(0, -2.0, 0), 12.0, 16.0, "rock", false, 7, 3.0)  # the mountains between
+		Kit.hill(g, hill, 13.0, 12.0, "rock")  # the mountains between
 	Kit.box(g, Vector3(0, 0.8, 0), Vector3(0.6, 1.6, 0.6), "stone")  # the shrine-stone at the meeting
 	var cart := Kit.group(g, Vector3(3.0, 0.4, 3.0), 0.8)
 	cart.rotation.z = 1.4
