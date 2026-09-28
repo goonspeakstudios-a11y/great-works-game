@@ -58,7 +58,7 @@ const ZONES := {
 		{"file": "rome_organ", "db": -10.0, "music": true, "needs": "lamps"},
 		{"file": "rome_drone", "db": -10.0, "music": true, "needs": "sun"},
 		{"file": "rome_tibia", "db": -10.0, "music": true, "needs": "teacher"},
-		{"file": "rome_march", "db": -11.0, "music": true, "needs": "soldiers"},
+		{"file": "rome_march", "db": -11.0, "music": true, "needs": "walkway"},  # the Forum's life, once its court stands
 		{"file": "crowd", "db": -24.0, "needs": "household"},
 		{"file": "fountain", "db": -26.0, "needs": "water"},
 		{"file": "birds", "db": -24.0, "needs": "leaves"},

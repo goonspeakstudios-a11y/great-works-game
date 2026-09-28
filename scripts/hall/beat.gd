@@ -34,6 +34,7 @@ var _t := 0.0
 var _held := 0.0
 var _waypoint := 0
 var _saved := {}  # Node3D -> Transform3D, to put back
+var _shown := {}  # Node3D -> whether it was visible, to put back
 var _move := {}  # {node, from, to, secs}
 var _turn := {}  # {from, to}
 var _eye := 0.0
@@ -107,6 +108,10 @@ func finish(player: Node3D) -> void:
 		if is_instance_valid(node):
 			(node as Node3D).transform = _saved[node]
 	_saved = {}
+	for node in _shown:
+		if is_instance_valid(node):
+			(node as Node3D).visible = _shown[node]
+	_shown = {}
 
 
 func current() -> Dictionary:
@@ -224,6 +229,8 @@ func _next(player: Node3D) -> void:
 		"show", "hide":
 			var node: Node3D = cast.get(s.get("show", s.get("hide", "")), null)
 			if node:
+				if not _shown.has(node):
+					_shown[node] = node.visible
 				node.visible = kind() == "show"
 			_next(player)
 		"eye":

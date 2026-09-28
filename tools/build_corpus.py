@@ -1,8 +1,11 @@
-"""Turn book files from Desktop\\Book Collections into searchable passages for the Hall.
+"""Turn book files from Desktop\\Book Collections (or public-domain texts online) into searchable
+passages for the Hall.
 
 Each book becomes content/books/<work-id>.json: a list of short passages (about 200
 words, split on paragraph edges) labelled with their chapter, so an author can quote
-the real text. Only public-domain translations are used.
+the real text. Only public-domain translations are used. A book can come from a file in the
+library ("file") or from the web ("urls": [[url, heading], ...]); downloads are kept in
+tools/data/books/ so a rebuild gives the same passages.
 
 Usage: C:\\Python314\\python.exe tools/build_corpus.py [work-id ...]
 """
@@ -12,6 +15,9 @@ import json
 import logging
 import re
 import sys
+import time
+import urllib.error
+import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -22,6 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LIBRARY = next((p for p in (Path("E:/Book Collections"), Path.home() / "Desktop" / "Book Collections") if p.exists()),
                Path("E:/Book Collections"))
 OUT = ROOT / "content" / "books"
+CACHE = ROOT / "tools" / "data" / "books"
 TARGET_WORDS = 200
 MAX_WORDS = 380
 
@@ -52,6 +59,17 @@ BOOKS = {
             {"file": "Aristotle - Sophistical Refutations (tr. Pickard-Cambridge).txt", "title": "Sophistical Refutations",
              "start": r"SECTION 1", "end": r"THE END", "chapter": r"^\s*Part (\d+)\s*$"},
         ],
+    },
+    "rhetorica-ad-herennium": {  # no English translation is out of copyright, so the Latin itself
+        "title": "Rhetorica ad Herennium",
+        "translation": "the Latin text, ed. F. Marx (Teubner, 1923), public domain",
+        "wiki": True,
+        "urls": [[f"https://la.wikisource.org/w/index.php?title=Rhetorica_ad_Herennium/Liber_{n}&action=raw", f"LIBER {n}"]
+                 for n in ("I", "II", "III", "IV")],
+        "start": r"LIBER I",
+        "end": r"\Z",
+        "chapter": r"^\s*==\s*(\d+)\s*==\s*$",
+        "book": r"^\s*LIBER ([IV]+)\s*$",
     },
     "aristotle-nicomachean-ethics": {
         "file": "Aristotle - Nicomachean Ethics (tr. Chase).txt",
@@ -88,15 +106,61 @@ class _Text(HTMLParser):
             self.parts.append(data)
 
 
-def read_text(path: Path, encoding: str) -> str:
-    raw = path.read_text(encoding=encoding, errors="replace")
-    if path.suffix.lower() in (".html", ".htm"):
+def tidy(raw: str, html: bool = False) -> str:
+    if html:
         parser = _Text()
         parser.feed(raw)
         raw = "".join(parser.parts)
     raw = raw.replace("\u00a0", " ").replace("\ufffd", " ")
     raw = re.sub(r"[ \t\r]+", " ", raw)
     return re.sub(r"\n\s*\n+", "\n\n", raw)
+
+
+def read_text(path: Path, encoding: str) -> str:
+    raw = path.read_text(encoding=encoding, errors="replace")
+    return tidy(raw, path.suffix.lower() in (".html", ".htm"))
+
+
+def fetch(url: str) -> str:
+    """The text at url, from the cache when it has been fetched before (retrying a dropped
+    connection a few times, waiting longer each time)."""
+    CACHE.mkdir(parents=True, exist_ok=True)
+    cached = CACHE / (re.sub(r"[^A-Za-z0-9._-]+", "_", url)[-150:] + ".txt")
+    if cached.exists():
+        return cached.read_text(encoding="utf-8")
+    request = urllib.request.Request(url, headers={"User-Agent": "great-works-game corpus builder"})
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as reply:
+                text = reply.read().decode("utf-8", errors="replace")
+            cached.write_text(text, encoding="utf-8")
+            logger.info("fetched %s", url)
+            return text
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as err:
+            wait = 2 ** (attempt + 1)
+            logger.warning("%s: %s; trying again in %d s", url, err, wait)
+            time.sleep(wait)
+    raise RuntimeError(f"could not fetch {url}")
+
+
+def unwiki(raw: str) -> str:
+    """Wikisource page source to plain text: templates, tags and editors' marks removed."""
+    raw = re.sub(r"\{\{(?:[^{}]|\{\{[^{}]*\}\})*\}\}", "", raw, flags=re.S)
+    raw = re.sub(r"<ref[^>]*>.*?</ref>|<[^>]+>", "", raw, flags=re.S)
+    raw = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", raw)
+    raw = raw.replace("‹", "").replace("›", "").replace("†", "")
+    return raw
+
+
+def source_text(part: dict) -> str:
+    if "urls" in part:
+        pieces = []
+        for url, heading in part["urls"]:
+            raw = fetch(url)
+            raw = unwiki(raw) if part.get("wiki") else raw
+            pieces.append(f"{heading}\n\n{raw}" if heading else raw)
+        return tidy("\n\n".join(pieces), part.get("html", False))
+    return read_text(LIBRARY / part["file"], part.get("encoding", "utf-8"))
 
 
 def body_of(text: str, spec: dict) -> str:
@@ -111,6 +175,7 @@ def body_of(text: str, spec: dict) -> str:
 
 
 def clean(paragraph: str) -> str:
+    paragraph = re.sub(r"^\s*==\s*\d+\s*==\s*", "", paragraph)  # a Wikisource section heading
     paragraph = re.sub(r"\|\d+", "", paragraph)  # page numbers like "|633"
     paragraph = re.sub(r"(?<=[a-zA-Z.,;:])\d{1,2}\b", "", paragraph)  # footnote marks like "Porphyry.1"
     return re.sub(r"\s+", " ", paragraph).strip()
@@ -163,7 +228,7 @@ def build(work_id: str) -> Path:
     spec = BOOKS[work_id]
     chunks: list[dict] = []
     for part in spec.get("parts", [spec]):
-        text = read_text(LIBRARY / part["file"], part.get("encoding", "utf-8"))
+        text = source_text(part)
         for c in chunk(body_of(text, part), part, part["title"]):
             c["id"] = len(chunks)
             chunks.append(c)

@@ -283,6 +283,8 @@ static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0,
 			return villa(world, work, room, stage)
 		"lyceum":
 			return lyceum(world, work, room, stage, stages)
+		"domus":  # the later Greek books' places are in places_greek.gd (loaded here, not preloaded: it preloads this)
+			return load("res://scripts/hall/places_greek.gd").domus(world, work, room, stage)
 	push_error("No place built for %s" % work)
 	return hub(world, [])
 

@@ -225,8 +225,12 @@ func _ready() -> void:
 
 ## Screenshot mode for checking the look without playing:
 ##   godot --path . -- --shot=C:/out.png --view=nexus|hub|assets|assets_mid|props|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map|hill|grove|stones|yard|garden|garden_w [--stage=0-6]
+## Any book's place from any spot: --view=place --work=<work id> --at=x,y,z --look=x,y,z [--stage=N]
 func _stage_shot(view: String) -> void:
-	if _args.has("stage"):  # --stage=N: see the places with N pieces brought back
+	if view == "place" and _args.has("stage"):
+		var w: String = _args.get("work", "")
+		progress.learn(w, Rooms.room(w).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
+	elif _args.has("stage"):  # --stage=N: see the places with N pieces brought back
 		for d in doors.slice(0, 2):
 			progress.learn(d["work"], Rooms.room(d["work"]).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
 		if view in ["hill", "grove"]:  # the two areas past the Lyceum keep their own stage
@@ -238,9 +242,13 @@ func _stage_shot(view: String) -> void:
 		_load_place("hub")
 	elif view in ["assets", "assets_mid", "props"]:
 		_load_place("asset_test")
+	elif view == "place":
+		_load_place(_args.get("work", doors[0]["work"]))
 	elif view != "nexus":  # the Nexus is where the game starts
 		_load_place(doors[0]["work"])
 	match view:
+		"place":
+			_stand(_vec(_args.get("at", "0,0,20")), _vec(_args.get("look", "0,0,0")))
 		"assets":
 			_stand(Vector3(0, 0, 1.5), Vector3(0, 0, -20))
 		"assets_mid":
@@ -302,6 +310,11 @@ func _stage_shot(view: String) -> void:
 		_open_ask(doors[0]["work"])
 		_talk[doors[0]["work"]] = _you("What's the difference between genus and species?") + "\n\n[color=#e0b660]Porphyry:[/color] Genus is the wide family, like animal. Species is one kind inside it, like human. What splits them is the difference: being able to reason."
 		_answer.text = _talk[doors[0]["work"]]
+
+
+static func _vec(text: String) -> Vector3:
+	var n := text.split(",")
+	return Vector3(float(n[0]), float(n[1]), float(n[2])) if n.size() == 3 else Vector3.ZERO
 
 
 func _stand(at: Vector3, look_at: Vector3) -> void:
@@ -1610,8 +1623,8 @@ func _start_beat(it: Dictionary) -> void:
 	_beat_mark.hide()
 
 
-func _play_beat(delta: float) -> void:
-	beat.update(delta, player, Input.is_action_pressed("interact"))
+func _play_beat(delta: float, holding: bool = false) -> void:
+	beat.update(delta, player, holding or Input.is_action_pressed("interact"))
 	if beat.done:
 		_end_beat(true)
 		return

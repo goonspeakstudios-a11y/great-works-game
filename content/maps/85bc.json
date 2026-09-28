@@ -1,0 +1,174 @@
+{
+ "title": "The world in 85 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Roman Republic",
+   "sub": "Sulla in the East, Marius's party in Rome",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    72,
+    52
+   ]
+  },
+  {
+   "name": "Pontus",
+   "sub": "King Mithridates VI, beaten back by Sulla",
+   "color": [
+    96,
+    84,
+    132
+   ],
+   "label": [
+    149,
+    66
+   ]
+  },
+  {
+   "name": "Armenia",
+   "sub": "King Tigranes the Great",
+   "color": [
+    120,
+    96,
+    60
+   ],
+   "label": [
+    171,
+    73
+   ]
+  },
+  {
+   "name": "Parthian Empire",
+   "sub": "the Arsacid kings",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    197,
+    100
+   ]
+  },
+  {
+   "name": "Seleucid Syria",
+   "sub": "the last Seleucids, at war with each other",
+   "color": [
+    140,
+    110,
+    90
+   ],
+   "label": [
+    150,
+    90
+   ]
+  },
+  {
+   "name": "Ptolemaic Egypt",
+   "sub": "the Ptolemies",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    128,
+    120
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Gauls",
+   "label": [
+    42,
+    40
+   ]
+  },
+  {
+   "name": "Germans",
+   "label": [
+    67,
+    22
+   ]
+  },
+  {
+   "name": "Dacians",
+   "label": [
+    111,
+    43
+   ]
+  },
+  {
+   "name": "Numidia",
+   "label": [
+    50,
+    89
+   ]
+  },
+  {
+   "name": "Mauretania",
+   "label": [
+    20,
+    96
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Rome",
+   "note": "The Rhetorica ad Herennium is written here",
+   "at": [
+    74,
+    60
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Athens",
+   "note": "Sacked by Sulla, 86 BC",
+   "at": [
+    109,
+    76
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Chaeronea",
+   "note": "Sulla beats Mithridates' army, 86 BC",
+   "at": [
+    106,
+    74
+   ],
+   "main": false,
+   "side": "above"
+  },
+  {
+   "name": "Rhodes",
+   "note": "Molon's school of speaking",
+   "at": [
+    123,
+    82
+   ],
+   "main": false,
+   "side": "below"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}
