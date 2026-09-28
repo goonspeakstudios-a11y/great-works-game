@@ -128,3 +128,12 @@ People are in `scripts/hall/kit_greek_people.gd`, the props from e2 on in `scrip
 the e1-e3 areas in `scripts/hall/kit_greek_areas.gd` and the philosophers' areas (e4) in
 `scripts/hall/kit_greek_thinkers.gd`, which shares its helpers.
 The gallery can look from a chosen spot: `--eye=x,y,z --look=x,y,z` (for inside caves and halls).
+
+## In use (sprint 4)
+The Rhetorica's place uses `Rome.atrium`, `lararium`, `capsa`, `pergola`, `fountain`, `stone_pine`,
+`togatus`, `memory_image`, `far_city` and the areas `memory_house` and `law_court`; Euclid's uses
+`museum_court`, `prop_one`, `prop_forty_seven` and `sand_tray`; Homer's uses `ships`, `achilles_hut`,
+`forge`, `walls`, `cyclops_cave`, `underworld`, `ithaca_hall`, `sirens`, `Greek.ship` as the black
+ship that sails between the islands, `People.figure` and `People.hero_arms` for the beats. The
+places are built in `scripts/hall/places_greek.gd`; the beats are in `content/greece/beats.json`.
+

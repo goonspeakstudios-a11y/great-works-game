@@ -35,9 +35,9 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
 | 1 | Porphyry, Isagoge | Built then replaced by the Hall (2026-09-25): Guess Who against Porphyry (Sicily, 270 AD); questions split families (genus, species, difference), the cloak is an accident, laughing a property; ends on the open question of universals |
 | 2 | Aristotle, Categories | Built then replaced by the Hall (2026-09-25): ask a theft witness the ten questions; the report fills; the man himself is substance |
 | 3 | Aristotle, the Organon | Built then replaced by the Hall (2026-09-25): ten coins in the Agora; one sound syllogism and five tricks (consequent, "your dog is your father", circular, many questions, after-so-because) |
-| 4 | Rhetorica ad Herennium | Built then replaced by the Hall (2026-09-25): defend Gaius; five steps of a speech; place strange pictures in your house, walk it again in court |
-| 5 | Euclid, Elements | Built then replaced by the Hall (2026-09-25): rope and pegs for Prop. 1's equal triangle, then 9 + 16 = 25 tiles for Prop. 47; "no royal road" |
-| 6 | Homer, Iliad and Odyssey | Achilles' pride, Hector at the gate, Priam kneels; Odysseus comes home |
+| 4 | Rhetorica ad Herennium | Built then replaced by the Hall (2026-09-25): defend Gaius; five steps of a speech; place strange pictures in your house, walk it again in court. **Built in the Hall (sprint 4):** a house in Rome, its memory house and a court; the memory walk as a beat |
+| 5 | Euclid, Elements | Built then replaced by the Hall (2026-09-25): rope and pegs for Prop. 1's equal triangle, then 9 + 16 = 25 tiles for Prop. 47; "no royal road". **Built in the Hall (sprint 4):** the Museum at Alexandria; rope and pegs and the tiles as beats |
+| 6 | Homer, Iliad and Odyssey | Achilles' pride, Hector at the gate, Priam kneels; Odysseus comes home. **Built in the Hall (sprint 4):** the plain of Troy and the voyage home; eight beats played as the heroes |
 | 7 | Hesiod | Sons overthrow fathers, again and again; a farming year where shortcuts fail |
 | 8 | Sappho | Piece together torn poems, knowing most pieces are gone forever |
 | 9 | Aeschylus, Oresteia | A revenge chain that only a jury can end |
@@ -47,7 +47,7 @@ Decided with BB1, 2026-09-25. This replaces the card game and the recall quizzes
 | 13 | Herodotus | Croesus, happiest king alive, until he isn't; Thermopylae |
 | 14 | Thucydides | Race to recall a ship sent to destroy a city; Melos, where nothing you say works |
 | 15 | Pre-Socratics | The river that changes every visit; the world that refuses to change |
-| 16 | Plato | The Cave; the invisibility ring; Socrates' last day |
+| 16 | Plato | The Cave; the invisibility ring; Socrates' last day. Next: the city in speech, semi-CK3 (`docs/republic-city.md`) |
 | 17 | Aristotle, Ethics | The middle path; habits that become your controls |
 
 Playable look preview: https://claude.ai/artifact/HDxwQCS9Ze3Z8YGY2Q6YAb (story and mood are right;

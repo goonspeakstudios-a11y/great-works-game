@@ -33,7 +33,7 @@ when it is grilled and agreed.
 Decided so far (see the round 2 asset plan): Homer is played as the scene's hero (Achilles,
 Hector at the gate, Priam kneeling, Telemachus, Odysseus), first person with your forearms and
 what you hold in view; the Republic gets the city in speech (city of pigs, fevered city, army,
-guardians, the just city, which turns round into the soul). Everything below is ideas, not decisions.
+guardians, the just city, which turns round into the soul). Built in sprint 4 (2026-09-28): Homer's eight beats, the Sirens and the trench; the memory walk; Euclid's rope and pegs and tiles. The Republic is to be semi-CK3 political planning: see docs/republic-city.md. Everything below is ideas, not decisions.
 - **Homer, beats:** Achilles' hand on his sword and Athena seizing his hair (Il. 1); the embassy,
   pressed three ways and refused every time (9); walking the shield of Achilles (18); three times
   round the walls after Hector (22); Hector takes off the helmet that frightens his son (6); Priam
