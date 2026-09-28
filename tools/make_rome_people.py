@@ -726,9 +726,169 @@ for j in jobs:
 news["early"] = EARLY_NEWS
 gods["early"] = EARLY_GODS
 
+
+# The heroic age, Rome of 280 BC: the first act. A small, simple, good-humoured city of farmer-
+# soldiers who remember Decius Mus and tell of Scaevola and Horatius; Samnites, Sabines and
+# Umbrians fought and made kin; Pyrrhus and the proud Greeks of Tarentum met with calm. Each job's
+# "hero": [intro, work..., worry].
+HEROIC = {
+    "holitor": ["{name}. I farm four iugera outside the gate, like everyone who matters. Curius Dentatus farms seven, and he beat the Samnites.",
+                "The Samnite envoys found Curius at his hearth boiling turnips, and offered him gold. He said he'd rather rule men who had gold than have it. Then he went back to his turnips.",
+                "Plough in spring, march in summer, harvest when you're home. A Roman's year.",
+                "They say King Pyrrhus has elephants. Well. We've oxen, and more sense."],
+    "figulus": ["{name}. I make pots, and good ones, if I say so.",
+                "The Greeks of Tarentum paint theirs all over with gods and heroes. Ours hold water. I know which I'd rather drink from.",
+                "A pot is like a Roman: plain on the outside, sound all through, and hard to break.",
+                "My boy wants to be a soldier like his uncles. He can throw a spear before he can write his name."],
+    "faber": ["{name}. Smith. Ploughshares in spring, spear points in summer.",
+              "The Samnites taught us the javelin and the long shield. We took the best of them and beat them with it. That's the Roman way.",
+              "My hammer rings from dawn. Rome's growing, and everything it grows needs iron.",
+              "Some say the Greeks make finer blades. Then why do they hire Romans to fight?"],
+    "sutor": ["{name}, cobbler.",
+              "The Appian Way goes all the way to Capua now. Blind old Appius built it, and the army walks it in my boots.",
+              "A good boot and a good conscience: you can walk a long way on both.",
+              "Leather's cheap and the customers are honest. What more could a cobbler want?"],
+    "textrix": ["{name}. I weave, like Lucretia did, at her loom in the night when the other wives were feasting.",
+                "The old women tell us about the Sabine wives who ran between the armies, their babies in their arms, and made the two peoples one. My grandmother was a Sabine.",
+                "A good woman keeps the hearth and the wool. And her tongue, if she's wise. I'm not always wise.",
+                "My husband's with the army in the south. I've woven him two cloaks. He'll lose one, men always do."],
+    "tignarius": ["{name}. Carpenter. Houses, barns, the bridge.",
+                  "The Sublician bridge has no iron in it at all, not a nail. The gods of the river wouldn't like it. Horatius held it once against a whole army while they cut it down behind him.",
+                  "Then he swam the Tiber in his armour. Or so my father told it. Every father tells it a little better.",
+                  "Timber, pegs, and a straight eye. The city's growing faster than we can build it."],
+    "fullo": ["{name}, fuller.",
+              "The candidates want their togas white as snow for the Campus. Candidatus: that's where the word comes from, from us.",
+              "It's a smelly trade and an honest one. Nobody ever lied about a clean toga.",
+              "My guild keeps Minerva's feast. We sing badly and drink well."],
+    "caupo": ["{name}. An inn by the Capene Gate. Soldiers, drovers, Sabines coming to market.",
+              "The Sabines were our enemies in my grandfather's day. Now they're Romans, near enough, and drink my wine and complain about it. Family, you see.",
+              "The Samnites? Tough men, good fighters, terrible singers. We've fought them for fifty years and made peace at last.",
+              "No trouble in my inn. One look from my wife and the fiercest Umbrian goes quiet."],
+    "praeco": ["{name}! Crier!",
+               "Hear ye: the Senate has refused the peace of King Pyrrhus! Old Appius Claudius, blind as he is, had himself carried in and said Rome makes no peace with a king in Italy!",
+               "Hear ye: Fabricius the consul went to Pyrrhus's camp, and the king offered him gold, and he laughed, and the king set an elephant roaring behind him, and he didn't even turn round!",
+               "Some days I have nothing to cry but the price of beans. Those days I cry it proudly."],
+    "lictor": ["{name}. Lictor.",
+               "The rods and the axe. I carry them before the consul. He carries the Republic.",
+               "Mucius, the young man who sneaked into the Etruscan king's camp to kill him? Caught, he held his right hand in the fire until it burned, to show what Romans are. The king let him go. They called him Scaevola, left-hand. Every lictor knows that story.",
+               "The consul goes back to his plough when his year is done. So do I, to mine."],
+    "senator": ["I am {name}. I have a farm, a house, a vote in the Senate, and three sons in the legions. A rich man, by our reckoning.",
+                "Decius Mus, at Sentinum, fifteen years ago: the Gauls were breaking our line, so he vowed himself and the enemy to the gods below, and rode into them alone. His father had done the same against the Latins. We won both days.",
+                "The Tarentines laughed at our envoy's Greek and dirtied his toga. He told them it would be washed in their blood. Now Pyrrhus is here with his elephants. Let him come.",
+                "We have no silver plate and want none. Curius had one earthenware cup. Fabricius, as censor, threw a man out of the Senate for owning ten pounds of silver plate. That's the Senate I sit in."],
+    "cliens": ["{name}. Client of the house of {patron}.",
+               "My patron stood by me in court and I stand by him in battle. Faith for faith. That's the oldest law in Rome, older than the Tables.",
+               "He eats turnips, I eat turnips. We're the same Romans, he just has more land to grow them on.",
+               "His son and mine are learning the spear together on the Campus."],
+    "matrona": ["I'm {name}.",
+                "Veturia, Coriolanus's mother, turned back a whole army by scolding her son. Roman mothers are not to be trifled with.",
+                "My sons are with the legions. I sent them off with bread, a blessing, and a clip on the ear to come home proud.",
+                "Wool, the hearth, the children, the household gods. And the neighbours' business, if I'm honest."],
+    "servus": ["{name}. I belong to the house of {patron}. There are only four of us.",
+               "I eat at the master's table, from the same pot. We plough the same field. He shouts at the ox more than at me.",
+               "At the Saturnalia he serves us. He's a terrible cook.",
+               "He says he'll free me when his son comes home from the war. I believe him. He's never broken his word to anyone."],
+    "proletarius": ["{name}. Citizen. No land yet. The colonies will give me some, in the Samnite country.",
+                    "Rome sends out colonies to every hill it wins: Latin towns, Roman towns. Soon there'll be Romans from the Po to the straits.",
+                    "Poor? I'm a Roman. There's no such thing as a poor Roman, only one who hasn't been given his farm yet.",
+                    "The Samnites are our friends now, more or less. The Umbrians too. It took fifty years of beating each other."],
+    "veteranus": ["{name}. I was at Sentinum. The day of the Gauls and the Samnites together, and Decius.",
+                  "I saw him ride out. He'd spoken the words with the priest, head veiled, standing on a spear. Then he rode into the Gauls and the gods took him and the line held.",
+                  "The Caudine Forks, my father remembered: an army sent under the yoke by the Samnites, bent double under the spears. We paid it back. Rome always pays it back.",
+                  "The Greeks with their elephants and their phalanx. Let them come to the Campus and see."],
+    "victimarius": ["{name}. I lead the beast to the altar.",
+                    "The rite must be done exactly, word for word. A single word wrong and the priest begins again.",
+                    "The gods are near here. You can feel them on the Capitol, in the groves, at the springs. They like us, I think. We keep faith.",
+                    "Our gods are plain gods, like us. The Greeks' gods squabble like a bad family."],
+    "haruspex": ["{name}, from Etruria. We taught the Romans to read the signs, when they were still farmers on seven hills.",
+                 "They are a strange people. They take the gods more seriously than the gods do.",
+                 "When the signs are bad they stop everything: the vote, the battle, the march. And then they win anyway.",
+                 "My grandfather said Rome would be great. The liver said it. The Romans said: we know."],
+    "tibicen": ["{name}. Piper.",
+                "Weddings, sacrifices, funerals, harvests. I play and the city dances, or weeps, or eats.",
+                "The pipers once walked out to Tibur in a sulk. The Senate got them drunk and carted them home asleep. We still celebrate it every June, in masks.",
+                "The Greeks have finer music. We have better reasons to play."],
+    "nauta": ["{name}. Boatman.",
+              "Up the river with salt, down the river with grain. Old Ostia's small still, but the river's generous.",
+              "We don't much trust the sea. The Tarentines do, and look where it got them.",
+              "The Tiber took my grandfather. My father pulled him out. Both got better."],
+    "tonsor": ["{name}. One of the first barbers in Rome. My father came from Sicily with the trade.",
+               "Before us, Romans wore their beards and hair long, like the old kings on the statues. Now the young men want their chins bare. My fortune!",
+               "The old men still won't shave. They say a beard is honest. I say it's a place for soup.",
+               "Everyone talks in the chair: the Samnites, Pyrrhus, the harvest. Mostly the harvest."],
+    "peregrinus": ["{name}. A Greek, from Neapolis, here to trade.",
+                   "They're rustic, these Romans. No theatre to speak of, no philosophy, statues like tree stumps. And they're about to beat Pyrrhus. I don't understand it.",
+                   "One of their senators told me: we don't need to be clever, we need to be right. I laughed. I'm not laughing now.",
+                   "They keep oaths. Not like us. It's almost a weakness. Almost."],
+    "mercator": ["{name}, trading salt and cloth from Campania.",
+                 "Romans pay what they promise and ask what's fair. It's slow business. It's good business.",
+                 "Tarentum's rich and proud and hired a king to fight for it. Rome's poor and proud and fights for itself.",
+                 "The Appian Way's cut my journey in half. Blind Appius knew what he was doing."],
+    "lanius": ["{name}, butcher.",
+               "Meat for the feasts and the gods. Porridge the rest of the week. We're a porridge people, and proud of it.",
+               "The Greeks call us pultiphagi, porridge-eaters. Let them. The porridge-eaters are winning.",
+               "Honest weights. The aediles check, but they needn't."],
+    "cetarius": ["{name}. Fish.",
+                 "From the river and from Ostia when the salt boats bring it. Rome's no sea city. Not yet.",
+                 "My husband fought at Sentinum and came home. I sold fish every day he was gone, and prayed every night.",
+                 "The river gives. The gods give. We give back."],
+}
+
+HEROIC_LIFE = {
+    "pleb": ["A little house on the {home}, a plot outside the gate, my {partner}, {kids}. When Rome calls, I go; when I come back, I plough.",
+             "We eat porridge and beans and sleep well. There's nothing to envy in Tarentum."],
+    "slave": ["I serve a small house. We work the same fields and eat the same bread.",
+              "I was taken in the Samnite wars. My master's a fair man. Most Samnites are Romans by now anyway."],
+    "freed": ["I was a slave, now I'm free, and a client of my old master's house. We keep faith with each other.",
+              "My son will be a citizen and serve in the legions like any Roman."],
+    "rich": ["We have a farm in the Sabine hills and this house on the {home}. My grandfather ploughed it himself. So do I.",
+             "Duty to the gods, to the Republic, to the family. And to the farm, or there's nothing to eat."],
+    "foreign": ["I'm a stranger here, and they're kind to strangers who keep their word.",
+                "They're simple, these people. Simple the way an oak is simple."],
+    "state": ["I serve the magistrate for his year. Next year, a different one, the same Republic."],
+}
+
+HEROIC_NEWS = ["Pyrrhus of Epirus has landed at Tarentum with a phalanx and twenty elephants. The consul Laevinus has marched south to meet him.",
+               "The Tarentines laughed at our envoy and fouled his toga. He said it'd be washed in their blood. Now they've hired a king. We'll see.",
+               "Blind old Appius Claudius had himself carried into the Senate: no peace while a foreign king stands in Italy. They cheered him to the roof.",
+               "Curius Dentatus finished the Samnites and the Sabines, and went home to his turnips. They're citizens now, the Sabines. Kin.",
+               "Fabricius refused Pyrrhus's gold. The king said it would be easier to turn the sun from its course than Fabricius from honour."]
+
+HEROIC_GODS = ["Jupiter on the Capitol, Mars on the Campus, Janus at the gate, Vesta at the hearth, and the Lares in every house. We give them what's theirs, and they give us Rome.",
+               "Decius gave himself to the gods below for the legions, and the gods took him and gave us the day. That's how it works, between Romans and gods: faith for faith."]
+
+COLLAPSE_NEWS = ["The Vandals were here fourteen days. They took everything: the gilded tiles off Jupiter's roof, the Temple treasure from Jerusalem, the Empress herself. Pope Leo talked them out of burning it. That's what we're grateful for now.",
+                 "The Emperor Petronius Maximus ran when the Vandals came. The crowd stoned him in the street and threw him in the Tiber. He'd reigned eleven weeks.",
+                 "Valentinian killed Aetius with his own hand, the one general we had. Then Aetius's men killed Valentinian on the Campus. And the crowd went to the races.",
+                 "Africa's gone to the Vandals, and the grain with it. The Senate's still arguing about the seating at the games.",
+                 "There'll be another emperor by winter. The barbarian generals choose them now. Bets are open on how long he lasts."]
+
+COLLAPSE_GODS = ["We're all Christians now, officially. The relic sellers do a better trade than the bakers. A finger of Saint Laurence, very cheap.",
+                 "Some say the old gods abandoned Rome for the Christian one. Some say the Christian one abandoned Rome for Constantinople. Either way, nobody's minding it."]
+
+MOODS_BY_AGE_EXTRA = {
+    "heroic": [["cheerful", "Good day to you, stranger!"], ["proud", "Sentinum! My father was there. Did you know?"],
+               ["busy", "The harvest won't bring itself in."], ["curious", "You're not from here. Where's home?"],
+               ["merry", "It's a feast day tomorrow, or the day after, or both."]],
+    "collapse": [["frantic", "Have you heard? Another one's dead, the emperor, I mean."], ["drunk", "Drink with me. Why not? Why not."],
+                 ["cynical", "What do you want? Everyone wants something."], ["fatalist", "It's all ending. Might as well enjoy the races."],
+                 ["hungry", "No grain from Africa. None."]],
+}
+
+for j in jobs:
+    if j["id"] in HEROIC:
+        lines = HEROIC[j["id"]]
+        j["ages"] = ["heroic"] + j["ages"]
+        j["hero"] = {"intro": lines[0], "work": lines[1:-1], "worry": lines[-1:]}
+news["heroic"] = HEROIC_NEWS
+gods["heroic"] = HEROIC_GODS
+news["collapse"] = COLLAPSE_NEWS
+gods["collapse"] = COLLAPSE_GODS
+MOODS_BY_AGE.update(MOODS_BY_AGE_EXTRA)
+
 data = {"about": "The citizens of the city of Rome (places_rome.gd, citizen.gd): names, the jobs they walk the city at (docs/rome-jobs.md has the full list), and what they say. {name} is their name, {home} the part of the city they live in, {partner} and {kids} their family, {patron} the great house they belong to.",
         "names": names, "jobs": jobs, "life": life, "news": news, "gods": gods, "reacts": reacts, "topics": topics,
-        "moods": moods, "moods_by_age": MOODS_BY_AGE, "life_early": EARLY_LIFE,
+        "moods": moods, "moods_by_age": MOODS_BY_AGE, "life_early": EARLY_LIFE, "life_heroic": HEROIC_LIFE,
         "patrons": ["the Cornelii", "the Claudii", "the Aemilii", "the Valerii", "the Caecilii Metelli", "the Licinii", "the Junii", "the Sempronii", "the Fabii", "the Domitii"]}
 OUT.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 print(len(jobs), "jobs")

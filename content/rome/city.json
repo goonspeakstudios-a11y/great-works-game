@@ -2,6 +2,17 @@
   "about": "The city of Rome as the Rome world's hub (places_rome.gd): the whole city, walked on the map of content/rome/republican_rome.json (real metres east and north of the Forum, shrunk by its scale). It stands in one of four ages; a monument stands from the year it was built ('from'), is a ruin from 'ruin', and is gone from 'gone'. Years are negative before Christ. Positions not marked in republican_rome.json are read off modern coordinates of the remains and are approximate. 'walkable' is the part of the city you can walk in (the Servian city, the Forum Boarium and the southern Campus Martius); beyond it, up to 'outer' (the line of Aurelian's wall), the city goes on to be seen, not walked.",
   "ages": [
     {
+      "id": "heroic",
+      "name": "The Age of Heroes",
+      "year": -280,
+      "when": "280 BC",
+      "mood": "morning",
+      "people": 180,
+      "ground": "cobble",
+      "line": "Rome, 280 BC. A small city of tufa and timber, of farmer-soldiers and their gods. The Samnites are beaten and the Sabines are kin. King Pyrrhus has landed in the south with his elephants.",
+      "navel": "Let the years pass: to Rome after Hannibal"
+    },
+    {
       "id": "early",
       "name": "The Republic",
       "year": -201,
@@ -43,6 +54,17 @@
       "people": 190,
       "ground": "cobble",
       "line": "Rome, about AD 330: Constantine has built a new Rome on the Bosporus. The old one keeps its Senate, its games and its walls, and now its churches.",
+      "navel": "Let the years pass: to the collapse"
+    },
+    {
+      "id": "collapse",
+      "name": "The Collapse",
+      "year": 455,
+      "when": "AD 455",
+      "mood": "golden",
+      "people": 110,
+      "ground": "cobble",
+      "line": "Rome, AD 455. The Vandals have just gone, after fourteen days. The Emperor was stoned in the street. The races go on.",
       "navel": "Let the years pass: to the emptied city"
     },
     {
@@ -54,7 +76,7 @@
       "people": 36,
       "ground": "rubble",
       "line": "Rome, AD 552, at the end of the Gothic War: besieged, taken and emptied again and again. The aqueducts are cut. A few thousand live by the river.",
-      "navel": "Go back to the Republic"
+      "navel": "Go back to the Age of Heroes"
     }
   ],
   "navel": {
