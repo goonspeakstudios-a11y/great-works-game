@@ -136,7 +136,7 @@ static func asset_test(world: Node3D) -> Dictionary:
 		var a := PI * (0.1 + 0.8 * j / float(m - 1))  # a half ring opening toward the aisle
 		var at := court + Vector3(-cos(a), 0, -sin(a)) * 6.5
 		Kit.box(world, at + Vector3(0, 0.35, 0), Vector3(1.0, 0.7, 1.0), "ph_white_sandstone_bricks")
-		_prop(world, ASSET_PROPS[j][0], at + Vector3(0, 0.7, 0), ASSET_PROPS[j][1] * 1.6, Kit.face_yaw(at, court))
+		prop(world, ASSET_PROPS[j][0], at + Vector3(0, 0.7, 0), ASSET_PROPS[j][1] * 1.6, Kit.face_yaw(at, court))
 		out.append({"kind": "look", "pos": at.lerp(court, 0.25), "text": ASSET_PROPS[j][0],
 			"note": "Poly Haven (CC0) model \"%s\", shown 1.6x life size (about %.1f m real) so it reads at a distance." % ASSET_PROPS[j]})
 	flicker.append(Kit.brazier(world, court))
@@ -162,7 +162,7 @@ static func _bay(world: Node3D, s: float, z: float, mat: String) -> void:
 
 
 ## A Poly Haven model standing at `at`, scaled so its longest side is `height` metres.
-static func _prop(world: Node3D, id: String, at: Vector3, height: float, yaw: float) -> void:
+static func prop(world: Node3D, id: String, at: Vector3, height: float, yaw: float) -> void:
 	var path := "res://assets/polyhaven/models/%s/%s.gltf" % [id, id]
 	if not ResourceLoader.exists(path):
 		push_warning("missing model " + path)
@@ -415,6 +415,11 @@ static func villa(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 	for k in 3:
 		Kit.mesh(world, Kit._cyl(0.05, 0.4), "parchment", Vector3(2.5 + k * 0.1, 0.4, -21.5 + (k % 2) * 0.1), Vector3(0.2 * k, 0, 0.15))
 	Kit.amphora(world, Vector3(4.9, 0, -19.0), 0.0)
+	# Poly Haven (CC0) pots and baskets alongside the house's own things: a jug and a bowl for
+	# the household's meals, a basket by the door (grey and dusty until the household is home)
+	for p in [["jug_01", Vector3(4.95, 0, -20.1), 0.35, 0.4], ["wooden_bowl_01", Vector3(2.2, 0, -22.9), 0.28, 0.0],
+			["wicker_basket_01", Vector3(0.9, 0, -19.3), 0.45, 1.2]]:
+		prop(world, p[0], p[1], p[2], p[3])
 	spots["hut"] = Vector3(3.9, 0, -19.4)
 	Kit.amphora(world, Vector3(-4.6, 0, -17.6))
 	Kit.amphora(world, Vector3(-4.1, 0, -17.7), 0.35)
