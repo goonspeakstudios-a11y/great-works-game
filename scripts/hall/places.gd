@@ -283,6 +283,32 @@ static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0,
 			return villa(world, work, room, stage)
 		"lyceum":
 			return lyceum(world, work, room, stage, stages)
+		"domus":  # the later Greek books' places are in places_greek.gd (loaded here, not preloaded: it preloads this)
+			return load("res://scripts/hall/places_greek.gd").domus(world, work, room, stage)
+		"museum":
+			return load("res://scripts/hall/places_greek.gd").museum(world, work, room, stage)
+		"troy":
+			return load("res://scripts/hall/places_greek.gd").troy(world, work, room, stage)
+		"ascra":
+			return load("res://scripts/hall/places_greek.gd").ascra(world, work, room, stage)
+		"lesbos":
+			return load("res://scripts/hall/places_greek.gd").lesbos(world, work, room, stage)
+		"argos":
+			return load("res://scripts/hall/places_greek.gd").argos(world, work, room, stage)
+		"thebes":
+			return load("res://scripts/hall/places_greek.gd").thebes(world, work, room, stage)
+		"cithaeron":
+			return load("res://scripts/hall/places_greek.gd").cithaeron(world, work, room, stage)
+		"thinkery":
+			return load("res://scripts/hall/places_greek.gd").thinkery(world, work, room, stage)
+		"sardis":
+			return load("res://scripts/hall/places_greek.gd").sardis(world, work, room, stage)
+		"athens_war":
+			return load("res://scripts/hall/places_greek.gd").athens_war(world, work, room, stage)
+		"ephesus":
+			return load("res://scripts/hall/places_greek.gd").ephesus(world, work, room, stage)
+		"academy":
+			return load("res://scripts/hall/places_greek.gd").academy(world, work, room, stage, stages.get("city", 0))
 	push_error("No place built for %s" % work)
 	return hub(world, [])
 

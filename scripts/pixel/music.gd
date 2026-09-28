@@ -49,6 +49,117 @@ const ZONES := {
 		{"file": "stream", "db": -22.0, "needs": "water"},
 		{"file": "birds", "db": -20.0, "needs": "leaves"},
 		{"file": "wind", "db": -27.0, "loud_db": -20.0, "loud_until": "sun"}]},
+	# The places still to come, ready for when they are built (their music is made; which piece
+	# brings back which layer follows the Lyceum: the ghost until the teacher, the drone with the
+	# sun, the melody with the teacher, the soldiers' drum with the soldiers).
+	# Rome: the cornu's pedal, the water organ, a tibia, the legion's drum and horn calls.
+	"rome": {"bells": false, "layers": [
+		{"file": "rome_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "rome_organ", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "rome_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "rome_tibia", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "rome_march", "db": -11.0, "music": true, "needs": "walkway"},  # the Forum's life, once its court stands
+		{"file": "crowd", "db": -24.0, "needs": "household"},
+		{"file": "fountain", "db": -26.0, "needs": "water"},
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Troy (Homer): a phorminx to the hexameter, the bard's hum, the camp's slow war drum, the sea.
+	"troy": {"bells": false, "layers": [
+		{"file": "troy_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "troy_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "troy_voice", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "troy_phorminx", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "troy_drum", "db": -10.0, "music": true, "needs": "soldiers"},
+		{"file": "waves", "db": -20.0, "needs": "water"},  # the sea moves again
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "fire", "db": -26.0, "needs": "lamps"},  # the fires along the ships
+		{"file": "hooves", "db": -27.0, "needs": "walkway"},  # chariots on the plain
+		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
+	# The theatre (the tragedians): the aulos over its drone pipe, the chorus, the heart drum.
+	"theatre": {"bells": false, "layers": [
+		{"file": "theatre_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "theatre_drum", "db": -12.0, "music": true, "needs": "walkway"},
+		{"file": "theatre_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "theatre_aulos", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "theatre_chorus", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "fire", "db": -26.0, "needs": "lamps"},  # the beacon, the torches
+		{"file": "cicadas", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Lesbos (Sappho): the barbitos to the Sapphic stanza, a woman's voice, the sea below.
+	"lesbos": {"bells": false, "layers": [
+		{"file": "lesbos_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "lesbos_low", "db": -9.0, "music": true, "needs": "lamps"},
+		{"file": "lesbos_drone", "db": -9.0, "music": true, "needs": "sun"},
+		{"file": "lesbos_barbitos", "db": -9.0, "music": true, "needs": "teacher"},
+		{"file": "lesbos_voice", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "waves", "db": -21.0},
+		{"file": "stream", "db": -25.0, "needs": "water"},  # the cold water through the apple boughs (fr. 2)
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -24.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Alexandria (Euclid): the tetraktys on a kithara, the monochord, gulls over the harbour.
+	"alexandria": {"bells": false, "layers": [
+		{"file": "alexandria_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "alexandria_low", "db": -9.0, "music": true, "needs": "walkway"},
+		{"file": "alexandria_drone", "db": -9.0, "music": true, "needs": "sun"},
+		{"file": "alexandria_kithara", "db": -9.0, "music": true, "needs": "teacher"},
+		{"file": "alexandria_monochord", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "gulls", "db": -26.0, "needs": "sun"},
+		{"file": "birds", "db": -25.0, "needs": "leaves"},
+		{"file": "crowd", "db": -28.0, "needs": "household"},
+		{"file": "waves", "db": -22.0},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# The Academy (Plato): the enharmonic pipe, the Sirens of Er, the Fates; the Cephisus nearby.
+	"academy": {"bells": false, "layers": [
+		{"file": "academy_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "academy_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "academy_spheres", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "academy_pipe", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "academy_voices", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -23.0, "needs": "water"},
+		{"file": "birds", "db": -22.0, "needs": "leaves"},
+		{"file": "crowd", "db": -27.0, "needs": "walkway"},  # the city in speech, peopled
+		{"file": "salpinx", "db": -28.0, "needs": "soldiers"},  # its guardians
+		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Helicon (Hesiod): a shepherd's pipe, the nine Muses, the flock on the mountain, their spring.
+	"helicon": {"bells": false, "layers": [
+		{"file": "helicon_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "helicon_low", "db": -9.0, "music": true, "needs": "lamps"},
+		{"file": "helicon_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "helicon_pipe", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "helicon_muses", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -24.0, "needs": "water"},
+		{"file": "flock", "db": -22.0, "needs": "leaves"},
+		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
+	# Sardis and Thermopylae (Herodotus): Croesus's kithara in the Lydian mode; the Spartans' march.
+	"sardis": {"bells": false, "layers": [
+		{"file": "sardis_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "sardis_low", "db": -9.0, "music": true, "needs": "lamps"},
+		{"file": "sardis_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "sardis_kithara", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "sardis_march", "db": -11.0, "music": true, "needs": "soldiers"},
+		{"file": "birds", "db": -25.0, "needs": "leaves"},
+		{"file": "crowd", "db": -25.0, "needs": "household"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Athens at war (Thucydides): the funeral in the Kerameikos, the lament, the pyres.
+	"kerameikos": {"bells": false, "layers": [
+		{"file": "kerameikos_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "kerameikos_drum", "db": -11.0, "music": true, "needs": "walkway"},
+		{"file": "kerameikos_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "kerameikos_aulos", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "kerameikos_lament", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "crickets", "db": -26.0, "needs": "leaves"},
+		{"file": "fire", "db": -26.0, "needs": "lamps"},
+		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
+	# Ephesus and Elea (the Pre-Socratics): Heraclitus's river and fire, Parmenides' one tone.
+	"ephesus": {"bells": false, "layers": [
+		{"file": "ephesus_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "ephesus_one", "db": -11.0, "music": true, "needs": "walkway"},
+		{"file": "ephesus_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "ephesus_flux", "db": -9.0, "music": true, "needs": "teacher"},
+		{"file": "ephesus_lyre", "db": -9.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -22.0, "needs": "water"},
+		{"file": "fire", "db": -27.0, "needs": "lamps"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
 }
 
 var zone := ""

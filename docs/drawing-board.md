@@ -28,3 +28,37 @@ when it is grilled and agreed.
   who comes to see) for Zen, Mathetes (the pupil) for Student; Akroates (hearer of the closed
   lectures) is the alternative.
 - Worlds with several cultures and languages: decide when we get there.
+
+## Play styles and mini-games per work (brainstorm, 2026-09-27)
+Decided so far (see the round 2 asset plan): Homer is played as the scene's hero (Achilles,
+Hector at the gate, Priam kneeling, Telemachus, Odysseus), first person with your forearms and
+what you hold in view; the Republic gets the city in speech (city of pigs, fevered city, army,
+guardians, the just city, which turns round into the soul). Built in sprint 4 (2026-09-28): Homer's eight beats, the Sirens and the trench; the memory walk; Euclid's rope and pegs and tiles. The Republic is to be semi-CK3 political planning: see docs/republic-city.md. Everything below is ideas, not decisions.
+- **Homer, beats:** Achilles' hand on his sword and Athena seizing his hair (Il. 1); the embassy,
+  pressed three ways and refused every time (9); walking the shield of Achilles (18); three times
+  round the walls after Hector (22); Hector takes off the helmet that frightens his son (6); Priam
+  carries the ransom through the camp at night and kisses the hands (24); under the ram, "Nobody"
+  (Od. 9); tied to the mast while the Sirens sing and the ship drifts (12); stringing the bow (21);
+  knowing the bed is rooted in a living olive (23). Companions who fall stay dead.
+- **Horror underground:** the underworld (Od. 11) as the game's horror zone: the trench of blood,
+  the dead crowding up out of the dark, your sword held out to keep them back until Teiresias
+  drinks; your mother's shade slipping through your arms three times; Achilles' shade. Also the
+  Cyclops' cave (survival: the blocking stone, the giant's reach, clinging under the rams) and
+  Plato's cave (the return down, blind in the dark, the prisoners who would kill you).
+- **Republic, other scenes:** the Ring of Gyges (invisible; a quiet record of what you did, read
+  back by Glaucon); the Cave walked through (the shadows, the blinding turn, the climb, the return);
+  the ship of state (who gets the helm); Er's lots (choosing the next life); the Apology jury (the
+  allotment machine, your pebble, the count).
+- **Rhetorica:** build a memory palace, then give the speech by walking it again.
+- **Hesiod:** a farming year where the stars say when to plough and shortcuts fail.
+- **Sappho:** piecing together torn papyrus, most of it gone for good.
+- **Oresteia:** your pebble on the Areopagus, the tie, Athena's vote.
+- **Sophocles:** Oedipus the detective whose clues lead back to you; Antigone, bury or obey, both cost.
+- **Bacchae:** the harder you clamp down on the god, the stronger the madness.
+- **Clouds:** the con where clever nonsense beats the honest argument.
+- **Herodotus:** reading Croesus's oracle wrong; Solon's "count no man happy" as a life's ledger.
+- **Thucydides:** rowing the second trireme to Mytilene in time; the Melian dialogue, where nothing
+  you say works; Corcyra, where the meanings of words shift.
+- **Pre-Socratics:** Heraclitus's river, different at every visit; Parmenides' place where motion
+  cannot happen.
+- **Aristotle, Politics I:** household to village to city, set against Plato's city in speech.

@@ -7,6 +7,7 @@ const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Rooms := preload("res://scripts/hall/rooms.gd")
 const Hall := preload("res://scripts/hall/hall.gd")
+const Beat := preload("res://scripts/hall/beat.gd")
 
 
 func test_isagoge_book_is_loaded_in_passages() -> void:
@@ -101,6 +102,17 @@ func test_plural_filler_words_are_ignored() -> void:
 	check(not ws.has("book") and not ws.has("answer"), "plural filler words are dropped: %s" % str(ws))
 
 
+## The books whose places are built so far; every other gateway on the Shore is sealed.
+const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium", "euclid-elements",
+	"homer-the-iliad", "hesiod-theogony", "sappho-fragments", "aeschylus-the-oresteia", "sophocles-the-theban-plays", "euripides-the-tragedies", "aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war", "the-pre-socratics", "plato-republic",
+	"aristotle-nicomachean-ethics"]
+## The places built in sprints 4 to 6 (places_greek.gd), each tested like the villa and the Lyceum.
+const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad", "hesiod-theogony", "sappho-fragments",
+	"aeschylus-the-oresteia", "sophocles-the-theban-plays", "euripides-the-tragedies",
+	"aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war",
+	"the-pre-socratics", "plato-republic"]
+
+
 func test_rooms_follow_the_reading_list() -> void:
 	var c := Content.new()
 	check(c.load_all(), "content loads")
@@ -109,7 +121,8 @@ func test_rooms_follow_the_reading_list() -> void:
 	check_eq(doors.size(), 17, "one door for every Greek work")
 	check_eq(doors[0]["work"], "porphyry-isagoge", "the first door is the Isagoge")
 	check(doors[0]["open"] and doors[1]["open"], "the Isagoge and the Categories have their places")
-	check(doors[2]["open"] and not doors[3]["open"], "the rest of the Organon has its ground; the rest are sealed for now")
+	for d in doors:
+		check_eq(d["open"], OPEN_WORKS.has(d["work"]), "%s is %s" % [d["work"], "open" if OPEN_WORKS.has(d["work"]) else "sealed for now"])
 	var room := Rooms.room("porphyry-isagoge")
 	check(room["facts"].size() >= 4, "the room has facts on its walls")
 	for f in room["facts"]:
@@ -126,7 +139,8 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	var places: Array = Rooms.doors().filter(func(d): return Rooms.room(d["work"]).get("area_of", "") == "")
 	check_eq(gates.size(), 15, "one gateway for every place (Aristotle's three books share one)")
 	check_eq(gates.map(func(g): return g["to"]), places.map(func(d): return d["work"]), "gateways follow the reading list")
-	check(gates[0]["open"] and gates[1]["open"] and not gates[2]["open"], "the first two are open, the rest not yet")
+	for g in gates:
+		check_eq(g["open"], OPEN_WORKS.has(g["to"]), "the gateway to %s is %s" % [g["to"], "open" if OPEN_WORKS.has(g["to"]) else "sealed"])
 	hall.free()
 
 
@@ -373,6 +387,8 @@ func test_the_villa_feels_lived_in() -> void:
 
 
 const Lettering := preload("res://scripts/hall/lettering.gd")
+const City := preload("res://scripts/hall/city.gd")
+const CityTest := preload("res://tests/test_city.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 
@@ -391,8 +407,10 @@ func test_every_word_on_screen_uses_our_lettering() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	hall.travel("porphyry-isagoge")
-	hall._open_ask("porphyry-isagoge")
+	hall.progress.data = {"works": {}}
+	hall.travel("plato-republic")
+	hall._open_council()  # the council table's people, laws and choices too
+	hall._open_ask("plato-republic")
 	var cheap: Array = []
 	var stack: Array = [hall._ui]
 	while not stack.is_empty():
@@ -811,4 +829,191 @@ func test_the_boat_rows_you_to_all_three_places() -> void:
 	var left: Vector3 = take["boat"]["root"].position
 	hall._animate_boats(0.5)
 	check_eq(take["boat"]["root"].position, left, "the boat waits where you left it")
+	hall.free()
+
+
+## Sprint 4's places: each starts lost with its teacher a shade, has every point on a stone (or a
+## beat), a book to read, a map, a way home, and comes back piece by piece until it is whole.
+func test_the_new_places_are_built_like_the_first() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for work in NEW_PLACES:
+		var room := Rooms.room(work)
+		check(Library.load_book(work) != null, "%s: the book is there to read" % work)
+		hall.progress.data = {"works": {}}
+		hall.travel(work)
+		check_eq(hall.here, work, "%s: its place is built" % work)
+		check_eq(hall.restored_here, [], "%s starts lost to the world" % work)
+		check(hall.teacher.get("shade", false), "%s: the teacher is a shade" % work)
+		var kinds: Array = hall.interactables.map(func(i): return i["kind"])
+		for k in ["author", "book", "map", "gate"]:
+			check(kinds.has(k), "%s has its %s" % [work, k])
+		check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == "hub"), "%s: a way back to the Shore" % work)
+		check_eq(hall.interactables.filter(func(i): return i["kind"] == "fact").size(), room["facts"].size(), "%s: a stone for each fact" % work)
+		for p in room["lesson"]:
+			var stones: Array = hall.interactables.filter(func(i): return i.get("id", "") == p["id"] and i.get("work", work) == work)
+			check(stones.any(func(i): return i["note"] == p["point"]), "%s: the '%s' point is on a stone or a beat" % [work, p["id"]])
+		for it in hall.interactables.filter(func(i): return i["kind"] == "beat"):
+			check(not Beat.find(work, it["beat"]).is_empty(), "%s: the beat '%s' is written" % [work, it["beat"]])
+		var ids := _ids(work)
+		var restores: Array = room["restores"]
+		for k in ids.size() + 1:
+			hall.progress.data = {"works": {}}
+			hall.progress.learn(work, ids.slice(0, k))
+			hall.travel(work)
+			check_eq(hall.restored_here, restores.slice(0, k).map(func(r): return r["what"]), "%s: %d points, %d pieces back" % [work, k, k])
+		check(not hall.teacher.get("shade", false), "%s: the teacher is himself again" % work)
+		var zone: String = room["zone"]
+		var all_back: Array = restores.map(func(r): return r["what"])
+		for k in range(1, all_back.size() + 1):
+			var before: Array = Music.plan(zone, all_back.slice(0, k - 1)).map(func(l): return l["file"])
+			var after: Array = Music.plan(zone, all_back.slice(0, k)).map(func(l): return l["file"])
+			before.sort()
+			after.sort()
+			check(before != after, "%s: bringing back '%s' changes what you hear" % [work, all_back[k - 1]])
+		check(not Music.plan(zone, all_back).any(func(l): return l["file"] == zone + "_ghost"), "%s: the echo is gone once it is whole" % work)
+	hall.free()
+
+
+## The memory walk (the Rhetorica): you set five images on five places in the memory house, go to
+## court, walk the places again, and speak; for a Theoros that counts the last point.
+func test_the_memory_walk_can_be_walked() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.progress.set_mode("greece", "zen")
+	hall.travel("rhetorica-ad-herennium")
+	var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == "memory_walk")[0]
+	hall.activate(it)
+	check(hall.beat != null, "the walk begins")
+	var shown := 0
+	for guard in 400:
+		if hall.beat == null:
+			break
+		var mark: Variant = hall.beat.next_mark()
+		if mark != null:
+			hall.player.position = Vector3(mark.x, hall.player.position.y, mark.z)
+		elif hall.beat.kind() in ["line", "act"]:
+			hall.beat.press(hall.player)
+		if hall.beat:
+			shown = it["cast"].values().filter(func(n): return n.visible).size()
+			hall._play_beat(0.1, true)  # holding F
+	check(hall.beat == null, "the walk ends")
+	check_eq(shown, 5, "five images were set on five places")
+	check(hall._read_panel.visible and hall._read_text.text.contains("golden hand"), "its point is read")
+	hall._close_panels()
+	check(hall.progress.understood("rhetorica-ad-herennium").has("order"), "and it counts")
+	check(it["cast"].values().all(func(n): return not is_instance_valid(n) or not n.visible), "the images are gone again, for next time")
+	hall.free()
+
+
+## Plays a beat to its end the way a player would: walking to each mark, pressing and holding F.
+## Returns how many steps it took (or -1 if it never ended).
+static func _play_through(hall: Node, it: Dictionary) -> int:
+	hall.activate(it)
+	for guard in 1000:
+		if hall.beat == null:
+			return guard
+		var mark: Variant = hall.beat.next_mark()
+		if mark != null:
+			hall.player.position = Vector3(mark.x, hall.player.position.y, mark.z)
+		elif hall.beat.kind() in ["line", "act"]:
+			hall.beat.press(hall.player)
+		if hall.beat:
+			hall._play_beat(0.1, true)
+	return -1
+
+
+## The Republic's heart: at the Academy's council table you found and govern the city in speech. Its
+## board stands as far as you have governed it; its stones and the soul over it wait until the city
+## has got that far; the city is kept; and after the just city it falls, regime by regime.
+func test_the_city_in_speech_is_governed_at_the_academy() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	var work := "plato-republic"
+	hall.progress.data = {"works": {}, "city": City.found(7).to_dict()}
+	hall.progress.set_mode("greece", "zen")
+	hall.travel(work)
+	var find := func(id: String) -> Dictionary:
+		return hall.interactables.filter(func(i): return i.get("id", "") == id)[0]
+	hall.activate(find.call("one_work"))
+	check(not hall.progress.understood(work).has("one_work"), "the city of pigs is not read before it is founded")
+	hall._close_panels()
+	hall.activate(find.call("soul"))
+	check(hall.beat == null, "the soul does not rise over a city that is not yet just")
+	hall._close_panels()
+	var table: Array = hall.interactables.filter(func(i): return i["kind"] == "council")
+	check_eq(table.size(), 1, "there is a council table")
+	hall.activate(table[0])
+	check(hall._council.visible, "you sit down at it")
+	check(CityTest._govern(hall._city, 80) >= 0, "a careful founder makes the city just")
+	hall._on_council_acted()
+	check(hall.progress.understood(work).has("one_work") and hall.progress.understood(work).has("just_city"),
+		"for a Theoros the city's stages count as they are reached")
+	hall._close_panels()
+	check_eq(hall.here, work, "the Academy is rebuilt round the grown city")
+	check_eq(hall.city().stage, City.JUST_CITY, "the city is kept")
+	check(_play_through(hall, find.call("soul")) >= 0, "now the soul can be looked into")
+	hall._close_panels()
+	check(hall.progress.understood(work).has("soul"), "and it counts")
+	hall.activate(hall.interactables.filter(func(i): return i["kind"] == "council")[0])
+	for k in City.LAST_STAGE - City.JUST_CITY:
+		hall._city.let_generations_pass()
+	hall._on_council_acted()
+	hall._close_panels()
+	check_eq(hall.city().stage, City.LAST_STAGE, "the generations pass, and the city falls to tyranny")
+	check_eq(hall.here, work, "the Academy stands round the fallen city")
+	hall.free()
+
+
+## Every beat of every new place can be played to its end, and in Zen each counts its point.
+func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for work in NEW_PLACES:
+		hall.progress.data = {"works": {}}
+		hall.progress.set_mode("greece", "zen")
+		hall.travel(work)
+		var beats: Array = hall.interactables.filter(func(i): return i["kind"] == "beat")
+		for k in beats.size():
+			var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "beat")[k]  # the place is rebuilt as it mends
+			if it.has("needs_city"):
+				continue  # played once the city is far enough on (test_the_city_in_speech_is_governed_at_the_academy)
+			check(_play_through(hall, it) >= 0, "%s/%s plays to its end" % [work, it["beat"]])
+			hall._close_panels()
+			if it.has("id"):
+				check(hall.progress.understood(work).has(it["id"]), "%s/%s counts '%s'" % [work, it["beat"], it["id"]])
+	hall.free()
+
+
+## The Odyssey's voyage: from every landing the black ship sails to every other, and you step
+## ashore on each island; at the edge of Ocean the dead come for the blood while you are near.
+func test_the_black_ship_sails_home_by_every_island() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.travel("homer-the-iliad")
+	var sea: Dictionary = load("res://scripts/hall/places_greek.gd").SEA
+	var ferries: Array = hall.interactables.filter(func(i): return i["kind"] == "ferry")
+	check_eq(ferries.size(), sea.size() * (sea.size() - 1), "from each landing, a way to each of the others")
+	for leg in [["troy", "cyclops"], ["cyclops", "sirens"], ["sirens", "ocean"], ["ocean", "ithaca"], ["ithaca", "troy"]]:
+		var take: Dictionary = ferries.filter(func(i): return i["from"] == leg[0] and i["to"] == leg[1])[0]
+		hall.activate(take)
+		for k in 200:
+			hall._animate_boats(0.5)
+		var there: Vector3 = sea[leg[1]]["at"]
+		check(take["boat"]["root"].position.distance_to(there) < 0.1, "it sails from %s to %s" % leg)
+		hall.stand_up()
+		check(not hall.player.seated, "you step ashore at %s" % leg[1])
+	var c: Dictionary = hall.creep[0]
+	var before: float = c["node"].global_position.distance_to(c["trench"])
+	hall.player.position = c["trench"] + Vector3(0, 0.05, 8.0)
+	for k in 20:
+		hall._animate_creep(0.5)
+	check(c["node"].global_position.distance_to(c["trench"]) < before, "the dead come toward the blood while you are near")
 	hall.free()

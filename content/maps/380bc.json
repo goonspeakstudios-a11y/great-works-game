@@ -1,0 +1,186 @@
+{
+ "title": "The world in 380 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Persian Empire",
+   "sub": "King Artaxerxes II; Ionia his again",
+   "color": [
+    196,
+    146,
+    48
+   ],
+   "label": [
+    172,
+    90
+   ]
+  },
+  {
+   "name": "Egypt",
+   "sub": "free of Persia again, King Nectanebo I",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    128,
+    120
+   ]
+  },
+  {
+   "name": "Macedon",
+   "sub": "King Amyntas III",
+   "color": [
+    110,
+    96,
+    140
+   ],
+   "label": [
+    99,
+    60
+   ]
+  },
+  {
+   "name": "Sparta",
+   "sub": "master of Greece since 404",
+   "color": [
+    160,
+    52,
+    52
+   ],
+   "label": [
+    99,
+    83
+   ]
+  },
+  {
+   "name": "Athens",
+   "sub": "a democracy again, rebuilding its walls",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    114,
+    74
+   ]
+  },
+  {
+   "name": "Syracuse",
+   "sub": "the tyrant Dionysius I",
+   "color": [
+    120,
+    96,
+    60
+   ],
+   "label": [
+    84,
+    70
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "the sea's traders",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    53,
+    96
+   ]
+  },
+  {
+   "name": "Rome",
+   "sub": "rebuilding after the Gauls sacked it",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    73,
+    56
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Thracians",
+   "label": [
+    114,
+    57
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Celts",
+   "label": [
+    44,
+    40
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Athens",
+   "note": "Plato's Academy, founded about 387 BC",
+   "at": [
+    109,
+    76
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Syracuse",
+   "note": "Plato tries to teach a tyrant",
+   "at": [
+    82,
+    80
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Sparta",
+   "note": "the city of soldiers",
+   "at": [
+    105,
+    80
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Thebes",
+   "note": "rising; beats Sparta at Leuctra, 371",
+   "at": [
+    107,
+    75
+   ],
+   "main": false,
+   "side": "above"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

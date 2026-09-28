@@ -1,0 +1,174 @@
+{
+ "title": "The world in 480 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Persian Empire",
+   "sub": "King Xerxes",
+   "color": [
+    196,
+    146,
+    48
+   ],
+   "label": [
+    172,
+    90
+   ]
+  },
+  {
+   "name": "Macedon",
+   "sub": "King Alexander I, subject to Xerxes",
+   "color": [
+    110,
+    96,
+    140
+   ],
+   "label": [
+    98,
+    62
+   ]
+  },
+  {
+   "name": "Greek allies",
+   "sub": "Athens, Sparta and their league",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    100,
+    83
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "Hamilcar sails for Sicily",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    53,
+    96
+   ]
+  },
+  {
+   "name": "Rome",
+   "sub": "a young republic",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    74,
+    58
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Celts",
+   "label": [
+    44,
+    40
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Etruscans",
+   "label": [
+    70,
+    54
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  },
+  {
+   "name": "Libya",
+   "label": [
+    85,
+    124
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Thermopylae",
+   "note": "three hundred Spartans hold the pass",
+   "at": [
+    105,
+    73
+   ],
+   "main": true,
+   "side": "left"
+  },
+  {
+   "name": "Salamis",
+   "note": "the Greek fleet wins",
+   "at": [
+    108,
+    76
+   ],
+   "main": false,
+   "side": "right"
+  },
+  {
+   "name": "Sparta",
+   "note": "King Leonidas's city",
+   "at": [
+    105,
+    80
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Sardis",
+   "note": "Xerxes' army musters",
+   "at": [
+    122,
+    74
+   ],
+   "main": false,
+   "side": "right"
+  },
+  {
+   "name": "Halicarnassus",
+   "note": "Herodotus is born here, about 484",
+   "at": [
+    120,
+    80
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Susa",
+   "note": "Xerxes' capital",
+   "at": [
+    185,
+    99
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

@@ -1,0 +1,2153 @@
+{
+ "rhetorica-ad-herennium": {
+  "memory_walk": {
+   "hero": "",
+   "title": "Your memory house",
+   "point": "order",
+   "steps": [
+    {
+     "line": "Tomorrow you speak in court, five charges to answer in order. Keep them here, not on a scroll."
+    },
+    {
+     "line": "Walk the colonnade from the door. At each place, set one strange picture of one charge."
+    },
+    {
+     "go": "loc0",
+     "text": "Go to the first empty place"
+    },
+    {
+     "act": "Set the first image: a man on fire (the arson)"
+    },
+    {
+     "show": "img0"
+    },
+    {
+     "go": "loc1",
+     "text": "The next place"
+    },
+    {
+     "act": "Set the second: a goat in a toga (the forged will)"
+    },
+    {
+     "show": "img1"
+    },
+    {
+     "go": "loc2",
+     "text": "The next place"
+    },
+    {
+     "act": "Set the third: a huge ear (the witness who overheard)"
+    },
+    {
+     "show": "img2"
+    },
+    {
+     "go": "loc3",
+     "text": "The next place"
+    },
+    {
+     "act": "Set the fourth: a bloody knife (the assault)"
+    },
+    {
+     "show": "img3"
+    },
+    {
+     "go": "loc4",
+     "text": "The next place, by the golden hand"
+    },
+    {
+     "act": "Set the fifth: a donkey in a crown (the bribe)"
+    },
+    {
+     "show": "img4"
+    },
+    {
+     "line": "Five places, five pictures. The stranger they are, the longer they stay."
+    },
+    {
+     "go": "court",
+     "text": "Go to the court in the Forum, and stand where the advocate stands"
+    },
+    {
+     "line": "The praetor nods. Speak. Walk your house again, from the door, and read your pictures in order."
+    },
+    {
+     "go": [
+      "loc0",
+      "loc1",
+      "loc2",
+      "loc3",
+      "loc4"
+     ],
+     "text": "Walk your places again, in order"
+    },
+    {
+     "act": "Speak the fifth charge, and close",
+     "hold": 1.5
+    },
+    {
+     "line": "Every charge answered, in order, without a scroll. Do it again tomorrow, and the next day."
+    }
+   ]
+  }
+ },
+ "euclid-elements": {
+  "rope_and_pegs": {
+   "hero": "",
+   "title": "Proposition 1, on the sand",
+   "point": "prop_one",
+   "steps": [
+    {
+     "line": "On a given finite straight line, to construct an equilateral triangle. The line is AB, pegged out on the sand."
+    },
+    {
+     "go": "A",
+     "text": "Go to A"
+    },
+    {
+     "act": "Drive the peg in at A"
+    },
+    {
+     "go": "B",
+     "text": "Go to B, paying out the cord"
+    },
+    {
+     "act": "Tie the cord at B: it is exactly as long as AB"
+    },
+    {
+     "line": "Postulate 3: a circle may be drawn with any centre and distance. Walk round A with the cord taut."
+    },
+    {
+     "go": "circle_a",
+     "text": "Walk the circle round A, the cord taut"
+    },
+    {
+     "line": "Every point you walked is as far from A as B is. Now round B, through A."
+    },
+    {
+     "go": "circle_b",
+     "text": "Walk the circle round B, the cord taut"
+    },
+    {
+     "line": "The two circles cross. Where they cross is the third corner."
+    },
+    {
+     "go": "C",
+     "text": "Stand where the circles cross"
+    },
+    {
+     "act": "Drive in the peg at C, and stretch the cord to A and to B",
+     "hold": 1.0
+    },
+    {
+     "line": "CA equals AB, for both reach from A to its circle. CB equals BA, from B to its circle."
+    },
+    {
+     "line": "Things which are equal to the same thing are also equal to one another. So CA equals CB, and all three are equal."
+    },
+    {
+     "line": "Being what it was required to do."
+    }
+   ]
+  },
+  "count_the_tiles": {
+   "hero": "",
+   "title": "Proposition 47, in tiles",
+   "point": "prop_47",
+   "steps": [
+    {
+     "line": "A right-angled triangle with sides of three, four and five, and a square of tiles on each side."
+    },
+    {
+     "go": "sq3",
+     "text": "Step on every tile of the square on the short side"
+    },
+    {
+     "line": "Nine."
+    },
+    {
+     "go": "sq4",
+     "text": "Now every tile of the square on the other short side"
+    },
+    {
+     "line": "Sixteen. Nine and sixteen make twenty-five."
+    },
+    {
+     "go": "sq5",
+     "text": "Now every tile of the square on the long side, opposite the right angle"
+    },
+    {
+     "line": "Twenty-five. The square on the side opposite the right angle equals the squares on the other two."
+    },
+    {
+     "act": "Say it back to yourself"
+    },
+    {
+     "line": "Counting shows it for this triangle. Euclid's proof shows it for every right-angled triangle there is."
+    }
+   ]
+  }
+ },
+ "homer-the-iliad": {
+  "menis": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 1",
+   "point": "menis",
+   "steps": [
+    {
+     "line": "Sing, O goddess, the anger of Achilles son of Peleus, that brought countless ills upon the Achaeans."
+    },
+    {
+     "line": "Agamemnon takes your prize, the girl Briseis, before the whole army. You are in two minds: kill him, or check your anger."
+    },
+    {
+     "swap": "right",
+     "what": "sword"
+    },
+    {
+     "act": "Draw your sword",
+     "hold": 1.2
+    },
+    {
+     "show": "athena"
+    },
+    {
+     "look": "athena"
+    },
+    {
+     "line": "Minerva came down from heaven and seized the son of Peleus by his yellow hair, visible to him alone."
+    },
+    {
+     "line": "“Why are you here, daughter of aegis-bearing Jove? To see the pride of Agamemnon, son of Atreus?”"
+    },
+    {
+     "act": "Put the sword back in its sheath"
+    },
+    {
+     "swap": "right",
+     "what": "spear"
+    },
+    {
+     "hide": "athena"
+    },
+    {
+     "line": "You obey the goddess. But you will not fight for him again, and the Achaeans will die for your anger."
+    }
+   ]
+  },
+  "kleos": {
+   "hero": "hector",
+   "title": "Hector, Iliad 6",
+   "point": "kleos",
+   "steps": [
+    {
+     "look": "andromache"
+    },
+    {
+     "line": "At the Scaean gate Andromache runs to meet you, and the nurse behind her with your little son."
+    },
+    {
+     "line": "The boy is scared at the sight of his father's armour, and at the horse-hair plume that nodded fiercely from his helmet."
+    },
+    {
+     "act": "Take off your helmet"
+    },
+    {
+     "swap": "left",
+     "what": ""
+    },
+    {
+     "show": "helmet"
+    },
+    {
+     "line": "Hector took the helmet from his head and laid it all gleaming upon the ground."
+    },
+    {
+     "act": "Take your son in your arms",
+     "hold": 1.2
+    },
+    {
+     "line": "Then he took his darling child, kissed him, and dandled him in his arms."
+    },
+    {
+     "line": "You know Troy will fall. You will go back to the fight anyway, for the city, and for the glory men will remember."
+    }
+   ]
+  },
+  "time": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 9",
+   "point": "time",
+   "steps": [
+    {
+     "line": "Odysseus, old Phoenix and Ajax come to your hut. Agamemnon offers gold, horses, women, his daughter, seven cities."
+    },
+    {
+     "line": "“Though you hate both him and his gifts with all your heart, yet pity the rest of the Achaeans.”"
+    },
+    {
+     "act": "Refuse Odysseus"
+    },
+    {
+     "line": "“Him do I hate even as the gates of hell who says one thing while he hides another in his heart.”"
+    },
+    {
+     "line": "Old Phoenix, who raised you, weeps and begs you not to wait until it is too late."
+    },
+    {
+     "act": "Refuse Phoenix"
+    },
+    {
+     "line": "Ajax says it plainly: you are hard, and you care nothing for the friends who honoured you."
+    },
+    {
+     "act": "Refuse Ajax too"
+    },
+    {
+     "line": "Three times asked, three times refused. Your honour is not for sale. Your friends go on dying."
+    }
+   ]
+  },
+  "shield": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 18",
+   "point": "shield",
+   "steps": [
+    {
+     "line": "Your mother brings the arms the fire god made you in one night. On the shield is the whole world."
+    },
+    {
+     "line": "He wrought the earth, the heavens, and the sea; the moon also at her full and the untiring sun."
+    },
+    {
+     "go": "ring0",
+     "text": "Walk the city at peace: a wedding, a quarrel judged by the elders"
+    },
+    {
+     "go": "ring1",
+     "text": "Walk the city at war, and the ambush by the river"
+    },
+    {
+     "go": "ring2",
+     "text": "Walk the ploughland, the harvest and the vintage"
+    },
+    {
+     "go": "ring3",
+     "text": "Walk the dance, and the river Ocean round the rim"
+    },
+    {
+     "act": "Take up the shield"
+    },
+    {
+     "line": "War is one ring of it. Everything else goes on round it: weddings, trials, harvests, dances."
+    }
+   ]
+  },
+  "fate": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 22",
+   "point": "fate",
+   "steps": [
+    {
+     "line": "Hector waits alone before the Scaean gate. When he sees you coming, he turns and runs."
+    },
+    {
+     "go": "chase",
+     "text": "Run after him along the wall (Shift to run)"
+    },
+    {
+     "line": "So did these two run full speed three times round the city of Priam. All the gods watched them."
+    },
+    {
+     "line": "Jove holds up his golden scales. Hector's fate sinks down toward the house of Hades."
+    },
+    {
+     "go": "springs",
+     "text": "On past the springs where the women washed in peacetime"
+    },
+    {
+     "line": "Hector stands at last. He knows he will die, and he will not die without a fight."
+    },
+    {
+     "act": "Face Hector",
+     "hold": 1.5
+    },
+    {
+     "line": "Hector falls. Killing him does not bring back Patroclus."
+    }
+   ]
+  },
+  "pity": {
+   "hero": "priam",
+   "title": "Priam, Iliad 24",
+   "point": "pity",
+   "steps": [
+    {
+     "line": "You are Priam, old king of Troy. Hermes has led you through the Greek camp by night, with a wagon of ransom."
+    },
+    {
+     "show": "achilles"
+    },
+    {
+     "go": "hut",
+     "text": "Go into the hut of the man who killed your son"
+    },
+    {
+     "look": "achilles"
+    },
+    {
+     "eye": -0.8
+    },
+    {
+     "act": "Kneel and clasp his knees"
+    },
+    {
+     "act": "Kiss his hands",
+     "hold": 1.5
+    },
+    {
+     "line": "He clasped his knees and kissed the dread murderous hands that had slain so many of his sons."
+    },
+    {
+     "line": "“Fear, O Achilles, the wrath of heaven; think on your own father and have compassion upon me.”"
+    },
+    {
+     "line": "He weeps for his father; you weep for your son. Then he gives you Hector's body to take home."
+    },
+    {
+     "eye": 0.8
+    }
+   ]
+  },
+  "metis": {
+   "hero": "odysseus",
+   "title": "Odysseus, Odyssey 9",
+   "point": "metis",
+   "steps": [
+    {
+     "line": "The Cyclops has shut you in his cave with a stone no team could shift, and has eaten six of your men."
+    },
+    {
+     "line": "He is drunk on your wine, and asks your name."
+    },
+    {
+     "act": "Tell him your name"
+    },
+    {
+     "line": "“Cyclops, you ask my name and I will tell it you ... my name is Noman.”"
+    },
+    {
+     "swap": "left",
+     "what": ""
+    },
+    {
+     "swap": "right",
+     "what": "stake"
+    },
+    {
+     "act": "Drive the stake into his eye",
+     "hold": 1.5
+    },
+    {
+     "line": "He roars that Noman is killing him. The other Cyclopes decide he is mad, and go home."
+    },
+    {
+     "swap": "right",
+     "what": ""
+    },
+    {
+     "go": "ram",
+     "text": "Get under the great ram"
+    },
+    {
+     "eye": -1.0
+    },
+    {
+     "act": "Cling to its fleece",
+     "hold": 2.0
+    },
+    {
+     "line": "Their master felt the backs of all the sheep, without being sharp enough to find the men under their bellies."
+    },
+    {
+     "move": "stone",
+     "by": [
+      4.0,
+      0,
+      0
+     ],
+     "secs": 1.5
+    },
+    {
+     "eye": 1.0
+    },
+    {
+     "go": "mouth",
+     "text": "Out into the daylight"
+    },
+    {
+     "line": "Cunning got you out. Shouting your real name back from the ship will bring the sea god's anger after you."
+    }
+   ]
+  },
+  "nostos": {
+   "hero": "odysseus",
+   "title": "Odysseus, Odyssey 21-23",
+   "point": "nostos",
+   "steps": [
+    {
+     "line": "Twenty years gone. You come home as a beggar, and the suitors are eating your house."
+    },
+    {
+     "line": "Penelope sets them a contest: string the old bow and shoot through twelve axes. None of them can bend it."
+    },
+    {
+     "act": "String the bow",
+     "hold": 2.0
+    },
+    {
+     "line": "He strung it as easily as a skilled bard strings a new peg of his lyre."
+    },
+    {
+     "line": "It sang sweetly under his touch like the twittering of a swallow."
+    },
+    {
+     "act": "Shoot through the twelve axes"
+    },
+    {
+     "line": "The house is yours again. But Penelope will not believe it is you until you prove it."
+    },
+    {
+     "go": "bed",
+     "text": "Go to the bed you built"
+    },
+    {
+     "line": "“There was a young olive growing within the precincts of the house ... I built my room round this.”"
+    },
+    {
+     "act": "Tell her the secret of the bed"
+    },
+    {
+     "line": "Only you could know it. She runs to you. You are home."
+    }
+   ]
+  },
+  "sirens": {
+   "hero": "odysseus_bound",
+   "title": "Odysseus, Odyssey 12",
+   "point": "",
+   "steps": [
+    {
+     "line": "Circe warned you: whoever hears the Sirens and goes near them never sees home again."
+    },
+    {
+     "line": "“Bind me as I stand upright, with a bond so fast that I cannot possibly break away.”"
+    },
+    {
+     "act": "Let your men bind you to the mast"
+    },
+    {
+     "line": "They row on with wax in their ears. The Sirens sing that they know everything that happened at Troy."
+    },
+    {
+     "act": "Strain against the ropes",
+     "hold": 3.0
+    },
+    {
+     "line": "The more you beg, the tighter they bind you. The song fades astern."
+    }
+   ]
+  },
+  "trench": {
+   "hero": "odysseus",
+   "title": "Odysseus, Odyssey 11",
+   "point": "",
+   "steps": [
+    {
+     "line": "At the edge of Ocean, where the sun never shines, you dig the trench and pour the blood."
+    },
+    {
+     "line": "The dead come up out of Erebus in crowds, with a strange cry, wanting the blood."
+    },
+    {
+     "swap": "right",
+     "what": "sword"
+    },
+    {
+     "act": "Hold your sword out over the blood",
+     "hold": 3.0
+    },
+    {
+     "line": "Your mother's shade comes. You reach for her three times, and three times she slips through your arms."
+    },
+    {
+     "act": "Let Teiresias drink"
+    },
+    {
+     "line": "The seer drinks, and tells you the way home, and what it will cost."
+    },
+    {
+     "swap": "right",
+     "what": "arrow"
+    }
+   ]
+  }
+ },
+ "plato-republic": {
+  "gyges": {
+   "hero": "gyges",
+   "title": "Gyges, Republic II",
+   "point": "gyges",
+   "steps": [
+    {
+     "hide": "gyges"
+    },
+    {
+     "line": "You are Gyges, a shepherd of the king of Lydia. There was a storm, and an earthquake opened the ground where your flock was feeding."
+    },
+    {
+     "go": "chasm",
+     "text": "Go down into the opening"
+    },
+    {
+     "line": "Among other marvels, “a hollow brazen horse, having doors.” Inside lies a dead body more than human, wearing only a gold ring."
+    },
+    {
+     "go": "horse",
+     "text": "Stoop and look in at the horse's door"
+    },
+    {
+     "act": "Take the ring from the finger of the dead"
+    },
+    {
+     "swap": "right",
+     "what": "ring"
+    },
+    {
+     "go": "meeting",
+     "text": "Climb out, and join the shepherds at their monthly meeting"
+    },
+    {
+     "line": "They are making their report about the flocks to the king. You sit among them, turning the ring on your finger."
+    },
+    {
+     "act": "Turn the collet of the ring inward",
+     "hold": 1.0
+    },
+    {
+     "line": "“Instantly he became invisible to the rest of the company and they began to speak of him as if he were no longer present.”"
+    },
+    {
+     "act": "Turn it outward again"
+    },
+    {
+     "line": "They see you again. Gyges went to court, seduced the queen, killed the king with her help, and took the kingdom."
+    },
+    {
+     "line": "Glaucon: give a just man such a ring and he will do as the unjust do. No one is just of his own free will."
+    },
+    {
+     "line": "Would you be? Socrates must show that justice is worth having even if no one ever sees it."
+    }
+   ]
+  },
+  "the_soul": {
+   "hero": "",
+   "title": "The soul, Republic IV",
+   "point": "soul",
+   "steps": [
+    {
+     "line": "The city is just: each order doing its own work. Now turn it round. The same three are in you."
+    },
+    {
+     "look": "appetite"
+    },
+    {
+     "line": "Appetite, in the belly: it wants food, drink and gain, many-headed. Bronze and iron, like the producers."
+    },
+    {
+     "look": "spirit"
+    },
+    {
+     "line": "Spirit, in the chest: anger, honour, courage. Silver, like the soldiers. Well trained, it sides with reason."
+    },
+    {
+     "look": "reason"
+    },
+    {
+     "line": "Reason, in the head: it loves learning and sees the whole. Gold, like the rulers. It should rule."
+    },
+    {
+     "act": "Let reason rule, with spirit its ally",
+     "hold": 2.0
+    },
+    {
+     "line": "“The just man does not permit the several elements within him to interfere with one another.”"
+    },
+    {
+     "line": "“He sets in order his own inner life, and is his own master and his own law, and at peace with himself.”"
+    }
+   ]
+  },
+  "the_line": {
+   "hero": "",
+   "title": "The divided line, Republic VI",
+   "point": "line",
+   "steps": [
+    {
+     "line": "“Now take a line which has been cut into two unequal parts, and divide each of them again in the same proportion.”"
+    },
+    {
+     "go": "images",
+     "text": "Walk into the first length: images"
+    },
+    {
+     "line": "“By images I mean, in the first place, shadows, and in the second place, reflections in water.”"
+    },
+    {
+     "look": "pool"
+    },
+    {
+     "act": "Look into the still pool"
+    },
+    {
+     "go": "things",
+     "text": "Walk on to the things themselves"
+    },
+    {
+     "line": "“The animals which we see, and everything that grows or is made”: the tree, the horse, the bowl."
+    },
+    {
+     "go": "mathematicals",
+     "text": "Walk on to the figures inlaid in the terrace"
+    },
+    {
+     "line": "Here the mind reasons from hypotheses, using drawn figures to think about the square itself, the diagonal itself."
+    },
+    {
+     "act": "Trace the square and its diagonal"
+    },
+    {
+     "go": "forms",
+     "text": "Walk out onto the white terrace"
+    },
+    {
+     "line": "Now reason itself, with no images, climbing to a first principle that rests on nothing else."
+    },
+    {
+     "look": "sun"
+    },
+    {
+     "line": "“The sun is not only the author of visibility in all visible things, but of generation and nourishment and growth.”"
+    },
+    {
+     "line": "So the good gives things their being and the mind its knowledge, “yet the good is not essence, but far exceeds essence.”"
+    },
+    {
+     "act": "Look up into the light",
+     "hold": 1.5
+    },
+    {
+     "line": "Four faculties: reason, understanding, faith, and the perception of shadows. Each is as clear as its objects are true."
+    }
+   ]
+  },
+  "cave": {
+   "hero": "",
+   "title": "The cave, Republic VII",
+   "point": "cave",
+   "steps": [
+    {
+     "eye": -0.7
+    },
+    {
+     "line": "“Behold! human beings living in a underground den, which has a mouth open towards the light.”"
+    },
+    {
+     "look": "wall"
+    },
+    {
+     "line": "Shadows pass on the wall: a horse, a jar, a man, a tree. You have never seen anything else. You give them names."
+    },
+    {
+     "line": "“You have shown me a strange image, and they are strange prisoners.” “Like ourselves, I replied.”"
+    },
+    {
+     "act": "Your chains are loosed. Turn round",
+     "hold": 1.0
+    },
+    {
+     "eye": 0.7
+    },
+    {
+     "look": "fire"
+    },
+    {
+     "line": "A fire, and men carrying figures along a wall. What you took for the real were shadows of copies. The light hurts."
+    },
+    {
+     "go": "up",
+     "text": "Climb the steep and rugged way up"
+    },
+    {
+     "line": "“When he approaches the light his eyes will be dazzled, and he will not be able to see anything at all.”"
+    },
+    {
+     "look": "pool"
+    },
+    {
+     "line": "“First he will see the shadows best, next the reflections of men and other objects in the water, and then the objects.”"
+    },
+    {
+     "act": "Lift your eyes to the sky",
+     "hold": 1.5
+    },
+    {
+     "line": "Last of all the sun itself, which makes the seasons and governs all that you once saw below."
+    },
+    {
+     "line": "He would rather be “the poor servant of a poor master” than live as they live. But the others are still down there."
+    },
+    {
+     "go": "down",
+     "text": "Go back down into the den"
+    },
+    {
+     "line": "Your eyes are full of darkness. They laugh: he went up and came back blind. Education is turning the whole soul round."
+    }
+   ]
+  },
+  "er": {
+   "hero": "",
+   "title": "The myth of Er, Republic X",
+   "point": "er",
+   "steps": [
+    {
+     "line": "You are a soul in the meadow, a thousand years after your last life. Before you, the Fates, and the spindle of Necessity."
+    },
+    {
+     "go": "prophet",
+     "text": "Go before the prophet of Lachesis"
+    },
+    {
+     "line": "“Your genius will not be allotted to you, but you will choose your genius.”"
+    },
+    {
+     "line": "“Virtue is free ... the responsibility is with the chooser—God is justified.”"
+    },
+    {
+     "act": "Take up your lot"
+    },
+    {
+     "line": "The first lot comes forward and in a moment chooses the greatest tyranny. Too late he sees he must devour his children."
+    },
+    {
+     "line": "Odysseus has the last lot. Tired of ambition, he searches a long time for the life of a private man with no cares."
+    },
+    {
+     "go": "lives",
+     "text": "Walk among the patterns of lives"
+    },
+    {
+     "act": "Choose a life, and think what it will make of your soul",
+     "hold": 2.0
+    },
+    {
+     "go": "lethe",
+     "text": "March on to the river of Unmindfulness"
+    },
+    {
+     "act": "Drink no more than you must",
+     "hold": 1.0
+    },
+    {
+     "line": "“Those who were not saved by wisdom drank more than was necessary; and each one as he drank forgot all things.”"
+    },
+    {
+     "line": "Er did not drink. He woke on his pyre on the twelfth day and told it: “the tale has been saved and has not perished.”"
+    }
+   ]
+  },
+  "apology": {
+   "hero": "socrates",
+   "title": "Socrates, the Apology",
+   "point": "",
+   "steps": [
+    {
+     "hide": "socrates"
+    },
+    {
+     "line": "Athens, 399 BC. You are Socrates, seventy years old, before five hundred and one jurors. Meletus accuses you."
+    },
+    {
+     "go": "platform",
+     "text": "Step up to speak"
+    },
+    {
+     "line": "“I am that gadfly which God has attached to the state, and all day long and in all places am always fastening upon you.”"
+    },
+    {
+     "act": "Tell them what you really think"
+    },
+    {
+     "line": "“The unexamined life is not worth living.”"
+    },
+    {
+     "look": "urns"
+    },
+    {
+     "line": "They vote: guilty, by a few votes. As your penalty you propose free meals for life. They vote again: death."
+    },
+    {
+     "line": "“The hour of departure has arrived, and we go our ways—I to die, and you to live. Which is better God only knows.”"
+    }
+   ]
+  },
+  "the_cup": {
+   "hero": "socrates",
+   "title": "Socrates, the Phaedo",
+   "point": "",
+   "steps": [
+    {
+     "hide": "socrates"
+    },
+    {
+     "line": "The evening of the last day. Your friends are round you. Crito: “the sun is still upon the hill-tops.”"
+    },
+    {
+     "line": "Do not hurry, he says; there is time enough. But you ask for the cup to be brought."
+    },
+    {
+     "act": "Take the cup from the servant of the Eleven"
+    },
+    {
+     "hide": "cup"
+    },
+    {
+     "swap": "right",
+     "what": "cup"
+    },
+    {
+     "line": "“Then raising the cup to his lips, quite readily and cheerfully he drank off the poison.”"
+    },
+    {
+     "act": "Drink",
+     "hold": 2.0
+    },
+    {
+     "swap": "right",
+     "what": ""
+    },
+    {
+     "go": "walk",
+     "text": "Walk about until your legs begin to fail"
+    },
+    {
+     "go": "bed",
+     "text": "Lie down on the bed"
+    },
+    {
+     "eye": -1.2
+    },
+    {
+     "line": "They weep. You ask them to be quiet: a man should die in peace."
+    },
+    {
+     "line": "“Crito, I owe a cock to Asclepius; will you remember to pay the debt?”"
+    },
+    {
+     "line": "“Of all the men of his time whom I have known, he was the wisest and justest and best.”"
+    },
+    {
+     "eye": 1.2
+    }
+   ]
+  }
+ },
+ "hesiod-theogony": {
+  "the_stone": {
+   "hero": "",
+   "title": "Rhea, Theogony 453-491",
+   "point": "succession",
+   "steps": [
+    {
+     "line": "Heaven hid his children in the earth. Kronos, the youngest, took the jagged sickle from their mother and cut him down."
+    },
+    {
+     "line": "“He learned from Earth and starry Heaven that he was destined to be overcome by his own son.” So he swallows them."
+    },
+    {
+     "line": "You are Rhea, his wife. Five children he has swallowed. The sixth, Zeus, you have hidden in a cave in Crete."
+    },
+    {
+     "go": "stone",
+     "text": "Go to the stone"
+    },
+    {
+     "act": "Wrap the stone in swaddling clothes",
+     "hold": 1.5
+    },
+    {
+     "go": "kronos",
+     "text": "Bring it to Kronos"
+    },
+    {
+     "look": "face"
+    },
+    {
+     "act": "Give him the stone"
+    },
+    {
+     "move": "stone",
+     "by": [
+      -3.4,
+      3.2,
+      -4.2
+     ],
+     "secs": 1.2
+    },
+    {
+     "hide": "stone"
+    },
+    {
+     "line": "“He took it in his hands and thrust it down into his belly: wretch! he knew not ... his son was left behind.”"
+    },
+    {
+     "line": "Zeus grows up, makes Kronos vomit up his children, the stone first, and overthrows him. Sons overthrow fathers."
+    },
+    {
+     "line": "Zeus will not wait to be overthrown in his turn. He swallows Wisdom herself, Metis, and keeps her counsel inside him."
+    }
+   ]
+  },
+  "the_jar": {
+   "hero": "",
+   "title": "Pandora, Works and Days 42-105",
+   "point": "prometheus",
+   "steps": [
+    {
+     "look": "crag"
+    },
+    {
+     "line": "Prometheus “stole the far-seen gleam of unwearying fire in a hollow fennel stalk.” Now he hangs chained on his crag."
+    },
+    {
+     "line": "As the price of fire, Zeus had the gods make a woman, and each gave her a gift. She was called Pandora, All-gifts."
+    },
+    {
+     "line": "Prometheus warned his brother never to take a gift from Zeus. Epimetheus took her, and understood too late."
+    },
+    {
+     "go": "jar",
+     "text": "Go to the great jar"
+    },
+    {
+     "act": "Lift the great lid",
+     "hold": 1.5
+    },
+    {
+     "line": "“The woman took off the great lid of the jar with her hands and scattered all these.” Sickness, toil, old age."
+    },
+    {
+     "line": "“Only Hope remained there in an unbreakable home within under the rim of the great jar, and did not fly out.”"
+    },
+    {
+     "act": "Put the lid back"
+    },
+    {
+     "line": "“But the rest, countless plagues, wander amongst men.” Is Hope kept for us, or kept from us? Hesiod does not say."
+    }
+   ]
+  },
+  "the_year": {
+   "hero": "",
+   "title": "The farmer's year, Works and Days",
+   "point": "work",
+   "steps": [
+    {
+     "line": "Your brother Perses took more than his share of your father's farm, by bribing the judges. Hesiod tells him: work."
+    },
+    {
+     "line": "“Between us and Goodness the gods have placed the sweat of our brows: long and steep is the path that leads to her.”"
+    },
+    {
+     "line": "“Mark, when you hear the voice of the crane who cries year by year from the clouds above, for she give the signal for ploughing.”"
+    },
+    {
+     "go": "plough",
+     "text": "Take the plough behind the oxen"
+    },
+    {
+     "act": "Plough the furrow straight",
+     "hold": 2.5
+    },
+    {
+     "line": "There are no shortcuts. The man who puts off his work wrestles with ruin, and ends by begging at his neighbour's door."
+    },
+    {
+     "go": "threshing",
+     "text": "Go to the threshing floor"
+    },
+    {
+     "line": "“When the Pleiades, daughters of Atlas, are rising, begin your harvest, and your ploughing when they are going to set.”"
+    },
+    {
+     "act": "Thresh the grain",
+     "hold": 1.5
+    },
+    {
+     "go": "hives",
+     "text": "Go to the hives"
+    },
+    {
+     "line": "The idle man is like the drones, who eat what the bees have worked for. Gods and men are angry with him."
+    },
+    {
+     "act": "Put up your harvest for the winter"
+    },
+    {
+     "line": "“Work is no disgrace: it is idleness which is a disgrace.”"
+    }
+   ]
+  }
+ },
+ "sappho-fragments": {
+  "the_pieces": {
+   "hero": "",
+   "title": "The pieces",
+   "point": "fragments",
+   "steps": [
+    {
+     "line": "A strip of papyrus, torn, from a rubbish heap in Egypt, a thousand years after she sang. Nine books; almost nothing is left."
+    },
+    {
+     "go": "strip0",
+     "text": "Find the next strip"
+    },
+    {
+     "act": "Pick up the strip"
+    },
+    {
+     "hide": "strip0"
+    },
+    {
+     "line": "“And round about the [breeze] murmurs cool through apple-boughs, and slumber streams from quivering leaves.”"
+    },
+    {
+     "go": "strip1",
+     "text": "Find the next strip"
+    },
+    {
+     "act": "Pick up the strip"
+    },
+    {
+     "hide": "strip1"
+    },
+    {
+     "line": "“The stars about the fair moon in their turn hide their bright face when she at about her full lights up all earth.”"
+    },
+    {
+     "go": "strip2",
+     "text": "Find the next strip"
+    },
+    {
+     "act": "Pick up the strip"
+    },
+    {
+     "hide": "strip2"
+    },
+    {
+     "line": "“As the sweet-apple blushes on the end of the bough ... which the gatherers overlooked, nay overlooked not but could not reach.”"
+    },
+    {
+     "go": "strip3",
+     "text": "Find the next strip"
+    },
+    {
+     "act": "Pick up the strip"
+    },
+    {
+     "hide": "strip3"
+    },
+    {
+     "line": "“Evening, thou that bringest all that bright morning scattered; thou bringest the sheep, the goat, the child back to her mother.”"
+    },
+    {
+     "go": "strip4",
+     "text": "Find the next strip"
+    },
+    {
+     "act": "Pick up the strip"
+    },
+    {
+     "hide": "strip4"
+    },
+    {
+     "line": "“The moon has set, and the Pleiades; it is midnight, the time is going by, and I sleep alone.”"
+    },
+    {
+     "line": "The [breeze] in brackets is not hers: a scholar guessed the missing word. Every reader of Sappho fills the gaps."
+    },
+    {
+     "line": "A whole line here, half a line there. The rest is gone forever, and what is left is sharper for it."
+    }
+   ]
+  },
+  "the_hymn": {
+   "hero": "",
+   "title": "The Hymn to Aphrodite",
+   "point": "hymn",
+   "steps": [
+    {
+     "go": "altar",
+     "text": "Stand before the altar"
+    },
+    {
+     "act": "Burn frankincense",
+     "hold": 1.5
+    },
+    {
+     "line": "“Immortal Aphrodite of the broidered throne, daughter of Zeus, weaver of wiles, I pray thee break not my spirit.”"
+    },
+    {
+     "line": "“Come hither, if ever before thou didst hear my voice afar, and listen.”"
+    },
+    {
+     "look": "chariot"
+    },
+    {
+     "line": "“Fair fleet sparrows drew thee, flapping fast their wings around the dark earth, from heaven through mid sky.”"
+    },
+    {
+     "line": "“Thou, blessed one, smiling with immortal countenance, didst ask What now is befallen me, and Why now I call.”"
+    },
+    {
+     "line": "“Who wrongs thee, Sappho? For even if she flies she shall soon follow, and if she rejects gifts shall yet give.”"
+    },
+    {
+     "act": "Ask her again",
+     "hold": 1.0
+    },
+    {
+     "line": "“Come, I pray thee, now too, and release me from cruel cares ... and be thyself my ally.”"
+    }
+   ]
+  },
+  "the_seats": {
+   "hero": "",
+   "title": "Fragment 2 (31)",
+   "point": "symptoms",
+   "steps": [
+    {
+     "go": "seat",
+     "text": "Sit on the seat opposite"
+    },
+    {
+     "eye": -0.5
+    },
+    {
+     "look": "girl"
+    },
+    {
+     "line": "“That man seems to me peer of gods, who sits in thy presence, and hears close to him thy sweet speech and lovely laughter.”"
+    },
+    {
+     "line": "“That indeed makes my heart flutter in my bosom. For when I see thee but a little, I have no utterance left.”"
+    },
+    {
+     "act": "Try to speak",
+     "hold": 1.5
+    },
+    {
+     "line": "“My tongue is broken down, and straightway a subtle fire has run under my skin, with my eyes I have no sight.”"
+    },
+    {
+     "line": "“My ears ring, sweat pours down, and a trembling seizes all my body; I am paler than grass.”"
+    },
+    {
+     "line": "“And seem in my madness little better than one dead. But I must dare all ...” The rest is lost."
+    },
+    {
+     "eye": 0.5
+    }
+   ]
+  }
+ },
+ "aeschylus-the-oresteia": {
+  "the_watch": {
+   "hero": "",
+   "title": "The watchman, Agamemnon",
+   "point": "beacon",
+   "steps": [
+    {
+     "look": "roof"
+    },
+    {
+     "line": "“I pray the gods to quit me of my toils, To close the watch I keep, this livelong year.”"
+    },
+    {
+     "line": "A year on the palace roof, “as a watch-dog lying,” waiting for the fire that will say Troy has fallen."
+    },
+    {
+     "look": "beacon"
+    },
+    {
+     "act": "Watch the far height through the night",
+     "hold": 3.0
+    },
+    {
+     "line": "“Fire of the night, that brings my spirit day, Shedding on Argos light, and dance, and song.”"
+    },
+    {
+     "line": "Mountain to mountain the beacons have run from Troy. The king is coming home. The watchman is glad, and afraid."
+    },
+    {
+     "line": "“The home itself might soothliest tell its tale.” Ten years ago, at Aulis, the king killed his daughter for a wind."
+    }
+   ]
+  },
+  "the_tapestries": {
+   "hero": "agamemnon",
+   "title": "Agamemnon, Agamemnon",
+   "point": "tapestries",
+   "steps": [
+    {
+     "line": "You are Agamemnon, home from Troy after ten years, the captive Cassandra in your chariot."
+    },
+    {
+     "look": "queen"
+    },
+    {
+     "line": "“Sweet lord, step forth, Step from thy car, I pray—nay, not on earth Plant the proud foot, O king, that trod down Troy!”"
+    },
+    {
+     "line": "“Women! why tarry ye, whose task it is To spread your monarch’s path with tapestry?”"
+    },
+    {
+     "act": "Refuse: such honour is for gods, not men"
+    },
+    {
+     "line": "She presses. What would Priam have done, if he had won? You are tired, and you give way."
+    },
+    {
+     "act": "Take off your sandals",
+     "hold": 1.0
+    },
+    {
+     "line": "“Stepping thus upon the sea’s rich dye, I pray, Let none among the gods look down With jealous eye on me.”"
+    },
+    {
+     "move": "clytemnestra",
+     "by": [
+      1.6,
+      0,
+      0
+     ],
+     "secs": 1.0
+    },
+    {
+     "go": "door",
+     "text": "Walk the purple into your house"
+    },
+    {
+     "eye": -1.2
+    },
+    {
+     "line": "“O I am sped—a deep, a mortal blow.”"
+    },
+    {
+     "line": "“O! O! again, another, another blow!” In the bath, caught in a robe like a net. Outside, the old men cannot agree what to do."
+    },
+    {
+     "eye": 1.2
+    }
+   ]
+  },
+  "the_vote": {
+   "hero": "",
+   "title": "The court, The Eumenides",
+   "point": "court",
+   "steps": [
+    {
+     "line": "Athens. Orestes has killed his mother to avenge his father. The Furies have hunted him here, to Athena's city."
+    },
+    {
+     "look": "orestes"
+    },
+    {
+     "line": "“Slaying her husband, she did slay my sire.” “Therefore thou livest.” The Furies will not let a mother's blood be."
+    },
+    {
+     "look": "athena"
+    },
+    {
+     "line": "Athena will not judge alone. She chooses citizens, sworn to judge by the evidence, and sets them on the hill of Ares."
+    },
+    {
+     "line": "“Ye who judge, Arise, take each his vote, mete out the right, Your oath revering.”"
+    },
+    {
+     "go": "urns",
+     "text": "Go down to the urns"
+    },
+    {
+     "act": "Cast your pebble",
+     "hold": 1.0
+    },
+    {
+     "line": "The votes are counted. They fall even: half for the Furies, half for Orestes."
+    },
+    {
+     "line": "“Mine is the right to add the final vote, And I award it to Orestes’ cause.”"
+    },
+    {
+     "line": "The Furies rage. Athena does not drive them out: she offers them a home under the hill, and honour in the city."
+    },
+    {
+     "line": "“If Persuasion’s grace be sacred to thee ... Tarry, I pray thee.” They stay, as the city's kindly guardians."
+    }
+   ]
+  }
+ },
+ "sophocles-the-theban-plays": {
+  "the_crossroads": {
+   "hero": "oedipus",
+   "title": "Oedipus, years before",
+   "point": "crossroads",
+   "steps": [
+    {
+     "line": "You are Oedipus, prince of Corinth. At Delphi the god told you: you will kill your father and marry your mother."
+    },
+    {
+     "line": "So you will never go home to Corinth, to the king and queen you love. You take the road the other way."
+    },
+    {
+     "go": "meeting",
+     "text": "Walk on to where three roads meet"
+    },
+    {
+     "look": "cart"
+    },
+    {
+     "line": "“A herald met me and a man who sat In a car drawn by colts ... Threatened to thrust me rudely from the path.”"
+    },
+    {
+     "line": "“The old man ... from his car brought down Full on my head the double-pointed goad.”"
+    },
+    {
+     "act": "Strike back with your staff"
+    },
+    {
+     "line": "“One stroke Of my good staff sufficed to fling him clean Out of the chariot seat ... And so I slew them every one.”"
+    },
+    {
+     "line": "You never asked his name. He was Laius, King of Thebes. You walk on to Thebes, and the Sphinx, and the queen."
+    }
+   ]
+  },
+  "the_truth": {
+   "hero": "oedipus",
+   "title": "Oedipus the King",
+   "point": "recognition",
+   "steps": [
+    {
+     "line": "The plague is still killing Thebes. A messenger from Corinth says: the king you called your father was not your father."
+    },
+    {
+     "line": "“Know that he took thee from my hands, a gift.” He had you as a baby from a Theban shepherd, your ankles pinned."
+    },
+    {
+     "look": "jocasta"
+    },
+    {
+     "line": "Jocasta begs you to stop asking. She has understood. She goes into the house."
+    },
+    {
+     "go": "altar",
+     "text": "Stand before the altar, where the old shepherd waits"
+    },
+    {
+     "act": "Make him tell you, and do not stop",
+     "hold": 2.0
+    },
+    {
+     "line": "The child he was given to kill was Laius's, and Jocasta's. He could not do it. He gave it away. It was you."
+    },
+    {
+     "line": "“Ah me! ah me! all brought to pass, all true! O light, may I behold thee nevermore!”"
+    },
+    {
+     "go": "door",
+     "text": "Go into the house"
+    },
+    {
+     "line": "He found her hanged. “He tore the golden brooches that upheld Her queenly robes, upraised them high and smote.”"
+    },
+    {
+     "eye": -0.6
+    },
+    {
+     "line": "“Therefore wait to see life’s ending ere thou count one mortal blest.”"
+    },
+    {
+     "eye": 0.6
+    }
+   ]
+  },
+  "the_dust": {
+   "hero": "antigone",
+   "title": "Antigone",
+   "point": "unwritten",
+   "steps": [
+    {
+     "hide": "antigone"
+    },
+    {
+     "line": "You are Antigone, daughter of Oedipus. Your brothers killed each other at the gates, one defending Thebes, one attacking it."
+    },
+    {
+     "line": "King Creon has ordered: Polynices, the traitor, lies unburied for the dogs and birds. Whoever buries him dies."
+    },
+    {
+     "go": "body",
+     "text": "Go out to your brother's body"
+    },
+    {
+     "swap": "right",
+     "what": "dust"
+    },
+    {
+     "act": "Sprinkle dust over him, and pour the offerings",
+     "hold": 2.0
+    },
+    {
+     "swap": "right",
+     "what": ""
+    },
+    {
+     "line": "“The corpse is buried; someone E’en now besprinkled it with thirsty dust.” The guards take you to the king."
+    },
+    {
+     "look": "creon"
+    },
+    {
+     "line": "“The immutable unwritten laws of Heaven. They were not born today nor yesterday; They die not.”"
+    },
+    {
+     "line": "“My nature is for mutual love, not hate.” “Die then, and love the dead if thou must.”"
+    },
+    {
+     "go": "tomb",
+     "text": "Walk into the tomb"
+    },
+    {
+     "line": "He walls you up alive. Teiresias warns him; he gives way at last, and comes to open the tomb. Too late."
+    }
+   ]
+  }
+ },
+ "euripides-the-tragedies": {
+  "the_stranger": {
+   "hero": "pentheus",
+   "title": "Pentheus, the Bacchae",
+   "point": "pentheus",
+   "steps": [
+    {
+     "line": "You are Pentheus, king of Thebes. You come home to find the women gone to the mountain, and your old grandfather in a fawnskin."
+    },
+    {
+     "look": "stranger"
+    },
+    {
+     "line": "“Track out this effeminate stranger, who brings this new disease upon women, and pollutes our beds.”"
+    },
+    {
+     "act": "Have him bound and shut in the stables"
+    },
+    {
+     "line": "He goes quietly, smiling. “Finding a bull in the stable ... he cast halters round the knees of that.”"
+    },
+    {
+     "look": "palace"
+    },
+    {
+     "line": "The ground shakes. Fire leaps from Semele's tomb, and your palace cracks. The stranger walks out, free, unhurried."
+    },
+    {
+     "line": "“I would rather sacrifice to him than, being wrath, kick against the pricks; a mortal against a God.”"
+    },
+    {
+     "act": "Refuse him"
+    },
+    {
+     "line": "“I will sacrifice, making a great slaughter of the women, as they deserve, in the glens of Cithæron.”"
+    }
+   ]
+  },
+  "the_dressing": {
+   "hero": "pentheus",
+   "title": "Pentheus, the Bacchae",
+   "point": "disguise",
+   "steps": [
+    {
+     "look": "stranger"
+    },
+    {
+     "line": "“Do you no longer wish to be a spectator of the Mænads?” You do. More than anything."
+    },
+    {
+     "line": "“With what dress—a woman’s? but shame possesses me.” “I will spread out your hair at length on your head.”"
+    },
+    {
+     "act": "Put on the long linen dress",
+     "hold": 2.0
+    },
+    {
+     "swap": "right",
+     "what": "thyrsus"
+    },
+    {
+     "act": "Take the thyrsus"
+    },
+    {
+     "line": "“And indeed I think I see two suns, and twin Thebes, and seven-gated city.”"
+    },
+    {
+     "line": "“You seem to guide me, being like a bull, and horns seem to grow on your head.”"
+    },
+    {
+     "go": "road",
+     "text": "Follow the stranger toward the mountain"
+    },
+    {
+     "line": "“You alone labor for this city, you alone; therefore the labors, which are meet, await you.”"
+    }
+   ]
+  },
+  "the_fir": {
+   "hero": "",
+   "title": "On Cithaeron, the Bacchae",
+   "point": "agave",
+   "steps": [
+    {
+     "go": "glade",
+     "text": "Creep down toward the glade"
+    },
+    {
+     "look": "fir"
+    },
+    {
+     "line": "The stranger takes the top of a tall fir, “pulled it down, pulled it, pulled it to the dark earth, and it was bent like a bow.”"
+    },
+    {
+     "line": "“Having placed Pentheus on the pine branches, he let it go upright through his hands steadily.”"
+    },
+    {
+     "line": "A voice from the sky: here is the man who mocks you. The women see him. His mother is the first to reach the tree."
+    },
+    {
+     "act": "Look away",
+     "hold": 1.5
+    },
+    {
+     "look": "agave"
+    },
+    {
+     "line": "“I have caught him without a noose, a young lion, as you may see.” Agave comes down the mountain rejoicing."
+    },
+    {
+     "line": "Her father Cadmus makes her look, slowly, at what she carries. It is her son's head."
+    },
+    {
+     "line": "“Ye have learned it too late; but when it behooved you, you knew it not.”"
+    }
+   ]
+  }
+ },
+ "aristophanes-the-comedies": {
+  "the_debts": {
+   "hero": "",
+   "title": "Strepsiades, the Clouds",
+   "point": "debts",
+   "steps": [
+    {
+     "eye": -0.6
+    },
+    {
+     "line": "“Ah me! Ah me! O King Jupiter, of what a terrible length the nights are! Will it never be day?”"
+    },
+    {
+     "line": "“I am not able, miserable man, to sleep, being tormented by my expenses, and my stud of horses, and my debts.”"
+    },
+    {
+     "act": "Light the lamp and count your debts",
+     "hold": 1.5
+    },
+    {
+     "line": "“What do I owe? Twelve minæ to Pasias. Why twelve minæ to Pasias? ... When I bought the blood-horse. Ah me!”"
+    },
+    {
+     "look": "son"
+    },
+    {
+     "line": "Your son, asleep in five blankets, dreams of the races: “You are acting unfairly, Philo! Drive on your own course.”"
+    },
+    {
+     "eye": 0.6
+    },
+    {
+     "look": "door"
+    },
+    {
+     "line": "“Do you see this little door and little house? ... This is a thinking-shop of wise spirits.”"
+    },
+    {
+     "line": "They teach, you hear, the worse argument, the one that wins though it speaks on the unjust side. No more debts."
+    }
+   ]
+  },
+  "the_basket": {
+   "hero": "",
+   "title": "At the Thinkery, the Clouds",
+   "point": "basket",
+   "steps": [
+    {
+     "go": "door",
+     "text": "Go to the Thinkery's door"
+    },
+    {
+     "act": "Knock"
+    },
+    {
+     "line": "A pupil tells you the mysteries: Socrates lately worked out how many of its own feet a flea can jump."
+    },
+    {
+     "look": "basket"
+    },
+    {
+     "line": "“Socrates! My little Socrates!” “Why callest thou me, thou creature of a day?”"
+    },
+    {
+     "line": "“I am walking in the air, and speculating about the sun.”"
+    },
+    {
+     "line": "“Who is it that compels them to borne along? Is it not Jupiter?” “By no means, but æthereal Vortex.”"
+    },
+    {
+     "act": "Sit on the sacred couch, and meet the Clouds",
+     "hold": 1.5
+    },
+    {
+     "line": "“Will you not, pray, now believe in no god, except what we believe in—this Chaos, and the Clouds, and the Tongue?”"
+    }
+   ]
+  },
+  "the_fire": {
+   "hero": "",
+   "title": "Strepsiades, the Clouds",
+   "point": "laughter",
+   "steps": [
+    {
+     "line": "Your son has beaten you, and proved it just. The Clouds tell you: this is what comes of loving what is wicked."
+    },
+    {
+     "line": "“Come forth with a ladder and with a mattock and then mount upon the thinking-shop and dig down the roof.”"
+    },
+    {
+     "go": "ladder",
+     "text": "Set up the ladder"
+    },
+    {
+     "look": "roof"
+    },
+    {
+     "act": "Tear at the roof with the mattock",
+     "hold": 2.0
+    },
+    {
+     "act": "Set the torch to it"
+    },
+    {
+     "line": "The pupils run out coughing. Socrates chokes in the smoke. The audience laughs; the play is over."
+    },
+    {
+     "line": "In 399 BC, on trial for his life, Socrates told the jurors his oldest accusers were not his prosecutors, but this play."
+    }
+   ]
+  }
+ },
+ "herodotus-the-histories": {
+  "the_question": {
+   "hero": "croesus",
+   "title": "Croesus, Histories I.30-32",
+   "point": "happiness",
+   "steps": [
+    {
+     "hide": "croesus"
+    },
+    {
+     "line": "You are Croesus, king of Lydia, the richest man alive. The wise Athenian Solon has come to Sardis."
+    },
+    {
+     "look": "gold"
+    },
+    {
+     "act": "Show him your treasuries",
+     "hold": 1.5
+    },
+    {
+     "look": "solon"
+    },
+    {
+     "act": "Ask him who is the happiest of men"
+    },
+    {
+     "line": "“Yes, O king, Tellos the Athenian.” A citizen who saw his grandchildren grow, and died well fighting for his city."
+    },
+    {
+     "line": "And second? “Cleobis and Biton”: two brothers who pulled their mother's cart to the temple, and died in their sleep."
+    },
+    {
+     "act": "Ask him, in anger, what of you"
+    },
+    {
+     "line": "“Man is altogether a creature of accident.”"
+    },
+    {
+     "line": "“Before he comes to his end it is well to hold back and not to call him yet happy but only fortunate.”"
+    }
+   ]
+  },
+  "the_pyre": {
+   "hero": "croesus",
+   "title": "Croesus, Histories I.86-87",
+   "point": "pyre",
+   "steps": [
+    {
+     "hide": "croesus"
+    },
+    {
+     "line": "Delphi said you would destroy a great empire. You have: your own. Cyrus has taken Sardis in fourteen days."
+    },
+    {
+     "eye": 1.6
+    },
+    {
+     "line": "He “caused Croesus to go up upon it bound in fetters, and along with him twice seven sons of Lydians.” They light it."
+    },
+    {
+     "line": "You remember what Solon said. No one is happy before his end. This is your end."
+    },
+    {
+     "act": "Call out the name of Solon, three times",
+     "hold": 2.0
+    },
+    {
+     "look": "cyrus"
+    },
+    {
+     "line": "Cyrus asks who Solon is. You tell him. He hears his own fortune in yours, and orders the fire put out. It will not go out."
+    },
+    {
+     "act": "Pray to Apollo",
+     "hold": 1.5
+    },
+    {
+     "look": "sky"
+    },
+    {
+     "line": "“Suddenly, they say, after clear sky and calm weather clouds gathered and a storm burst, and it rained.”"
+    },
+    {
+     "eye": -1.6
+    }
+   ]
+  },
+  "the_pass": {
+   "hero": "spartan",
+   "title": "A Spartan, Histories VII.208-228",
+   "point": "thermopylae",
+   "steps": [
+    {
+     "line": "You are one of the three hundred Spartans with King Leonidas, holding the narrow pass between the mountain and the sea."
+    },
+    {
+     "go": "wall",
+     "text": "Go out in front of the wall"
+    },
+    {
+     "line": "A Persian horseman rides up to count you. He sees “some of the men practising athletic exercises and some combing their long hair.”"
+    },
+    {
+     "act": "Comb your long hair",
+     "hold": 2.0
+    },
+    {
+     "look": "persians"
+    },
+    {
+     "line": "They say the Persian arrows will hide the sun. Dienekes answers: good, then “the battle against them would be in the shade.”"
+    },
+    {
+     "look": "mountain"
+    },
+    {
+     "line": "On the seventh day a Greek, Ephialtes, shows the Persians the path over the mountain. Leonidas sends the allies home."
+    },
+    {
+     "go": "hillock",
+     "text": "Fall back to the hillock"
+    },
+    {
+     "act": "Hold the hillock",
+     "hold": 3.0
+    },
+    {
+     "line": "“Defending themselves with daggers, that is those who still had them left, and also with hands and with teeth.”"
+    },
+    {
+     "line": "“Stranger, report this word, we pray, to the Spartans, that lying Here in this spot we remain, faithfully keeping their laws.”"
+    }
+   ]
+  }
+ },
+ "thucydides-the-peloponnesian-war": {
+  "the_oration": {
+   "hero": "",
+   "title": "The Funeral Oration, Book II",
+   "point": "funeral",
+   "steps": [
+    {
+     "line": "The first winter of the war. The bones of the dead lie three days in a tent; then the procession to the public grave."
+    },
+    {
+     "go": "coffins",
+     "text": "Follow the coffins"
+    },
+    {
+     "line": "“Cypress coffins are borne in cars, one for each tribe ... one empty bier decked for the missing.”"
+    },
+    {
+     "go": "crowd",
+     "text": "Stand with the crowd below the platform"
+    },
+    {
+     "look": "pericles"
+    },
+    {
+     "line": "“Our constitution does not copy the laws of neighbouring states; we are rather a pattern to others than imitators ourselves.”"
+    },
+    {
+     "line": "“We cultivate refinement without extravagance and knowledge without effeminacy.”"
+    },
+    {
+     "line": "“In short, I say that as a city we are the school of Hellas.”"
+    },
+    {
+     "act": "Listen for your own dead",
+     "hold": 2.0
+    },
+    {
+     "line": "“For heroes have the whole earth for their tomb.”"
+    },
+    {
+     "line": "The next summer, the plague. Within two years Pericles is dead of it."
+    }
+   ]
+  },
+  "the_plague": {
+   "hero": "",
+   "title": "The plague, Book II",
+   "point": "plague",
+   "steps": [
+    {
+     "line": "“I had the disease myself, and watched its operation in the case of others.” The refugees are crammed inside the walls."
+    },
+    {
+     "go": "street",
+     "text": "Walk down the street"
+    },
+    {
+     "line": "“Half-dead creatures reeled about the streets and gathered round all the fountains in their longing for water.”"
+    },
+    {
+     "go": "fountain",
+     "text": "Go to the fountain"
+    },
+    {
+     "act": "Give water to the sick",
+     "hold": 2.0
+    },
+    {
+     "line": "“Neither were the physicians at first of any service ... but they died themselves the most thickly.”"
+    },
+    {
+     "line": "“The despair into which they instantly fell took away their power of resistance.”"
+    },
+    {
+     "look": "pyres"
+    },
+    {
+     "line": "Some throw their own dead on a stranger's pyre and run. “Fear of gods or law of man there was none to restrain them.”"
+    }
+   ]
+  },
+  "the_dialogue": {
+   "hero": "",
+   "title": "The Melian dialogue, Book V",
+   "point": "melos",
+   "steps": [
+    {
+     "line": "You are a magistrate of Melos, a small island that has stayed neutral. Thirty Athenian ships are in your bay."
+    },
+    {
+     "look": "envoys"
+    },
+    {
+     "line": "The envoys will not speak before the people, only to you. They will not pretend to have any right on their side."
+    },
+    {
+     "act": "Appeal to justice"
+    },
+    {
+     "line": "Right, they say, is only in question between equals in power: “the strong do what they can and the weak suffer what they must.”"
+    },
+    {
+     "act": "Appeal to the gods, and to Sparta"
+    },
+    {
+     "line": "“Hope, danger’s comforter, may be indulged in by those who have abundant resources.”"
+    },
+    {
+     "look": "ships"
+    },
+    {
+     "act": "Give your answer",
+     "hold": 1.5
+    },
+    {
+     "line": "“We will not in a moment deprive of freedom a city that has been inhabited these seven hundred years.”"
+    },
+    {
+     "line": "The siege; treachery inside. Athens “put to death all the grown men whom they took, and sold the women and children for slaves.”"
+    }
+   ]
+  }
+ },
+ "the-pre-socratics": {
+  "the_river": {
+   "hero": "",
+   "title": "Heraclitus, the river",
+   "point": "flux",
+   "steps": [
+    {
+     "look": "water"
+    },
+    {
+     "line": "“You cannot step twice into the same rivers; for fresh waters are ever flowing in upon you.”"
+    },
+    {
+     "go": "across",
+     "text": "Cross the river on the stepping stones"
+    },
+    {
+     "act": "Look back at the water you crossed",
+     "hold": 1.5
+    },
+    {
+     "line": "The water that was round the stones a moment ago is already out to sea. Is this the river you crossed?"
+    },
+    {
+     "go": "back",
+     "text": "Cross back"
+    },
+    {
+     "line": "“We step and do not step into the same rivers; we are and are not.”"
+    },
+    {
+     "line": "The river stays the river only because it keeps changing. Stop the flow, and there is no river at all."
+    }
+   ]
+  },
+  "the_stair": {
+   "hero": "",
+   "title": "Heraclitus, the way up and the way down",
+   "point": "opposites",
+   "steps": [
+    {
+     "go": "foot",
+     "text": "Go to the foot of the stair"
+    },
+    {
+     "look": "top"
+    },
+    {
+     "line": "“The way up and the way down is one and the same.” From the top it is a way down."
+    },
+    {
+     "act": "Draw an imaginary bow, and feel the pull both ways",
+     "hold": 2.0
+    },
+    {
+     "line": "“It is an attunement of opposite tensions, like that of the bow and the lyre.” Slacken it, and there is no bow."
+    },
+    {
+     "line": "“War is the father of all and the king of all; and some he has made gods and some men, some bond and some free.”"
+    },
+    {
+     "line": "“We must know that war is common to all and strife is justice.” Take away strife, and the world falls still."
+    }
+   ]
+  },
+  "the_ways": {
+   "hero": "",
+   "title": "Parmenides, the poem",
+   "point": "it_is",
+   "steps": [
+    {
+     "line": "“The car that bears me carried me as far as ever my heart desired ... on the renowned way of the goddess.”"
+    },
+    {
+     "go": "gates",
+     "text": "Ride on to the gates of Night and Day"
+    },
+    {
+     "look": "dike"
+    },
+    {
+     "line": "“They themselves, high in the air, are closed by mighty doors, and Avenging Justice keeps the keys that fit them.”"
+    },
+    {
+     "act": "Ask Justice to unbar the gates",
+     "hold": 1.5
+    },
+    {
+     "go": "goddess",
+     "text": "Go through to the goddess"
+    },
+    {
+     "line": "“The goddess greeted me kindly, and took my right hand in hers.” There are two ways only: it is, or it is not."
+    },
+    {
+     "line": "“For thou canst not know what is not—that is impossible—nor utter it; for it is the same thing that can be thought and that can be.”"
+    },
+    {
+     "look": "fog"
+    },
+    {
+     "line": "Down there, mortals “knowing naught wander two-faced ... like men deaf and blind,” saying things are and are not."
+    },
+    {
+     "go": "truth",
+     "text": "Take the straight way of truth"
+    },
+    {
+     "look": "sphere"
+    },
+    {
+     "line": "“One path only is left for us to speak of, namely, that It is ... uncreated and indestructible.”"
+    }
+   ]
+  }
+ }
+}
