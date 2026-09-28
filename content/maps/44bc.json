@@ -1,0 +1,138 @@
+{
+ "title": "The world in 44 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Parthian Empire",
+   "sub": "King Orodes II",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    191,
+    96
+   ]
+  },
+  {
+   "name": "Roman Republic",
+   "sub": "Caesar dictator for life, until the Ides",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    41,
+    46
+   ]
+  },
+  {
+   "name": "Ptolemaic Egypt",
+   "sub": "Queen Cleopatra",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    128,
+    120
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Germans",
+   "label": [
+    67,
+    22
+   ]
+  },
+  {
+   "name": "Dacians",
+   "label": [
+    111,
+    43
+   ]
+  },
+  {
+   "name": "Mauretania",
+   "label": [
+    20,
+    96
+   ]
+  },
+  {
+   "name": "Armenia",
+   "label": [
+    171,
+    67
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Rome",
+   "note": "Caesar is killed on the Ides of March",
+   "at": [
+    74,
+    60
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Philippi",
+   "note": "Brutus and Cassius fall, 42 BC",
+   "at": [
+    110,
+    64
+   ],
+   "main": false,
+   "side": "above"
+  },
+  {
+   "name": "Actium",
+   "note": "Octavian wins, 31 BC",
+   "at": [
+    99,
+    72
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Alexandria",
+   "note": "Cleopatra's capital",
+   "at": [
+    128,
+    103
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Carrhae",
+   "note": "Crassus's legions lost to Parthia, 53 BC",
+   "at": [
+    157,
+    81
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

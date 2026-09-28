@@ -1,0 +1,180 @@
+{
+ "title": "The world about 600 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Babylon",
+   "sub": "King Nebuchadnezzar II",
+   "color": [
+    150,
+    110,
+    70
+   ],
+   "label": [
+    169,
+    96
+   ]
+  },
+  {
+   "name": "Media",
+   "sub": "King Cyaxares, who took Nineveh",
+   "color": [
+    110,
+    70,
+    110
+   ],
+   "label": [
+    189,
+    84
+   ]
+  },
+  {
+   "name": "Egypt",
+   "sub": "King Necho II, who had Africa sailed round",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    130,
+    122
+   ]
+  },
+  {
+   "name": "Lydia",
+   "sub": "King Alyattes; rich Sardis",
+   "color": [
+    176,
+    128,
+    64
+   ],
+   "label": [
+    130,
+    70
+   ]
+  },
+  {
+   "name": "Greeks",
+   "sub": "Athens under Solon's new laws, Sparta, Corinth",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    101,
+    70
+   ]
+  },
+  {
+   "name": "Lesbos",
+   "sub": "Sappho's island",
+   "color": [
+    96,
+    130,
+    160
+   ],
+   "label": [
+    116,
+    70
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "the sea's traders",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    59,
+    90
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Etruscans",
+   "label": [
+    71,
+    56
+   ]
+  },
+  {
+   "name": "Rome",
+   "label": [
+    74,
+    60
+   ]
+  },
+  {
+   "name": "Thracians",
+   "label": [
+    114,
+    58
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    147,
+    42
+   ]
+  },
+  {
+   "name": "Massalia",
+   "label": [
+    51,
+    55
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Mytilene",
+   "note": "Sappho's city on Lesbos",
+   "at": [
+    118,
+    72
+   ],
+   "main": true,
+   "side": "above"
+  },
+  {
+   "name": "Sardis",
+   "note": "where a friend of hers went to live",
+   "at": [
+    122,
+    74
+   ],
+   "main": false,
+   "side": "right"
+  },
+  {
+   "name": "Naucratis",
+   "note": "where her brother sold wine",
+   "at": [
+    130,
+    104
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Syracuse",
+   "note": "where she lived for a time in exile",
+   "at": [
+    82,
+    80
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

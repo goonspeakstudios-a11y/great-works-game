@@ -176,6 +176,71 @@ static func material(kind: String) -> Material:
 			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			m.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		# Rome
+		"travertine":  # the cream limestone of Rome's great buildings, pitted in thin streaks
+			world_tex.call(_travertine(), 0.5)
+		"tufa":  # the soft yellow-grey volcanic stone of the early city
+			world_tex.call(_noise(Color("a89a6a"), Color("8a7e52"), Color("bcae80"), 43), 0.4)
+		"brick":  # long, thin Roman bricks in pale mortar (opus latericium)
+			world_tex.call(_blocks(Color("9a4a32"), Color("cbbd9c"), 16, 4), 0.5)
+		"reticulatum":  # a net of small square stones set on the diagonal (opus reticulatum)
+			world_tex.call(_reticulate(Color("b0a078"), Color("8a7c5c"), Color("d0c4a4")), 0.5)
+		"basalt":  # the dark polygonal blocks of a paved Roman road
+			world_tex.call(_polygons(Color("4c4c50"), Color("2c2c30"), 71), 0.4)
+		"mosaic":  # a floor of small white stones with a black pattern
+			world_tex.call(_mosaic(), 0.5)
+		"fresco":  # a painted Pompeian wall: black frieze, red panels framed in yellow, black dado
+			world_tex.call(_fresco(), 0.25)
+		"porphyry":  # the purple stone only emperors used
+			world_tex.call(_noise(Color("6a2a3a"), Color("521e2c"), Color("b8909a"), 47), 1.0)
+		"giallo":  # giallo antico, the yellow marble of Numidia
+			world_tex.call(_noise(Color("d8b870"), Color("c09c50"), Color("e8d090"), 53), 0.5)
+		"pine":  # the dark flat crown of an Italian stone pine
+			world_tex.call(_noise(Color("3e5a34"), Color("2e4628"), Color("56704a"), 59), 1.0)
+		"toga":  # undyed wool, the citizen's white
+			world_tex.call(_noise(Color("e8e2d2"), Color("d6cfbe"), Color("f2eee2"), 61), 2.0)
+		"iron":  # polished iron plate: the legionary's armour and helmet
+			m.albedo_color = Color("8a8e94")
+			m.metallic = 0.6
+			m.roughness = 0.45
+		"rust":  # the same iron after the world was lost
+			world_tex.call(_noise(Color("6a4430"), Color("4e3224"), Color("845a3c"), 109), 1.0)
+		"scutum", "scutum_dead":  # the legionary's curved shield: red, gold wings and thunderbolts
+			m.albedo_texture = _scutum(kind == "scutum_dead")
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		# Greece, the places still to come
+		"hoplon_sparta", "hoplon_athens", "hoplon_dead":  # a hoplite's round shield and its device
+			m.albedo_texture = _hoplon(kind.trim_prefix("hoplon_"))
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+			m.alpha_scissor_threshold = 0.5
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"persian":  # the Immortals' robes: blue, with a lattice of yellow rosettes
+			world_tex.call(_rosettes(), 2.0)
+		"wicker":  # woven osier, the Persian shield (spara) and baskets
+			world_tex.call(_weave(Color("b09060"), Color("7a6040")), 2.0)
+		"blackfigure":  # a painted pot: black glaze, a key band, black figures on orange clay
+			world_tex.call(_blackfigure(), 1.5)
+		"papyrus":  # a sheet of papyrus, its fibres crossing
+			world_tex.call(_papyrus(), 2.0)
+		"sand":
+			world_tex.call(_noise(Color("d8c49a"), Color("c4ae82"), Color("e8d8b4"), 67), 0.35)
+		"grass":  # greener ground than the dry earth of Attica: Troy's plain, the Boeotian fields
+			world_tex.call(_noise(Color("6e8a48"), Color("58743a"), Color("86a05a"), 73), 0.35)
+		"furrows":  # a ploughed field, the ridges running along X
+			world_tex.call(_furrows(), 0.5)
+		"cave":  # the dark rock of Plato's cave
+			world_tex.call(_noise(Color("4a4038"), Color("3a322c"), Color("5a5046"), 79), 0.3)
+		"mist":  # ground mist: a soft grey cloud that fades out at its edges
+			m.albedo_texture = _cloud(71)
+			m.albedo_color = Color(0.72, 0.72, 0.76, 0.4)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		"shadow":  # a shadow cast on the cave wall
+			m.albedo_color = Color(0.02, 0.02, 0.03, 0.6)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_cache[kind] = m
 	return m
 
@@ -375,4 +440,273 @@ static func _plaque() -> ImageTexture:
 	for line in [4, 7, 10]:
 		for x in range(4, 20 if line != 10 else 14):
 			img.set_pixel(x, line, Color("3a2e1e"))
+	return ImageTexture.create_from_image(img)
+
+
+# ---------- Rome ----------
+
+## Travertine: warm cream, with short dark pores lying along the bedding.
+static func _travertine() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 83
+	var base := Color("dcd0b4")
+	for y in 32:
+		for x in 32:
+			img.set_pixel(x, y, base.darkened(0.05) if rng.randf() < 0.2 else base)
+	for k in 22:
+		var y := rng.randi_range(0, 31)
+		var x0 := rng.randi_range(0, 31)
+		for dx in rng.randi_range(2, 5):
+			img.set_pixel((x0 + dx) % 32, y, Color("a89a7c"))
+	return ImageTexture.create_from_image(img)
+
+
+## Opus reticulatum: square stones turned 45 degrees, in thin mortar lines.
+static func _reticulate(face: Color, mortar: Color, light: Color) -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 89
+	for y in 32:
+		for x in 32:
+			var c := face
+			if (x + y) % 8 == 0 or (x - y + 32) % 8 == 0:
+				c = mortar
+			elif (x + y) % 8 == 1 and (x - y + 32) % 8 != 1:
+				c = light  # the lit lower-left edge of each stone
+			elif rng.randf() < 0.2:
+				c = face.darkened(0.08)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## Polygonal paving: stones of irregular shape (the cells round scattered points, wrapping at
+## the edges so the tile repeats), their joints dark.
+static func _polygons(face: Color, joint: Color, seed_value: int) -> ImageTexture:
+	const N := 32
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var pts: Array = []
+	for k in 11:
+		pts.append(Vector2(rng.randf() * N, rng.randf() * N))
+	var shade: Array = []
+	for k in pts.size():
+		shade.append(face.lightened(rng.randf_range(-0.08, 0.1)))
+	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
+	for y in N:
+		for x in N:
+			var best := 1e9
+			var second := 1e9
+			var which := 0
+			for k in pts.size():
+				var d: Vector2 = Vector2(x + 0.5, y + 0.5) - pts[k]
+				d = Vector2(fposmod(d.x + N / 2.0, N) - N / 2.0, fposmod(d.y + N / 2.0, N) - N / 2.0)
+				var l: float = d.length()
+				if l < best:
+					second = best
+					best = l
+					which = k
+				elif l < second:
+					second = l
+			img.set_pixel(x, y, joint if second - best < 1.1 else shade[which])
+	return ImageTexture.create_from_image(img)
+
+
+## A black-and-white mosaic floor: white tesserae with faint grout, a black diamond in each
+## square and a black line round it.
+static func _mosaic() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 97
+	var white := Color("e8e2d4")
+	var black := Color("26241f")
+	for y in 32:
+		for x in 32:
+			var c := white.darkened(rng.randf_range(0.0, 0.07))
+			if x % 2 == 1 and y % 2 == 1:
+				c = c.darkened(0.12)  # the grout between the stones
+			var d := absi(x - 16) + absi(y - 16)
+			if d >= 9 and d <= 10:
+				c = black
+			if d <= 3:
+				c = black
+			if x <= 1 or y <= 1:
+				c = black
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## A Pompeian painted wall (the texture spans 4 m of wall): a black frieze with a white line,
+## red panels framed in yellow, a black dado.
+static func _fresco() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 101
+	for y in 32:
+		for x in 32:
+			var c := Color("9a2a22")
+			if y < 6:
+				c = Color("1e1a18") if y != 4 else Color("d8d0c0")
+			elif y >= 25:
+				c = Color("1e1a18") if y != 26 else Color("7a5a2a")
+			elif x % 16 in [1, 2] or y in [7, 23]:
+				c = Color("d0a040")
+			elif x % 16 == 8 and y > 10 and y < 20:
+				c = Color("2a4a3a")  # a slender painted candelabrum between the panels
+			if rng.randf() < 0.1:
+				c = c.darkened(0.08)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## The legionary's scutum (spans the shield's face): red, a bronze rim and boss, gold eagle
+## wings spread from the boss and thunderbolts above and below. The dead men's are faded brown
+## and green.
+static func _scutum(dead: bool) -> ImageTexture:
+	const W := 24
+	const H := 40
+	var field := Color("5a3a2a") if dead else Color("9a1e1a")
+	var gold := Color("76865a") if dead else Color("e0b640")
+	var rim := Color("5e7c62") if dead else Color("a07a3a")
+	var img := Image.create(W, H, false, Image.FORMAT_RGBA8)
+	var cx := (W - 1) / 2.0
+	var cy := (H - 1) / 2.0
+	for y in H:
+		for x in W:
+			var c := field
+			var dx := x - cx
+			var dy := y - cy
+			if x == 0 or y == 0 or x == W - 1 or y == H - 1:
+				c = rim
+			elif Vector2(dx, dy).length() < 3.2:
+				c = rim  # the boss
+			elif absf(dy) < 2.5 - absf(dx) * 0.12 and absf(dx) > 3.0 and absf(dx) < 10.0:
+				c = gold  # the wings
+			elif absf(dx) < 1.0 and absf(dy) > 5.0 and absf(dy) < 16.0:
+				c = gold  # the thunderbolt's shaft
+			elif absf(dy) > 8.0 and absf(dy) < 15.0 and absi(int(absf(dx)) - int((absf(dy) - 8.0) * 0.6)) == 0:
+				c = gold  # its forked zigzags
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+# ---------- Greece: the places still to come ----------
+
+## A hoplite's round shield: a bronze rim and a device on the face. "sparta": bronze with the red
+## lambda of Lacedaemon. "athens": black, with Athena's owl in white. "dead": green and black.
+static func _hoplon(device: String) -> ImageTexture:
+	const N := 40
+	var field: Color = {"sparta": Color("b08a44"), "athens": Color("1e1c1a"), "dead": Color("3a4436")}.get(device, Color("b08a44"))
+	var rim := Color("5e7c62") if device == "dead" else Color("8a6a3a")
+	var mark: Color = {"sparta": Color("8a1e1a"), "athens": Color("e8e0cc"), "dead": Color("5a6a4a")}.get(device, Color("8a1e1a"))
+	var img := Image.create(N, N, false, Image.FORMAT_RGBA8)
+	var c := (N - 1) / 2.0
+	for y in N:
+		for x in N:
+			var dx := x - c
+			var dy := y - c
+			var r := sqrt(dx * dx + dy * dy)
+			if r > c:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+				continue
+			var col := rim if r > c - 3.0 else field
+			if r <= c - 3.0:
+				if device in ["sparta", "dead"]:
+					# the lambda: two strokes meeting at the top, like an upturned V
+					var u := (dy + 12.0) / 24.0
+					if u >= 0.0 and u <= 1.0 and absf(absf(dx) - u * 10.0) < 1.6:
+						col = mark
+				else:
+					var body := Vector2(dx / 7.0, (dy - 3.0) / 10.0).length() < 1.0
+					var ears := dy < -6.0 and dy > -10.0 and absf(dx) > 3.0 and absf(dx) < 7.0 and absf(dx) - 3.0 > -(dy + 6.0)
+					var eye := Vector2(absf(dx) - 3.0, dy + 3.0).length() < 1.8
+					if (body or ears) and not eye:
+						col = mark
+					elif eye:
+						col = Color("e0b640")
+			img.set_pixel(x, y, col)
+	return ImageTexture.create_from_image(img)
+
+
+## Persian court robes: blue, with a lattice of yellow rosettes.
+static func _rosettes() -> ImageTexture:
+	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	for y in 16:
+		for x in 16:
+			var c := Color("2a4a6a")
+			var d := Vector2(x - 7.5, y - 7.5)
+			if d.length() < 2.6:
+				c = Color("e0b640") if d.length() > 1.0 else Color("f0e0b0")
+			elif (x + y) % 16 == 0 or (x - y + 16) % 16 == 0:
+				c = Color("223c58")
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## Woven osier: strands passing over and under.
+static func _weave(a: Color, b: Color) -> ImageTexture:
+	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	for y in 16:
+		for x in 16:
+			var over := ((x / 4) + (y / 4)) % 2 == 0
+			var edge := (y % 4 == 0) if over else (x % 4 == 0)
+			img.set_pixel(x, y, b if edge else (a if over else a.darkened(0.15)))
+	return ImageTexture.create_from_image(img)
+
+
+## Black-figure pottery: black glaze at the top, a key band, orange clay with black figures
+## (a row of walking silhouettes), black at the foot.
+static func _blackfigure() -> ImageTexture:
+	const UNIT := ["########", ".......#", "#####..#", "#...#..#", "#.###..#", "#......#"]
+	var clay := Color("c8703a")
+	var black := Color("1a1410")
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	for y in 32:
+		for x in 32:
+			var c := clay
+			if y < 5 or y >= 28:
+				c = black
+			elif y >= 6 and y < 12:
+				c = black if UNIT[y - 6][x % 8] == "#" else clay
+			elif y >= 14 and y < 27:
+				var fx := x % 16
+				var head := Vector2(fx - 8, y - 15.5).length() < 1.6
+				var trunk := fx >= 7 and fx <= 9 and y >= 17 and y <= 21
+				var legs := y > 21 and (absi(fx - 8 - (y - 21) / 2) == 0 or absi(fx - 8 + (y - 21) / 2) == 0)
+				var spear := fx == 11 and y >= 14
+				if head or trunk or legs or spear:
+					c = black
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## Papyrus: pale yellow, the fibres of its two layers faint across and down.
+static func _papyrus() -> ImageTexture:
+	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 103
+	for y in 16:
+		for x in 16:
+			var c := Color("e0d0a0")
+			if y % 3 == 0:
+				c = c.darkened(0.06)
+			if x % 5 == 0:
+				c = c.darkened(0.04)
+			if rng.randf() < 0.08:
+				c = c.darkened(0.1)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## A ploughed field: dark furrows and lighter ridges running along X.
+static func _furrows() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 107
+	for y in 32:
+		for x in 32:
+			var c: Color = [Color("5a4430"), Color("6e5438"), Color("86684a"), Color("6e5438")][(y / 2) % 4]
+			if rng.randf() < 0.15:
+				c = c.darkened(0.1)
+			img.set_pixel(x, y, c)
 	return ImageTexture.create_from_image(img)

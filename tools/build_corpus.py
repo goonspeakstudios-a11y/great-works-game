@@ -1,8 +1,11 @@
-"""Turn book files from Desktop\\Book Collections into searchable passages for the Hall.
+"""Turn book files from Desktop\\Book Collections (or public-domain texts online) into searchable
+passages for the Hall.
 
 Each book becomes content/books/<work-id>.json: a list of short passages (about 200
 words, split on paragraph edges) labelled with their chapter, so an author can quote
-the real text. Only public-domain translations are used.
+the real text. Only public-domain translations are used. A book can come from a file in the
+library ("file") or from the web ("urls": [[url, heading], ...]); downloads are kept in
+tools/data/books/ so a rebuild gives the same passages.
 
 Usage: C:\\Python314\\python.exe tools/build_corpus.py [work-id ...]
 """
@@ -12,6 +15,9 @@ import json
 import logging
 import re
 import sys
+import time
+import urllib.error
+import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -22,6 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LIBRARY = next((p for p in (Path("E:/Book Collections"), Path.home() / "Desktop" / "Book Collections") if p.exists()),
                Path("E:/Book Collections"))
 OUT = ROOT / "content" / "books"
+CACHE = ROOT / "tools" / "data" / "books"
 TARGET_WORDS = 200
 MAX_WORDS = 380
 
@@ -51,6 +58,170 @@ BOOKS = {
              "start": r"BOOK I", "end": r"THE END", "chapter": r"^\s*Part (\d+)\s*$", "book": r"^\s*BOOK ([IVX]+)\s*$"},
             {"file": "Aristotle - Sophistical Refutations (tr. Pickard-Cambridge).txt", "title": "Sophistical Refutations",
              "start": r"SECTION 1", "end": r"THE END", "chapter": r"^\s*Part (\d+)\s*$"},
+        ],
+    },
+    "rhetorica-ad-herennium": {  # no English translation is out of copyright, so the Latin itself
+        "title": "Rhetorica ad Herennium",
+        "translation": "the Latin text, ed. F. Marx (Teubner, 1923), public domain",
+        "wiki": True,
+        "urls": [[f"https://la.wikisource.org/w/index.php?title=Rhetorica_ad_Herennium/Liber_{n}&action=raw", f"LIBER {n}"]
+                 for n in ("I", "II", "III", "IV")],
+        "start": r"LIBER I",
+        "end": r"\Z",
+        "chapter": r"^\s*==\s*(\d+)\s*==\s*$",
+        "book": r"^\s*LIBER ([IV]+)\s*$",
+    },
+    "euclid-elements": {  # Heath's Book I from the scan of his first volume, without his notes
+        "title": "Elements, Book I",
+        "translation": "tr. T. L. Heath (1908), public domain",
+        "urls": [["https://archive.org/download/thirteenbookseu02heibgoog/thirteenbookseu02heibgoog_djvu.txt", ""]],
+        "segments": [
+            {"start": r"^DEFINITIONS\.\s*$", "end": r"The whole is greater than the part", "heading": "FIRST PRINCIPLES", "once": True,
+             "skip_start": False},
+            {"start": r"^Proposition ([0-9ilIoO]{1,3})[\.,]\s*$",
+             "end": r"required to (do|prove)\.|^Therefore etc\.|Q\. ?E\. ?[DF]\.",
+             "heading": "PROPOSITION {n}", "skip_start": True, "max": 3200},
+        ],
+        "drop": [r"^.{0,3}$", r"^H\. E\. \d+.*$", r"^BOOK I \[.*$", r"^\[\d+\]\s*", r"^B\(X\)K I.*$"],
+        "start": r"FIRST PRINCIPLES",
+        "end": r"\Z",
+        "chapter": r"^\s*(?:PROPOSITION|FIRST) (\d+|PRINCIPLES)\s*$",
+        "chapter_label": "Prop.",
+        "chapter_names": {"PRINCIPLES": "Definitions, Postulates, Common Notions"},
+    },
+    "homer-the-iliad": {  # both poems, as the reading takes both
+        "title": "Homer",
+        "translation": "tr. Samuel Butler (Iliad 1898, Odyssey 1900), public domain",
+        "parts": [
+            {"title": "The Iliad", "urls": [["https://www.gutenberg.org/cache/epub/2199/pg2199.txt", ""]],
+             "start": r"(?m)^\s*BOOK I\.\s*$(?![\s\S]{0,200}BOOK II\.)", "end": r"\*\*\* ?END OF", "chapter": r"^\s*BOOK ([IVXL]+)\.\s*$",
+             "chapter_label": "Book"},
+            {"title": "The Odyssey", "urls": [["https://www.gutenberg.org/cache/epub/1727/pg1727.txt", ""]],
+             "start": r"(?m)^\s*BOOK I\s*$(?![\s\S]{0,200}BOOK II\s*$)", "end": r"\*\*\* ?END OF", "chapter": r"^\s*BOOK ([IVXL]+)\.?\s*$",
+             "chapter_label": "Book"},
+        ],
+    },
+    "hesiod-theogony": {  # the Theogony and the Works and Days, as the reading takes both
+        "title": "Hesiod",
+        "translation": "tr. Hugh G. Evelyn-White (1914), public domain",
+        "parts": [
+            {"title": "Theogony", "urls": [["https://www.gutenberg.org/cache/epub/348/pg348.txt", ""]],
+             "segments": [{"start": r"^THE THEOGONY\s*\n\s*\n\(ll\. 1-25\)", "end": r"(?=^THE CATALOGUES OF WOMEN)", "heading": "",
+                           "once": True}],
+             "drop": [r"(?<=[A-Za-z,;:’?])\s1\d{3}\b"],  # the footnote marks
+             "start": r"\(ll\. 1-25\)", "end": r"\Zx", "chapter": r"^\(ll\. (\d+)-?\d*\)", "chapter_label": "line"},
+            {"title": "Works and Days", "urls": [["https://www.gutenberg.org/cache/epub/348/pg348.txt", ""]],
+             "segments": [{"start": r"^HESIOD’S WORKS AND DAYS\s*\n\s*\n\(ll\. 1-10\)", "end": r"(?=^THE THEOGONY\s*$)",
+                           "heading": "", "once": True}],
+             "drop": [r"(?<=[A-Za-z,;:’?])\s1\d{3}\b"],  # the footnote marks
+             "start": r"\(ll\. 1-10\)", "end": r"\Zx", "chapter": r"^\(ll\. (\d+)-?\d*\)", "chapter_label": "line"},
+        ],
+    },
+    "sappho-fragments": {  # Wharton's literal prose of each fragment, without the Greek or the verse renderings
+        "title": "Sappho",
+        "translation": "tr. Henry Thornton Wharton (1885), literal prose, public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/57390/pg57390.txt", ""]],
+        "segments": [{"start": r"^(\d+)(?:, ?\d+)*[ \t]*$", "end": r"^_\S.*?_[ \t.]{0,5}$", "max": 6000, "heading": "Fragment {n}",
+                      "keep_last": True}],
+        "drop": [r"^.*\[Greek:.*$", r"_"],
+        "start": r"(?m)^Fragment 1\s*$", "end": r"\Zx", "chapter": r"^Fragment (\d+)\s*$", "chapter_label": "Fragment",
+    },
+    "aeschylus-the-oresteia": {  # the first and last plays of the trilogy, as the reading takes them
+        "title": "Aeschylus",
+        "translation": "tr. E. D. A. Morshead (1881), public domain",
+        "parts": [
+            {"title": "Agamemnon", "urls": [["https://www.gutenberg.org/cache/epub/8604/pg8604.txt", ""]],
+             "start": r"(?m)^_A Watchman_\s*$", "end": r"(?m)^THE LIBATION-BEARERS\s*$", "chapter": r"^\Zx", "drop": [r"_"]},
+            {"title": "The Eumenides", "urls": [["https://www.gutenberg.org/cache/epub/8604/pg8604.txt", ""]],
+             "start": r"(?m)^_The Temple at Delphi_\s*$", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx", "drop": [r"_"]},
+        ],
+    },
+    "sophocles-the-theban-plays": {  # Oedipus the King and Antigone, as the reading takes them
+        "title": "Sophocles",
+        "translation": "tr. Francis Storr (1912), public domain",
+        "parts": [
+            {"title": "Oedipus the King", "urls": [["https://www.gutenberg.org/cache/epub/31/pg31.txt", ""]],
+             "start": r"(?m)^Suppliants of all ages are seated round the altar", "end": r"(?m)^OEDIPUS AT COLONUS\s*$", "chapter": r"^\Zx"},
+            {"title": "Antigone", "urls": [["https://www.gutenberg.org/cache/epub/31/pg31.txt", ""]],
+             "start": r"(?m)^\s*ANTIGONE and ISMENE before the Palace gates", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+        ],
+    },
+    "euripides-the-tragedies": {  # the Bacchae, as the reading takes it
+        "title": "Euripides",
+        "translation": "tr. Theodore Alois Buckley (1850), prose, public domain",
+        "parts": [
+            {"title": "The Bacchae", "urls": [["https://www.gutenberg.org/cache/epub/15081/pg15081.txt", ""]],
+             "start": r"(?m)^THE BACCH\u00c6\.\[1\]", "end": r"(?m)^NOTES ON THE BACCH", "chapter": r"^\Zx",
+             "drop": [r"\[\d+\]", r"^\s*\*\s+\*.*$"]},
+        ],
+    },
+    "aristophanes-the-comedies": {  # the Clouds, as the reading takes it
+        "title": "Aristophanes",
+        "translation": "tr. William James Hickie (1853), prose, public domain",
+        "parts": [
+            {"title": "The Clouds", "urls": [["https://www.gutenberg.org/cache/epub/2562/pg2562.txt", ""]],
+             "start": r"(?m)^\s*Scene: The interior of a sleeping-apartment", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+        ],
+    },
+    "herodotus-the-histories": {  # Book I (Croesus and Solon, and on) and Thermopylae (VII.201-239)
+        "title": "Herodotus",
+        "translation": "tr. G. C. Macaulay (1890), public domain",
+        "parts": [
+            {"title": "Histories, Book I", "urls": [["https://www.gutenberg.org/cache/epub/2707/pg2707.txt", ""]],
+             "segments": [{"start": r"^BOOK I\. THE FIRST BOOK", "end": r"(?=^BOOK II\. THE SECOND)", "heading": "", "once": True}],
+             "drop": [r"(?<=[a-z,;:.\"”]) \d{1,3}(?= [A-Za-z])"],  # the note marks
+             "start": r"BOOK I\. THE FIRST BOOK", "end": r"\Zx", "chapter": r"^(\d+)\. ", "chapter_label": "chapter"},
+            {"title": "Histories, Book VII", "urls": [["https://www.gutenberg.org/cache/epub/2456/pg2456.txt", ""]],
+             "segments": [{"start": r"^201\. King Xerxes", "end": r"(?=^BOOK VIII\. THE EIGHTH)", "heading": "", "once": True}],
+             "drop": [r"(?<=[a-z,;:.\"”]) \d{1,3}(?= [A-Za-z])"],  # the note marks
+             "start": r"201\. King Xerxes", "end": r"\Zx", "chapter": r"^(\d+)\. ", "chapter_label": "chapter"},
+        ],
+    },
+    "thucydides-the-peloponnesian-war": {  # the four passages the reading takes (Crawley numbers no sections)
+        "title": "Thucydides",
+        "translation": "tr. Richard Crawley (1874), public domain",
+        "parts": [
+            {"title": "History of the Peloponnesian War", "urls": [["https://www.gutenberg.org/cache/epub/7142/pg7142.txt", ""]],
+             "segments": [
+                 {"start": r"^Having now given the result of my inquiries", "end": r"possession for all time\.", "heading": "Book I", "once": True},
+                 {"start": r"^In the same winter the Athenians", "end": r"A Dorian war shall come and with it death\.", "heading": "Book II",
+                  "once": True},
+                 {"start": r"^So bloody was the march of the revolution", "end": r"(?=^While the revolutionary passions thus)",
+                  "heading": "Book III", "once": True},
+                 {"start": r"^The next summer Alcibiades sailed", "end": r"inhabited the place themselves\.", "heading": "Book V", "once": True},
+             ],
+             "start": r"Book I", "end": r"\Zx", "chapter": r"^Book ([IV]+)\s*$", "chapter_label": "Book"},
+        ],
+    },
+    "the-pre-socratics": {  # the fragments of Heraclitus and the poem of Parmenides, as the reading takes them
+        "title": "The Pre-Socratics",
+        "translation": "tr. John Burnet, Early Greek Philosophy (2nd ed. 1908), public domain",
+        "parts": [
+            {"title": "Early Greek Philosophy", "urls": [["https://www.gutenberg.org/cache/epub/67097/pg67097.txt", ""]],
+             "segments": [
+                 {"start": r"^\s*\(1\) It is wise to hearken", "end": r"(?=^\[Sidenote: The doxographical tradition)",
+                  "heading": "Heraclitus", "once": True},
+                 {"start": r"^\[Sidenote: The poem\.\]", "end": r"(?=^\[Sidenote: \u201cIt is\.\u201d\])", "heading": "Parmenides", "once": True},
+             ],
+             "drop": [r"^Footnote \d+:\s*\n\n(?:  [^\n]*\n)+", r"\[\d+\]", r"R\. P\. \d+[a-z]?\.?( [a-z]\.)?", r"<<\d+>>",
+                      r"^\[Sidenote:.*$", r"(?<=\)) ?[a-z]\. (?=\()"],
+             "start": r"Heraclitus", "end": r"\Zx", "chapter": r"^(Heraclitus|Parmenides)\s*$",
+             "chapter_names": {"Heraclitus": "Heraclitus, the fragments", "Parmenides": "Parmenides, the poem"}},
+        ],
+    },
+    "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
+        "title": "Plato",
+        "translation": "tr. Benjamin Jowett (1871-1892), public domain",
+        "parts": [
+            {"title": "Republic", "urls": [["https://www.gutenberg.org/cache/epub/1497/pg1497.txt", ""]],
+             "start": r"(?m)^ *PERSONS OF THE DIALOGUE\.\s*\n\s*\n\s*Socrates, who is the narrator", "end": r"\*\*\* ?END OF",
+             "chapter": r"^\s*BOOK ([IVX]+)\.\s*$", "chapter_label": "Book"},
+            {"title": "Apology", "urls": [["https://www.gutenberg.org/cache/epub/1656/pg1656.txt", ""]],
+             "start": r"How you, O Athenians, have been affected", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+            {"title": "Symposium", "urls": [["https://www.gutenberg.org/cache/epub/1600/pg1600.txt", ""]],
+             "start": r"PERSONS OF THE DIALOGUE: Apollodorus", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+            {"title": "Phaedo", "urls": [["https://www.gutenberg.org/cache/epub/1658/pg1658.txt", ""]],
+             "start": r"PERSONS OF THE DIALOGUE:\s*\n\s*\nPhaedo, who is the narrator", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
         ],
     },
     "aristotle-nicomachean-ethics": {
@@ -88,15 +259,107 @@ class _Text(HTMLParser):
             self.parts.append(data)
 
 
-def read_text(path: Path, encoding: str) -> str:
-    raw = path.read_text(encoding=encoding, errors="replace")
-    if path.suffix.lower() in (".html", ".htm"):
+def tidy(raw: str, html: bool = False) -> str:
+    if html:
         parser = _Text()
         parser.feed(raw)
         raw = "".join(parser.parts)
     raw = raw.replace("\u00a0", " ").replace("\ufffd", " ")
     raw = re.sub(r"[ \t\r]+", " ", raw)
     return re.sub(r"\n\s*\n+", "\n\n", raw)
+
+
+def read_text(path: Path, encoding: str) -> str:
+    raw = path.read_text(encoding=encoding, errors="replace")
+    return tidy(raw, path.suffix.lower() in (".html", ".htm"))
+
+
+def fetch(url: str) -> str:
+    """The text at url, from the cache when it has been fetched before (retrying a dropped
+    connection a few times, waiting longer each time)."""
+    CACHE.mkdir(parents=True, exist_ok=True)
+    cached = CACHE / (re.sub(r"[^A-Za-z0-9._-]+", "_", url)[-150:] + ".txt")
+    if cached.exists():
+        return cached.read_text(encoding="utf-8")
+    request = urllib.request.Request(url, headers={"User-Agent": "great-works-game corpus builder"})
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as reply:
+                text = reply.read().decode("utf-8", errors="replace")
+            cached.write_text(text, encoding="utf-8")
+            logger.info("fetched %s", url)
+            return text
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as err:
+            wait = 2 ** (attempt + 1)
+            logger.warning("%s: %s; trying again in %d s", url, err, wait)
+            time.sleep(wait)
+    raise RuntimeError(f"could not fetch {url}")
+
+
+def unwiki(raw: str) -> str:
+    """Wikisource page source to plain text: templates, tags and editors' marks removed."""
+    raw = re.sub(r"\{\{(?:[^{}]|\{\{[^{}]*\}\})*\}\}", "", raw, flags=re.S)
+    raw = re.sub(r"<ref[^>]*>.*?</ref>|<[^>]+>", "", raw, flags=re.S)
+    raw = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", raw)
+    raw = raw.replace("‹", "").replace("›", "").replace("†", "")
+    return raw
+
+
+def segments(text: str, part: dict) -> str:
+    """Only the parts of a scanned book that are the author's own text (not the editor's notes):
+    each {"start", "end", "heading"} keeps every span from a start match to the end of its end
+    match (or, failing that, "max" characters on, at a paragraph break), under a heading line ({n}
+    numbers them in order), at most "limit" of them ("keep_last" keeps only the end match under the
+    heading); "drop" removes scanner debris lines."""
+    kept: list[str] = []
+    for seg in part["segments"]:
+        n = 0
+        last = 0
+        pos = 0
+        while True:
+            m = re.search(seg["start"], text[pos:], re.M)
+            if not m:
+                break
+            start = pos + m.start()
+            window = text[start: start + seg.get("max", 10**9)]
+            e = re.search(seg["end"], window, re.M | re.S)
+            if e:
+                stop = start + e.end()
+            elif "max" in seg:
+                cut = window.rfind("\n\n")
+                stop = start + (cut if cut > 0 else len(window))
+            else:
+                break
+            n += 1
+            number = n
+            if m.groups():  # the number the book itself gives, read through the scanner's slips
+                digits = m.group(1).translate(str.maketrans("ilIoOS", "111005"))
+                number = int(digits) if digits.isdigit() else n
+                if number < last:
+                    break  # the next book begins again at 1
+                last = number
+            body = text[start + (m.end() - m.start()) if seg.get("skip_start") else start: stop]
+            if seg.get("keep_last"):  # only what the end matched: e.g. the translation after the original
+                body = e.group(0) if e else ""
+            kept.append(seg["heading"].format(n=number) + "\n\n" + body)
+            pos = stop
+            if seg.get("once") or n >= seg.get("limit", 10**9):
+                break
+    out = "\n\n".join(kept)
+    for pattern in part.get("drop", []):
+        out = re.sub(pattern, "", out, flags=re.M)
+    return out
+
+
+def source_text(part: dict) -> str:
+    if "urls" in part:
+        pieces = []
+        for url, heading in part["urls"]:
+            raw = fetch(url)
+            raw = unwiki(raw) if part.get("wiki") else raw
+            pieces.append(f"{heading}\n\n{raw}" if heading else raw)
+        return tidy("\n\n".join(pieces), part.get("html", False))
+    return read_text(LIBRARY / part["file"], part.get("encoding", "utf-8"))
 
 
 def body_of(text: str, spec: dict) -> str:
@@ -111,6 +374,7 @@ def body_of(text: str, spec: dict) -> str:
 
 
 def clean(paragraph: str) -> str:
+    paragraph = re.sub(r"^\s*==\s*\d+\s*==\s*", "", paragraph)  # a Wikisource section heading
     paragraph = re.sub(r"\|\d+", "", paragraph)  # page numbers like "|633"
     paragraph = re.sub(r"(?<=[a-zA-Z.,;:])\d{1,2}\b", "", paragraph)  # footnote marks like "Porphyry.1"
     return re.sub(r"\s+", " ", paragraph).strip()
@@ -126,7 +390,9 @@ def chunk(body: str, spec: dict, title: str) -> list[dict]:
         if len(words) < 25 and not final:
             return  # a lone heading joins the passage that follows it
         if words:
-            where = title + (f", Book {book}" if book else "") + (f", Chap. {chapter}" if chapter else "")
+            named = spec.get("chapter_names", {}).get(chapter, "")
+            where = title + (f", Book {book}" if book else "") + (
+                f", {named}" if named else f", {spec.get('chapter_label', 'Chap.')} {chapter}" if chapter else "")
             chunks.append({"id": len(chunks), "where": where, "text": " ".join(words)})
             words.clear()
 
@@ -141,7 +407,7 @@ def chunk(body: str, spec: dict, title: str) -> list[dict]:
             # a chapter's last lines stay with that chapter; only text before the
             # first chapter (a title) is carried into the chapter that follows
             flush(final=bool(chapter))
-            chapter = m.group(1)
+            chapter = next((g for g in m.groups() if g), "")
         text = clean(para)
         if not text:
             continue
@@ -163,8 +429,14 @@ def build(work_id: str) -> Path:
     spec = BOOKS[work_id]
     chunks: list[dict] = []
     for part in spec.get("parts", [spec]):
-        text = read_text(LIBRARY / part["file"], part.get("encoding", "utf-8"))
-        for c in chunk(body_of(text, part), part, part["title"]):
+        text = source_text(part)
+        if "segments" in part:
+            text = tidy(segments(text, part))
+        body = body_of(text, part)
+        if "segments" not in part:  # (a segmented book has had its debris dropped already)
+            for pattern in part.get("drop", []):
+                body = re.sub(pattern, "", body, flags=re.M)
+        for c in chunk(body, part, part["title"]):
             c["id"] = len(chunks)
             chunks.append(c)
     OUT.mkdir(parents=True, exist_ok=True)

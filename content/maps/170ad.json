@@ -1,0 +1,125 @@
+{
+ "title": "The world in 170 AD",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Parthian Empire",
+   "sub": "King Vologases IV",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    193,
+    104
+   ]
+  },
+  {
+   "name": "Roman Empire",
+   "sub": "Emperor Marcus Aurelius",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    91,
+    50
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Marcomanni and Quadi",
+   "label": [
+    81,
+    27
+   ]
+  },
+  {
+   "name": "Iazyges",
+   "label": [
+    97,
+    41
+   ]
+  },
+  {
+   "name": "Germans",
+   "label": [
+    64,
+    16
+   ]
+  },
+  {
+   "name": "Sarmatians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Carnuntum",
+   "note": "Marcus writes the Meditations in camp",
+   "at": [
+    87,
+    36
+   ],
+   "main": true,
+   "side": "above"
+  },
+  {
+   "name": "Sirmium",
+   "note": "his headquarters on the frontier",
+   "at": [
+    96,
+    48
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Rome",
+   "note": "the plague of Galen's day",
+   "at": [
+    74,
+    60
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Athens",
+   "note": "he founds four chairs of philosophy, 176",
+   "at": [
+    109,
+    76
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Pergamon",
+   "note": "Galen's home",
+   "at": [
+    120,
+    72
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

@@ -23,6 +23,9 @@ const Worlds := preload("res://scripts/hall/worlds.gd")
 const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Lettering := preload("res://scripts/hall/lettering.gd")
+const Beat := preload("res://scripts/hall/beat.gd")
+const City := preload("res://scripts/hall/city.gd")
+const Council := preload("res://scripts/hall/council.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -76,6 +79,7 @@ var sway: Array = []  # tree crowns the breeze stirs
 var blink: Array = []  # the far toad's eyes, which close once every BLINK_EVERY seconds
 var drift: Array = []  # things hanging in the void that bob and turn (Kit.drifting)
 var ground: Array = []  # where you can stand, if the place says (the Nexus): discs and rects in x/z
+var creep: Array = []  # the dead of the underworld: {node, home, trench}; they come for the blood while you are near
 var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which way
 var _falling_since := -1.0  # when you went over the edge (-1: on solid ground)
 var _fall_fx: Node3D  # the stars rushing past while you fall
@@ -122,6 +126,8 @@ var _map_note: Label
 var _tree_panel: Panel
 var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
 var _choice: PanelContainer  # a world asks who you are there (Choice)
+var _council: Panel  # the council table of the city in speech (Council)
+var _council_board := -1  # the city's stage when you sat down, to rebuild the board if it changed
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -132,6 +138,9 @@ var _seat := {}  # the bench you are sitting on
 var boats: Array = []  # boats on the waterway: {root, oars, speed, junction, landings, landing, route, to}
 var _riding := {}  # the boat you are sitting in
 var _mouse_before := Input.MOUSE_MODE_CAPTURED  # how the mouse was before a panel opened
+var beat: RefCounted = null  # the moment being played, as its hero or as yourself (Beat)
+var _beat_it := {}  # the interactable that started it
+var _beat_mark: Node3D  # the glow over where a beat asks you to walk
 
 
 static func ensure_actions() -> void:
@@ -190,6 +199,9 @@ func _ready() -> void:
 	_choice = Choice.new()
 	_choice.chosen.connect(_on_chosen)
 	_root.add_child(_choice)
+	_council = Council.new()
+	_council.acted.connect(_on_council_acted)
+	_root.add_child(_council)
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
@@ -221,8 +233,17 @@ func _ready() -> void:
 
 ## Screenshot mode for checking the look without playing:
 ##   godot --path . -- --shot=C:/out.png --view=nexus|hub|assets|assets_mid|props|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map|hill|grove|stones|yard|garden|garden_w [--stage=0-6]
+## Any book's place from any spot: --view=place --work=<work id> --at=x,y,z --look=x,y,z [--stage=N]
+## [--city=N: the city in speech at stage N, 0-9, on the Academy's board]
 func _stage_shot(view: String) -> void:
-	if _args.has("stage"):  # --stage=N: see the places with N pieces brought back
+	if _args.has("city"):
+		var c: RefCounted = City.found(380)
+		c.stage = clampi(int(_args["city"]), 0, City.LAST_STAGE)
+		progress.data["city"] = c.to_dict()
+	if view == "place" and _args.has("stage"):
+		var w: String = _args.get("work", "")
+		progress.learn(w, Rooms.room(w).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
+	elif _args.has("stage"):  # --stage=N: see the places with N pieces brought back
 		for d in doors.slice(0, 2):
 			progress.learn(d["work"], Rooms.room(d["work"]).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
 		if view in ["hill", "grove"]:  # the two areas past the Lyceum keep their own stage
@@ -234,9 +255,25 @@ func _stage_shot(view: String) -> void:
 		_load_place("hub")
 	elif view in ["assets", "assets_mid", "props"]:
 		_load_place("asset_test")
+	elif view == "place":
+		_load_place(_args.get("work", doors[0]["work"]))
 	elif view != "nexus":  # the Nexus is where the game starts
 		_load_place(doors[0]["work"])
 	match view:
+		"place":
+			_stand(_vec(_args.get("at", "0,0,20")), _vec(_args.get("look", "0,0,0")))
+			if _args.has("beat"):  # --beat=<name> [--press=N]: start that beat and go N steps into it
+				var it: Array = interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == _args["beat"])
+				if not it.is_empty():
+					activate(it[0])
+					for k in int(_args.get("press", "0")):
+						if beat == null:
+							break
+						var mark: Variant = beat.next_mark()
+						if mark != null:
+							player.position = Vector3(mark.x, player.position.y, mark.z)
+						beat.press(player)
+						_play_beat(2.0, true)
 		"assets":
 			_stand(Vector3(0, 0, 1.5), Vector3(0, 0, -20))
 		"assets_mid":
@@ -300,6 +337,11 @@ func _stage_shot(view: String) -> void:
 		_answer.text = _talk[doors[0]["work"]]
 
 
+static func _vec(text: String) -> Vector3:
+	var n := text.split(",")
+	return Vector3(float(n[0]), float(n[1]), float(n[2])) if n.size() == 3 else Vector3.ZERO
+
+
 func _stand(at: Vector3, look_at: Vector3) -> void:
 	player.position = Vector3(at.x, at.y + 0.05, at.z)
 	player.rotation.y = Places.look_yaw(look_at - at)
@@ -350,6 +392,8 @@ func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> 
 
 
 func _load_place(to: String, keep: bool = false) -> void:
+	if beat:
+		_end_beat(false)
 	var held := _where_everyone_is() if keep else {}
 	var area_target := ""
 	if not to in ["hub", "nexus"] and Rooms.room(to).get("area_of", "") != "":
@@ -382,6 +426,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 		for d in doors:
 			if Rooms.room(d["work"]).get("area_of", "") == to:
 				stages[d["work"]] = _stage(d["work"])
+		if Rooms.room(to).get("place", "") == "academy":
+			stages["city"] = city().stage  # the city in speech stands on its board as far as you have governed it
 		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
 	if not to in ["hub", "nexus", "asset_test"] and not keep:
 		progress.visit(to)
@@ -406,6 +452,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	blink = built.get("blink", [])
 	drift = built.get("drift", [])
 	ground = built.get("ground", [])
+	creep = built.get("creep", [])
 	flicker.clear()
 	for l in built["flicker"]:
 		if l:
@@ -1272,14 +1319,16 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
+	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible \
+		or _council.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu]:
+	var rebuild: bool = _council.visible and _city != null and _city.stage != _council_board
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _council]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
@@ -1290,6 +1339,8 @@ func _close_panels() -> void:
 	_restore_pending = ""
 	if due:
 		_restore()
+	elif rebuild:
+		_load_place(here, true)  # the city on the board has grown
 
 
 # ---------- moment to moment ----------
@@ -1313,6 +1364,9 @@ func _process(delta: float) -> void:
 	_nexus_clock(delta)
 	if _nexus_due > 0.0 and _t >= _nexus_due and not travelling and not _any_panel():
 		_nexus_catch_up()
+	if beat and not _any_panel():
+		_play_beat(delta)
+		return
 	if player.frozen:
 		_prompt.text = ""
 		return
@@ -1340,6 +1394,7 @@ F: Yes" if _ready_to_land() else ""
 
 ## Swallows wheel overhead, the trees stir, and the toad hops along after you.
 func _animate_life(delta: float) -> void:
+	_animate_creep(delta)
 	for b in birds:
 		b["angle"] += b["speed"] * delta
 		var a: float = b["angle"]
@@ -1372,6 +1427,29 @@ func _animate_life(delta: float) -> void:
 
 
 ## Soldiers march their circuit in step, the whole block turning at each corner.
+## The dead at the edge of Ocean (Odyssey 11): while you are near, they drift in from the dark toward
+## the blood in the trench, and stop at its edge; while you hold the sword over it (a beat), they
+## shrink back to where they stood. Far off, they wait.
+func _animate_creep(delta: float) -> void:
+	for c in creep:
+		var node: Node3D = c["node"]
+		if not is_instance_valid(node):
+			continue
+		var trench: Vector3 = c["trench"]
+		var near := Vector2(player.global_position.x - trench.x, player.global_position.z - trench.z).length() < 30.0
+		var home: Vector3 = c["home"]
+		var want := home
+		if near and beat == null:
+			want = trench + (home - trench).normalized() * 2.2
+		var to := want - node.global_position
+		to.y = 0.0
+		if to.length() < 0.05:
+			continue
+		var speed := 1.6 if beat != null else 0.45
+		node.global_position += to.normalized() * minf(to.length(), speed * delta)
+		node.rotation.y = lerp_angle(node.rotation.y, atan2(to.x, to.z), minf(1.0, delta * 2.0))
+
+
 func _animate_squads(delta: float) -> void:
 	for sq in squads:
 		var root: Node3D = sq["root"]
@@ -1533,6 +1611,9 @@ func _nearest() -> Dictionary:
 
 
 func activate(it: Dictionary) -> void:
+	if it.has("needs_city") and city().board_stage() < int(it["needs_city"]):
+		_show_read(it.get("not_yet", "Not yet."))  # a stone of the city in speech, before the city has got so far
+		return
 	match it.get("kind", ""):
 		"fact":
 			_show_read(it["text"])
@@ -1560,6 +1641,10 @@ func activate(it: Dictionary) -> void:
 			take_boat(it)
 		"toad":
 			pat_toad()
+		"beat":
+			_start_beat(it)
+		"council":
+			_open_council()
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1571,6 +1656,99 @@ func _read_stone(it: Dictionary) -> void:
 		var note := _learned(it.get("work", here), [it["id"]])
 		if note != "":
 			_show_read(it["note"] + note)
+
+
+## A beat: a moment of the book played in the first person, as its hero (Beat). You stand where
+## it happens, the hero's arms come up before your eyes, and the moment goes one short line and one
+## act at a time. When it ends its point is read like a lesson stone's: for a Theoros it counts,
+## and a piece of the place comes back when you turn away.
+func _start_beat(it: Dictionary) -> void:
+	var def := Beat.find(it.get("work", here), it["beat"])
+	if def.is_empty():
+		push_error("No beat %s for %s" % [it["beat"], it.get("work", here)])
+		return
+	if it.has("start"):
+		var at: Vector3 = it["start"]
+		player.position = Vector3(at.x, player.position.y, at.z)
+		if it.has("face"):
+			var to: Vector3 = it["face"] - at
+			player.rotation.y = atan2(-to.x, -to.z)
+	_beat_it = it
+	beat = Beat.new(def, it.get("work", here), it.get("id", ""), it.get("cast", {}), it.get("marks", {}))
+	beat.start(player)
+	if _where and beat.title != "":
+		_where.text = beat.title
+	_beat_mark = Kit.group(world, Vector3.ZERO)
+	Kit.cylinder(_beat_mark, Vector3(0, 0, 0), 0.35, 3.0, "glow", false, 8, 0.05)
+	Kit.unsolid(_beat_mark)
+	_beat_mark.hide()
+
+
+func _play_beat(delta: float, holding: bool = false) -> void:
+	beat.update(delta, player, holding or Input.is_action_pressed("interact"))
+	if beat.done:
+		_end_beat(true)
+		return
+	player.frozen = not beat.free_to_walk()
+	var mark: Variant = beat.next_mark()
+	if is_instance_valid(_beat_mark):
+		_beat_mark.visible = mark != null
+		if mark != null:
+			_beat_mark.position = mark
+	_prompt.text = beat.prompt()
+
+
+## The moment ends: finished (its point is read, and counts for a Theoros) or left with Esc.
+func _end_beat(finished: bool) -> void:
+	var it := _beat_it
+	beat.finish(player)
+	beat = null
+	_beat_it = {}
+	if is_instance_valid(_beat_mark):
+		_beat_mark.queue_free()
+	player.frozen = _any_panel()
+	if _where:
+		_where.text = here_name
+	_prompt.text = ""
+	if finished and it.has("id") and it.has("note"):
+		_read_stone(it)
+	elif finished and it.has("after"):
+		_show_read(it["after"])
+
+
+## The city in speech you are founding with Socrates (city.gd): kept in your progress, founded the
+## first time you sit at the council table.
+func city() -> RefCounted:
+	var saved: Variant = progress.data.get("city")
+	if not saved is Dictionary:
+		var c: RefCounted = City.found(380)
+		progress.data["city"] = c.to_dict()
+		return c
+	return City.from_dict(saved)
+
+
+var _city: RefCounted  # the city while you sit at the table
+
+
+func _open_council() -> void:
+	_city = city()
+	_council_board = _city.stage
+	_council.open(_city)
+	_show_panel(_council)
+
+
+## Something was decided at the table: keep the city, and as it reaches the book's stages its
+## points count (for a Theoros; a Mathetes must still explain them to the teacher).
+func _on_council_acted() -> void:
+	progress.data["city"] = _city.to_dict()
+	var work := "plato-republic"
+	if progress.mode(_world_of(here)) == "zen":
+		for pair in [[1, "one_work"], [City.JUST_CITY, "just_city"]]:
+			if _city.stage >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
+				var note := _learned(work, [pair[1]])
+				if note != "":
+					_council._socrates.append_text(note)  # what goes on your tablet, under what Socrates said
+	progress.save()
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.
@@ -1657,6 +1835,8 @@ func _input(event: InputEvent) -> void:
 			get_tree().quit()
 		elif _choice.visible:
 			pass  # a world's question has to be answered
+		elif beat and not _any_panel():
+			_end_beat(false)  # leave the moment; it can be played again
 		elif _any_panel():
 			_close_panels()
 		else:
@@ -1681,7 +1861,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
-		if _read_panel.visible or _map_panel.visible or _tree_panel.visible:
+		if beat and not _any_panel():
+			beat.press(player)
+		elif _read_panel.visible or _map_panel.visible or _tree_panel.visible:
 			_close_panels()
 		elif player.seated:
 			stand_up()
