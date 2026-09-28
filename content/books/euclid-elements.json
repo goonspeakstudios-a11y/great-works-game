@@ -1,0 +1,447 @@
+{
+ "work": "euclid-elements",
+ "title": "Elements, Book I",
+ "translation": "tr. T. L. Heath (1908), public domain",
+ "chunks": [
+  {
+   "id": 0,
+   "where": "Elements, Book I, Definitions, Postulates, Common Notions",
+   "text": "FIRST PRINCIPLES DEFINITIONS. •^ I. A point is that which has no part. <- 2. A line is breadthless length. 3. The extremities of a line are points. — 4. A straight line is a line which lies evenly with the points on itself. — 5* A surface is that which has length and breadth only. 6. The extremities of a surface are lines. 7. A plane surface is a surface which lies evenly with the straight lines on itself. 8. A plane angle is the inclination to one another of two lines in a plane which meet one another and do not lie in a straight line. 9. And when the lines containing the angle are straight, the angle is called rectilineal. 10. When a straight line set up on a straight line makes the adjacent angles equal to one another, each of the equal anfi^les is right, and the straight line standing on the other is called a perpendicular to that on which it stands. 11. An obtuse angle is an angle greater than a right angle. 12. J^ii^iacute angle is an angle less than a right angle. — 13. A boundary is that which is an extremity of any- thing."
+  },
+  {
+   "id": 1,
+   "where": "Elements, Book I, Definitions, Postulates, Common Notions",
+   "text": "■^ 14. A figure is* mat which js contained by any boundary or boundaries. 15. A circle is a plane figure contained by one line such that all the straight lines falling upon it from one point among those lying within the figure are equal to one another ; 154 BOOK I [h VIEW. i— POST. 4 16. And the point is (Ailed the centre of the circle. 1 7. A diameter of the circle is any straight line drawn through the centre and terminated in both directions by the circumference of the circle, and such a straight line also bisects the circle. 1 8. A semicircle is the figure contained by the diameter and the circumference cut off by it . And the centre of the semicircle is the same as that of the circle. 19. Rectilineal figures are those which are contained by straight lines, trilateral figures being those contained by three, quadrilateral those contained j^ four, and multi- lateral those contained by more than four straight lines. 20. Of trilateral figures, an equilateral triangle is that which has its three sides equal, an isosceles triangle that which has two of its sides alone equal, and a scalene triangle that which has its three sides unequal."
+  },
+  {
+   "id": 2,
+   "where": "Elements, Book I, Definitions, Postulates, Common Notions",
+   "text": "21. Further, of trilateral figures, a right-angled tri- angle is that which has a right angle, an obtuse-angled triangle that which has an obtuse angle, and an acute- angled triangle that which has its three angles acute. 22. Of quadrilateral figures, a square is that which is both equilateral and right-angled ; an oblong that which is right-angled but not equilateral ; a rhombus that which is equilateral but not right-angled ; and a rhomboid that which has its opposite sides and angles equal to one another but is neither equilateral nor right-angled. And let quadrilaterals other than these be called trapezia. 23. Parallel straight lines are straight lines which, being in the same plane and being produced indefinitely in both directions, do not meet one another in either direction. POSTULATES. Let the following be postulated : 1. To draw a straight line from any point to any point 2. To produce a finite straight line continuously in a straight line. 3. To describe a circle with any centre and distance. 4. That all right angles are equal to one another. -L«. . > I- POST. 5— c N. s] DEFINITIONS ETC 155 5* . That, if a straight line falling on two straight lines make the interior angles on the same side less than two right angles, the two straight lines, if produced indefinitely, meet on that side on which are the angles less than the two right angles."
+  },
+  {
+   "id": 3,
+   "where": "Elements, Book I, Definitions, Postulates, Common Notions",
+   "text": "COMMON NOTIONS. 1. Things which are equal to the same thing are also equal to one another. 2. If equals be added to equals, the wholes are equal. 3. If equals be subtracted from equals, the remainders are equal. 4- Things which coincide with one another are equal to one another. 5. The whole is greater than the part"
+  },
+  {
+   "id": 4,
+   "where": "Elements, Book I, Prop. 1",
+   "text": "PROPOSITION 1 I On a given finite straight line to construct an equilateral triangle. I' Let AB be the given finite straight line. * Thus it is required to con- fS struct an equilateral triangle on ' the straight line A£. With centre A and distance AB let the circle BCD be described ; [Post 3] '^o again, with centre B and dis- 1 tance BA let the circle ACE I be described ; [Post 3] :. and from the point C, in which the circles cut one another, to \\ the points -/4, B let the straight lines CA^ CB be joined. \\ [Post. I] 15 Now, since the point A is the centre of the circle CDB^ j AC is equal to AB. [Def. 15] Again, since the point B is the centre of the circle CA£y J i BC is equal to BA. [Def. 15] But CA was also proved equal to AB ; iao therefore each of the straight lines CA, CB is equal to AB. And things which are equal to the same thing are also equal to one another ; [C. N. i] therefore CA is also equal to CB. Therefore the three straight lines CA^ AB^ BC are as equal to one another."
+  },
+  {
+   "id": 5,
+   "where": "Elements, Book I, Prop. 1",
+   "text": "Therefore the triangle ABC is equilateral ; and it has been constructed on the given finite straight line AB. (Being) what it was required to do."
+  },
+  {
+   "id": 6,
+   "where": "Elements, Book I, Prop. 2",
+   "text": "PROPOSITION 2 [Postal To place at a given paint (as an extremity) a straight Une equal to a given straight line. Let A be the given point, and BC the given straight line. Thus it is required to place at the point A (as an extremity) 5 a straight line equal to the given straight line BC. From the point A to the point B let the straight line AB be joined ; [Post i] and on it let the equilateral triangle JO DAB be constructed. [i. i] Let the straight lines AE, BF be produced in a straight line with DA^ DB\\ [Post a] with centre B and distance BC let the 15 circle CGH be described ; and again, with centre D and distance DG let the circle GKL be described. [Post 3] Then, since the point B is the centre of the circle CGH^ BC is equal to BG. so Again, since the point D is the centre of the circle GKL, DL is equal to DG. And in these DA is equal to DB ; therefore the remainder AL\\s equal to the remainder BG. \\C.N. 3] But BC was also proved equal to BG ; therefore each of the straight lines AL, BC is equal \\oBG. And things which are equal to the same thing are also equal to one another ; [C.AI i]"
+  },
+  {
+   "id": 7,
+   "where": "Elements, Book I, Prop. 2",
+   "text": "J therefore AL is also equal to BC. Therefore at the given point A the straight line AL is placed equal to the given straight line BC. (Being) what it was required to do."
+  },
+  {
+   "id": 8,
+   "where": "Elements, Book I, Prop. 3",
+   "text": "PROPOSITION 3 Given two unequal straight lines^ to cut off front the greater a straight line equal to the less. 5. Let ABy C be the two given un- equal straight lines, and let AB be the greater of them. Thus it is required to cut off from AB the greater a straight line equal to C the less. At the point A let AD be placed equal to the straight line C ; [i. 2] and with centre A and distance AD let the circle DEF be described. [Post 3] 1.,] PROPOSITIONS 2—4 247 Now, since the point A is the centre of the circle DEF, AE is equal to AD. [Def. 15] But C is also equal to AD. Therefore each of the straight lines AE, C is equal to AD ; so that AE\\s also equal to C. \\C.N, i] Therefore, given the two straight lines AB, C, from AB the greater A[E has been cut off equal to C the less. (Being) what it was required to do."
+  },
+  {
+   "id": 9,
+   "where": "Elements, Book I, Prop. 4",
+   "text": "PROPOSITION 4 If two triangles have the two sides equal to two sides respectively, and have the angles contained by the equal straight lines equal, they will also have the base equal to the base, the triangle will be equal to the triangle, and the remaining angles 5 will be equal to the remaining angles respectively, namely those which the equal sides subtend Let ABC, DEE he two triangles having the two sides AB, AC equal to the two sides DE, Z?-F respectively, namely AB to DE and AC to DE, and the angle BAC equal to the ID angle EDE. I say that the base BC is also equal to the base EE, the triangle ABC will be equal to the triangle DEE, and the remaining angles will be equal to the remaining angles respectively, namely those which the equal sides subtend, that 15 is, the angle ABC to the angle DEE, and the angle ACB to the angle DEE. For, if the triangle ABC be applied to the triangle DEE, and if the point A be placed 20 on the point D and the straight line AB on DE, then the point B will also coincide with E, because AB is equal to DE."
+  },
+  {
+   "id": 10,
+   "where": "Elements, Book I, Prop. 4",
+   "text": "348 BOOK I [1. 5 Again, AB coinciding with DE^ the straight line AC will also coincide with DF, because the angle BAC is equal to the angle EDF\\ hence the point C will also coincide with the point F^ because AC\\s again equal to DF. o But B also coincided with E ; hence the base BC will coincide with the base EF. [For if, when B coincides with E and C with F, the base BC does not coincide with the base EF, two straight lines will enclose a space : which is impossible. 5 Therefore the base BC will coincide with EF^ and will be equal to it \\C.N. 4] Thus the whole triangle ABC will coincide with the whole triangle DEF, and will be equal to it. p And the remaining angles will also coincide with the remaining angles and will be equal to them, the angle ABC to the angle DEF, and the angle ACB to the angle DFE. Therefore etc."
+  },
+  {
+   "id": 11,
+   "where": "Elements, Book I, Prop. 5",
+   "text": "PROPOSITION 5 In isosceles triangles the angles at the base are equal to one another^ and, if the equal straight lines be produced further, the angles under the base will be equal to one another. Let ABC be an isosceles triangle having the side AB 5 equal to the side AC\\ and let the straight lines BD, CE be produced further in a straight line with AB, AC. [Post 2] 1 say that the angle ABC is equal to the angle ACB^ and the angle CBD to the angle BCE. 10 Let a point F be taken at random on BD] from AE the greater let AG he cut off equal to AF the less ; [i. 3] and let the straight lines FC, GB be joined. [Post i] 15 Then, since AF is equal to -^G^ and ^^to^C, the two sides FA^ AC are equal to the two sides GA, A By respectively ; and they contain a common angle, the angle FAG. 20 Therefore the base FC is equal to the base GB, and the triangle AFC is equal to the triangle AGB, and the remaining angles will be equal to the remaining angles respectively, namely those which the equal sides subtend,"
+  },
+  {
+   "id": 12,
+   "where": "Elements, Book I, Prop. 5",
+   "text": "that is, the angle ACF to the angle ABG, 25 and the angle AFC to the angle AGB. [i. 4] And, since the whole AFis equal to the whole AG, and in these AB is equal to AC, the remainder BF is equal to the remainder CG. But FC was also proved equal to GB ; 30 therefore the two sides BF, FC are equal to the two sides CG, GB respectively ; and the angle BFC is equal to the angle CGB, while the base BC is common to them ; therefore the triangle BFC is also equal to the triangle CGB, 35 and the remaining angles will be equal to the remaining 353 BOOK I [l 5 angles respectively, namely those which the equal sides subtend ; therefore the angle FBC is equal to the angle GCB^ and the angle BCF to the angle CBG. ¥> Accordingly, since the whole angle ABG was proved equal to the angle ACF, and in these the angle CBG is equal to the angle BCF, the remaining angle ABC is equal to the remaining angle ACB; 15 and they are at the base of the triangle ABC. But the angle FBC was also proved equal to the angle GCB ;"
+  },
+  {
+   "id": 13,
+   "where": "Elements, Book I, Prop. 5",
+   "text": "and they are under the base. Therefore etc."
+  },
+  {
+   "id": 14,
+   "where": "Elements, Book I, Prop. 6",
+   "text": "PROPOSITION 6 If in a triangle two angles be equal to one another^ the sides which subtend the equal angles will also be equal to one another. Let ABC be a triangle having the angle ABC equal to the angle ACB\\ I say that the side AB is also equal to the ^ side AC. j For, if AB is unequal to AC, one of them is greater. Let AB be greater; and from AB the greater let DB be cut off equal to -^C the less ; let DC be joined. Then, since DB is equal to AC, and BC is common, the two sides DB, BC are equal to the two sides AC, CB respectively ; 956 BOOK I [l and the angle DBC is equal to the angle ACB ; therefore the base DC is equal to the base AB^ and the triangle DBC will be equal to the triangle ACB^ the less to the greater : which is absurd Therefore AB is not unequal to AC; it is therefore equal to it Therefore etc."
+  },
+  {
+   "id": 15,
+   "where": "Elements, Book I, Prop. 7",
+   "text": "PROPOSITION 7 Given two straight, lines constructed on a straight line {from its extremities) and fneeting in a point, there cannot be constructed on the same straight line {from its extremities\\ and on the same side of it, two other straight lines meeting tn 5 another point and equal to the former two respectively, namely each to that which has the same extremity with it. For, if possible, given t^o straight lines AC, CB con- structed on the straight line AB and meeting at the point C, let two other straight lines 10 AD, DB be constructed on the same straight line AB, on the same side of it, meeting in another point D and equal to the former two respectively, namely each to that which has the same extremity with it, so that CA is 15 equal to DA which has the same extremity A with it, and L 7] PROPOSITIONS 6, 7 ^59 CB to DB which has the same extremity B with it ; and let CD be joined. Then, since -^C is equal to ADy the angle ACD is also equal to the angle ADC; [i. s] therefore the angle ADC is greater than the angle DCB ;"
+  },
+  {
+   "id": 16,
+   "where": "Elements, Book I, Prop. 7",
+   "text": "therefore the angle CDB is much greater than the ancfle DCB. \\ Again, since CB is equal to DB, \" \\ the angle CDB is also equal to the angle DCB. ■ |; But it was also proved much greater than it : which is impossible. Therefore etc."
+  },
+  {
+   "id": 17,
+   "where": "Elements, Book I, Prop. 8",
+   "text": "PROPOSITION 8 1/ two triangles have the two sides equal to two sides respectively, and have also the base equal to t/ie base, they will aba have the angles equal which are contained by the equal straight lines. \\ Let ABC, DEF be two triangles having the two sides \\AB, AC equal to the two sides ^DE, DF respectively, namely .AB to DE, and AC to DF\\ and ^let them have the base BC equal to the base EF\\ 1 say that the angle BAC is also equal to the angle EDF. For, if the triangle ABC be applied to the triangle DEF, and if the point B be placed on [the point E and the straight line BC on EF, the point C will also coincide with F, because BC is equal to EF. 263 BOOK I [l Then, BC coinciding with EF^ BA. AC will also coincide with ED, DF\\ » for, if the base BC coincides with the base EF, and the sides BA, AC do not coincide with ED, DF but fall beside them as EG, GF, then, given two straight lines constructed on a straight line (from its extremities) and meeting in a point, there will"
+  },
+  {
+   "id": 18,
+   "where": "Elements, Book I, Prop. 8",
+   "text": "sshave been constructed on the same straight line (from its extremities^, and on the same side of it, two other straight lines meeting in another point and equal to the former two respectively, namely each to that which has the same extremity with it 30 But they cannot be so constructed. [i. 7] Therefore it is not possible that, if the base BC be applied to the base EF, the sides BA, AC should not coincide with ED, DF; they will therefore coincide, 35 so that the angle BAC will also coincide with the angle EDF, and will be equal to it If therefore etc. q. e. d. 19. B A, AC. The text has here \" BA, CA, \" 91. fall beside them. The Greek has the future, wa^taXk^qvvi, wapoXKirrm means \" to pass by without touchiug,** ** to miss\" or *' to deviate.\" As pointed out above (p. 257) i. 8 is a /or/Za/ converse of i. 4. It is to be observed that in i. 8 Euclid is satisfied with proving the equality of the vertical angles and does not, as in i. 4, add that the triangles are equal, and the remaining angles are equal respectively. The reason is no doubt (as pointed out by Proclus and by Savile afler him) that, when once the vertical angles are proved equal, the rest follows from i. 4, and there is no object in proving again what has been proved already."
+  },
+  {
+   "id": 19,
+   "where": "Elements, Book I, Prop. 8",
+   "text": "Anstotle has an allusion to the theorem of this proposition in MeteorologUa III. 3, 373 a 5 — 16. He is speaking of the rainbow and observes that, if equal ra3rs be reflected from one and the same point to one and the same point, the points at which reflection takes place are on the circumference of a circle. \"For let the broken lines ACB, AFB, ADB be all reflected from the point A to the point B (in such a way that) AC, AF, AD are all equal to one another, and the lines (terminating) at B, Le. CB, FB, DB, are likewise all equal ; and let AEB be joined. It follows that the triangles are equal; for they are upon the equal (base) AEB*^"
+  },
+  {
+   "id": 20,
+   "where": "Elements, Book I, Prop. 9",
+   "text": "PROPOSITION 9 To bisect a given rectilineal angle. Let the angle BAC be the ^ven rectilineal angle. It is then required to bisect it. Let a point D be taken at random on AB ; let AE be cut off from AC equal to AD ; [i. 3] let DE be joined, and on DE let the equilateral triangle DEFh^ constructed ; let .^/^ be joined. I say that the angle BAC has been bisected by the straight line AF. r or, since AD is equal to AE, and AF is common, the two sides DA, AF are equal to the two sides ^ EA, AF respectively. And the base DF is equal to the base EF\\ therefore the angle DAF is equal to the angle EAF. j [I. 8] I Therefore the given rectilineal angle BAC has been | bisected by the straight line AF. Q. e. f. ^ It win be observed from the translation of this proposition that Euclid does not say, in his description of the construction, that the equilateral triangle | should be constructed on the side of DE opposite to ^ ; he leaves this to be < inferred from his figure. There is no particular value in Proclus' explanation \\ as to how we should proceed in case any one should assert that he could not . recognise the existence of any space below DE. He supposes, then, the ! equilateral triangle described on the side of DE towards A, and hence has to -. consider three cases according as the vertex of the equilateral triangle fidls on A, above A or below it The second and third cases do not difier"
+  },
+  {
+   "id": 21,
+   "where": "Elements, Book I, Prop. 9",
+   "text": "I. 9] PROPOSITIONS 8, 9 265 substantially from Euclid's. In the first case, where ADE is the equilateral triangle constructed on DE^ take any point ^on AD^ and from AE cut off AG equal to AF, Join DG^ J?^ meeting in H\\ and join AH, Then ^^ is the bisector required. Proclus ako answers the possible AjecHon that might be raised to Euclid's proof on the ground that it assumes that, if the equilateral triangle m described on the side of DE opposite to A^ its vertex -F will lie within the angle BAC. The objector is supposed to argue that this is not necessary, but that ^ might fall eiSier on one of the lines forming the angle or outside it altogether. The two cases are disposed of thus. Suppose ^to fall as shown in the two figures below respectively. Then, since FD is equal to FE^ the angle FDE is equal to the angle FED, Therefore the angle CED is greater than the angle FDE ; and, in the second figure, a fortiori^ the angle CED is greater than the angle BDE. But, since ADE is an isosceles triangle, and the equal sides are produced. the angles under the base are equal,"
+  },
+  {
+   "id": 22,
+   "where": "Elements, Book I, Prop. 9",
+   "text": "i.e., the angle CED is equal to the angle BDE, But the an^e CED was proved greater : which is impossible. Here then is the second case in which, in Proclus' view, the second part of I. 5 is useful for refuting objections. On this proposition Proclus takes occasion (p. 371, 15—19) to emphasize I the isjct that the given angle must be rectilineal^ since the bisection of any sort of angle (including angles made by curves with one another or with straight \\ lines) is not matter for an elementary treatise, besides which it is questionable ^whether such bisection is always possible. \"Thus it is difficult to say"
+  },
+  {
+   "id": 23,
+   "where": "Elements, Book I, Prop. 11",
+   "text": "PROPOSITION 11 I To draw a straight line at right angles to a given straight line front a given point on it. Let AB be the given straight line, and C the given point on it. Thus it is required to draw from the point C a straight . line at right angles to the straight \\ line AB. I Let a point D be taken at ran- \\ dom on AC\\ ^ let CE be made equal to CD ; [i. 3] ► on DE let the equilateral triangle \\FDE be constructed, • [i. i] I and let FC be joined ; I say that the straight line FC has been drawn at right I angles to the given straight line AB from C the given point Jon it. • For, since DC is equal to CE, rCF is common, the two sides DC, CF are equal to the two sides EC, I ' CF respectively ; I and the base DF is equal to the base FE ; therefore the angle DCF is equal to the angle ECF\\ ['• «] and they are adjacent angles. But, when a straight line set up on a straight line makes the adjacent angles equal to one another, each of the equal"
+  },
+  {
+   "id": 24,
+   "where": "Elements, Book I, Prop. 11",
+   "text": "ingles is right ; [Def. 10] therefore each of the angles DCF^ FCE is right Therefore the straight line CF has been drawn at right ngles to the given straight line AB from the given point r on it. Q. E. F."
+  },
+  {
+   "id": 25,
+   "where": "Elements, Book I, Prop. 12",
+   "text": "PROPOSITION 12 To a given infinite straight line, from a given point which is not on it, to draw a perpendicular straight line. Let AB be the given infinite straight line, and C the given point which is not on it ; I. 12] PROPOSITIONS II, 12 271 5 thus it is required to draw to the given infinite straight line AB^ from the given point C which is not on it, a per- pendicular straight line. For let a point D be taken 10 at random on the other side of the straight line AB, and with centre c and distance CD let the circle EFG be described ; [Post 3] let the straight line EG IS be bisected at H, [i. 10] and let the straight lines CG, CH, CE be joined. [Post l] I say that CH has been drawn perpendicular to the given infinite straight line AB from the given point C which is not on it. 20 For, since GH is equal to HE^ and HC is common, flie two sides GH, HC are equal to the two sides EH, HC respectively ; and the base CG is equal to the base CE ; 25 therefore the angle CHG is equal to the angle EHC."
+  },
+  {
+   "id": 26,
+   "where": "Elements, Book I, Prop. 12",
+   "text": "[1.] And they are adjacent angles. But, when a straight line set up on a straight line makes the adjacent angles equal to one another, each of the equal angles is right, and the straight line standing on the other is 30 called a perpendicular to that on which it stands. [Def. 10] Therefore C/^ has been drawn perpendicular to the given infinite straight line AB from the given point C which is not on it Q. E. F."
+  },
+  {
+   "id": 27,
+   "where": "Elements, Book I, Prop. 13",
+   "text": "PROPOSITION 13 If a straight line set up an a straight line make angles^ it will make either two right angles or angles equal to two right angles. \\ For let any straight line AB set up on the straight line s CD make the angles CBA, ABD ; I say that the angles CBA, ABD are either two right angles or equal to two right angles. Now, if the angle CBA is equal to g to the angle ABD, they are two right angles. [Def. 10] But, if not, let BE be drawn from the point B at right ' angles to CD\\ [i. n] therefore the angles CBE, EBD are two right angles, fis Then, since the angle CBE is equal to the two angles CBA, ABE, let the angle EBD be added to each ; therefore the angles CBE, EBD are equal to the three angles CBA, ABE, EBD. , [C. N. 2] Again, since the angle DBA is equal to the two angles DBE, EBA, let the angle ABC be added to each ; therefore the angles DBA, ABC are equal to the three angles DBE, EBA, ABC. [C N. 2] i But the angles CBE, EBD were also proved equal to the same three angles ;"
+  },
+  {
+   "id": 28,
+   "where": "Elements, Book I, Prop. 13",
+   "text": "and things which are equal to the same thing are also equal to one another ; [C. N. 1] therefore the angles CBE, EBD are also equal to the . angles DBA, ABC 18—2 276 BOOK I [h 13, 14 But the angles CBB, EBD are two right angles ; therefore the angles DBA, ABC are also equal to two right angles. Therefore etc."
+  },
+  {
+   "id": 29,
+   "where": "Elements, Book I, Prop. 14",
+   "text": "PROPOSITION 14 If with any straight line, and at a point on it, two stra^kt lines not lying on the same side make the adjacent angles equal to two right angles, the two straight lines will be in a straight line with one another. 5 For with any straight line AB, and at the point B on it, let the two straight lines BC, BD not lying on the same side make the adjacent angles ABC, ABD equal to two right angles ; I say that BD is in a straight line with CB. o For, if BD is not in a straight line with BC, let BE be in a straight line with CB. Then, since the straight line AB g — stands on the straight line CBE, s the angles ABC, ABE are equal to two right angles. [1. 13] But the angles ABC, ABD are also equal to two right angles ; therefore the angles CBA, ABE are equal to the angles CBA, ABD. [Post 4 and C. N. i] Let the angle CBA be subtracted frpm each ; » therefore the remaining angle ABE is equal to the remaining angle ABD, [C N. 3] the less to the greater : which is impossible. Therefore BE is not in a straight line with CB. Similarly we can prove that neither is any other straight \\s line except BD."
+  },
+  {
+   "id": 30,
+   "where": "Elements, Book I, Prop. 14",
+   "text": "I. 14, is] propositions 13—15 277 Therefore CB is in a straight line with BD. Therefore etc."
+  },
+  {
+   "id": 31,
+   "where": "Elements, Book I, Prop. 16",
+   "text": "PROPOSITION 16 In any triangle^ if one of the sides be produced^ the exterior angle is greaier than either of the interior and opposite angles. Let ABC be a triangle, and let one side of it BC be produced to D\\ 5 I say that the exterior angle ACD is greater than either of the interior and opposite angles CBA, BAC. Let A Che bisected at £ [i. lo], and let B£ be joined and produced 10 in a straight line to £] let £Fhe made equal to B£[i. 3], let FC be joined [Post, i], and let A C be drawn through to G [Post. 2]. Then, since A£ is equal to £Ct cs and B£ to £F, the two sides A£, £B are equal to the two sides C£, £F respectively ; and the angle A£B is equal to the angle F£Cy for they are vertical angles. [i. 15] JO Therefore the base AB is equal to the base FC, and the triangle AB£ is equal to the triangle CF£, and the remaining angles are equal to the remaining angles , respectively, namely those which the equal sides subtend ; [i. 4J therefore the angle BAB is equal to the angle ECF."
+  },
+  {
+   "id": 32,
+   "where": "Elements, Book I, Prop. 16",
+   "text": "a8o BOOK I [l i ; But the angle ECD is greater than the angle ECF\\ therefore the angle ACD is greater than the angle BAE. Similarly also, if BC be bisected, the angle BCG, that is, the angle ACD [i. 15], can be proved greater than the angle ABC as well. Therefore etc."
+  },
+  {
+   "id": 33,
+   "where": "Elements, Book I, Prop. 17",
+   "text": "PROPOSITION 17 In any triangle two angles taken together in any manner -are less than two right angles. Let ABC be a triangle ; I say that two angles of the triangle ABC taken together in any manner are less than two right angles. For let BC be produced to I). [Post. 2] Then, since the angle A CD is an exterior angle of the triangle ABC, it is greater than the interior and opposite angle ABC [1. 16] 282 BOOK I [l 17 Let the angle ACB be added to each ; therefore the angles A CD, ACB are greater than the angles ABC, BCA. But the angles A CD, ^C^^raj equal to two right angles. [I. «3] Therefore the angles ^/^|^ BCA are less than two right imilarly we can prove thitoythe angles BAC, ACB are angles. f we can prove uiiMyuic au^ica ajxt,\\^, xt,\\^aj mc th an Ji^o right^anglc^and so are the angles CAB, AiclSm^.,^ pi %. Thereiore>6tc. \">'sk*.,.^ I ^^^^\"\"^^^^ ^* ^' ^' I. taken Sogether in any manner, vd^rT^MraXaM/fftv^^MFai, Le. any pair added togetlier. V As in his note on the previous propodtiony Produs tries to state the comu of the property. He takes the case of two straight lines forming right anises with a transversal and observes that it is the convergence of the straight lifus towards one another (irvvcvo'if rwf cv^coSy), the lessening oi the two right angles, which produces the triangle. He will not have it that the &ct of the exterior angle being greater than the interior and opposite angle is the cause of the property, for the odd reason that '' it is not necessary that a side should be produced, or that there should be any exterior angle constructed... and how can what is not necessary be the cause of what is necessary?\" (p. 311, 17 — 21)."
+  },
+  {
+   "id": 34,
+   "where": "Elements, Book I, Prop. 17",
+   "text": "Agreeably to this view, Proclus then sets himself to prove the theorem without producing a side of the triangle. Let ABC be a triangle. Take any point D on BC, and join AD. Then the exterior angle ADC of the triangle ABD is greater than the interior and opposite angle ABD. Similarly the exterior angle ADB of the triangle ADC is greater than'tlie interior and opposite angle ACD. Therefore, by addition, the angles ADB, ADC are together greater than the angles ABC, ACB. But the angles ADB, ADC are equal to two right angles ; therefore the angles ABC, ACB are less than two right angles. - Lastly, Proclus proves (what is obvious from this proposition) that there cannot be more than one perpendicular to a straight line from a point without it. For, if this were possible, two of such perpendiculars would form a triangle in which two angles would be right angles: which is impossible, since any two angles of a triangle are together less tbuui two right angles. I. i] PROPOSITIONS 17, 18 Proposition 18. 283 In atiy triangle the greater side subtends the greater angle. For let ABC be a triangle having the side AC greater than AB ;"
+  },
+  {
+   "id": 35,
+   "where": "Elements, Book I, Prop. 17",
+   "text": "I say that the angle ABC is also greater than the angle BCA. For, since AC\\^ greater than AB, let AD be made equal to AB [i. 3], and let BD be joined. Then, since the angle ADB is an exterior angle of the triangle BCD, it is greater than the interior and opposite angle DCB. [l 16]"
+  },
+  {
+   "id": 36,
+   "where": "Elements, Book I, Prop. 19",
+   "text": "PROPOSITION 19 In any triangle the greater angle is subtended by the greater side. Let ABC be a triangle having the angle ABC greater than the angle BCA ; I say that the side AC is also greater than the side AB. For, if not, -^C is either eaual to AB or less. Now -^C is not equal to AB ; for then the anc^le ABC would also have been equal to the angle ACB ; [i. sj but it is not ; therefore AC is not equal to AB. Neither is -^C less than AB, for then the angle ABC would also have been less than the Single ACB; [1. iS] but it is not ; therefore AC is not less than AB. And it was proved that it is not equal either. Therefore -^C is greater than AB. Therefore etc."
+  },
+  {
+   "id": 37,
+   "where": "Elements, Book I, Prop. 20",
+   "text": "PROPOSITION 20 In any triangle two sides taken together in any manner are greater than the remaining one. For let ABC be a triangle ; I say that in the triangle ABC two sides taken together in any manner are greater than the remaining one, namely BAy AC greater than BC, AB, BC greater than AC, BCy CA greater than AB. For let BA be drawn through to the point /?, let DA be made equal to CA, and let DC be joined. Then, since DA is equal to AC, the angle ADC is also equal to the angle ACD; [I.S] therefore the angle BCD is greater than the angle ADC. [C N. 5] And, since DCB is a triangle having the angle BCD greater than the angle BDC, and the greater angle is subtended by the greater side, [i. 19] therefore DB is greater than BC. I. 20] PROPOSITIONS 19, ao 287 But DA is equal to AC; therefore BA, AC are greater than BC. Similarly we can prove that AB, BC are also greater than CA, and BC, CA than AB. Therefore etc."
+  },
+  {
+   "id": 38,
+   "where": "Elements, Book I, Prop. 21",
+   "text": "PROPOSITION 21 If on one of the sides of a triangle, from its extremities, there be constructed two straight lines meeting within the triangle, the straight lines so constructed will be less than the remaining two sides of the triangle, but will contain a grecUer I angle. j On BC, one of the sides of the triangle ABC, from its extremities B, C, let the two straight lines BD, DC be con- I structed meeting within the triangle ; I I say that BD, DC are less than the remaining^ two sides MO of the triangle BA, AC, but contain an angle BvC greater I than the angle BAC For let BD be drawn through to E. Then, since in any triangle two , sides are greater than the remaining ii one, [i. 20] therefore, in the triangle ABE, the \\ two sides -^jff, AE are greater than BE. Let EC be added to each ; therefore BA, AC are greater than BE, EC |ao Again, since, in the triangle CED, \\ the two sides CE^ ED are greater than CD, \\ let DB be added to each ; therefore CE, EB are greater than CD, DB. But BA^ AC were proved greater than BE, EC;"
+  },
+  {
+   "id": 39,
+   "where": "Elements, Book I, Prop. 21",
+   "text": "therefore BA, AC are much greater than BD, DC. Agrain, since in any triangle the exterior angle is greater than the interior and opposite angle, [i. 16] therefore, in the triangle CDE, the exterior angle BDC is greater than the angle CED. o For the same reason, moreover, in the triangle ABE also, the exterior angle CEB is greater than the angle BAC. But the angle BDCvias proved greater than the angle CEB; therefore the angle BDC is much greater than the angle BAC. »^ Therefore etc. q. e. d. 3. be constructed... meeting within the triangle. The word \"meeting\" is not in the Greek, where the words are irrhs cveraBCMtv, ffwlffroffSai is the word lued of con- structing two straight lines to a point (cf. i. 7) or^ as to form a triangle ; but it is necessaiy in Engksh to indicate that they nuet. 3. the straight lines so constructed. Observe the elegant brevity of the Greek ol H. B. 19 «90 BOOK I [i. ti The editors generally call attention to the fiiurt that the lines dnwn within the triangle in this proposition must be drawn, as the enunciation says, from the ends of the side ; otherwise it is not necessary that their sum should be less than that of the remaining sides of the triangle. Proclus (p. 337, 1 2 sqq.) gives a simple illustration."
+  },
+  {
+   "id": 40,
+   "where": "Elements, Book I, Prop. 21",
+   "text": "Let i^^C be a right-angled triangle. Take any point D on BC^ join DA^ and cut off from it DE equal to AB, Bisect AE at A and join FC. Then shall CF, FD be together greater than CA^ AB. For CF, FE are equal to CF, FA, and therefore greater than CA. Add the equals ED, AB respectively ; therefore CF, FD are together greater than CA, AB. Pappus gives the same proposition as that just proved, but follows it up by a number of others more elaborate in character, selected apparently from \" the socalled paradoxes \" of one Erycinus (Pappus, in. p. 106 sqq.). Thus he proves the following :"
+  },
+  {
+   "id": 41,
+   "where": "Elements, Book I, Prop. 22",
+   "text": "PROPOSITION 22 Out of three straight lines, which are equal to three given straight lines, to construct a triangle : thus it is necessary that two of the straight lines taken together in any manner should be greater than the remaining one. [i. 20] Let the three given straight lines be A, B, C, and of these let two taken together in any manner be greater than the remaining one, namely A, B greater than C, A, C greater than B, and B, C greater than A ; thus it is required to construct a triangle out of straight lines equal to A, B, C. Let there be set out a straight line DE, terminated at D but of infinite length in the direction of E, and let DF be made equal to A, FG equal to B, and GH equal to C. [i- 3] With centre F and distance FD let the circle DKL be described ; again, with centre G and distance GH let the circle KLH be * described ; and let KF, KG be joined ; I say that the triangle KFG has been constructed out of three straight lines equal to A, B, C. i I. at] PROPOSITIONS ai, 22 293"
+  },
+  {
+   "id": 42,
+   "where": "Elements, Book I, Prop. 22",
+   "text": "For, since the point /^ is the centre of the circle DKL, FD is equal to FK. But FD is equal to A ; therefore KF is also equal to A. Again, since the point G is the centre of the circle LKH^ GH is equal to GK. But GH is equal to C \\ therefore KG is also equal to C And FG is also equal to B ; therefore the three straight lines KF, FG, GK are equal to the three straight lines A, B, C. Therefore out of the three straight lines KF, FG, GK, which are equal to the three given straight lines A, B, C, the triangle KFG has been constructed. ^ Q. E. F."
+  },
+  {
+   "id": 43,
+   "where": "Elements, Book I, Prop. 23",
+   "text": "PROPOSITION 23 On a given straight line and at a point an it to construct a rectilineal angle equal to a given rectilineal angle. Let AB be the given straight line, A the point on it, and the angle DCE the given rectilineal angle; # thus it is required to construct on tne given straight line AB, and at the point A on it, a rectilineal angle equsu to the given rectilineal angle DCE. On the straight lines CD, CE respectively let the points /?,.£* be taken at random ; let DE be joined, arid out of three straight lines which are equal to the three I. 23] PROPOSITIONS 22, 23 29s Straight lines CD, DE, CE let the triangle AFG be con- structed in such a way that CD is equal to AF, CE to AG, and further DE to FG. ^i. 22] Then, since the two sides DC, CE are equal to the two ^ sides FA, AG respectively, ' and the base DE is equal to the base FG, the angle DCE is equal to the angle FAG. [i. 8] \\ Therefore on the given straight line AB, and at the point I -^ on it, the rectilineal angle FAG has been constructed equal"
+  },
+  {
+   "id": 44,
+   "where": "Elements, Book I, Prop. 23",
+   "text": "f to the given rectilineal angle DCE. This problem was, according to Eudemus (see Proclus, p. 333, 5), \"rather the discovery of Oenopides,\" from which we must apparently infer, not that Oenopides was the first to find any solution of it, but that it was he who dis- covered the particular solution given by Euclid. (Cf. Bretschneider, p. 65.) The editors do not seem to have noticed the fact that the construction of the triangle assumed in this proposition is not exactly the construction given in I. 22. We have here to construct a triangle on a certain finite straight line AG& base; in i. 22 we have only to construct a triangle with sides of given length without any restriction as to how it is to be placed. Thus in i. 22 we set out any line whatever and measure successively three lengths along it b^inning from the given extremity, and what we must r^ard as the base is the intermecUate length, not the length banning at the given extremity of the straight line arbitrarily set out Here the base is a given straight line abutting at a given point Thus the construction has to be modified somewhat from"
+  },
+  {
+   "id": 45,
+   "where": "Elements, Book I, Prop. 23",
+   "text": "ITb that of the preceding proposition. We must measure AG along AB so that AG\\& equal to CE (or CD), and C^ along GB equal to DE\\ and then we must produce BA, in the opposite direction, to ^ so that AF\\& equal to CD (or CE, ii AG has been made equal to CD). Then, by drawing circles (i) with centre A and radius AF, (2) with centre G and radius GIf, we determine J^, one of their points of intersection, and we prove that the triangle J^AG is equal in all respects to the triangle DCE, and then that the angle at A is equal to the angle DCE. I think that Proclus must (though he does not say so) have felt the same difficulty with regard to the use in i. 23 of the result of i. 22, and that this is probably the reason why he gives over again the construction which I have given above, with the remark (p. 334, 6) that \"you may obtain the construction of the triangle in a more instructive manner (StSaoncaXaci^cpov) as follows.\""
+  },
+  {
+   "id": 46,
+   "where": "Elements, Book I, Prop. 24",
+   "text": "PROPOSITION 24 If two triangles have the two sides equal to two sides respectively^ but have the one of the angles contained by the equal straight lines greater than the other, they will also have the bc^e greater than the base. S Let ABC, DEF be two triangles having the two sides AB^ -^C equal to the two sides DE, Z?/^ respectively, namely AB to DE, and -^C to DF, and let the angle at -^ be greater than the angle at D ; I say that the base BC is also greater than the base EF. 10 For, since the angle BAC is greater than the angle EDF, let there be constructed, on the straight line DE, and at the point D on it, the angle EDG IS equal to the angle BAC; [i. 23] let DG be made equal to either of the two straight lines AC, DF, and let EG, FG be joined. ' 1.] PROPOSITIONS 23, 297 i Then, since AB is equal to DE, and AC to DG, j ao the two sides BA, AC are equal to the two sides ED, DG, respectively ; . and the angle BAC is equal to the angle EDG ;"
+  },
+  {
+   "id": 47,
+   "where": "Elements, Book I, Prop. 24",
+   "text": "therefore the base BC is equal to the base EG. [1. 4] V Again, since DF is equal to DG, * 25 the angle DGF is also equal to the angle DFG ; [i. 5] therefore the angle DFG is greater than the angle EGF. It Therefore the angle EFG is much greater than the angle * EGF. And, since EFG is a triangle having the angle EFG 30 greater than the angle EGF, and the greater angle is subtended by the greater side, [I. 19] the side EG is also greater than EF. But EG is equal to BC. Therefore BC is also greater than EF. f 35 Therefore etc. Q. E. D."
+  },
+  {
+   "id": 48,
+   "where": "Elements, Book I, Prop. 25",
+   "text": "PROPOSITION 25 // two triangles have the two sides equal to two sides respectively, but have the base greater than the base, thiy will also have the one of the angles contained by the equal straight lines greater than the other. Let ABC, DEF be two triangles having the two sides AB^ AC equal to the two sides DE^ Z?/^ respectively, namely AB to DE, and -^C to DF\\ and let the base BC be greater than the base EF\\ I say that the angle BAC is also greater than the angle EDF. For, if not, it is either equal to it or less. • Now the angle BAC is not equal to the angle EDF\\ I for then the base BC would also have been equal to the base , EF, [1.] but it is not ; therefore the angle BAC is not equal to the angle EDF. Neither again is the angle BAC less than the angle EDF; for then the base BC would also have been less than the base EF, ^ [1.] but it is not ; therefore the angle BAC is not less than the angle EDF. But it was proved that it is not equal either ;"
+  },
+  {
+   "id": 49,
+   "where": "Elements, Book I, Prop. 25",
+   "text": "therefore the angle BAC is greater than the angle EDF. Therefore etc."
+  },
+  {
+   "id": 50,
+   "where": "Elements, Book I, Prop. 26",
+   "text": "PROPOSITION 26 I If two triangles have the two angles equal to two angles I respectively y and one side equal to one side^ namely, either the side adjoining the equal angles, or thai subtending one of the equal angles, they will also have the remaining sides equal to 5 the remaining sides and the remaining angle to the remaining angle. 302 BOOK I [l s Let ABC, DEF be two triangles having the two angles ABC, BCA equal to the two angles DEF, EFD respectivelv, namely the angle ABC to the angle DEF, and the ansle ^^BCA to the angle EFD; and let them also have one side equal to one side, first that adjoining the equal angles, namely BC to EF\\ I say that they will also have the remaininc; sides equal to the remaining sides respectively, namely aS to DE and 15-^C to DF, and the remaining angle to the remaining angle, namely the angle BAC to the angle EDF. For, if AB is unequal to DE, one of them is greater. Let AB be greater, and let BG be made equal to DE ; and let GC be joined. ao Then, since BG is equal to DE, and BC to EF, the two sides GB, BC are equal to the two sides DE, EF respectively; and the angle GBC is equal to the angle DEF;"
+  },
+  {
+   "id": 51,
+   "where": "Elements, Book I, Prop. 26",
+   "text": "therefore the base GC is equal to the base DF, 25 and the triangle GBC is equal to the triangle DEF, and the remaining angles will be equal to the remaining angles, namely those which the equal sides subtend ; [i. 4] therefore the angle GCB is equal to the angle DFE. But the angle DFE is by hypothesis equal to the angle BCA ; 30 therefore the angle BCG is equal to the angle BCA, the less to the greater : which is impossible. Therefore AB is not unequal to DE, and is therefore equal to it. But BC is also equal to EF-, 35 therefore the two sides AB, BC are equal to the two sides DE, EF respectively, and the angle ABC is equal to the angle DEF\\ therefore the base ACv& equal to the base /?/% and the remaining angle BAC is equal to the remaining 40 angle EDF. [l 4] 26] PROPOSITION 36 303 Again, let sides subtending equal angles be equal, as AB , to DE\\ ' I say again that the remaining sides will be equal to the remaining sides, namely AC to DF and BC to EF, and ^45 further the remaining angle BAC is equal to the remaining"
+  },
+  {
+   "id": 52,
+   "where": "Elements, Book I, Prop. 26",
+   "text": "angle EDF. 1 For, if BC is unequal to EF^ one of them is greater. Let BC be greater, if possible, and let BH be made equal to EF\\ let Am be joined. 50 Then, since Bm is equal to EF, and AB to DE, the two sides AB, BH are equal to the two sides DE, EF respectively, and they contain equal angles ; therefore the base AH is equal to the base DF, and the triangle ABH is equal to the triangle DEF, 55 and the remaining angles will be equal to the remaining angles, namely those which the equal sides subtend ; [i. 4] therefore the angle BHA is equal to the angle EFD. But the angle EFD is equal to the angle BCA ; therefore, in the triangle AHC, the exterior angle BHA is 60 equal to the interior and opposite angle BCA : which is impossible. [i. 16] Therefore BC is not unequal to EF,"
+  },
+  {
+   "id": 53,
+   "where": "Elements, Book I, Prop. 27",
+   "text": "PROPOSITION 27 If a straight line falling on two straight lines make the alternate angles equal to one another, the straight lines mill be parallel to one another. % For let the straight line EF falling on the two straight 5 lines AB, CD make the alternate angles AEF, EFD equal ^ to one another ; I say that AB is parallel to CD. For, if not, AB, CD when pro- duced will meet either in the direction \\o of B, D or towardis A, C. Let them be produced and meet, in the direction of B, Z>, at G. * Then, in the triangle GEF, the exterior angle A EF is equal to the interior and opposite 15 angle EFG : which is impossible. [i. 16] Therefore AB, CD when produced will not meet in the direction of B, D. Similarly it can be proved that neither will they meet o towards A, C 20 — 2 3o BOOK I [i. «7 But straight lines which do not meet in either direction are parallel ; [Dcf. 23] therefore AB is parallel to CD. Therefore etc."
+  },
+  {
+   "id": 54,
+   "where": "Elements, Book I, Prop. 28",
+   "text": "PROPOSITION 28 If a straight line falling on two straight lines make the exterior angle equal to the interior and opposite angle on the same side, or the interior angles on the same side equal to two right angles, Jhe straight lines will be parallel to one another. 3IO BOOK I [i. 38 For let the straight line EF falling on the two straight lines AB, CD make the exterior angle EGB equal to the interior and opposite angle GHD, or the interior angles on the same side, namely BGH, GHD, equal to two right angles; : I say that AB is parallel to CD. For, since the angle EGB is equal to the angle GHD, while the angle EGB is equal to the angle AGH, [i. 15] the angle AGH is also equal to the angle GHD\\ and they are alternate ; therefore AB is papdlel to CD. [i. 27] Again, since the angles BG^.JCrlip^zxt^ equal to two right angles, and the angles AGH, BuH are also equal to two right angles, [i. 13] the angles AGH, BGH are equal to the angles BGH, GHD. Let the angle BGH be subtracted from each ; therefore the remaining angle AGH is equal to the remaining angle GHD\\ and they are alternate ;"
+  },
+  {
+   "id": 55,
+   "where": "Elements, Book I, Prop. 28",
+   "text": "therefore AB is parallel to CD. [i. 27] Therefore etc."
+  },
+  {
+   "id": 56,
+   "where": "Elements, Book I, Prop. 29",
+   "text": "PROPOSITION 29 A straight line falling on parallel straight lines makes \\ the alternate angles equal to one another, the exterior angle equal to the interior and opposite angle, and the interior angles on the same side equal to two right angles. 5 For let the straight line EF fall on the parallel straight - lines AB, CD ; I say that it makes the alternate angles AGH, GHD equal, the ekterior angle EGB equal to the interior and opposite angle GHD, and the interior angles on the same 10 side, namely BGH, GHD, equal to two right angles. For, if the angle AGH is unequal to the angle GHD, one of them is greater. Let the angle AGH be greater. 15 Let the angle BGH be added to each ; therdfore the angles AGH, BGH are greater than the angles BGH, GHD. 31 a BOOK I [h 29 «> But the angles AGIf, BGH are equal to two right angles; therefore the angles BGH, GHD are less than two right angles. But straight lines produced indefinitely from angles less than two right angles meet ; [Post. 5] 25 therefore AB, CD, if produced indefinitely, will meet ; but they do not meet, because they are by hypothesis parallel."
+  },
+  {
+   "id": 57,
+   "where": "Elements, Book I, Prop. 29",
+   "text": "Therefore the angle AGH is not unequal to the angle GHD, and is therefore equal to it JO Again, the angle AGH is equal to the angle EGB ; [i. 15] therefore the angle EGB is also equal to the angle GHD. [C. N. i] Let the angle BGH be added to each ; therefore the angles EGB, BGH are equal to the js angles BGH. GHD. [C. N. a] But the angles EGB, BGH are equal to two right angles; P-I] therefore the angles BGH, GHD are also equal to two right angles. Therefore etc."
+  },
+  {
+   "id": 58,
+   "where": "Elements, Book I, Prop. 30",
+   "text": "PROPOSITION 30 Straight lines parallel to the same straight line are also parallel to one another. Let each of the straight lines AB^ CD be parallel to EF\\ I say that AB is also parallel to CD. 5 For let the straight line GK fall upon them. Then, since the straight line GK has fallen on the parallel straight lines AB, EF, o the angle AGK is equal to the angle GHF. [l 29] j Again, since the straight line GK has fallen on the parallel I straight lines EF, CD, - the angle GHF is equal to the angle GKD. [i. 29] 5 But the angle AGK \"w^s also proved equal to the angle GHF\\ therefore the angle AGK is also equal to the angle GKD ; [C. N. il and they are alternate. o Therefore AB is parallel to CD. Q. E. D."
+  },
+  {
+   "id": 59,
+   "where": "Elements, Book I, Prop. 31",
+   "text": "PROPOSITION 31 Through a given point to draw a straight line parallel to a given straight line. Let A be the given point, and BC the given straight line; thos it is required to draw through the point A a straight line parallel to the straight line Bi 3i BOOK I [i. 31, 3a Let a point D be taken at random on BC, and let AD be joined; on the straight line DA, and at the point A on it, let the ^ — angle DAE be constructed equal / to the angle ADC [i. 23] ; and let the straight straight ine AF be produced in a ine with EA. Then, since the straight line AD falling on the two straight lines BC, EF has made the alternate angles EAD, ADC equal to one another, therefore EAF is parallel to BC. [i. «7] Therefore through the given point A the straight line EAF has been drawn parallel to the given straight line BC. Q. E, F,"
+  },
+  {
+   "id": 60,
+   "where": "Elements, Book I, Prop. 31",
+   "text": "Proclus rightly remarks (p. 376, 14 — 20) that, as it is implied in i. 12 that only one perpendicular can be drawn to a straight line from an external point, so here it is implied that only one straight line can be drawn through a point parallel to a given straight line. The construction, be it observed, depends only upon i. 27, and might therefore have come directly after that proposition, ^^y then did Eucbd postpone it until after i. 29 and L 30? Presumably because he considered it nec^sary, before giving the constructioii, to place beyond all doubt the fact that only one such parallel am be drawn. Proclus infers this fact from i. 30 ; for, he says, if two straight lines could be drawn through one and the same point parallel to the same straight line, the two straight lines would \\^ parallel, though intersecting at the given point : which is impossible. I think it is a fair inference that Euclid would have considered it necessary to justify the assumption that only one parallel can be drawn by some such argument, and that he deliberately determined that his own assumption was more appropriate to be made the subject of a Postulate than tfie assumption of the uniqueness of the parallel"
+  },
+  {
+   "id": 61,
+   "where": "Elements, Book I, Prop. 31",
+   "text": "Proposition 32. In any triangle, if one of the sides be produced, the exterior angle is equal to the two interior and opposite angles^ and the three interior angles of the triangle are equal to two right angles. Let ABC be a triangle, and let one side of it BC be produced to D ; I say that the exterior angle ACD is equal to the two interior and opposite angles CAB, ABC, and the three interior angles of the triangle ABC^ BCA, CAB are equal to two right angles. I, 32] PROPOSITIONS 31. 32 317 For let CE be drawn through the point C parallel to the straight line AB. [i. 31] Then, since AB is parallel to CE, and AC has fallen upon them, the alternate angles BAC, ACE are equal to one another. [i. 29] Again, since AB is parallel to CE, and the straight line BD has fallen upon them, the exterior angle ECD is equal to the interior and opposite angle ABC. [i. 29] But the angle ACE was also proved equal to the angle BAC\\ therefore the whole angle ACD is equal to the two interior and opposite angles BAC, ABC Let the angle ACB be added to each ;"
+  },
+  {
+   "id": 62,
+   "where": "Elements, Book I, Prop. 33",
+   "text": "PROPOSITION 33 TAe stra^kt iines joining equal ami parallel straight lines (at the extremities which are) in the same directions {respectively) are themselves also equcU and parallel. Let AB, CD be equal and parallel and let the straight 5 lines AC^ BD join them (at the extremities which are) in the same directions (respectively) ; I. 33i 34] PROPOSITIONS 32—34 323 ; I say that AC, BD are also equal and parallel. Let BC be joined. Then, since AB is parallel to CD, 10 and BC has fallen upon them, the alternate angles ABC, BCD are equal to one another. [i. 29] And, since AB is equal to CD, and BC is common, 15 the two sides AB, BC are equal to the two sides DC, CB ; and the angle ABC is equal to the angle BCD ; therefore the base -^C is equal to the base BD, and the triangle ABC is equal to the triangle DCB, and the remaining apgles will be equal to the remaining angles 20 respectively, namely those which the equal sides subtend ; [1. 4] therefore the angle ACB\\% equal to the angle CBD. And, since the straight line BC falling on the two straight lines AC, BD has made the alternate angles equal to one another, 25 ^C is parallel to BD. [i. 27]"
+  },
+  {
+   "id": 63,
+   "where": "Elements, Book I, Prop. 33",
+   "text": "And it was also proved equal to it. Therefore etc."
+  },
+  {
+   "id": 64,
+   "where": "Elements, Book I, Prop. 34",
+   "text": "PROPOSITION 34 In parallelogrammic areas the opposite sides and angles are equal to one another, and the diameter bisects the areas. Let ACDB be a paFallelogrammic area, and BC its diameter ; 21 — 2 324 BOOK I [i. 34 5 I say that the opposite sides and angles of the parallelogram ACDB are equal to one another, and the diameter BC bisects it For, since AB is parallel to CD, and the straight line BC has fallen ioupon them, the alternate angles ABC, BCD are equal to one another. [i. 29] Again, since -<4C is parallel to BD, and BC has fallen upon them, 15 the alternate angles ACB, CBD are equal to one another. [l 29] Therefore ABC, DCB are two triangles having the two angles ABC, BCA equal to the two angles DCB, CBD respectively, and one side equal to one side, namely that 20 adjoining the equal angles and common to both of them, BC\\ therefore they will also have the remaining sides equal to the remaining sides respectively, and the remaining angle to the remaining angle ; [i. 26] therefore the side AB is equal to CD, 25 and^Cto^A and further the angle BAC is equal to the angle CDB. And, since the angle ABC is equal to the angle BCD, and the angle CBD to the angle ACB,"
+  },
+  {
+   "id": 65,
+   "where": "Elements, Book I, Prop. 34",
+   "text": "the whole an^^le ABD is equal to the whole angle A CD. [C.N.\\ 30 And the angle BAC^^s also proved equal to the angle CDB. ^ Therefore in parallelogrammic areas the opposite sides and angles are equal to one another. I say, next, that the diameter also bisects the areas. For, since AB is equal to CD, 35 and BC is common, the two sides AB, BC are equal to the two sides DC, CB respectively ; and the angle ABC is equal to the angle BCD ; therefore the base AC is also equal to DB, 40 and the triangle ABC is equal to the triangle DCB. [i. 4] Therefore the diameter BC bisects the parallelogram ACDB. Q. E. D."
+  },
+  {
+   "id": 66,
+   "where": "Elements, Book I, Prop. 35",
+   "text": "PROPOSITION 35 Parallelograms which are on the same base and in the same parallels are equal to one another. Let ABCD, EBCF be parallelograms on the same base BC and in the same parallels AF, BC ; 5 I say that ABCD is equal to the parallelogram EBCF. For, since ABCD is a parallelogram, AD is equal to BC. [l 34] I. 35] PROPOSITIONS 34, 35 3^7 I For the same reason also I EF is equal to BCy iio so that AD is also equal to EF\\ \\C. N, i] and DE is common ; ! therefore the whole AE is equal to the whole Z?/^ [C. N. 2] But AB is also equal to DC\\ [i. 34] therefore the two sides EA, AB are equal to the two sides }SED, DC respectively, and the angle FDC is equal to the angle EAB, the exterior to the interior ; [i. 29] therefore the base EB is equal 20 to the base FQ and the triangle EAB will be equal to the triangle FDC. [1.] Let DGE be subtracted from each ; therefore the trapezium ABGD which remains is equal to the trapezium EGCF \"which remains. [C N. 3] 25 Let the triangle GBC be added to each ; therefore the whole parallelogram A BCD is equal to the whole parallelogram EBCF. [C N. 2]"
+  },
+  {
+   "id": 67,
+   "where": "Elements, Book I, Prop. 35",
+   "text": "Therefore etc."
+  },
+  {
+   "id": 68,
+   "where": "Elements, Book I, Prop. 36",
+   "text": "PROPOSITION 36 Parallelograms which are on equal bases and in the same parallels are equal to one another. Let ABCD, EFGH be parallelograms which are on equal bases BC^ FG and in the same parallels AH, BG \\ I say that the parallelogram ABCD is equal to EFGH. For let BEy CH be joined. Then, since BC is equal to FG, while FG is equal to EH, BC is also equal to EH. \\C. N. i] But they are also parallel. And EB, HC join them ; but straight lines joining equal and parallel straight lines (at the extremities which are) in the same directions (respectively) are equal and parallel. [i. 33] Therefore EBCH is a parallelogram. [i. 34] And it is equal to ABCD ; for it has the same base BC with it, and is in the same parallels BC, AH with it. [i. 35] For the same reason also EFGH is equal to the same EBCH, [1. 35] so that the parallelogram ABCD is also equal to EFGH. \\C. N. 1] Therefore etc."
+  },
+  {
+   "id": 69,
+   "where": "Elements, Book I, Prop. 37",
+   "text": "PROPOSITION 37 Triangles which are an the same 6ase and in the same parallels are equal to one another. Let ABC, DBC be triangles on the same base EC and in the same parallels AD, BC ; 5 I say that the triangle ABC is equal to the triangle DBC. Let AD be produced in both directions lo E, F\\ through B let BE be drawn parallel to CA, [i. 31] 10 and through C let CF be drawn parallel to ED. [i. 31] Then each of the figures EEC A, DECF is a parallelogram ; and they are equal, 15 for they are on the same base BC and in the same parallels EC, EF. [i. 3S] Moreover the triangle ABC is half of the parallelogram EEC A ; for the diameter AB bisects it [i. 34] And the triangle DEC is half of the parallelogram DBCF\\ 10 for the diameter DC bisects it. [i. 34] [But the halves of equal things are equal to one another.] Therefore the triangle ABC is equal to the triangle DEC Therefore etc."
+  },
+  {
+   "id": 70,
+   "where": "Elements, Book I, Prop. 38",
+   "text": "PROPOSITION 38 Triangles which are on equal bases and in the same parallels are equal to one another. Let ABC, DEF be triangles on equal bases BC, EF and in the same par^tllels BF, AD ; I say that the triangle ABC is q a d h equal to the triangle DEF. For let AD be produced in both directions to G, H\\ through B let BG be drawn parallel to CA, [i. 31] and through F let FH be drawn parallel to DE. Then each of the figures GBCA, DEFH is a parallelo- gram ; and GBCA is equal to DEFH\\ 334 BOOK I [1. for they are on equal bases BC, EF and in the same parallels BF, GH. [l 36] Moreover the triangle ABC is half of the parallelogram GBCA ; for the diameter AB bisects it [i- 34] . And the triangle FED is half of the parallelogram DEFH\\ for the diameter DF bisects it [i. 34] [But the halves of eaual things are equal to one another.] Therefore the triangle ABC is equal to the triangle DEF. Therefore etc."
+  },
+  {
+   "id": 71,
+   "where": "Elements, Book I, Prop. 39",
+   "text": "PROPOSITION 39 Equal triangles which are on the same base and an the same side are also in the same parallels. Let ABC, DBC be equal triangles which are on the same base BC and on the same side of it ; 5 [I say that they are also in the same parallels.] And [For] let AD be joined ; I say that AD is parallel to BC. For, if not, let AE be drawn through the point A parallel to the straight line ^''BC, [1. 31] and let EC be joined. Therefore the triangle ABC is equal to the triangle EBC\\ for it is on the same base BC with it and 15 parallels. But ABC is equal to DBC ; therefore DBC is also equal to EBC, the greater to the less : which is impossible. Therefore AE is not parallel to BC. Similarly we can prove that neither is any other straight line except AD ; therefore AD is parallel to BC. Therefore etc."
+  },
+  {
+   "id": 72,
+   "where": "Elements, Book I, Prop. 41",
+   "text": "PROPOSITION 41 If a parallelogram liave the sante base with a triangle and be in the same parallels, the parallelogram is double of the triangle. For let the parallelogram ABCD have the same base EC with the triangle EBC, and let it be in the same parallels BC, AE\\ I say that the parallelogram ABCD is double of the triangle BEC. For let -r4C be joined. Then the triangle ABC is equal to the triangle EBC ; for it is on the same base BC with it and in the same parallels BC, AE. [i. 37] But the parallelogram ABCD is double of the triangle ABC\\ for the diameter AC bisects it ; [i. 34] so that the parallelogram ABCD is also double of the triangle EBC. Therefore etc."
+  },
+  {
+   "id": 73,
+   "where": "Elements, Book I, Prop. 42",
+   "text": "PROPOSITION 42 To construct^ in a given rectilineal angle, a parallelogram equal to a given triangle. Let ABC be the given triangle, and D the given recti- lineal angle ; thus it is required to construct in the rectilineal angle D a parallelogram equal to the triangle ABC. Let BC be bisected at E, and let AE be joined ; on the straight line EC, and at the point E on it, let the angle CEF be constructed equal to the angle D ; [i. 23] through A \\et AGhe drawn parallel to EC, and [i. 31] through C let CG be drawn parallel to EE. Then FECG is a parallelogram. And, since BE is equal to EC, the triangle ABE is also equal to the triangle AEC, for they are on equal bases BE, EC and in the same parallels BC,AG\\ [1.] therefore the triangle ABC is double of the triangle AEC 22 — 2 340 BOOK I ti-4tM But the parallelogram FECG is also double of the triangle A EC, for it has the same base with it and is in the same parallels with it ; [i. 41] therefore the parallelogram FECG is equal to the triangle ABC. And it has the angle C^-F equal to the given angle D. Therefore the parallelogram FECG has been constructed equal to the given triangle ABC, in the angle C£*/^ which is equal to D. Q. E. F."
+  },
+  {
+   "id": 74,
+   "where": "Elements, Book I, Prop. 43",
+   "text": "PROPOSITION 43 In any parallelogram the complements of the parallelograms about the diameter are equal to one another. Let A BCD be a parallelogram, and AC\\X& diameter ; and about AC let EH, FG be parallelograms, and BK, KD 5 the so-called complements ; I say that the complement BK is equal to the complement KD. For, since A BCD is a parallelogram, and y4C its diameter, the triangle ABC is equal to 10 the triangle A CD. [i. 34] Again, since EH is a parallelo- gram, and AK is its diameter, the triangle AEK is equal to the triangle AHK. 15 For the same reason the triangle KFC is also equal to KGC. Now, since the triangle AEK is equal to the trianele AHK, and KFC to KGC, ao the triangle AEK together with KGC is equal to the triangle AHK together with KFC. \\C. N. 2] And the whole triangle ABC is also equal to the whole ADC\\ therefore the complement BK which remains is equal to the as complement KD which remains. \\C. N. 3] Therefore eta Q. E. D."
+  },
+  {
+   "id": 75,
+   "where": "Elements, Book I, Prop. 44",
+   "text": "PROPOSITION 44 ,To a given straight line to apply ^ in a given rectilineal angle, a parallelogram equal to a given triangle. Let AB be the given straight line, C the given triangle and D the given rectUineal angle ; 5 thus it is required to apply to the given straight line AB, in an angle equal to the angle D, a parallelogram equal to the I given triangle C. Let the parallelogram BEFG be constructed equal to the triangle c, in the angle EBG which is equal to D [i. 42] ; {lo let it be placed so that BE is in a straight line with AB \\ let 343 BOOK I [l FG be drawn through to H^ and let AH be drawn through A parallel to either BG or EF. [i. 31] Let HB be joined. Then, since the straight line HF falls upon the parallels isAH.EF, the angles AHF, HFE are equal to two right angles. [I. »9] Therefore the angles BHG^ GFE are less than two right angles; and straight lines produced indefinitely from angles less than «> two right angles meet ; [Post 5] therefore HB, FE, when produced, will meet Let them be produced and meet at K\\ through the point K let KL be drawn parallel to either EA or FH, [i. 31]"
+  },
+  {
+   "id": 76,
+   "where": "Elements, Book I, Prop. 44",
+   "text": "and let HA, GB be produced to the points L, M. *s Then HLKF is a parallelogram, HK is its diameter, and AG, ME are parallelograms, and LB, BFlht, so-called complements, about HK\\ therefore LB is equal to BF. [i. 43] But BF is equal to the triangle C ; 30 therefore LB is also equal to C [C N. i] And, since the angle GBE is equal to the angle ABM, [I. IS] while the angle GBE is equal to D, the angle ABM is also equal to the angle D. Therefore the parallelogram LB equal to the given triangle 35 C has been applied to the given straight line aS, in the angle ABM which is equal to D. Q. E. F."
+  },
+  {
+   "id": 77,
+   "where": "Elements, Book I, Prop. 45",
+   "text": "PROPOSITION 45 To construct, in a given rectilineal angle, a parallelogram equal to a given rectilineal figure. Let A BCD be the given rectilineal figure and E the given rectilineal angle ; 5 thus it is required to construct, in the given angle E^ a parallelogram equal to the rectilineal figure ABCD. ^^P-L Let DB be joined, and let the parallelogram FH be constructed equal to the triangle ABD, in the angle HKF which is equal to E \\ [i. 42] ©let the parallelogram GM equal to the triangle DBC be applied to the straight line GH, in the angle GrlM which is ^ equal to E. [i. 44] Then, since the angle E is equal to each of the angles HKF, GHM, 15 the angle HKF is also equal to the angle GHM. [C N. i] 346 BOOK I . [i. 45 Let the angle KHG be added to each ; therefore the angles FKH, KHG are equal to the angles KHG, GHM. But the angles FKH, KHG are equal to two right angles; ao therefore the angles KHG, GHM ^^ also equal to two right angles. Thus, with a straight line GH, and at the point H on it,"
+  },
+  {
+   "id": 78,
+   "where": "Elements, Book I, Prop. 45",
+   "text": "two straight lines Kff, HM not lying on the same side make the adjacent angles equal to two right angles ; 25 therefore KH is in a straight line with HM. [l 14] And, since the straight line HG falls upon the parallels KM, FG, the alternate angles MHG, HGF are equal to one another. [l 39] Let the angle HGL be added to each ; 30 therefore the angles MHG, HGL are equal to the angles HGF, HGL. [C N. 2] But the angles MHG, HGL are equal to two right angles ; [L] therefore the angles HGF, HGL are also equal to two right angles. [C N. i] 35 Therefore FG is in a straight line with GL. [i. 14] And, since FK is equal and parallel to HG, [i. 34] and HG to ML also, KF is also equal and parallel to ML ; [C. ^ i ; i. 30] and the straight lines KM, FL join them (at their extremities); 40 therefore Km, FL are also equal and parallel. [i. 33] Therefore KFLM is a parallelogram. And, since the triangle ABD is equal to the parallelogram ^^' and DBC to GM, 45 the whole rectilineal figure ABCD is equal to the whole parallelogram KFLM."
+  },
+  {
+   "id": 79,
+   "where": "Elements, Book I, Prop. 45",
+   "text": "Therefore the parallelogram KFLM has been constructed equal to the given rectilineal figure ABCD, in the angle FKM which is equal to the given angle E. q. e. f. St 3f ^% 45* 48* rectilineal figure, in the Greek '* rectilineal \" simply, without **fipiie,\" €^^faikiii» being here used as a substantive, like the similarly formed waptXkiKAyptLiitum, Transformation of areas. We can now take stock of how Ceu- the propositions i. 43 — 45 bring us in the matter of transfarmoHon af areas, which constitutes so important a part of 1. 45. 46] PROPOSITIONS 4S» 46 347"
+  },
+  {
+   "id": 80,
+   "where": "Elements, Book I, Prop. 46",
+   "text": "PROPOSITION 46 On a given straight line to describe a square. Let AB be the given straight line ; thus it IS required to describe a square on the straight line AB. 5 Let AC he drawn at right angles to the straight line AB from the point A on It [i. 11], and let AD be made equal to AB ; through the point Z? let DE be drawn 10 parallel to AB, and through the point B let B£ be drawn parallel to AD. 348 BOOK I [1. Therefore ADEB is a parallelogram ; ^ therefore AB is equal to DE, and AD to BE. [l 34] But AB is equal to AD ; IS therefore the four straight lines BA, AD, DE, EB are equal to one another ; therefore the parallelogram ADEB is equilateral. I say next that it is also right-angled. For, since the straight line AD falls upon the parallels ^AB, DE, the angles BAD, ADE are equal to two right angles. [i. 29] But the angle BAD is right ; therefore the angle ADE is also right And in parallelogrammic areas the opposite sides and 15 angles are equal to one another ; [l 34]"
+  },
+  {
+   "id": 81,
+   "where": "Elements, Book I, Prop. 46",
+   "text": "therefore each of the opposite angles ABE, BED is also right Therefore ADEB is right-angled. And it was also proved equilateral, p Therefore it is a square; and it is described on the straight line AB. Q. E. F."
+  },
+  {
+   "id": 82,
+   "where": "Elements, Book I, Prop. 47",
+   "text": "PROPOSITION 47 In right-angled triangles the square on the side subtending the right angle is equal to the squares on the sides containing the right angle. Let ABC be a right-angled triangle having the angle ^BAC right; I say that the square on BC is equal to the squares on BA, AC. For let there be described on BC the square BDEC^ ID and on BA, AC the squares GB,HC\\ [1.] through A let AL be drawn parallel to either BD or CE, and let AD, FC be joined. IS Then, since each of the angles BAC, BAG is right, it follows that with a straight line BA, and at the point A on it, the two straight lines so/^C AG not lying on the same side make the adjacent i angles equal to two right angles ; therefore C is in a straight line with AG. For the same reason BA is also in a straight line with AH. And, since the angle DBC is equal to the angle FBA : for each is right : let the angle ABC be added to each ; therefore the whole angle DBA is equal to the whole angle FBC. [C. N. a]"
+  },
+  {
+   "id": 83,
+   "where": "Elements, Book I, Prop. 47",
+   "text": "[I. 14] 3SO BOOK I [l And, since DB is equal to BC^ and FB to BA^ the two sides AB, BD are equal to the two sides FB^ BC respectively ; J and the angle ABD is equal to the angle FBC ; therefore the base AD is equal to the base FC, and the triangle ABD is equal to the triangle FBC. [l 4] Now the paraJlelogram BL is double of the triangle ABD, for they have the same base BD and are in the same parallels 10 ^Z?, AL. [1.] And the square GB is double of the triangle FBC, for they again have the same base FB and are in the same parallels FB, GC [i. 41] [But the doubles of equals are equal to one another.] ^5 Therefore the parallelogram BL is also equal to the square GB. Similarly, if AE, BK be joined, the parallelogram CL can also be proved equal to the square HC\\ ;o therefore the whole square BDEC is equal to the two squares GB, HC [C. N. 2] j And the square BDEC is described on BC, \\ and the squares GB, HC on BA, AC Therefore the square on the side BC is equal to the 15 squares on the sides BA, AC"
+  },
+  {
+   "id": 84,
+   "where": "Elements, Book I, Prop. 47",
+   "text": "Therefore etc."
+  },
+  {
+   "id": 85,
+   "where": "Elements, Book I, Prop. 48",
+   "text": "PROPOSITION 48 If in a triangle the square on one of the sides be equal to the squares on the remaining two sides of the triangle, the angle contained by the remaining two sides of the triangle is right. For in the triangle ABC let the square on one side BC be equal to the squares on the sides BA, AC; I say that the angle BAC is right. For let AD be drawn from the point A at right angles to the straight line AC, let AD be made equal to BA, and let DC be joined. Since DA is equal to AB, the square on DA is also equal to the square on AB. Let the square on -^C be added to each ; I. 48] PROPOSITIONS 47, 48 369 therefore the squares on DA, AC are equal to the squares on BAy AC. But the square on DC is equal to the squares on DA, AC, for the angle DAC is right ; [1. 47] and the square on BC is equal to the squares on BA, AC, for this is the hypothesis ; therefore the square on DC is equal to the square on BC, so that the side DC is also equal to BC And, since DA is equal to AB, and AC is common,"
+  },
+  {
+   "id": 86,
+   "where": "Elements, Book I, Prop. 48",
+   "text": "the two sides DA, AC are equal to the two sides BA, AC; I and the base DC is equal to the base BC ; I therefore the angle DAC is equal to the angle BAC. [i. 8] i But the angle DAC is right ; ' therefore the angle BAC is also right. \\ Therefore etc. q. e. d Proclus' note (p. 430) on this proposition, though it does not mention I Heron's name, gives an alternative proof, which is the same as that definitely 1 attributed by an-NairizI to Heron, the only diflference being that Proclus demonstrates two cases in full, while Heron dismisses the second with a r \" similarly.\" The alternative proof is another instance of the use of i. 7 as a means of answering objections. If, says Proclus, it be not admitted that the perpendicular AD may be drawn on the opposite side of AC from B, we may draw it on the same side as AB, in which case it is impossible that it should not coincide with AB, Proclus takes two cases, first supposing that the perpendicular falls, as AD, 1 within the angle CAB, and secondly that it falls, ; as A£, outside that angle. In either case the absurdity results that, on the same straight line A C and on the same side of it, AD, DC must be re- spectively equal to AB, BC, which contradicts i. 7."
+  },
+  {
+   "id": 87,
+   "where": "Elements, Book I, Prop. 48",
+   "text": "Much to the same effect is the note of De Morgan that there is here '' an appearance of avoiding indirect demonstration by drawing the triangles on diflferent sides of the base and appealing to i. 8, because drawing them on the same side would make the appeal to i. 7 (on which, however, i. 8 is founded).\" H. K. 24 BOOK II. DEFINITIONS. 1. Any rectangular parallelogram is said to be contained by the two straight lines containing the right angle. 2. And in any parallelogrammic area let any one whatever of the parallelograms about its diameter with the two comple- ments be called a gnomon. Definition i. Ilav wapaXXrikoypafifLov dpOoyJu^wv vtpc^cirAu Xfycrcu vw tvo rmt^ r^ fy$^v ytaytav vcpicxovcraiv cMctwF."
+  }
+ ]
+}

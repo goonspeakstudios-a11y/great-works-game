@@ -103,10 +103,10 @@ func test_plural_filler_words_are_ignored() -> void:
 
 
 ## The books whose places are built so far; every other gateway on the Shore is sealed.
-const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium",
+const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium", "euclid-elements",
 	"aristotle-nicomachean-ethics"]
 ## The places built in sprint 4 (places_greek.gd), each tested like the villa and the Lyceum.
-const NEW_PLACES := ["rhetorica-ad-herennium"]
+const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements"]
 
 
 func test_rooms_follow_the_reading_list() -> void:
@@ -898,4 +898,40 @@ func test_the_memory_walk_can_be_walked() -> void:
 	hall._close_panels()
 	check(hall.progress.understood("rhetorica-ad-herennium").has("order"), "and it counts")
 	check(it["cast"].values().all(func(n): return not is_instance_valid(n) or not n.visible), "the images are gone again, for next time")
+	hall.free()
+
+
+## Plays a beat to its end the way a player would: walking to each mark, pressing and holding F.
+## Returns how many steps it took (or -1 if it never ended).
+static func _play_through(hall: Node, it: Dictionary) -> int:
+	hall.activate(it)
+	for guard in 1000:
+		if hall.beat == null:
+			return guard
+		var mark: Variant = hall.beat.next_mark()
+		if mark != null:
+			hall.player.position = Vector3(mark.x, hall.player.position.y, mark.z)
+		elif hall.beat.kind() in ["line", "act"]:
+			hall.beat.press(hall.player)
+		if hall.beat:
+			hall._play_beat(0.1, true)
+	return -1
+
+
+## Every beat of every new place can be played to its end, and in Zen each counts its point.
+func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for work in NEW_PLACES:
+		hall.progress.data = {"works": {}}
+		hall.progress.set_mode("greece", "zen")
+		hall.travel(work)
+		var beats: Array = hall.interactables.filter(func(i): return i["kind"] == "beat")
+		for k in beats.size():
+			var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "beat")[k]  # the place is rebuilt as it mends
+			check(_play_through(hall, it) >= 0, "%s/%s plays to its end" % [work, it["beat"]])
+			hall._close_panels()
+			if it.has("id"):
+				check(hall.progress.understood(work).has(it["id"]), "%s/%s counts '%s'" % [work, it["beat"], it["id"]])
 	hall.free()

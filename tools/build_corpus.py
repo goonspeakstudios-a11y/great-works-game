@@ -71,6 +71,24 @@ BOOKS = {
         "chapter": r"^\s*==\s*(\d+)\s*==\s*$",
         "book": r"^\s*LIBER ([IV]+)\s*$",
     },
+    "euclid-elements": {  # Heath's Book I from the scan of his first volume, without his notes
+        "title": "Elements, Book I",
+        "translation": "tr. T. L. Heath (1908), public domain",
+        "urls": [["https://archive.org/download/thirteenbookseu02heibgoog/thirteenbookseu02heibgoog_djvu.txt", ""]],
+        "segments": [
+            {"start": r"^DEFINITIONS\.\s*$", "end": r"The whole is greater than the part", "heading": "FIRST PRINCIPLES", "once": True,
+             "skip_start": False},
+            {"start": r"^Proposition ([0-9ilIoO]{1,3})[\.,]\s*$",
+             "end": r"required to (do|prove)\.|^Therefore etc\.|Q\. ?E\. ?[DF]\.",
+             "heading": "PROPOSITION {n}", "skip_start": True, "max": 3200},
+        ],
+        "drop": [r"^.{0,3}$", r"^H\. E\. \d+.*$", r"^BOOK I \[.*$", r"^\[\d+\]\s*", r"^B\(X\)K I.*$"],
+        "start": r"FIRST PRINCIPLES",
+        "end": r"\Z",
+        "chapter": r"^\s*(?:PROPOSITION|FIRST) (\d+|PRINCIPLES)\s*$",
+        "chapter_label": "Prop.",
+        "chapter_names": {"PRINCIPLES": "Definitions, Postulates, Common Notions"},
+    },
     "aristotle-nicomachean-ethics": {
         "file": "Aristotle - Nicomachean Ethics (tr. Chase).txt",
         "title": "Nicomachean Ethics",
@@ -152,6 +170,49 @@ def unwiki(raw: str) -> str:
     return raw
 
 
+def segments(text: str, part: dict) -> str:
+    """Only the parts of a scanned book that are the author's own text (not the editor's notes):
+    each {"start", "end", "heading"} keeps every span from a start match to the end of its end
+    match (or, failing that, "max" characters on, at a paragraph break), under a heading line ({n}
+    numbers them in order), at most "limit" of them; "drop" removes scanner debris lines."""
+    kept: list[str] = []
+    for seg in part["segments"]:
+        n = 0
+        last = 0
+        pos = 0
+        while True:
+            m = re.search(seg["start"], text[pos:], re.M)
+            if not m:
+                break
+            start = pos + m.start()
+            window = text[start: start + seg.get("max", 10**9)]
+            e = re.search(seg["end"], window, re.M | re.S)
+            if e:
+                stop = start + e.end()
+            elif "max" in seg:
+                cut = window.rfind("\n\n")
+                stop = start + (cut if cut > 0 else len(window))
+            else:
+                break
+            n += 1
+            number = n
+            if m.groups():  # the number the book itself gives, read through the scanner's slips
+                digits = m.group(1).translate(str.maketrans("ilIoOS", "111005"))
+                number = int(digits) if digits.isdigit() else n
+                if number < last:
+                    break  # the next book begins again at 1
+                last = number
+            body = text[start + (m.end() - m.start()) if seg.get("skip_start") else start: stop]
+            kept.append(seg["heading"].format(n=number) + "\n\n" + body)
+            pos = stop
+            if seg.get("once") or n >= seg.get("limit", 10**9):
+                break
+    out = "\n\n".join(kept)
+    for pattern in part.get("drop", []):
+        out = re.sub(pattern, "", out, flags=re.M)
+    return out
+
+
 def source_text(part: dict) -> str:
     if "urls" in part:
         pieces = []
@@ -191,7 +252,9 @@ def chunk(body: str, spec: dict, title: str) -> list[dict]:
         if len(words) < 25 and not final:
             return  # a lone heading joins the passage that follows it
         if words:
-            where = title + (f", Book {book}" if book else "") + (f", Chap. {chapter}" if chapter else "")
+            named = spec.get("chapter_names", {}).get(chapter, "")
+            where = title + (f", Book {book}" if book else "") + (
+                f", {named}" if named else f", {spec.get('chapter_label', 'Chap.')} {chapter}" if chapter else "")
             chunks.append({"id": len(chunks), "where": where, "text": " ".join(words)})
             words.clear()
 
@@ -206,7 +269,7 @@ def chunk(body: str, spec: dict, title: str) -> list[dict]:
             # a chapter's last lines stay with that chapter; only text before the
             # first chapter (a title) is carried into the chapter that follows
             flush(final=bool(chapter))
-            chapter = m.group(1)
+            chapter = next((g for g in m.groups() if g), "")
         text = clean(para)
         if not text:
             continue
@@ -229,6 +292,8 @@ def build(work_id: str) -> Path:
     chunks: list[dict] = []
     for part in spec.get("parts", [spec]):
         text = source_text(part)
+        if "segments" in part:
+            text = tidy(segments(text, part))
         for c in chunk(body_of(text, part), part, part["title"]):
             c["id"] = len(chunks)
             chunks.append(c)

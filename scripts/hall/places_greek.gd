@@ -5,7 +5,8 @@ extends RefCounted
 ## kit_greek_areas.gd, and their people and props. Where a book is played, its moments are beats
 ## (beat.gd, content/greece/beats.json): an interactable {"kind": "beat"} that also carries its
 ## lesson point, so it counts like a stone.
-##   domus()  #4 the Rhetorica ad Herennium: a house in Rome, its memory house, the court in the Forum
+##   domus()   #4 the Rhetorica ad Herennium: a house in Rome, its memory house, the court in the Forum
+##   museum()  #5 Euclid: the Museum at Alexandria, Proposition 1 on the sand, Proposition 47 in tiles
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -249,3 +250,140 @@ static func _strange(world: Node3D, at: Vector3, kind: String) -> Node3D:
 			Kit.mesh(g, TorusMesh.new(), "gold", Vector3(0, 1.45, 0.75), Vector3.ZERO, Vector3(0.12, 0.25, 0.12))
 	Kit.unsolid(g)
 	return g
+
+
+# ---------- #5 Euclid, the Elements ----------
+
+## Where a node stands in the world's space (the kits nest their pieces in groups).
+static func _in_world(node: Node3D, world: Node3D) -> Vector3:
+	var t := node.transform
+	var up := node.get_parent()
+	while up != null and up != world and up is Node3D:
+		t = (up as Node3D).transform * t
+		up = up.get_parent()
+	return t.origin
+
+
+## The Museum at Alexandria, about 300 BC: the court with its colonnades, cabinets of book rolls,
+## date palms and sand trays, where Euclid sits drawing; west, open sand with Proposition 1 pegged
+## out at walking size, two circles and a triangle; east, a terrace with the three squares of
+## Proposition 47 in tiles. Lost, the palms are dead, the colonnades broken, sand drifts over the
+## figures, and the scholars are shades.
+static func museum(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 8), 34.0)  # the low sun, so the figures on the sand show
+	Kit.plateau(world, 70.0, "earth", false)
+	Kit.sea(world, -2.0)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 6), 5, 16.0, 12.0) if b.has("leaves") else []
+	_arrival(world, room, out, spots, flicker, 44.0, 25.0, "paving")
+
+	var court := Areas.museum_court(world, Vector3(0, 0, 8), 0.0, b)
+	flicker.append_array(court["flicker"])
+	sway.append_array(court["sway"])
+	people.append_array(court["people"])
+	Greek.sand_tray(world, Vector3(0, 0, 1.6), 0.0, b.has("teacher"))
+	var euclid := _teacher(world, room, b, stage, Vector3(0, 0, 0.3), 0.0, Vector3(0, 0, 3.2), out, spots)
+	people.push_front(euclid)
+	_study(world, room, out, spots, [[Vector3(-8.5, 0, 22.0), PI, Vector3(-8.5, 0, 20.4)], [Vector3(8.5, 0, 22.0), PI, Vector3(8.5, 0, 20.4)]],
+		Vector3(-15.2, 2.2, 4.5), PI / 2.0, Vector3(-13.6, 0, 4.5), Vector3(9.5, 0, 17.0), Vector3(9.5, 0, 15.8))
+
+	var one := Areas.prop_one(world, Vector3(-38, 0, 6), 0.0, b)
+	flicker.append_array(one["flicker"])
+	sway.append_array(one["sway"])
+	Kit.box(world, Vector3(-19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "paving" if b.has("walkway") else "sand", false)
+	var tiles := Areas.prop_forty_seven(world, Vector3(38, 0, 6), 0.0, b)
+	flicker.append_array(tiles["flicker"])
+	sway.append_array(tiles["sway"])
+	Kit.box(world, Vector3(19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "paving" if b.has("walkway") else "sand", false)
+
+	flicker.append_array(_museum_lessons(world, work, room, out, spots, one, tiles, b))
+	out.append(Places.seat(world, Vector3(0, 0, 30.0), Vector3(0, 0, 1), "Sit and look out to sea"))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 41.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": people, "restored": 0, "sway": sway, "birds": birds, "back": b}
+
+
+## Euclid's six stones: the definitions, the postulates and the common notions in the court, the
+## bridge of asses in its floor, and the two propositions played on the sand and on the tiles.
+static func _museum_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, one: Dictionary,
+		tiles: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var whole := b.has("walkway")
+
+	# definitions: a point (a bronze bead on a plinth), a line (a cord between two pegs), a circle
+	# (a ring of pebbles round a peg)
+	var dc := Vector3(-5.5, 0, 4.0)
+	Kit.box(world, dc + Vector3(-1.4, 0.45, 0), Vector3(0.4, 0.9, 0.4), "marble")
+	Kit.blob(world, dc + Vector3(-1.4, 0.93, 0), 0.03, "bronze")
+	for x: float in [-0.5, 0.9]:
+		Kit.cylinder(world, dc + Vector3(x, 0, 0), 0.03, 0.5, "wood", false, 6)
+	Kit.box(world, dc + Vector3(0.2, 0.45, 0), Vector3(1.4, 0.015, 0.015), "#c8b890", false)
+	Kit.cylinder(world, dc + Vector3(0.2, 0, 1.4), 0.03, 0.3, "wood", false, 6)
+	for k in 16:
+		var a := TAU * k / 16.0
+		Kit.blob(world, dc + Vector3(0.2 + cos(a) * 0.8, 0.04, 1.4 + sin(a) * 0.8), 0.05, "stone")
+	_stone(out, work, room, "definitions", dc + Vector3(0, 0, 2.8), "Look at the point, the line and the circle")
+
+	# postulates: a straightedge and dividers on a table, and a line ruled straight out across the
+	# court and through the gateway (a line may be produced as far as you like)
+	var pc := Vector3(5.5, 0, 4.0)
+	Kit.box(world, pc + Vector3(0, 0.4, 0), Vector3(1.2, 0.8, 0.7), "wood" if whole else "deadwood")
+	Kit.box(world, pc + Vector3(0, 0.81, 0.1), Vector3(1.0, 0.02, 0.05), "wood", false)
+	for side: float in [-1.0, 1.0]:
+		Kit.box(world, pc + Vector3(0.1 * side, 0.82, -0.12), Vector3(0.02, 0.01, 0.35), "bronze", false, Vector3(0, side * 0.3, 0))
+	Kit.box(world, Vector3(2.2, 0.035, 26.0), Vector3(0.04, 0.01, 40.0), "#3a3226", false)
+	_stone(out, work, room, "postulates", pc + Vector3(0, 0, 1.6), "Look at the straightedge and the dividers")
+
+	# common notions: a balance with two equal weights, and a third just like them beside it
+	var nc := Vector3(5.5, 0, 12.0)
+	Kit.box(world, nc + Vector3(0, 0.4, 0), Vector3(0.5, 0.8, 0.5), "marble")
+	Kit.box(world, nc + Vector3(0, 1.1, 0), Vector3(0.04, 0.6, 0.04), "bronze", false)
+	Kit.box(world, nc + Vector3(0, 1.4, 0), Vector3(0.9, 0.03, 0.03), "bronze", false)
+	for x: float in [-0.42, 0.42]:
+		Kit.cylinder(world, nc + Vector3(x, 1.1, 0), 0.12, 0.02, "bronze", false, 8)
+		Kit.cylinder(world, nc + Vector3(x, 1.12, 0), 0.05, 0.08, "iron", false, 6)
+	Kit.cylinder(world, nc + Vector3(0.4, 0.8, 0.3), 0.05, 0.08, "iron", false, 6)
+	_stone(out, work, room, "common_notions", nc + Vector3(-1.6, 0, 0), "Look at the balance")
+
+	# the bridge of asses: an isosceles triangle cut into the court's floor, its base angles marked
+	var ic := Vector3(-5.5, 0, 13.0)
+	var apex := ic + Vector3(0, 0, -2.2)
+	for q: Vector3 in [ic + Vector3(-1.2, 0, 1.2), ic + Vector3(1.2, 0, 1.2)]:
+		Kit.box(world, (apex + q) / 2.0 + Vector3(0, 0.04, 0), Vector3(0.05, 0.02, apex.distance_to(q)), "#3a3226", false,
+			Vector3(0, atan2(q.x - apex.x, q.z - apex.z), 0))
+		Kit.blob(world, q + Vector3(0, 0.04, -0.25), 0.15, "#8a1e1a", Vector3(1.0, 0.1, 1.0), 6)  # the equal angles
+	Kit.box(world, ic + Vector3(0, 0.04, 1.2), Vector3(2.4, 0.02, 0.05), "#3a3226", false)
+	_stone(out, work, room, "pons_asinorum", ic + Vector3(0, 0, 2.6), "Look at the triangle in the floor")
+
+	# Proposition 1, pegged out on the sand: drive the pegs, walk the circles, find the third corner
+	var corners: Array = one["corners"]
+	var a: Vector3 = corners[0]
+	var bb: Vector3 = corners[1]
+	var c: Vector3 = corners[2]
+	var marks := {"A": a, "B": bb, "C": c, "circle_a": _around(a, a.distance_to(bb)), "circle_b": _around(bb, a.distance_to(bb))}
+	out.append({"kind": "beat", "pos": (a + bb) / 2.0 + (a + bb - c * 2.0).normalized() * 2.0, "work": work, "id": "prop_one",
+		"beat": "rope_and_pegs", "text": "Peg out the first proposition", "note": Places._lesson(room, "prop_one").get("point", ""),
+		"marks": marks})
+
+	# Proposition 47 in tiles: step on every tile of each square and count
+	var sq: Dictionary = tiles["squares"]
+	var routes := {}
+	for n in [3, 4, 5]:
+		routes["sq%d" % n] = (sq[n] as Array).map(func(t): return _in_world(t, world))
+	var t0: Vector3 = (routes["sq3"] as Array)[0] if not (routes["sq3"] as Array).is_empty() else Vector3(38, 0, 6)
+	out.append({"kind": "beat", "pos": Vector3(38, 0, 13.5), "work": work, "id": "prop_47", "beat": "count_the_tiles",
+		"text": "Count the three squares", "note": Places._lesson(room, "prop_47").get("point", ""), "marks": routes})
+	spots["prop_47"] = t0
+	return flicker
+
+
+## Points round a circle on the ground, for walking it.
+static func _around(centre: Vector3, r: float, count: int = 12) -> Array:
+	var pts: Array = []
+	for k in count + 1:
+		var a := TAU * k / count
+		pts.append(centre + Vector3(cos(a), 0, sin(a)) * r)
+	return pts

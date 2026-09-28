@@ -90,5 +90,102 @@
     }
    ]
   }
+ },
+ "euclid-elements": {
+  "rope_and_pegs": {
+   "hero": "",
+   "title": "Proposition 1, on the sand",
+   "point": "prop_one",
+   "steps": [
+    {
+     "line": "On a given finite straight line, to construct an equilateral triangle. The line is AB, pegged out on the sand."
+    },
+    {
+     "go": "A",
+     "text": "Go to A"
+    },
+    {
+     "act": "Drive the peg in at A"
+    },
+    {
+     "go": "B",
+     "text": "Go to B, paying out the cord"
+    },
+    {
+     "act": "Tie the cord at B: it is exactly as long as AB"
+    },
+    {
+     "line": "Postulate 3: a circle may be drawn with any centre and distance. Walk round A with the cord taut."
+    },
+    {
+     "go": "circle_a",
+     "text": "Walk the circle round A, the cord taut"
+    },
+    {
+     "line": "Every point you walked is as far from A as B is. Now round B, through A."
+    },
+    {
+     "go": "circle_b",
+     "text": "Walk the circle round B, the cord taut"
+    },
+    {
+     "line": "The two circles cross. Where they cross is the third corner."
+    },
+    {
+     "go": "C",
+     "text": "Stand where the circles cross"
+    },
+    {
+     "act": "Drive in the peg at C, and stretch the cord to A and to B",
+     "hold": 1.0
+    },
+    {
+     "line": "CA equals AB, for both reach from A to its circle. CB equals BA, from B to its circle."
+    },
+    {
+     "line": "Things which are equal to the same thing are also equal to one another. So CA equals CB, and all three are equal."
+    },
+    {
+     "line": "Being what it was required to do."
+    }
+   ]
+  },
+  "count_the_tiles": {
+   "hero": "",
+   "title": "Proposition 47, in tiles",
+   "point": "prop_47",
+   "steps": [
+    {
+     "line": "A right-angled triangle with sides of three, four and five, and a square of tiles on each side."
+    },
+    {
+     "go": "sq3",
+     "text": "Step on every tile of the square on the short side"
+    },
+    {
+     "line": "Nine."
+    },
+    {
+     "go": "sq4",
+     "text": "Now every tile of the square on the other short side"
+    },
+    {
+     "line": "Sixteen. Nine and sixteen make twenty-five."
+    },
+    {
+     "go": "sq5",
+     "text": "Now every tile of the square on the long side, opposite the right angle"
+    },
+    {
+     "line": "Twenty-five. The square on the side opposite the right angle equals the squares on the other two."
+    },
+    {
+     "act": "Say it back to yourself"
+    },
+    {
+     "line": "Counting shows it for this triangle. Euclid's proof shows it for every right-angled triangle there is."
+    }
+   ]
+  }
  }
 }

@@ -99,6 +99,8 @@ const ZONES := {
 		{"file": "alexandria_kithara", "db": -9.0, "music": true, "needs": "teacher"},
 		{"file": "alexandria_monochord", "db": -10.0, "music": true, "needs": "lamps"},
 		{"file": "gulls", "db": -26.0, "needs": "sun"},
+		{"file": "birds", "db": -25.0, "needs": "leaves"},
+		{"file": "crowd", "db": -28.0, "needs": "household"},
 		{"file": "waves", "db": -22.0},
 		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
 	# The Academy (Plato): the enharmonic pipe, the Sirens of Er, the Fates; the Cephisus nearby.

@@ -536,5 +536,117 @@
         "line": "The people of Rome are back: the crowd round the court, and your images on their places."
       }
     ]
+  },
+  "euclid-elements": {
+    "open": true,
+    "place": "museum",
+    "zone": "alexandria",
+    "where": "The Museum, Alexandria",
+    "when": "about 300 BC",
+    "map": "300bc",
+    "map_note": "About 300 BC Alexander has been dead for twenty years and his generals have split his empire: Ptolemy holds Egypt and builds Alexandria into the greatest city of the Greek world, with its Museum, its Library and, soon, its lighthouse, the Pharos.",
+    "statues": [
+      {
+        "name": "Pythagoras",
+        "beard": "long",
+        "note": "Pythagoras of Samos (about 570 - 495 BC), whose followers held that everything is number. The theorem about right-angled triangles bears his name; Euclid gives the first proof of it that survives, as Proposition 47."
+      },
+      {
+        "name": "Ptolemy",
+        "beard": "none",
+        "note": "Ptolemy I (about 367 - 282 BC), Alexander's general and now king of Egypt, who brought scholars to Alexandria. The story goes that he asked Euclid for a quicker way into geometry, and was told there is no royal road."
+      }
+    ],
+    "greeting": "Sit. Bring nothing but what I give you: a few words, a few things asked for, a few things everyone agrees on. From those alone we will build everything, and never take a step we cannot justify.",
+    "greeting_lost": "You found the Museum. It is grey now, the sand is blown over the figures, and I am what is left. The proofs still hold. They do not need anyone.",
+    "gift": "Euclid hands you his straightedge and a pair of bronze dividers. \"No royal road,\" he says. \"You walked it anyway.\"",
+    "author": "Euclid",
+    "life": "fl. about 300 BC",
+    "book": "Elements",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "6a6058",
+      "beard": "short",
+      "beard_color": "7a7068",
+      "robe": "d8d0bc",
+      "trim": "4a6a8a",
+      "old": true
+    },
+    "persona": "You are Euclid, teaching geometry in Alexandria about 300 BC, in the court of the Museum that King Ptolemy has founded. Almost nothing is known of your life, and you do not dwell on it. You wrote the Elements in thirteen books; Book I begins from definitions, five postulates and five common notions and proves, step by step, everything from how to build an equilateral triangle (Proposition 1) to the theorem about the squares on a right-angled triangle (Proposition 47). You are calm, exact and patient; you never skip a step and you always say what justifies it (a postulate, a definition, a common notion, an earlier proposition). You like to draw in the sand. You quote your book in Heath's translation.",
+    "summary": "The foundation of geometry for two thousand years. Book I sets down definitions (a point is that which has no part; a line is breadthless length; a circle), five postulates (things we ask to be allowed: to draw a straight line between two points, to extend it, to draw a circle with any centre and distance, that all right angles are equal, and the parallel postulate) and five common notions (things equal to the same thing are equal to one another; the whole is greater than the part). From these alone it proves 48 propositions, from the equilateral triangle built on a line (I.1) and the equal base angles of an isosceles triangle (I.5) to the Pythagorean theorem (I.47).",
+    "facts": [
+      "Euclid taught in Alexandria about 300 BC, under King Ptolemy I. Almost nothing else is known of his life.",
+      "The Elements, thirteen books, was used to teach geometry for more than two thousand years.",
+      "After the Bible it may be the most copied and printed book in history.",
+      "Asked by the king for an easier way into geometry, Euclid is said to have replied: there is no royal road.",
+      "A student once asked what he would gain by learning geometry. Euclid told his slave to give him a coin, since he must profit."
+    ],
+    "questions": [
+      "What is a postulate?",
+      "How do you build an equilateral triangle?",
+      "Why are the base angles of an isosceles triangle equal?",
+      "What does Proposition 47 say?"
+    ],
+    "home": "court",
+    "props": "the court of the Museum with its colonnades, the cabinets of book rolls, the date palms, the sand trays, the Pharos far off, the two circles and the triangle pegged out on the sand, the three squares of tiles",
+    "lesson": [
+      {
+        "id": "definitions",
+        "label": "Definitions",
+        "point": "Geometry starts by saying exactly what its words mean: a point is that which has no part, a line is length without breadth, a circle is a figure whose every edge point is the same distance from the centre. Nothing is used that has not been defined."
+      },
+      {
+        "id": "postulates",
+        "label": "Five postulates",
+        "point": "Then five things are asked for and granted: to draw a straight line between any two points, to extend it, to draw a circle with any centre and distance, that all right angles are equal, and that lines leaning toward each other will meet. Everything else must be proved."
+      },
+      {
+        "id": "common_notions",
+        "label": "Common notions",
+        "point": "And five things everyone agrees on: things equal to the same thing are equal to one another; add or take equals from equals and the results are equal; things that fit exactly on each other are equal; the whole is greater than the part."
+      },
+      {
+        "id": "prop_one",
+        "label": "The first proposition",
+        "point": "The first thing proved: on any straight line you can build a triangle with all three sides equal. Draw a circle round each end through the other; where they cross is the third corner. Each side equals the line, so all three are equal."
+      },
+      {
+        "id": "pons_asinorum",
+        "label": "The bridge of asses",
+        "point": "In a triangle with two equal sides, the two angles at the base are equal (Proposition 5). Students who could not cross this proof were said to be stuck at the bridge of asses: every later step needs it."
+      },
+      {
+        "id": "prop_47",
+        "label": "Proposition 47",
+        "point": "In a right-angled triangle the square on the side opposite the right angle equals the two squares on the other sides together: with sides 3 and 4, the long side is 5, and 9 + 16 = 25. Euclid proves it for every such triangle, not just this one."
+      }
+    ],
+    "restores": [
+      {
+        "what": "leaves",
+        "line": "The date palms are green, and the court's grass grows."
+      },
+      {
+        "what": "walkway",
+        "line": "The colonnades of the Museum stand whole."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit among the book rolls."
+      },
+      {
+        "what": "sun",
+        "line": "It is morning in Alexandria, and the Pharos's fire is lit."
+      },
+      {
+        "what": "teacher",
+        "line": "Euclid is himself."
+      },
+      {
+        "what": "household",
+        "line": "The scholars are back at their sand trays."
+      }
+    ]
   }
 }
