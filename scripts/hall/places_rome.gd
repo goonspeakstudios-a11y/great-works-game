@@ -2,7 +2,7 @@ extends RefCounted
 ## The city of Rome: the Rome world's hub. Where Greece has its Shore of gateways, Rome has the
 ## whole city (rome_map.gd), walked street by street, in one of four ages (content/rome/city.json):
 ## the Republic about 50 BC in the morning, the Empire about AD 150 at noon, the late Empire about
-## AD 330 in the golden afternoon, and the emptied city of AD 552 at nightfall. Its books stand in
+## AD 384 in the golden afternoon, and the emptied city of AD 552 at nightfall. Its books stand in
 ## its zones behind Roman gateways (the Rhetorica's in the Forum, under the Palatine). The navel
 ## of the city, by the Rostra, lets the years pass.
 ##
@@ -19,6 +19,7 @@ const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const Citizen := preload("res://scripts/hall/citizen.gd")
 const Life := preload("res://scripts/hall/urbs_life.gd")
 const Town := preload("res://scripts/hall/urbs_town.gd")
+const Activities := preload("res://scripts/hall/urbs_activities.gd")
 
 ## Where the city crowds together in each age: [map position, share of the people].
 const HOTSPOTS := {
@@ -68,6 +69,7 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	var clear: Array = [arrival, navel]
 	for work: String in c.get("gates", {}):
 		clear.append(RomeMap.on_ground(c["gates"][work]["at"]))
+	clear.append_array(Activities.clearings(id))  # your room, and where the rites and games are held
 	var fab := RomeMap.fabric(world, age, {"clear": clear})
 	var flicker: Array = fab["flicker"]
 
@@ -115,6 +117,9 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 		var pos := _front(s)
 		out.append({"kind": "statue", "pos": pos, "text": "Look at %s" % m["name"],
 			"note": "[b]%s[/b], %s\n\n%s" % [_title(str(m["name"])), age["when"], note]})
+
+	# your room, the rites, the games, the temples' offerings (urbs_activities.gd)
+	Activities.place(world, id, fab, out, spots, func(s: Dictionary) -> Vector3: return _front(s))
 
 	var people: Array = []
 	var squads: Array = []

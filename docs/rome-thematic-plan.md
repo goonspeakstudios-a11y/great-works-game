@@ -316,7 +316,7 @@ This mirrors Greece; the exact pieces are to be written into `content/nexus.json
 
 1. **Import the Essentials Rome modules**, and settle which books are read in full here and which
    stay witnesses.
-2. **Move Era V from AD 330 to 384.** Recommended, so Ammianus, Symmachus and Augustine are
+2. **Move Era V from AD 330 to 384.** Done (the city's late age is AD 384), so Ammianus, Symmachus and Augustine are
    eyewitnesses.
 3. **Livy's placement.** He is Augustan. Is he the storyteller of Eras I–II only, or also a book of
    Era IV (his Preface as the decline stated)? Recommended: both. His books teach Eras I and II;

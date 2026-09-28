@@ -1,0 +1,589 @@
+{
+ "about": "Where and when to do things in the city of Rome (tools/make_rome_activities.py).",
+ "room": {
+  "at": [
+   402,
+   345
+  ],
+  "toward": [
+   410,
+   322
+  ],
+  "notes": {
+   "heroic": "Your room: one room of a tufa house in the Subura, with a hearth, a bed and a chest. Your landlady's family lives above.",
+   "early": "Your room in the Subura. The landlady's son died at Cannae. She keeps his portrait by the household shrine.",
+   "republic": "Your room on the ground floor of a block of flats in the Subura. Five storeys above you, and all of them noisy.",
+   "empire": "Your room in a block of six storeys. The landlord lives on the Esquiline and has never seen it.",
+   "late": "Your room. Half the block is empty; the rent has gone up anyway.",
+   "collapse": "Your room. The door was broken in by the Vandals and mended with a plank.",
+   "fall": "What is left of your room. The roof came down in the second siege. The niche of the household gods is still in the wall."
+  }
+ },
+ "spots": [
+  {
+   "scene": "augury",
+   "text": "Watch the sky with the augur on the Arx",
+   "at": [
+    -140,
+    175
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire"
+   ]
+  },
+  {
+   "scene": "dice_duodecim",
+   "text": "Play at twelve lines on the Basilica steps",
+   "at": [
+    -20,
+    -20
+   ],
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "collapse"
+   ]
+  },
+  {
+   "scene": "curse_tablet",
+   "text": "Go to the woman at the fountain",
+   "at": [
+    25,
+    -25
+   ],
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ]
+  },
+  {
+   "scene": "census",
+   "text": "Declare your property to the censors at the Villa Publica",
+   "at": [
+    -545,
+    300
+   ],
+   "ages": [
+    "early",
+    "republic"
+   ]
+  },
+  {
+   "scene": "census",
+   "text": "Declare your property to the tax assessor",
+   "at": [
+    55,
+    25
+   ],
+   "ages": [
+    "late"
+   ]
+  },
+  {
+   "scene": "practice_race",
+   "text": "Ask at the Greens' stables for a practice run",
+   "at": [
+    120,
+    -620
+   ],
+   "ages": [
+    "empire",
+    "late"
+   ]
+  },
+  {
+   "scene": "baths",
+   "text": "Go into the baths",
+   "monument": "titus_baths",
+   "at": [
+    700,
+    -20
+   ],
+   "ages": [
+    "empire"
+   ],
+   "from": 12.0,
+   "to": 20.0
+  },
+  {
+   "scene": "baths",
+   "text": "Go into the baths",
+   "monument": "diocletian_baths",
+   "at": [
+    1000,
+    1150
+   ],
+   "ages": [
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "from": 12.0,
+   "to": 20.0
+  },
+  {
+   "scene": "baths",
+   "text": "Go into the bathhouse",
+   "at": [
+    560,
+    330
+   ],
+   "ages": [
+    "republic"
+   ],
+   "from": 12.0,
+   "to": 20.0
+  },
+  {
+   "scene": "fire",
+   "text": "Help with the fire",
+   "at": [
+    520,
+    420
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "every": 3,
+   "offset": 2,
+   "from": 14.0,
+   "to": 18.0
+  },
+  {
+   "scene": "night",
+   "text": "Walk home through the Subura",
+   "at": [
+    150,
+    170
+   ],
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "from": 20.5,
+   "to": 4.5
+  },
+  {
+   "scene": "races_bet",
+   "text": "Bet on the races",
+   "monument": "circus",
+   "at": [
+    41,
+    -560
+   ],
+   "ages": [
+    "empire",
+    "late"
+   ],
+   "every": 2,
+   "offset": 1,
+   "from": 12.0,
+   "to": 18.0
+  },
+  {
+   "scene": "exemplum_horatius",
+   "text": "Stand where Horatius at the bridge happened",
+   "at": [
+    -540,
+    -490
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_horatius"
+  },
+  {
+   "scene": "tell_horatius",
+   "text": "Hear the story of Horatius at the bridge",
+   "at": [
+    -540,
+    -490
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_horatius"
+  },
+  {
+   "scene": "exemplum_scaevola",
+   "text": "Stand where Mucius Scaevola happened",
+   "at": [
+    -500,
+    -460
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_scaevola"
+  },
+  {
+   "scene": "tell_scaevola",
+   "text": "Hear the story of Mucius Scaevola",
+   "at": [
+    -500,
+    -460
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_scaevola"
+  },
+  {
+   "scene": "exemplum_cloelia",
+   "text": "Stand where Cloelia happened",
+   "at": [
+    250,
+    -150
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_cloelia"
+  },
+  {
+   "scene": "tell_cloelia",
+   "text": "Hear the story of Cloelia",
+   "at": [
+    250,
+    -150
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_cloelia"
+  },
+  {
+   "scene": "exemplum_sabines",
+   "text": "Stand where The Sabine women happened",
+   "at": [
+    -20,
+    -10
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_sabines"
+  },
+  {
+   "scene": "tell_sabines",
+   "text": "Hear the story of The Sabine women",
+   "at": [
+    -20,
+    -10
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_sabines"
+  },
+  {
+   "scene": "exemplum_curtius",
+   "text": "Stand where Marcus Curtius happened",
+   "at": [
+    18,
+    8
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_curtius"
+  },
+  {
+   "scene": "tell_curtius",
+   "text": "Hear the story of Marcus Curtius",
+   "at": [
+    18,
+    8
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_curtius"
+  },
+  {
+   "scene": "exemplum_decius",
+   "text": "Stand where Decius Mus happened",
+   "at": [
+    -700,
+    380
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_decius"
+  },
+  {
+   "scene": "tell_decius",
+   "text": "Hear the story of Decius Mus",
+   "at": [
+    -700,
+    380
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_decius"
+  },
+  {
+   "scene": "exemplum_appius",
+   "text": "Stand where Appius Claudius the Blind happened",
+   "at": [
+    -45,
+    75
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_appius"
+  },
+  {
+   "scene": "tell_appius",
+   "text": "Hear the story of Appius Claudius the Blind",
+   "at": [
+    -45,
+    75
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_appius"
+  },
+  {
+   "scene": "exemplum_fabricius",
+   "text": "Stand where Fabricius and the King happened",
+   "at": [
+    60,
+    45
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_fabricius"
+  },
+  {
+   "scene": "tell_fabricius",
+   "text": "Hear the story of Fabricius and the King",
+   "at": [
+    60,
+    45
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_fabricius"
+  },
+  {
+   "scene": "exemplum_curius",
+   "text": "Stand where Curius and his turnips happened",
+   "at": [
+    520,
+    700
+   ],
+   "ages": [
+    "heroic"
+   ],
+   "id": "exemplum_curius"
+  },
+  {
+   "scene": "tell_curius",
+   "text": "Hear the story of Curius and his turnips",
+   "at": [
+    520,
+    700
+   ],
+   "ages": [
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_curius"
+  },
+  {
+   "scene": "tell_cincinnatus",
+   "text": "Hear the story of Cincinnatus at the plough",
+   "at": [
+    -560,
+    -300
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_cincinnatus"
+  },
+  {
+   "scene": "tell_camillus",
+   "text": "Hear the story of Camillus and the schoolmaster",
+   "at": [
+    -150,
+    140
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_camillus"
+  },
+  {
+   "scene": "tell_torquatus",
+   "text": "Hear the story of Manlius Torquatus",
+   "at": [
+    -560,
+    520
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_torquatus"
+  },
+  {
+   "scene": "tell_regulus",
+   "text": "Hear the story of Regulus",
+   "at": [
+    -30,
+    70
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_regulus"
+  },
+  {
+   "scene": "tell_lucretia",
+   "text": "Hear the story of Lucretia and Brutus",
+   "at": [
+    60,
+    -40
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "tell_lucretia"
+  }
+ ],
+ "temples": {
+  "jupiter": "Jupiter Best and Greatest",
+  "juno_moneta": "Juno the Warner",
+  "saturn": "Saturn",
+  "concord": "Concord",
+  "vespasian": "the Deified Vespasian and Titus",
+  "castor": "Castor and Pollux",
+  "vesta": "Vesta",
+  "divus_julius": "the Deified Julius",
+  "antoninus": "Antoninus and Faustina",
+  "venus_genetrix": "Venus the Mother",
+  "mars_ultor": "Mars the Avenger",
+  "minerva": "Minerva",
+  "venus_roma": "Venus and Rome",
+  "magna_mater": "the Great Mother",
+  "apollo_palatinus": "Apollo",
+  "ceres": "Ceres",
+  "diana": "Diana",
+  "juno_regina": "Juno the Queen",
+  "hercules": "Hercules the Victor",
+  "portunus": "Portunus, god of harbours",
+  "sant_omobono": "Fortune",
+  "aesculapius": "Aesculapius, the healer",
+  "bellona": "Bellona, goddess of war",
+  "apollo_sosianus": "Apollo the Healer",
+  "mars_in_circo": "Mars",
+  "venus_victrix": "Venus the Victor",
+  "quirinus": "Quirinus, who was Romulus",
+  "serapis": "Serapis",
+  "jupiter_stator": "Jupiter the Stayer",
+  "hadrian_temple": "the Deified Hadrian",
+  "sol": "the Sun"
+ },
+ "offering_ages": [
+  "heroic",
+  "early",
+  "republic",
+  "empire",
+  "late"
+ ]
+}

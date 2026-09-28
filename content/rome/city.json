@@ -48,12 +48,12 @@
     {
       "id": "late",
       "name": "The Late Empire",
-      "year": 330,
-      "when": "about AD 330",
+      "year": 384,
+      "when": "AD 384",
       "mood": "golden",
       "people": 190,
       "ground": "cobble",
-      "line": "Rome, about AD 330: Constantine has built a new Rome on the Bosporus. The old one keeps its Senate, its games and its walls, and now its churches.",
+      "line": "Rome, AD 384: the Emperors live in the north and the east; the new Rome on the Bosporus has the court. The old one keeps its Senate, its games, its walls and its idle crowds, and now its churches. The Altar of Victory has been taken out of the Senate House.",
       "navel": "Let the years pass: to the collapse"
     },
     {
