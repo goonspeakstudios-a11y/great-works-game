@@ -220,7 +220,7 @@ func _ready() -> void:
 
 
 ## Screenshot mode for checking the look without playing:
-##   godot --path . -- --shot=C:/out.png --view=nexus|hub|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map|hill|grove|stones|yard|garden|garden_w [--stage=0-6]
+##   godot --path . -- --shot=C:/out.png --view=nexus|hub|assets|assets_mid|props|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map|hill|grove|stones|yard|garden|garden_w [--stage=0-6]
 func _stage_shot(view: String) -> void:
 	if _args.has("stage"):  # --stage=N: see the places with N pieces brought back
 		for d in doors.slice(0, 2):
@@ -232,9 +232,17 @@ func _stage_shot(view: String) -> void:
 		_load_place(doors[1]["work"])
 	elif view in ["hub", "gate", "ruins", "head", "toad"]:
 		_load_place("hub")
+	elif view in ["assets", "assets_mid", "props"]:
+		_load_place("asset_test")
 	elif view != "nexus":  # the Nexus is where the game starts
 		_load_place(doors[0]["work"])
 	match view:
+		"assets":
+			_stand(Vector3(0, 0, 1.5), Vector3(0, 0, -20))
+		"assets_mid":
+			_stand(Vector3(0, 0, -40), Vector3(0, 0, -60))
+		"props":
+			_stand(Vector3(0, 0, -89), Vector3(0, 0, -100))
 		"lyceum":
 			_stand(Vector3(1.5, 0, 16), Vector3(-6, 0, -8))
 		"walk":

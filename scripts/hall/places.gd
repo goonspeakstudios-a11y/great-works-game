@@ -105,7 +105,7 @@ const ASSET_PROPS := [
 	["ceramic_vase_01", 0.6], ["ceramic_vase_02", 0.6], ["ceramic_vase_03", 0.6], ["jug_01", 0.4],
 	["brass_pot_01", 0.5], ["wooden_bowl_01", 0.35], ["wicker_basket_01", 0.6],
 	["wooden_candlestick", 0.5], ["wooden_stool_01", 0.6], ["boulder_01", 1.6], ["rock_07", 1.0],
-	["shrub_01", 1.4], ["tree_stump_01", 0.9], ["dead_tree_trunk", 2.2],
+	["shrub_01", 1.4], ["tree_stump_01", 0.9], ["dead_tree_trunk", 2.6],
 ]
 const BAY := 4.0  # metres per bay along the aisle
 
@@ -115,7 +115,7 @@ static func asset_test(world: Node3D) -> Dictionary:
 	var n := ASSET_PAIRS.size()
 	var far := -BAY * n
 	var court := Vector3(0, 0, far - 9.0)
-	Kit.box(world, Vector3(0, -0.1, far / 2.0), Vector3(16, 0.2, -far + 8), "earth")
+	Kit.box(world, Vector3(0, -0.1, (far - 24.0) / 2.0), Vector3(24, 0.2, -far + 28), "earth")  # the aisle and the court
 	Kit.box(world, Vector3(0, 0.0, far / 2.0), Vector3(3.0, 0.04, -far + 6), "paving", false)
 	var out: Array = []
 	var flicker: Array = []
@@ -136,9 +136,9 @@ static func asset_test(world: Node3D) -> Dictionary:
 		var a := PI * (0.1 + 0.8 * j / float(m - 1))  # a half ring opening toward the aisle
 		var at := court + Vector3(-cos(a), 0, -sin(a)) * 6.5
 		Kit.box(world, at + Vector3(0, 0.35, 0), Vector3(1.0, 0.7, 1.0), "ph_white_sandstone_bricks")
-		_prop(world, ASSET_PROPS[j][0], at + Vector3(0, 0.7, 0), ASSET_PROPS[j][1], Kit.face_yaw(at, court))
+		_prop(world, ASSET_PROPS[j][0], at + Vector3(0, 0.7, 0), ASSET_PROPS[j][1] * 1.6, Kit.face_yaw(at, court))
 		out.append({"kind": "look", "pos": at.lerp(court, 0.25), "text": ASSET_PROPS[j][0],
-			"note": "Poly Haven (CC0) model \"%s\", shown about %.1f m tall." % ASSET_PROPS[j]})
+			"note": "Poly Haven (CC0) model \"%s\", shown 1.6x life size (about %.1f m real) so it reads at a distance." % ASSET_PROPS[j]})
 	flicker.append(Kit.brazier(world, court))
 	for z in [2.0, far - 1.0]:
 		for x in [-7.0, 7.0]:
@@ -161,7 +161,7 @@ static func _bay(world: Node3D, s: float, z: float, mat: String) -> void:
 	Kit.box(world, Vector3(s * 4.6, 0.75, z + 0.7), Vector3(0.9, 0.3, 0.9), mat)
 
 
-## A Poly Haven model standing at `at`, scaled to `height` metres whatever its source size.
+## A Poly Haven model standing at `at`, scaled so its longest side is `height` metres.
 static func _prop(world: Node3D, id: String, at: Vector3, height: float, yaw: float) -> void:
 	var path := "res://assets/polyhaven/models/%s/%s.gltf" % [id, id]
 	if not ResourceLoader.exists(path):
@@ -180,7 +180,7 @@ static func _prop(world: Node3D, id: String, at: Vector3, height: float, yaw: fl
 		var b: AABB = t * (mi as MeshInstance3D).get_aabb()
 		box = b if first else box.merge(b)
 		first = false
-	var k := height / maxf(box.size.y, 0.01)
+	var k := height / maxf(box.size[box.get_longest_axis_index()], 0.01)  # longest side, so a fallen trunk is not huge
 	node.scale = Vector3.ONE * k
 	node.rotation.y = yaw
 	node.position = at - Vector3(box.get_center().x, box.position.y, box.get_center().z) * k
