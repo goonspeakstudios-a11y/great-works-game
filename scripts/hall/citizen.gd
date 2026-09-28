@@ -9,6 +9,14 @@ extends RefCounted
 ## time. react() is the short thing they say out loud as you pass or bump into them.
 
 const FILE := "res://content/rome/people.json"
+## What each age believes of itself, for Claude playing its people: from the old virtues to their ruin.
+const SPIRIT := {
+	"early": "the Republic of 201 BC, just after the victory over Hannibal. You sincerely hold the old Roman virtues: virtus (courage), pietas (duty to gods, family and Republic), fides (the word kept), gravitas, frugality, and service and sacrifice for the res publica. You are proud, pious and plain; grief and hardship are borne for Rome and not complained of. Luxury and Greek softness are suspect.",
+	"republic": "the last generation of the Republic. The old virtues are praised in speeches and betrayed in practice: ambition, faction, money, gangs and generals' armies rule. You are shrewd, cynical or angry, and you know exactly who is buying whom.",
+	"empire": "Rome at the height of the Empire. Peace, plenty and spectacle; the old virtues are statues in the Forum. Luxury, idleness, servility to the Emperor, informers and the arena. You are comfortable, careful and a little hollow.",
+	"late": "the late Empire. A hard, taxed, regimented and frightened city; cruelty and corruption in office, the old gods forbidden, the new faith in power, trades bound by law. You are bitter, afraid or devout.",
+	"fall": "the ruined city after twenty years of war, siege, famine and plague. Most of Rome is empty. You are numb, desperate, hungry, and you cling to the Church or to nothing.",
+}
 
 static var _data := {}
 
@@ -74,7 +82,7 @@ static func make(rng: RandomNumberGenerator, job_id: String, age: String, homes:
 		name = "%s %s %s" % [_pick(rng, n["praenomina"]), _pick(rng, n["nomina"]), _pick(rng, n["cognomina"])]
 		call = name.split(" ")[0] if rng.randf() < 0.5 else name.split(" ")[2]
 	var kids := rng.randi_range(0, 4)
-	var mood: Array = _pick(rng, data().get("moods", [["cheerful", ""]]))
+	var mood: Array = _pick(rng, data().get("moods_by_age", {}).get(age, data().get("moods", [["weary", ""]])))
 	return {
 		"id": "%s_%d" % [job_id, rng.randi()], "name": name, "call": call, "gender": gender, "class": cls, "origin": origin,
 		"job": job_id, "title": j.get("title", job_id), "latin": j.get("latin", ""), "age": age,
@@ -112,6 +120,9 @@ static func greeting(p: Dictionary) -> String:
 ## Their answer to one of the talk panel's topics. `near`: the names of what stands close by.
 static func reply(p: Dictionary, topic: String, near: Array = []) -> String:
 	var j := job(p["job"])
+	if p["age"] == "early" and j.has("rise"):  # the Republic of 201 BC speaks from inside the old virtues
+		j = j.duplicate()
+		j.merge(j["rise"], true)
 	var d := data()
 	match topic:
 		"who":
@@ -123,7 +134,8 @@ static func reply(p: Dictionary, topic: String, near: Array = []) -> String:
 		"work":
 			return fill(p, _next(p, "work", (j.get("work", []) as Array) + (j.get("worry", []) as Array)))
 		"life":
-			return fill(p, _next(p, "life", d["life"].get(p["class"], d["life"]["pleb"])))
+			var lives: Dictionary = d["life_early"] if p["age"] == "early" else d["life"]
+			return fill(p, _next(p, "life", lives.get(p["class"], lives["pleb"])))
 		"news":
 			return _next(p, "news", d["news"].get(p["age"], []))
 		"gods":
@@ -167,6 +179,9 @@ static func heard(text: String) -> String:
 ## Who Claude is to be for this citizen: the person, their time, and how to talk.
 static func persona(p: Dictionary, when: String, near: Array) -> String:
 	var j := job(p["job"])
+	if p["age"] == "early" and j.has("rise"):
+		j = j.duplicate()
+		j.merge(j["rise"], true)
 	var family := "You live in the %s" % p["home"]
 	if p["partner"] != "":
 		family += " with your %s" % p["partner"]
@@ -175,17 +190,19 @@ static func persona(p: Dictionary, when: String, near: Array) -> String:
 	var who := "a %s (%s)" % [p["title"], p["latin"]]
 	if p["origin"] != "Roman":
 		who += ", from among the %s in Rome" % p["origin"]
+	var spirit: String = SPIRIT.get(p["age"], "")
 	return """You are %s, %s, aged %d, in the city of Rome, %s. %s. You are %s today.
 What you are like at your work: %s
+The spirit of your age: %s
 How to talk:
-- You are an ordinary adult of your trade, not a scholar and not a comic character. Talk the way a %s in the street would: plainly, frankly, about your work, your money, your family, your debts, your fears, your neighbours, the gossip and the politics as you see them. Life is hard and often short; you are used to it and do not dramatise it.
-- You live with what your world takes for granted: slavery, debt, sickness and early death, violence in the streets, bought elections, the rich and the poor. Speak of these as a person of your time would, without modern judgement and without cheerfulness put on for a stranger. Nothing sexually explicit, but you are not coy about how people live.
+- You are an ordinary adult of your trade, not a scholar and not a comic character. Talk the way a %s in the street would: plainly, frankly, about your work, your family, your duties and troubles, your neighbours, the gossip and the politics as you see them, in the spirit of your age above. Life is hard and often short; you are used to it and do not dramatise it.
+- You live with what your world takes for granted, as a person of your time would, without modern judgement and without cheerfulness put on for a stranger. Nothing sexually explicit, but you are not coy about how people live.
 - One to three short sentences. First person. No lists, no formatting, no stage directions.
 - You know only your own time and your own city. You have never heard of anything later. If asked about something you would not know, say so the way a person would.
 - The one talking to you is a stranger, oddly dressed, with a strange accent. You may be curious, friendly, suspicious or busy, as suits you.
 - Nearby just now: %s.
 - Never say you are an AI or a character.""" % [p["name"], who, p["years"], when, family, p["mood"],
-		" ".join((j.get("work", []) as Array).slice(0, 2)), p["title"], ", ".join(near) if not near.is_empty() else "houses and shops"]
+		" ".join((j.get("work", []) as Array).slice(0, 2)), spirit, p["title"], ", ".join(near) if not near.is_empty() else "houses and shops"]
 
 
 ## What they say out loud: "greet" as you come near, "bump" when you walk into them, "call" (a

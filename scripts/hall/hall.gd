@@ -1802,23 +1802,25 @@ const CITY_JUST := 5
 const CITY_LAST := 9
 
 
-## The city of Rome stands in one of four ages (content/rome/city.json): the Republic, the Empire at
-## its height, the late Empire, and the emptied city after the Gothic War. The navel of the city in
-## the Forum lets the years pass, and brings you back to the Republic at the end.
-const ROME_AGES := 4
+## The city of Rome stands in one of five ages (content/rome/city.json): the Republic of 201 BC in
+## the pride of its virtues, the late Republic, the Empire at its height, the late Empire, and the
+## emptied city after the Gothic War. The navel of the city lets the years pass as far as you have
+## come, and brings you back to the beginning at the end.
+const ROME_AGES := 5
 
 
 func rome_age() -> int:
 	return clampi(int(progress.data.get("rome_age", 0)), 0, rome_age_reached())
 
 
-## How far the years have gone: the age of the latest Roman book you have begun (the Rhetorica
-## belongs to the Republic, so for now Rome stays young). "rome_reached" in the save can open more.
+## How far the years have gone: the age of the latest Roman book you have mastered (the Rhetorica
+## belongs to the late Republic, so until it is mastered Rome is the Republic of 201 BC, its first
+## act). "rome_reached" in the save can open more.
 func rome_age_reached() -> int:
 	var ids: Array = load("res://scripts/hall/rome_map.gd").ages().map(func(a): return a["id"])
 	var reached := int(progress.data.get("rome_reached", 0))
 	for d in Rooms.doors_of("rome"):
-		if not progress.understood(d["work"]).is_empty():
+		if progress.is_mastered(d["work"]):
 			reached = maxi(reached, ids.find(d.get("age", "republic")))
 	return clampi(reached, 0, ROME_AGES - 1)
 
@@ -1946,7 +1948,8 @@ func _on_said(topic: String, text: String) -> void:
 func _gossip(c: Dictionary, otherwise: String) -> String:
 	var met: Dictionary = progress.data.get("rome_met", {})
 	var known: Array = life.people.filter(func(p): return p.has("citizen") and p["citizen"] != c and met.has(p["citizen"]["id"]))
-	var lines: Array = load("res://scripts/hall/urbs_town.gd").data().get("gossip", [])
+	var said: Variant = load("res://scripts/hall/urbs_town.gd").data().get("gossip", [])
+	var lines: Array = said.get(life.town.age, said.get("republic", [])) if said is Dictionary else said
 	if known.is_empty() or lines.is_empty():
 		return otherwise
 	var o: Dictionary = known[randi() % known.size()]["citizen"]

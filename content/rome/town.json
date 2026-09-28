@@ -28,6 +28,7 @@
       "name": "the Lupercalia",
       "day": 4,
       "ages": [
+        "early",
         "republic",
         "empire",
         "late"
@@ -48,6 +49,7 @@
       "name": "the Parilia, Rome's birthday",
       "day": 10,
       "ages": [
+        "early",
         "republic",
         "empire",
         "late"
@@ -68,6 +70,7 @@
       "name": "the Roman Games",
       "day": 16,
       "ages": [
+        "early",
         "republic",
         "empire",
         "late"
@@ -170,6 +173,7 @@
       "hour": 11.0,
       "every": 2,
       "ages": [
+        "early",
         "republic",
         "empire",
         "late"
@@ -197,6 +201,7 @@
       "from": 10.0,
       "to": 12.5,
       "ages": [
+        "early",
         "republic",
         "empire",
         "late"
@@ -223,6 +228,11 @@
           "The city has its walls and its bread. Be grateful!",
           "The Emperor in the east thinks of Rome!",
           "(a voice) Then let him send bread!"
+        ],
+        "early": [
+          "Citizens! Carthage is beaten. Now beware the softness that comes with victory!",
+          "The Republic keeps faith: land for every man who served!",
+          "Remember Cannae. Remember who did not ask for peace!"
         ]
       }
     },
@@ -264,6 +274,7 @@
       "to": 14.0,
       "market": true,
       "ages": [
+        "early",
         "republic",
         "empire",
         "late"
@@ -286,6 +297,10 @@
         "late": [
           "Market day, what there is of it.",
           "Beans, cheap!"
+        ],
+        "early": [
+          "Market day! The farms are back, and the men with them!",
+          "Grain from Sicily, cheap at last!"
         ]
       }
     },
@@ -508,6 +523,92 @@
           "The soldiers are coming!"
         ]
       }
+    },
+    {
+      "id": "triumph",
+      "kind": "procession",
+      "hour": 10.0,
+      "every": 1,
+      "ages": [
+        "early"
+      ],
+      "road": 0,
+      "crew": [
+        "lictor",
+        "lictor",
+        "tibicen",
+        "tibicen",
+        "senator",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "servus",
+        "servus"
+      ],
+      "cries": [
+        "Io triumphe! Io triumphe!",
+        "Africanus! Africanus!",
+        "Carthage's silver, look, the wagons of it!",
+        "The slave in the chariot whispers to him: remember you are mortal.",
+        "The legions of Cannae, home at last!"
+      ],
+      "torches": false
+    },
+    {
+      "id": "hero_funeral",
+      "kind": "procession",
+      "hour": 9.0,
+      "every": 3,
+      "ages": [
+        "early"
+      ],
+      "road": 0,
+      "crew": [
+        "tibicen",
+        "tibicen",
+        "libitinarius",
+        "senator",
+        "senator",
+        "senator",
+        "senator",
+        "matrona",
+        "matrona",
+        "cliens",
+        "cliens",
+        "cliens"
+      ],
+      "cries": [
+        "The masks of his ancestors walk before him: consuls, censors, men who triumphed!",
+        "He fell at Zama at the head of his century.",
+        "His son will speak his deeds from the Rostra, and the young men will listen.",
+        "A good death. A Roman death."
+      ],
+      "torches": false
+    },
+    {
+      "id": "levy",
+      "kind": "gathering",
+      "from": 7.0,
+      "to": 10.0,
+      "every": 2,
+      "ages": [
+        "early"
+      ],
+      "at": [
+        -150,
+        60
+      ],
+      "speaker": "praeco",
+      "crowd": 12,
+      "cries": [
+        "The levy! Tribe by tribe, every man of age!",
+        "Swear it: to follow the consul, not to desert, not to leave the ranks except to save a Roman or take up a weapon.",
+        "I'm seventeen. Take me.",
+        "My father served. His father served. Write my name."
+      ]
     }
   ],
   "rain": {
@@ -519,55 +620,151 @@
       "The Tiber'll be up by morning. Mind the low flats."
     ]
   },
-  "chatter": [
-    [
-      "Salve, {b}. Paid your rent?",
-      "Half of it, {a}. The other half's a promise."
+  "chatter": {
+    "early": [
+      [
+        "Salve, {b}. Your son's home?",
+        "Home, {a}, with a scar and a land grant. The gods be thanked."
+      ],
+      [
+        "Did you see the triumph?",
+        "I saw it. I wept. My brother should have been in it."
+      ],
+      [
+        "They say the young men want Greek cooks now.",
+        "Let them try it in this street. My father ate turnips and beat the Samnites."
+      ],
+      [
+        "The levy's called again.",
+        "Then we'll answer, {a}. Same as always."
+      ],
+      [
+        "You owe me for the grain, {b}.",
+        "By the Kalends. You have my word. That's enough for me."
+      ],
+      [
+        "The Senate's giving land in Apulia.",
+        "The Republic keeps faith. It always has."
+      ]
     ],
-    [
-      "Did you hear about the fire on the Esquiline?",
-      "Three floors. The landlord was at his villa. Nobody from the top got out."
+    "republic": [
+      [
+        "Salve, {b}. Paid your rent?",
+        "Half of it, {a}. The other half's a promise."
+      ],
+      [
+        "Who are you voting for?",
+        "Whoever's paying most. Same as you."
+      ],
+      [
+        "Did you hear about the fire on the Esquiline?",
+        "Three floors. The landlord was at his villa. Nobody from the top got out."
+      ],
+      [
+        "Clodius's men were in the Subura last night.",
+        "Milo's will be here tonight. Stay in."
+      ],
+      [
+        "Remember when a Roman's word was worth something?",
+        "My grandfather did. He's dead."
+      ],
+      [
+        "There was a body by the fountain this morning.",
+        "Knifed. Nobody saw anything. Nobody ever does."
+      ]
     ],
-    [
-      "{b}, you still owe me for the oil.",
-      "After the Nones, {a}. Swear on my mother."
+    "empire": [
+      [
+        "Going to the games?",
+        "What else is there to do?"
+      ],
+      [
+        "Careful, {b}. That one's an informer.",
+        "They're all informers now, {a}."
+      ],
+      [
+        "They sold Syrus.",
+        "After twenty years in the house? To some farm in Apulia. Chained gangs."
+      ],
+      [
+        "My cousin's selling her daughter to a household on the Palatine.",
+        "Better than starving. At least she'll eat."
+      ],
+      [
+        "Your boy's joined the legions?",
+        "Twenty-five years on the frontier. For pay. Nobody joins for Rome now."
+      ],
+      [
+        "The Emperor gave another dole.",
+        "And another games. We're fed like his dogs, {a}."
+      ]
     ],
-    [
-      "How's your wife, {b}?",
-      "The fever broke last night. The baby didn't make it."
+    "late": [
+      [
+        "The tax men came again.",
+        "They took the seed grain. What do we plant?"
+      ],
+      [
+        "They tortured a man at the Prefect's today. Tax arrears.",
+        "Don't talk about it. Walk."
+      ],
+      [
+        "My son can't leave the bakers' guild. It's the law.",
+        "Chained to the oven. Like a slave, {a}."
+      ],
+      [
+        "Did you pray at the church or the temple?",
+        "Both. Whichever one's watching."
+      ],
+      [
+        "The price of bread!",
+        "Don't, {a}. Just don't."
+      ]
     ],
-    [
-      "They sold Syrus.",
-      "After twenty years in the house? Where to? Some farm in Apulia. Chained gangs, they say."
-    ],
-    [
-      "Who are you voting for?",
-      "Whoever's paying most. Same as you."
-    ],
-    [
-      "The price of bread!",
-      "Don't, {a}. Just don't."
-    ],
-    [
-      "Your boy's joined the legions?",
-      "Twenty-five years. If he comes back, he'll be older than me."
-    ],
-    [
-      "There was a body by the fountain this morning.",
-      "Knifed. Nobody saw anything. Nobody ever does."
-    ],
-    [
-      "My cousin's selling her daughter to a household on the Palatine.",
-      "Better than starving, {a}. At least she'll eat."
+    "fall": [
+      [
+        "Have you eaten?",
+        "Not since yesterday."
+      ],
+      [
+        "The Goths are gone.",
+        "Till the next ones."
+      ],
+      [
+        "They took the lead off the roofs of the baths.",
+        "Let them. Nobody bathes."
+      ],
+      [
+        "My mother died in the night.",
+        "Mine in the siege. Bury her by the church, they'll say a prayer."
+      ]
     ]
-  ],
-  "gossip": [
-    "You met {other}? The {title}? Owes money to a lender on the Sacred Way. The kind who sends men round.",
-    "{other} the {title}? Buried two children this year. Doesn't talk about it.",
-    "{other}. The {title}. Their {kin} sleeps elsewhere most nights, and everyone knows where but them.",
-    "{other} the {title} is an informer. I'm not saying. I'm just saying, watch what you tell them.",
-    "{other} the {title} was a slave until two years ago. Bought their freedom with every coin they had. Look at them now."
-  ],
+  },
+  "gossip": {
+    "early": [
+      "{other} the {title}? Lost two sons at Cannae and sent the third to Scipio. A Roman family.",
+      "{other}, the {title}. Honest as the day. Never once broke his word, they say.",
+      "{other} the {title}? Too fond of Greek ways, some say. Mind you, he fought well enough."
+    ],
+    "republic": [
+      "You met {other}? The {title}? Owes money to a lender on the Sacred Way. The kind who sends men round.",
+      "{other} the {title}? Sold their vote twice at the last election, to both sides.",
+      "{other}. The {title}. Their {kin} sleeps elsewhere most nights, and everyone knows where but them."
+    ],
+    "empire": [
+      "{other} the {title} is an informer. I'm not saying. I'm just saying, watch what you tell them.",
+      "{other} the {title}? Buried two children this year. Doesn't talk about it.",
+      "{other} the {title} was a slave until two years ago. Look at the airs on them now."
+    ],
+    "late": [
+      "{other} the {title}? Paid off the tax collector. With what, I'd like to know.",
+      "{other} the {title} goes to church in the morning and the old shrine at night."
+    ],
+    "fall": [
+      "{other} the {title}? Still alive, then. That's news.",
+      "{other} the {title} ate things in the siege nobody should eat. Don't ask."
+    ]
+  },
   "favours": {
     "asks": [
       "Do me a kindness, stranger. Tell {target}, the {title}, that {msg}. They'll know what it means.",
@@ -610,7 +807,8 @@
         "republic": "Lucius Numisius Felix",
         "empire": "Titus Numisius Felix",
         "late": "Numisia Prima",
-        "fall": "Iohannes, a beggar"
+        "fall": "Iohannes, a beggar",
+        "early": "Numisius Felix"
       },
       "jobs": {
         "fall": "mendicus"
@@ -635,6 +833,11 @@
           "See that doorway? A bakery, once. The Felixes, four hundred years of them, they say.",
           "The last of them starved in the siege, with the rest of the street.",
           "Spare a crust, stranger? For the old baker's sake."
+        ],
+        "early": [
+          "Numisius, baker, as my father was. My elder son fell at Cannae. The younger is home from Zama with a land grant. I bake for both of them now.",
+          "My girl's betrothed to a veteran of Scipio's. A good man. He has a scar across his face and he's not ashamed of it, nor is she.",
+          "The Felix name will be on this oven when Rome is a thousand years old. I believe that."
         ]
       }
     },
@@ -648,7 +851,8 @@
       "names": {
         "republic": "Hilarus the Thracian",
         "empire": "Callistus the retiarius",
-        "late": "Nicias, once a gladiator"
+        "late": "Nicias, once a gladiator",
+        "early": "Gaius Varenus, centurion"
       },
       "lines": {
         "republic": [
@@ -665,7 +869,15 @@
           "Nicias. The emperors don't like the games now, and the bishops call it murder. They're not wrong. It was my life.",
           "Now I train men for the beast hunts. The beasts don't pray.",
           "When I'm gone, nobody will know how it was done. Maybe that's for the best."
+        ],
+        "early": [
+          "Varenus. First spear of my legion at Zama. Sixteen years under arms. I was at Cannae too, and I lived, and they sent us to Sicily in disgrace.",
+          "Scipio took the Cannae men to Africa and let us wash it out in Hannibal's blood. We did.",
+          "Land in Apulia, and an oak crown from a man whose life I saved. I'd go again tomorrow."
         ]
+      },
+      "jobs": {
+        "early": "veteranus"
       }
     },
     {
@@ -679,7 +891,8 @@
         "republic": "Quintus Caecilius Rufus",
         "empire": "Caecilius Rufus Antoninus",
         "late": "Caecilius Rufus Symmachianus",
-        "fall": "Caecilius Rufus, of the Senate"
+        "fall": "Caecilius Rufus, of the Senate",
+        "early": "Quintus Caecilius"
       },
       "lines": {
         "republic": [
@@ -701,6 +914,11 @@
           "Caecilius Rufus, of the Senate, such as it is. Totila took half of us as hostages. Some didn't come back.",
           "My house on the Caelian has no roof. My sons are dead in the war, one on each side.",
           "Six hundred years of Caecilii. I may be the last one who remembers the name meant anything."
+        ],
+        "early": [
+          "Caecilius. My family has given Rome three consuls and a great many dead. Three of my brothers lie at Cannae.",
+          "The Senate refused to ransom the prisoners of Cannae. My nephew was among them. I voted with the rest. Rome does not buy back men who surrender.",
+          "Now there's Greek silver in the houses, perfume on the young men, and talk of repealing the law that kept our women plain. Victory is more dangerous than Hannibal ever was."
         ]
       }
     },
@@ -716,7 +934,8 @@
         "republic": "Fabia Tertulla",
         "empire": "Fabia Procula",
         "late": "Fabia Maria",
-        "fall": "Maria of the river"
+        "fall": "Maria of the river",
+        "early": "Fabia"
       },
       "lines": {
         "republic": [
@@ -738,6 +957,11 @@
           "Maria. The river feeds us now the aqueducts are cut. Fish and water. And the fevers that come with it.",
           "In the siege we ate the fish before they were dead, and then there weren't any.",
           "My grandmother's grandmother sold fish right here. The river doesn't care who rules."
+        ],
+        "early": [
+          "Fabia. Fish. My husband rowed in the fleet off Africa. He came home, the gods be thanked, and mends nets now.",
+          "Half the women on this bank were widows at Cannae. We kept the stalls. We kept the city fed.",
+          "My son wants the fleet too. I'll let him. What else would a Roman boy do?"
         ]
       }
     },
@@ -751,7 +975,8 @@
       "names": {
         "republic": "Stephanus the barber",
         "empire": "Stephanus the younger",
-        "late": "Stephanus, barber of the Subura"
+        "late": "Stephanus, barber of the Subura",
+        "early": "Menas the barber"
       },
       "lines": {
         "republic": [
@@ -768,6 +993,11 @@
           "Stephanus. Same chair, four hundred years, or so I tell people.",
           "The monks want their crowns shaved. They don't tip, and they don't gossip, which is worse.",
           "Stay a while. There are fewer to talk to every year."
+        ],
+        "early": [
+          "Menas, barber, from Sicily, like the first barbers in Rome. The Romans only started shaving in my grandfather's time.",
+          "The talk in this chair is all Zama and land grants. They're a proud people and they've earned it.",
+          "I've lived among Greeks and Carthaginians. These are the ones who keep their word. I'm staying."
         ]
       }
     }

@@ -147,23 +147,33 @@ Decided with BB1 (2026-09-28):
   into someone and they curse you. The words appear over their heads and fade.
 - Screenshots: `--talk` stops the nearest citizen and asks about their work.
 
-## Tone
-Rome is written for adults (decided with BB1, 2026-09-28: "whimsical and immature" was the wrong
-note). The city's people speak plainly of what their world takes for granted:
-- slavery: the auction block by the Temple of Castor, sold families, the collar and the lash;
-- debt, rent and eviction;
-- fever and early death: mothers in childbirth, children, the pits outside the Esquiline gate;
-- fires and collapsing blocks;
-- bought elections, informers and gangs;
-- prostitution in the Subura (registered, by night, never explicit);
-- executions outside the gate;
-- grain riots.
+## Tone: the fall from virtue
+Rome is written for adults, as a moral arc, and the fall is meant to be felt (decided with BB1,
+2026-09-28). The first act is the Republic at the height of its old virtues, so the decline can be
+seen against it:
 
-The chatter, gossip, favours and regulars' stories follow suit: Felix the baker's daughter dies in
-childbirth, and Hilarus wins his freedom crippled. The city's events include a slave auction, an
-execution procession, evictions, fires and a grain riot. Claude's persona for the citizens says the
-same: ordinary adults, frank, of their time, not comic and not explicit. The town music stays the
-bright theme BB1 asked for; the later ages darken it.
+| Age | Year | Spirit | What the streets show |
+|---|---|---|---|
+| The Republic | 201 BC, after Zama | virtus, pietas, fides, gravitas, frugality, service and sacrifice | Scipio's triumph, the levy on the Capitol, a hero's funeral with his ancestors' masks, veterans of Cannae and Zama, words kept, grief borne for Rome |
+| The Late Republic | about 50 BC | the virtues spoken of and betrayed: ambition, faction, money, gangs | bought votes, evictions, fires with speculators, the slave auction, the Subura by night, a grain riot |
+| The Empire | AD 150 | peace, plenty, spectacle; servility, informers, idleness | the arena, informers, executions at the gate, families sold apart |
+| The Late Empire | AD 330 | fear, cruelty, corruption, trades bound by law, the old gods forbidden | torture for tax arrears, bread riots, church offices bought |
+| The Fall | AD 552 | ruin, famine, numbness | the starving, the dead, the empty city |
+
+- **People:** every citizen, the chatter, the gossip, the news, the gods and the regulars' stories
+  follow the age. The Republic's people speak from inside the old virtues (each job's `rise` lines,
+  `life_early`, `moods_by_age`). The later ages speak plainly of slavery, debt, disease, violence
+  and bought power, never explicitly.
+- **The regulars:**
+  - The baker Numisius loses one son at Cannae and has another home from Zama. His descendants are
+    ruined by the late Empire's laws, and the last starve in the siege.
+  - A centurion of Zama becomes, in later ages, a gladiator killing his friends for the crowd.
+  - The austere senator who refused to ransom his own nephew has descendants who buy praetorships,
+    open their veins for an informer's lie, and die on both sides of the Gothic War.
+- **Claude:** when Claude plays a citizen, it is told the spirit of their age (`Citizen.SPIRIT`).
+- **The Rhetorica:** the age of 201 BC lasts until you master the Rhetorica. Its book belongs to
+  the late Republic, and mastering it brings the city's years on. Each later Roman book brings on
+  its own age in turn.
 
 ## The city's days and memory
 These live in `scripts/hall/urbs_town.gd`, with the content in `content/rome/town.json`. Add to that
