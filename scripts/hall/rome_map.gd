@@ -630,6 +630,7 @@ static func tinted(kind: String) -> StandardMaterial3D:
 ## The colours of plaster in each age: creams and whites under the Republic, ochres, roses and reds
 ## under the emperors, all of it duller and dirtier later.
 const PLASTER := {
+	"early": ["e8dcc0", "d8c8a0", "c8b890", "f0e8d4", "b8a880"],
 	"republic": ["f2ead8", "ece0c4", "e8d4a8", "f4f0e6", "d8c8a8", "e8c8a0"],
 	"empire": ["e0b070", "d8907a", "f0e4c8", "c8704e", "ecd898", "b8c4c8", "f4f0e8", "d8a878"],
 	"late": ["c8a878", "b88a74", "d8ccb4", "a8745a", "c8c0a8", "a8b0b0"],

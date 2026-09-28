@@ -225,7 +225,8 @@ func _voices(at: Vector3, speed: float) -> void:
 
 ## Two people who know each other stop and pass a word or two (town.json's "chatter").
 func _chat(root: Node3D, c: Dictionary) -> bool:
-	var chatter: Array = town.data().get("chatter", []) if town else []
+	var said: Variant = town.data().get("chatter", []) if town else []
+	var chatter: Array = (said.get(town.age, said.get("republic", [])) if said is Dictionary else said) if town else []
 	if chatter.is_empty():
 		return false
 	for q: Dictionary in people:

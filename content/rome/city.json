@@ -2,14 +2,25 @@
   "about": "The city of Rome as the Rome world's hub (places_rome.gd): the whole city, walked on the map of content/rome/republican_rome.json (real metres east and north of the Forum, shrunk by its scale). It stands in one of four ages; a monument stands from the year it was built ('from'), is a ruin from 'ruin', and is gone from 'gone'. Years are negative before Christ. Positions not marked in republican_rome.json are read off modern coordinates of the remains and are approximate. 'walkable' is the part of the city you can walk in (the Servian city, the Forum Boarium and the southern Campus Martius); beyond it, up to 'outer' (the line of Aurelian's wall), the city goes on to be seen, not walked.",
   "ages": [
     {
-      "id": "republic",
+      "id": "early",
       "name": "The Republic",
+      "year": -201,
+      "when": "201 BC",
+      "mood": "morning",
+      "people": 200,
+      "ground": "cobble",
+      "line": "Rome, 201 BC. Hannibal is beaten at Zama; Carthage has given up its fleet. The legions come home. A city of tufa and temples, poor, proud, and certain of its gods.",
+      "navel": "Let the years pass: to the last generation of the Republic"
+    },
+    {
+      "id": "republic",
+      "name": "The Late Republic",
       "year": -50,
       "when": "about 50 BC",
       "mood": "morning",
       "people": 190,
       "ground": "cobble",
-      "line": "Rome, about 50 BC: the Republic at the height of its power and the edge of its civil wars. Pompey's theatre is new; Caesar is in Gaul.",
+      "line": "Rome, about 50 BC. The Republic rules the world and can no longer rule itself. Gangs in the streets, votes for sale, armies loyal to their generals. Pompey's theatre is new; Caesar is in Gaul.",
       "navel": "Let the years pass: to the Empire at its height"
     },
     {

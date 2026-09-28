@@ -307,6 +307,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -329,7 +330,17 @@
    "call": [
     "Bread! Hot bread!",
     "Fresh loaves, still warm!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}. Baker. Before the war we ground our own grain at home. Now there's a bakery on every street, and I'm proud of mine.",
+    "work": [
+     "I baked for the legions going south. Hard biscuit, a month's worth to a man. I'd like to think some of it went to Zama.",
+     "My word is my measure. A short loaf in this street and you'd never sell another. A Roman's word is worth his weight."
+    ],
+    "worry": [
+     "My brother fell at Cannae. I bake for his widow's house as well as mine. That's what brothers are for."
+    ]
+   }
   },
   {
    "id": "molitor",
@@ -362,6 +373,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -383,7 +395,17 @@
    "call": [
     "Pork! Good pork!",
     "Sausages here!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}, butcher.",
+    "work": [
+     "Meat's for festivals and sacrifices. Most days we eat porridge like our grandfathers, and we're stronger for it.",
+     "The best cuts go to the gods first. You don't cheat the gods, and you don't cheat your neighbours."
+    ],
+    "worry": [
+     "Prices went mad in the war. We held them down on this street. You don't grow fat on a city at war."
+    ]
+   }
   },
   {
    "id": "cetarius",
@@ -392,6 +414,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -414,7 +437,17 @@
    "call": [
     "Fresh fish! This morning's!",
     "Eels! Mullet!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}. Fish from the river and the coast.",
+    "work": [
+     "My husband rowed in the fleet against Carthage. He came home. Many didn't. I sell fish; he mends the nets.",
+     "The river gives, the gods take their share. We don't complain."
+    ],
+    "worry": [
+     "The fleet's been burned at Carthage now. Five hundred ships, they say. The sea's ours."
+    ]
+   }
   },
   {
    "id": "holitor",
@@ -423,6 +456,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -443,7 +477,17 @@
    "call": [
     "Cabbages! Leeks!",
     "Lettuces, fresh this morning!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}. I farm a plot outside the Colline Gate, as my father did, and bring the vegetables in at dawn.",
+    "work": [
+     "Cabbage and beans and hard work. Cato says the farmer makes the bravest soldier. He's right. I was one.",
+     "Sixteen years I was with the legions. The farm went to weeds. My wife kept it alive. Now I'm home, and it's mine again."
+    ],
+    "worry": [
+     "My sons will serve when they're called. As I did. As their grandfather did."
+    ]
+   }
   },
   {
    "id": "pomarius",
@@ -533,6 +577,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -554,7 +599,17 @@
    ],
    "call": [
     "Beds! Hot food!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}. An inn by the gate, for travellers and carters.",
+    "work": [
+     "Soldiers coming home stop here first. Some weep to see the city. Some weep because their fathers aren't in it.",
+     "An honest measure and a clean bed. The aediles look in, and they find nothing to say."
+    ],
+    "worry": [
+     "Too many veterans with nowhere to go yet. The Senate's promised land. It'll come."
+    ]
+   }
   },
   {
    "id": "popinarius",
@@ -648,6 +703,7 @@
    "class": "slave",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -666,7 +722,17 @@
    "worry": [
     "The last water carrier here fell on the stairs with two jars. He didn't get up. They bought me the next week."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I carry water from the Appian aqueduct fountains up to the houses.",
+    "work": [
+     "Censor Appius brought the water in a hundred years ago. Rome builds for its grandchildren.",
+     "My master is a fair man. He fought at Cannae and lived. He says a household is a small Republic."
+    ],
+    "worry": [
+     "I hope to earn my freedom. Serve well, and the master keeps his word. That's Roman fides."
+    ]
+   }
   },
   {
    "id": "fullo",
@@ -675,6 +741,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -693,7 +760,17 @@
    "worry": [
     "The vapours. Two of my men cough all night. One's coughing blood now."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}, fuller.",
+    "work": [
+     "White togas for the Campus: when a man stands for office he wears the whitened toga, the candida. We make him candidatus.",
+     "Honest work, hard work. The smell is the price of clean wool."
+    ],
+    "worry": [
+     "Our guild honours Minerva at her festival. We'll pour for her this spring."
+    ]
+   }
   },
   {
    "id": "sutor",
@@ -702,6 +779,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -720,7 +798,17 @@
    "worry": [
     "Leather's gone up. The tanners across the river set the price together and dare anyone to argue."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}, cobbler.",
+    "work": [
+     "Soldiers' boots, mostly: hobnailed, to march a hundred miles. The legions walked to Africa on boots from shops like mine.",
+     "Honest leather, honest stitching. A boot that splits on the march can kill a man."
+    ],
+    "worry": [
+     "My son's in the levy this year. I made his boots myself."
+    ]
+   }
   },
   {
    "id": "vestiarius",
@@ -754,6 +842,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -771,7 +860,17 @@
    "worry": [
     "My husband drinks what I make. He's the man of the house, the law says. The law's never been to our house."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I weave, as my mother did.",
+    "work": [
+     "A Roman woman works wool and keeps her house: that's the praise on the old tombs, and it's a good praise.",
+     "In the war the women gave their gold to the treasury, and wove for the legions. We'd do it again."
+    ],
+    "worry": [
+     "Four sons. Two are with the legions. I weave their cloaks myself."
+    ]
+   }
   },
   {
    "id": "purpurarius",
@@ -805,6 +904,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -823,7 +923,17 @@
    "worry": [
     "The neighbours complain about the noise. The landlord says one more complaint and I'm out."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Smith.",
+    "work": [
+     "Through the war I made nothing but swords and spear points, day and night. The Senate paid late and I didn't mind.",
+     "A sword I made went to Zama in a young man's hand. He came to tell me it held. I've never been prouder."
+    ],
+    "worry": [
+     "Iron's scarce. Everything went to the legions. We'll rebuild."
+    ]
+   }
   },
   {
    "id": "aurifex",
@@ -857,6 +967,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -877,7 +988,17 @@
    ],
    "call": [
     "Pots! Jugs! Good cheap pots!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}. Potter.",
+    "work": [
+     "Plain pots for plain people. The rich want painted Greek ware. My grandmother would have smashed it.",
+     "The clay's from the river, the kiln's outside the wall, and the work is honest."
+    ],
+    "worry": [
+     "Two apprentices went to the war. One came back. I'll teach his son the wheel."
+    ]
+   }
   },
   {
    "id": "lucernarius",
@@ -1068,6 +1189,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1085,7 +1207,17 @@
    "worry": [
     "A barber on the next street cut a man's throat. An accident, he said. The man's brother said otherwise."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}, barber. Barbers came to Rome from Sicily in my grandfather's day. Before that the Romans wore their beards like the old kings.",
+    "work": [
+     "The young nobles want clean chins now, the Greek way. Their grandfathers wore beards and conquered Italy.",
+     "I hear the talk in this chair: the war, the Senate, the price of grain. And I keep it here."
+    ],
+    "worry": [
+     "My brother is with the army still, in Africa, till the treaty's signed."
+    ]
+   }
   },
   {
    "id": "medicus",
@@ -1094,6 +1226,7 @@
    "class": "foreign",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1113,7 +1246,17 @@
    "worry": [
     "If a patient dies it's my fault. If he lives, the gods did it."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}, a doctor, from Greece. There are few of us in Rome yet.",
+    "work": [
+     "Romans trust cabbage and their grandfathers' remedies. Old men here call my art a Greek trick.",
+     "The wounded from the war taught me more than any book at home. The Romans don't complain under the knife."
+    ],
+    "worry": [
+     "They are a hard people and a straight people. A man's word here is his bond. It's not like that everywhere."
+    ]
+   }
   },
   {
    "id": "obstetrix",
@@ -1122,6 +1265,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1140,7 +1284,17 @@
    "worry": [
     "The ones you lose stay with you. I count them at night."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Midwife.",
+    "work": [
+     "Children are the city's strength. After Cannae every house wanted sons. I've brought hundreds.",
+     "Not every mother lives, and not every child. We bury them with honour and go on."
+    ],
+    "worry": [
+     "The census counts citizens by their children. Rome counts its future in cradles."
+    ]
+   }
   },
   {
    "id": "magister",
@@ -1149,6 +1303,7 @@
    "class": "freed",
    "place": "stand",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1166,7 +1321,17 @@
    "worry": [
     "Half the fathers don't pay on time. Some never."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I teach letters and sums, and the Twelve Tables by heart, as every boy must.",
+    "work": [
+     "The boys chant the laws of the Twelve Tables: 'If a man is summoned to court, he shall go.' It's in their bones by ten.",
+     "Their fathers teach them to ride, swim, throw a spear and fear the gods. I teach them to read what the laws say."
+    ],
+    "worry": [
+     "Half my older boys are in the levy. I pray for them by name."
+    ]
+   }
   },
   {
    "id": "paedagogus",
@@ -1201,6 +1366,7 @@
    "class": "pleb",
    "place": "stand",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1220,7 +1386,17 @@
    "call": [
     "Hear ye! Auction at noon by the Temple of Castor!",
     "Runaway! A Syrian, answers to Eros, reward for his return!"
-   ]
+   ],
+   "rise": {
+    "intro": "{name}! Crier!",
+    "work": [
+     "The levy is called on the Capitol at dawn. Every man of military age, by tribe. Rome needs her sons.",
+     "The Senate's decrees, the games, the festivals: I cry them all."
+    ],
+    "worry": [
+     "I cried the news of Cannae in this Forum. I cried the news of Zama. I'll never forget either."
+    ]
+   }
   },
   {
    "id": "tignarius",
@@ -1229,6 +1405,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1247,7 +1424,17 @@
    "worry": [
     "When a block collapses, the owner blames the builder, the builder blames the owner, and the dead are dead."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Carpenter.",
+    "work": [
+     "We rebuilt the temples the lightning hit, and the houses the floods took. There's always building in a growing city.",
+     "Our guild's older than the Republic. King Numa founded the guilds, they say."
+    ],
+    "worry": [
+     "Timber comes from the Sabine hills. The ships took most of it in the war."
+    ]
+   }
   },
   {
    "id": "marmorarius",
@@ -1332,6 +1519,7 @@
    "class": "slave",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1350,7 +1538,17 @@
    "worry": [
     "When my father's back went, they left him on the island of Aesculapius. We never heard if he lived."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I carry loads.",
+    "work": [
+     "My back is strong and the city's growing. There's work for anyone who'll do it.",
+     "The master rents me out, and he gives me a share. I'm saving for my freedom."
+    ],
+    "worry": [
+     "Rome was built on backs like mine. I don't mind. I'd like it built on my son's too, as a free man."
+    ]
+   }
   },
   {
    "id": "saccarius",
@@ -1359,6 +1557,7 @@
    "class": "pleb",
    "place": "river",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1376,7 +1575,17 @@
    "worry": [
     "A man fell between the barge and the quay last week. They pulled the barge off him too late."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I carry the grain from the barges.",
+    "work": [
+     "Sicily's grain feeds us now, and Sardinia's. The war paid for itself in the end.",
+     "Hard work, and honest. The tally-man counts true. His father did too."
+    ],
+    "worry": [
+     "I carried grain the day the news of Zama came. We dropped the sacks and cheered till we were hoarse."
+    ]
+   }
   },
   {
    "id": "mulio",
@@ -1385,6 +1594,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1402,7 +1612,17 @@
    "worry": [
     "The mule's worth more than I am, on paper."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Muleteer.",
+    "work": [
+     "I drove supply carts for the legions in Italy while Hannibal was loose in it. The roads the censors built won that war as much as the swords.",
+     "A good road, a good mule, an honest load. Rome runs on all three."
+    ],
+    "worry": [
+     "The country's still half empty from the war. The farms need men."
+    ]
+   }
   },
   {
    "id": "lecticarius",
@@ -1436,6 +1656,7 @@
    "class": "pleb",
    "place": "river",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1453,7 +1674,17 @@
    "worry": [
     "Floods in spring. The river comes into the Forum and the low flats, and people drown in their beds."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Boatman on the Tiber.",
+    "work": [
+     "I rowed the grain up from Ostia through the whole war, even when Hannibal was at the gates. Rome never starved.",
+     "My son's at sea with the fleet. The Romans learned the sea from the Carthaginians and beat them on it."
+    ],
+    "worry": [
+     "The river's ours now, and the sea."
+    ]
+   }
   },
   {
    "id": "balneator",
@@ -1487,6 +1718,7 @@
    "class": "foreign",
    "place": "stand",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1504,7 +1736,17 @@
    "worry": [
     "Some young men laugh at the old arts. Most of them ask me in private when someone's ill."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}, haruspex, from Etruria. The Senate calls us when the signs are strange.",
+    "work": [
+     "In the war the prodigies came thick: showers of stones, a talking ox, blood in the streams. The Senate expiated every one. Nothing was neglected.",
+     "Rome is the most pious city I know. They fear the gods, and it's made them masters of the world."
+    ],
+    "worry": [
+     "Men speak of the Greek philosophers who doubt the gods. Let them doubt somewhere else."
+    ]
+   }
   },
   {
    "id": "aedituus",
@@ -1513,6 +1755,7 @@
    "class": "freed",
    "place": "temple",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1529,7 +1772,17 @@
    "worry": [
     "The temple treasury is where men deposit money for safe keeping. Where there's money there are thieves."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I keep this temple.",
+    "work": [
+     "People bring thanks for sons home from the war. More this year than in all the war together.",
+     "The temple treasury holds the city's money and the people's vows. Nobody has ever stolen from it. It's unthinkable."
+    ],
+    "worry": [
+     "Rome keeps faith with the gods and the gods keep faith with Rome. That's why we won."
+    ]
+   }
   },
   {
    "id": "victimarius",
@@ -1538,6 +1791,7 @@
    "class": "pleb",
    "place": "temple",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1554,7 +1808,17 @@
    "worry": [
     "Some days I kill thirty. The smell never leaves your hair."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I serve at the altar.",
+    "work": [
+     "The ox goes willing if the rite is done rightly. The gods watch how we do things, not just what.",
+     "In the war we did everything to win the gods back after Cannae: the Sibylline books, the Great Mother brought from Phrygia. And they came back to us."
+    ],
+    "worry": [
+     "The victory was the gods' before it was Scipio's. We must not forget it."
+    ]
+   }
   },
   {
    "id": "libitinarius",
@@ -1563,6 +1827,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1580,7 +1845,17 @@
    "worry": [
     "Undertakers live outside decent company. We're polluted by the work. People need us and won't eat with us."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Undertaker.",
+    "work": [
+     "A great man's funeral: his ancestors walk before him, men wearing the wax masks of every consul in the family. His son praises him from the Rostra. The young men watch and burn to be worthy.",
+     "We buried so many in the war there were no masks left to carry. The Senate limited mourning to thirty days. There was a war to win."
+    ],
+    "worry": [
+     "Death for Rome is the best death. The whole city says so, and means it."
+    ]
+   }
   },
   {
    "id": "vespillo",
@@ -1615,6 +1890,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1631,7 +1907,17 @@
    "worry": [
     "I play at the brothels too, some nights. Music's music."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Piper.",
+    "work": [
+     "At the sacrifice my pipe covers any ill-omened word. The rite must be perfect.",
+     "At the funerals of the war dead I played till my lips bled."
+    ],
+    "worry": [
+     "Music for the gods and for the dead. That's a piper's life, and it's a good one."
+    ]
+   }
   },
   {
    "id": "mimus",
@@ -1765,6 +2051,7 @@
    "class": "state",
    "place": "patrol",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1782,7 +2069,17 @@
    "worry": [
     "I've flogged men in the Forum on a magistrate's word. You don't let yourself think about it."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Lictor to the consul.",
+    "work": [
+     "The rods and the axe: the power of the Roman people, carried before its magistrate. Inside the city the axe comes out: a citizen may appeal.",
+     "The consul's power is great and lasts a year, and then he goes back to his farm. That's the Republic."
+    ],
+    "worry": [
+     "I walked before the consul who marched to Africa. I've never seen men so glad to serve."
+    ]
+   }
   },
   {
    "id": "vigil",
@@ -1842,6 +2139,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1859,7 +2157,17 @@
    "worry": [
     "I sleep badly. So does everyone who was there."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I served under Scipio. Spain, then Africa. I was at Zama.",
+    "work": [
+     "Hannibal's elephants came at us and we opened the lines and let them through, like he told us. Then we closed and held. We held.",
+     "Many of us were Cannae men: disgraced, sent to Sicily, never allowed home. Scipio took us to Africa and we made it right."
+    ],
+    "worry": [
+     "Land in Apulia, they say. I'll farm it and send my sons when Rome calls."
+    ]
+   }
   },
   {
    "id": "senator",
@@ -1868,6 +2176,7 @@
    "class": "rich",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1887,7 +2196,17 @@
    "worry": [
     "My son borrowed ruinously to buy an aedileship and the games that go with it. If he loses the next election, we lose the house."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "I am {name}. My family has given Rome consuls and soldiers since the kings.",
+    "work": [
+     "Three of my brothers fell at Cannae. The Senate did not ask for peace. Not one senator spoke of peace. That is Rome.",
+     "We refused to ransom the prisoners Hannibal took. A soldier who surrenders is lost to Rome. It was cruel. It was right."
+    ],
+    "worry": [
+     "Luxury is creeping in from the Greek cities. Silver plate, perfumes, dancing. It softens men. We must hold the line."
+    ]
+   }
   },
   {
    "id": "cliens",
@@ -1896,6 +2215,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late"
@@ -1912,7 +2232,17 @@
    "worry": [
     "If he falls from favour, so do we all. Nobody feeds the clients of a condemned man."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Client of the house of {patron}.",
+    "work": [
+     "At dawn I greet my patron. When I was in need he helped me, and in the war I fought in his company. Patron and client: it's a bond of faith.",
+     "My vote goes with his, because his cause is mine. He'd lose his honour if he failed me."
+    ],
+    "worry": [
+     "My father was his father's client. My son will be his son's. That's how Rome holds together."
+    ]
+   }
   },
   {
    "id": "matrona",
@@ -1921,6 +2251,7 @@
    "class": "rich",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1940,7 +2271,17 @@
    "worry": [
     "My husband's been seen with a freedwoman. If he divorces me, the dowry comes back to my father. Not to me."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "I'm {name}.",
+    "work": [
+     "When the gold was needed for the war, we women gave our jewels to the treasury. The law since then keeps our dress plain. We keep it proudly.",
+     "I run the house and raise the sons. Two are with the legions. I raised them to go."
+    ],
+    "worry": [
+     "I buried my husband's brother after Cannae, without a body. Half the city did. We grieved thirty days, as the Senate ordered, and then we went on."
+    ]
+   }
   },
   {
    "id": "ancilla",
@@ -1949,6 +2290,7 @@
    "class": "slave",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1967,7 +2309,17 @@
    "worry": [
     "I'm saving my allowance to buy my freedom. Twelve years, maybe. By then they'll have raised my price."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I serve in the house of {patron}.",
+    "work": [
+     "The household works together: the master, the mistress, the children, the slaves. We eat the same bread.",
+     "I was born in the house. The master has promised me freedom when his daughter marries. He keeps his word."
+    ],
+    "worry": [
+     "The young master is with the army. The whole house prays for him at the hearth."
+    ]
+   }
   },
   {
    "id": "servus",
@@ -1976,6 +2328,7 @@
    "class": "slave",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -1993,7 +2346,17 @@
    "worry": [
     "They say I'll be freed before thirty. I'm twenty-nine."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. I belong to the house of {patron}.",
+    "work": [
+     "The master worked the fields beside us before the war. He's a hard man, but he's hard on himself first.",
+     "In the worst of the war they armed eight thousand slaves and freed them for their courage. It's remembered."
+    ],
+    "worry": [
+     "Serve well, and you'll be freed, and your children will be citizens. That's the Roman way."
+    ]
+   }
   },
   {
    "id": "mercator",
@@ -2002,6 +2365,7 @@
    "class": "foreign",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -2020,7 +2384,17 @@
    "worry": [
     "I lost a ship off Sicily last year. Eleven men. I still pay their widows."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}, a trader from Massilia. Rome's ally.",
+    "work": [
+     "Romans keep their word. Carthage never did. That's why the cities of the coast chose Rome.",
+     "They're a poor city still, hard and plain. They buy little and pay honestly."
+    ],
+    "worry": [
+     "Their fides is famous. A treaty with Rome is worth more than a Punic oath."
+    ]
+   }
   },
   {
    "id": "presbyter",
@@ -2175,6 +2549,7 @@
    "class": "foreign",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -2192,7 +2567,17 @@
    "worry": [
     "Some Romans think anyone who isn't Roman is a slave who hasn't been caught yet."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. A Greek, here on business. I'm still learning these people.",
+    "work": [
+     "They are the most religious people I have met, and the hardest. They'd die rather than break an oath.",
+     "They count their sons as wealth and their dead as glory. It frightens me and I admire it."
+    ],
+    "worry": [
+     "One day they'll rule all the Greeks too. They don't know it yet. I do."
+    ]
+   }
   },
   {
    "id": "proletarius",
@@ -2201,6 +2586,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "early",
     "republic",
     "empire",
     "late",
@@ -2218,7 +2604,17 @@
    "worry": [
     "Rent is half of everything. A room on the fifth floor, no water, no fire, and the landlord can throw us out at the Kalends."
    ],
-   "call": []
+   "call": [],
+   "rise": {
+    "intro": "{name}. Citizen. No land yet, but a citizen, and I've served.",
+    "work": [
+     "I rowed in the fleet. The proletarii serve at sea when the legions have taken everyone with land. Rome wasted nobody.",
+     "The Senate's settling veterans on land in Samnium and Apulia. My name's on the list."
+    ],
+    "worry": [
+     "I'm poor, and I'm Roman, and I'd do it again."
+    ]
+   }
   }
  ],
  "life": {
@@ -2285,6 +2681,14 @@
    "In the siege people ate grass and dogs and worse. Some didn't wake. Some weren't allowed to.",
    "The aqueducts are cut. The baths are dry. We drink from the river and the fevers come with it.",
    "Totila emptied the city once. Forty days with no one in it. I was hiding in the Colosseum with my mother."
+  ],
+  "early": [
+   "Scipio's triumph! Carthage's gold carried through the streets, and the captives, and the elephants' tusks. He'll be called Africanus.",
+   "The treaty's signed. Carthage gives up her fleet, burns it in the harbour, and pays ten thousand talents over fifty years.",
+   "The Senate's voting land for Scipio's veterans in Samnium and Apulia.",
+   "Philip of Macedon helped Hannibal. The Senate won't forget. There'll be war in the east before long.",
+   "The poet Ennius, Cato brought him from Sardinia, is writing the whole history of Rome in verse. They say it's magnificent.",
+   "Sixteen years since Cannae. The Senate never once asked for peace. Now look at us."
   ]
  },
  "gods": {
@@ -2303,6 +2707,10 @@
   "fall": [
    "God is great and Rome is small. We pray at the tombs of the martyrs and hope they're listening.",
    "The old temples are shut or they're churches now. The saints moved in when the gods moved out. Or when the gods were thrown out."
+  ],
+  "early": [
+   "Jupiter Best and Greatest keeps the city. Vesta's fire keeps it alive. We keep the rites exactly, and the gods keep us.",
+   "After Cannae we did everything the Sibylline books said. We brought the Great Mother from Phrygia. And the gods turned back to Rome."
   ]
  },
  "reacts": {
@@ -2433,6 +2841,117 @@
    "What do you want?"
   ]
  ],
+ "moods_by_age": {
+  "early": [
+   [
+    "proud",
+    "Zama! You've heard? Of course you have."
+   ],
+   [
+    "resolute",
+    "There's work to do. There always is."
+   ],
+   [
+    "devout",
+    "I've just come from the temple. Thanks for my son's return."
+   ],
+   [
+    "grieving",
+    "My brother didn't come back. He died well."
+   ],
+   [
+    "busy",
+    "Quickly, friend. The levy's called."
+   ]
+  ],
+  "empire": [
+   [
+    "idle",
+    "Nothing to do till the games."
+   ],
+   [
+    "bored",
+    "Another day."
+   ],
+   [
+    "wary",
+    "Careful what you ask."
+   ],
+   [
+    "drunk",
+    "A bit of wine at lunch. More than a bit."
+   ],
+   [
+    "weary",
+    "Tired. Always tired."
+   ]
+  ],
+  "late": [
+   [
+    "afraid",
+    "Don't stand so close."
+   ],
+   [
+    "bitter",
+    "What's it to you?"
+   ],
+   [
+    "weary",
+    "Tired. Always tired."
+   ],
+   [
+    "hungry",
+    "Have you bread? No? Then what do you want?"
+   ]
+  ],
+  "fall": [
+   [
+    "starving",
+    "Have you food? Anything?"
+   ],
+   [
+    "numb",
+    "..."
+   ],
+   [
+    "grieving",
+    "My children. The fever. All three."
+   ],
+   [
+    "afraid",
+    "Are you with the Goths?"
+   ]
+  ]
+ },
+ "life_early": {
+  "pleb": [
+   "A small house on the {home}, my {partner}, {kids}. My sons will serve when Rome calls. That's a Roman's life, and it's enough.",
+   "We lost my father in the war and my uncle at Cannae. Their names are said at our hearth every day."
+  ],
+  "slave": [
+   "I serve a hard house but an honest one. The master eats what we eat and works beside us when there's need.",
+   "Freedom comes to those who serve well. I've seen it given, and kept."
+  ],
+  "freed": [
+   "I was a slave in this house. Now I'm free, and a client of my old master, and my son is a citizen. Rome keeps its word.",
+   "I stood in the line of freedmen at the census. Proudest day of my life."
+  ],
+  "rich": [
+   "We have land in the Sabine country and this house on the {home}. Not large. Our ancestors lived plainly and conquered Italy.",
+   "Duty first: to the gods, to the Republic, to the family. My father said it every morning. I say it to my sons."
+  ],
+  "foreign": [
+   "I came to trade and I stay because they keep their word. It's rare, believe me.",
+   "The Romans are hard to know and easy to trust."
+  ],
+  "state": [
+   "I serve the magistrate as my father did. The office passes; the Republic stays.",
+   "My {partner} and {kids} live near the Capitol. I see the temple from my door every morning."
+  ],
+  "church": [
+   "Our gods have kept Rome through the worst of it."
+  ]
+ },
  "patrons": [
   "the Cornelii",
   "the Claudii",
