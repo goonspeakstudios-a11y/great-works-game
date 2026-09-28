@@ -1,5 +1,5 @@
 {
-  "about": "The city of Rome as the Rome world's hub (places_rome.gd): the whole city, walked on the map of content/rome/republican_rome.json (real metres east and north of the Forum, shrunk by its scale). It stands in one of four ages; a monument stands from the year it was built ('from'), is a ruin from 'ruin', and is gone from 'gone'. Years are negative before Christ. Positions not marked in republican_rome.json are read off modern coordinates of the remains and are approximate.",
+  "about": "The city of Rome as the Rome world's hub (places_rome.gd): the whole city, walked on the map of content/rome/republican_rome.json (real metres east and north of the Forum, shrunk by its scale). It stands in one of four ages; a monument stands from the year it was built ('from'), is a ruin from 'ruin', and is gone from 'gone'. Years are negative before Christ. Positions not marked in republican_rome.json are read off modern coordinates of the remains and are approximate. 'walkable' is the part of the city you can walk in (the Servian city, the Forum Boarium and the southern Campus Martius); beyond it, up to 'outer' (the line of Aurelian's wall), the city goes on to be seen, not walked.",
   "ages": [
     {
       "id": "republic",
@@ -85,6 +85,76 @@
     "note": "In the 6th century the people drew in to the bend of the Tiber in the Campus Martius, near the river and its mills, when the aqueducts failed."
   },
   "walkable": [
+    [
+      -560,
+      -420
+    ],
+    [
+      -514,
+      -579
+    ],
+    [
+      -348,
+      -1135
+    ],
+    [
+      25,
+      -1191
+    ],
+    [
+      315,
+      -1247
+    ],
+    [
+      481,
+      -913
+    ],
+    [
+      1103,
+      -746
+    ],
+    [
+      1144,
+      -300
+    ],
+    [
+      1310,
+      490
+    ],
+    [
+      1351,
+      1147
+    ],
+    [
+      700,
+      1250
+    ],
+    [
+      100,
+      1050
+    ],
+    [
+      -400,
+      980
+    ],
+    [
+      -760,
+      920
+    ],
+    [
+      -1110,
+      760
+    ],
+    [
+      -990,
+      300
+    ],
+    [
+      -660,
+      -40
+    ]
+  ],
+  "outer": [
     [
       -729,
       2142
@@ -1965,154 +2035,6 @@
       "note": "The empress Helena's palace hall, holding the pieces of the Cross she brought from Jerusalem."
     }
   ],
-  "people": {
-    "republic": {
-      "merchant": [
-        "Sausages! Hot sausages! Fresh from Lucania!",
-        "Garum from Spain, the best: it costs more than perfume and it is worth it.",
-        "Figs, dates, the new wine. Don't touch unless you're buying.",
-        "I sell books too, you know. Greek ones. Very improving.",
-        "Money-changer. Denarii for your drachmas, a fair rate, near enough.",
-        "They say Crassus buys houses while they burn. Cheap, then he rebuilds and rents them to us."
-      ],
-      "patrol": [
-        "Make way! Make way for the praetor!",
-        "The lictors carry the rods and the axe. Inside the city the axe stays out of the bundle, for a citizen may appeal.",
-        "Stand aside, citizen. The magistrate passes.",
-        "At night the three men for capital crimes keep the watch. Very few of them for a city this size."
-      ],
-      "patrician": [
-        "My clients come to my door at dawn and walk me to the Forum. A man is known by his following.",
-        "The Senate is the Republic. The tribunes forget it.",
-        "Pompey was made sole consul, no colleague at all. It is not the old way.",
-        "My son goes to Rhodes to study rhetoric. A Roman must be able to speak.",
-        "Caesar writes his dispatches from Gaul as if he were a god reporting the weather."
-      ],
-      "plebeian": [
-        "Clodius gave us our grain free. Then Milo's men killed him on the Appian Way.",
-        "Third floor of an insula, forty families to a stair. If it burns, you jump.",
-        "Did you vote? They buy the tribes now, a denarius a head.",
-        "The Tiber came up again last spring. The whole Velabrum under water.",
-        "My son is with Caesar in Gaul. Nine years he signed for. He'll have land, they say."
-      ],
-      "peregrinus": [
-        "I came from Alexandria with the grain ships. Your Rome is loud and crooked, and very rich.",
-        "A Greek teacher? Every rich Roman wants one and none of them respect us.",
-        "I am of the Aedui, a friend of the Roman people. That is what the treaty says.",
-        "Syrian? No, from Tyre. Purple dye. The senators' stripes are my trade.",
-        "I am a Jew of the city. We live across the river; we send our tribute to the Temple."
-      ]
-    },
-    "empire": {
-      "merchant": [
-        "Pepper, from India, by way of Alexandria! Trajan's markets have nothing better.",
-        "Oil from Baetica, wine from Gaul, grain from Egypt: all the world comes up the Tiber.",
-        "Books! Martial's epigrams, new copies. Four sesterces, and cheap at that.",
-        "Bread from the public ovens? That's for citizens with the token. The rest of you buy mine.",
-        "Hot food! Chickpeas, sausages, eggs: I light the brazier before dawn."
-      ],
-      "patrol": [
-        "Vigiles. We are the watch: seven cohorts, a station for every two regions. Buckets, axes, blankets soaked in vinegar.",
-        "Keep a jar of water in your room, the prefect's orders. Fires start in the upper floors.",
-        "The urban cohorts keep the peace in the streets. At the games we keep it in the stands.",
-        "Carts only at night, the law says. So nobody sleeps, but the streets are clear by day."
-      ],
-      "patrician": [
-        "The Senate meets. The emperor decides. Antoninus is a good emperor, and we are glad of him.",
-        "Two years ago Rome was nine hundred years old. The games went on for weeks.",
-        "I have a villa at Tibur and another at Baiae, and I prefer this city to both. Nobody believes me.",
-        "My freedman is richer than I am. He trades in Ostia and wears more rings than a king.",
-        "My sons will go into the army as tribunes for a year and then into the courts."
-      ],
-      "plebeian": [
-        "Bread and circuses, the poet said. Well, the bread is free and the circus is free.",
-        "The Greens will win. Never bet against the Greens.",
-        "The baths cost a quarter of an as. For that you get hot water, a massage and all the gossip in Rome.",
-        "My landlord is Greek, my neighbour Syrian, my baker a Gaul. Who is Roman now?",
-        "Six floors, and the builders cut corners. You hear the walls creak at night."
-      ],
-      "peregrinus": [
-        "I am from Lepcis, in Africa. My cousin is in the Senate now. It can be done.",
-        "I came from Britain with the tin. So much marble! And so many people!",
-        "A Christian? Yes. We meet in houses. We harm no one.",
-        "An Egyptian priest of Isis. Your emperors have built her a temple on the Campus. Rome takes every god.",
-        "I am a Greek doctor. Romans distrust doctors and cannot do without us."
-      ]
-    },
-    "late": {
-      "merchant": [
-        "Pork! The state gives it out now, and oil and wine, but you want more than your ration.",
-        "Relics? No, only oil lamps with the sign of Christ on them. The best sellers.",
-        "The new coin is the solidus, gold. The old silver is worth nothing.",
-        "Wine from the south of Italy. The Emperor lives in the east now, but Rome still drinks.",
-        "Everything costs more since Diocletian set the prices, and then it all went to the black market."
-      ],
-      "patrol": [
-        "The Urban Prefect keeps the city now. The Emperor is far away.",
-        "The walls! Aurelian's walls. Nineteen kilometres of brick, and a gate on every road.",
-        "No brawls at the chariot races. The factions fight with knives now.",
-        "Move along. The Prefect's bread is given at the steps, not here."
-      ],
-      "patrician": [
-        "The Emperor has built a new Rome on the Bosporus. The old one keeps its Senate. For now.",
-        "My family has sat in the Senate for four hundred years. We keep the old gods, most of us.",
-        "The bishop has become a great man. Constantine gave him the Lateran palace.",
-        "Rome is not where the Emperor is. Rome is here. We are Rome.",
-        "I hold games for my son's praetorship. It will cost two thousand pounds of gold."
-      ],
-      "plebeian": [
-        "The Emperor was here in 326, for his twenty years. He would not go up to the Capitol. They booed him.",
-        "I go to the church of the Lateran on Sunday and the Circus on Monday.",
-        "My grandfather built walls when the barbarians came. Aurelian made everyone dig.",
-        "Bread every day, baked, not grain. Aurelian did that. Good man.",
-        "They took the old sculpture for Constantine's arch. Nobody carves like that now."
-      ],
-      "peregrinus": [
-        "I came from Milan. The emperors lived there before Constantinople. Rome is old now.",
-        "A Goth? I serve in the army. There are more of us in it every year.",
-        "I am from Antioch, a Christian, on pilgrimage to the tombs of Peter and Paul.",
-        "From Carthage, with the grain fleet. Africa feeds Rome still.",
-        "A Persian? A trader. The war comes and goes; the silk keeps coming."
-      ],
-      "cleric": [
-        "The bishop of Rome sits in Peter's chair.",
-        "Constantine has given us churches as great as basilicas. We have never had so many hearers.",
-        "Pray for the Emperor."
-      ]
-    },
-    "fall": {
-      "merchant": [
-        "Nothing to sell. Some fish from the river, if you have bronze.",
-        "The mills are on the river now, since the Goths cut the aqueducts. Belisarius thought of it.",
-        "Stone from the old buildings. Take what you want; nobody owns them now."
-      ],
-      "patrol": [
-        "Soldiers of the Emperor Justinian. Narses has taken the city back from the Goths, again.",
-        "Five times this city has changed hands in these wars. We hold it now.",
-        "Stay inside the walls after dark. There are not enough of us to guard them."
-      ],
-      "patrician": [
-        "The Senate? A few of us left. Totila took the senators away as hostages.",
-        "My family's house on the Caelian is empty. We live near the river now, like everyone.",
-        "Boethius was one of us, and the Goth king had him killed. Now the Goths are gone too."
-      ],
-      "plebeian": [
-        "In the year Totila took the city, they say there was no one here at all for forty days.",
-        "My grandmother said there were a million people once. There are not a million stones left standing.",
-        "The Pope's men give bread at the Lateran. God keep them.",
-        "No water in the fountains. We drink from the Tiber and pray."
-      ],
-      "peregrinus": [
-        "A pilgrim, from Gaul, come to pray at Peter's tomb. The city is empty and very holy.",
-        "A Greek, from Constantinople, with the army. This is Rome? It looks like the end of the world."
-      ],
-      "cleric": [
-        "We pray at the tombs of the martyrs. Rome is the city of Peter now, not of Caesar.",
-        "The Pope is in Constantinople, called by the Emperor. We wait.",
-        "Plague, war, hunger. And still they come to pray."
-      ]
-    }
-  },
   "talks": {
     "republic": [
       [

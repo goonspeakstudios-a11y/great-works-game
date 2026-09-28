@@ -191,12 +191,29 @@ static func material(kind: String) -> Material:
 			world_tex.call(_rubble(), 0.35)
 		"insula", "insula_ochre", "insula_rose", "insula_white":  # a block of flats: its storeys of windows
 			world_tex.call(_storeys(kind), 0.25)
+		# Rome's city, sharper than Greece: 64-pixel textures, and pale ones meant to be tinted
+		"r_ground":  # the city's streets: beaten earth and grit with worn-in cobbles
+			world_tex.call(_r_ground(Color("786c5e"), 181), 0.25)
+		"r_dirt":  # darker trodden dirt, puddle-stained
+			world_tex.call(_r_ground(Color("6e6050"), 191), 0.3)
+		"r_wall":  # lime plaster over brick, pale, to be tinted any colour; a stone course each storey
+			world_tex.call(_r_wall(), 0.25)
+		"r_brick":  # bare brick facing (opus testaceum) with bonding courses
+			world_tex.call(_r_brick(), 0.25)
+		"r_shop":  # a row of shop fronts: arched openings, wooden shutters, a counter
+			world_tex.call(_r_shop(), 0.25)
+		"r_roof":  # rows of curved tiles (imbrices) over flat ones (tegulae)
+			world_tex.call(_r_roof(), 0.5)
+		"r_slab":  # travertine slabs of a pavement or a shop's step
+			world_tex.call(_r_slab(), 0.3)
+		"leaves":  # a garden's leaves: box, myrtle, vines
+			world_tex.call(_noise(Color("4a6a34"), Color("36522a"), Color("6a8a44"), 197), 1.0)
 		"awning":  # a shop's striped awning
 			world_tex.call(_stripes(Color("a8342a"), Color("e0d0b0")), 1.0)
 		"terracotta":
 			world_tex.call(_noise(Color("b0643e"), Color("94502e"), Color("c47a52"), 131), 1.0)
 		"basalt":  # the dark polygonal blocks of a paved Roman road
-			world_tex.call(_polygons(Color("4c4c50"), Color("2c2c30"), 71), 0.4)
+			world_tex.call(_polygons(Color("4c4c50"), Color("2c2c30"), 71), 0.8)
 		"mosaic":  # a floor of small white stones with a black pattern
 			world_tex.call(_mosaic(), 0.5)
 		"fresco":  # a painted Pompeian wall: black frieze, red panels framed in yellow, black dado
@@ -481,6 +498,141 @@ static func _travertine() -> ImageTexture:
 		var x0 := rng.randi_range(0, 31)
 		for dx in rng.randi_range(2, 5):
 			img.set_pixel((x0 + dx) % 32, y, Color("a89a7c"))
+	return ImageTexture.create_from_image(img)
+
+
+## The city's ground, 64 px to 4 m: grit in two tones, with here and there a worn cobble and a
+## brick shard pressed in, so it reads as trodden earth, not a pattern.
+static func _r_ground(base: Color, seed_value: int) -> ImageTexture:
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	for y in 64:
+		for x in 64:
+			var n := rng.randf()
+			var c := base
+			if n < 0.25:
+				c = base.darkened(0.08)
+			elif n > 0.93:
+				c = base.lightened(0.1)
+			img.set_pixel(x, y, c)
+	for k in 18:  # cobbles and shards
+		var cx := rng.randi_range(0, 63)
+		var cy := rng.randi_range(0, 63)
+		var r := rng.randi_range(1, 3)
+		var tint := base.lightened(0.07) if rng.randf() < 0.55 else (base.lerp(Color("7a5444"), 0.5) if rng.randf() < 0.4 else base.darkened(0.12))
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				if dx * dx + dy * dy <= r * r:
+					img.set_pixel((cx + dx + 64) % 64, (cy + dy + 64) % 64, tint)
+	return ImageTexture.create_from_image(img)
+
+
+## Plaster, near white so it takes a tint (ochre, rose, blue-grey, cream), slightly mottled, with a
+## thin stone course and a darker band at the foot of each storey.
+static func _r_wall() -> ImageTexture:
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 211
+	for y in 64:
+		for x in 64:
+			var c := Color("ece6da")
+			var n := rng.randf()
+			if n < 0.2:
+				c = c.darkened(0.05)
+			elif n < 0.24:
+				c = c.darkened(0.12)
+			if y >= 61:
+				c = Color("d8d0c0")  # the string course
+			elif y >= 56:
+				c = c.darkened(0.08)  # splash and grime at the floor line
+			img.set_pixel(x, y, c)
+	for k in 5:  # patches where the plaster is worn to the brick
+		var cx := rng.randi_range(0, 60)
+		var cy := rng.randi_range(4, 50)
+		for dy in rng.randi_range(2, 5):
+			for dx in rng.randi_range(3, 7):
+				img.set_pixel((cx + dx) % 64, (cy + dy) % 64, Color("b8866a") if (dx + dy) % 3 else Color("a87a60"))
+	return ImageTexture.create_from_image(img)
+
+
+static func _r_brick() -> ImageTexture:
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 223
+	for y in 64:
+		for x in 64:
+			var course := y / 4
+			var off := 6 if course % 2 else 0
+			var c := Color("9a5238")
+			if y % 4 == 0 or (x + off) % 12 == 0:
+				c = Color("c4b496")
+			else:
+				var n := rng.randf()
+				c = c.darkened(0.12) if n < 0.2 else (c.lightened(0.08) if n > 0.9 else c)
+			if y >= 60:
+				c = Color("b0a48a")  # a bonding course of big tiles
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## The ground storey's shop fronts, 4 m to a tile: a brick arch over each opening, the wooden
+## shutters folded back, the dark shop inside, and the step.
+static func _r_shop() -> ImageTexture:
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 227
+	for y in 64:
+		for x in 64:
+			var c := Color("a4583c") if (y % 4 != 0 and (x + (3 if (y / 4) % 2 else 0)) % 8 != 0) else Color("c4b496")
+			var dx := x - 32
+			var inside := absi(dx) < 20 and y > 10 and (y > 20 or dx * dx + (y - 20) * (y - 20) < 400)
+			if inside:
+				c = Color("21170f") if absi(dx) < 14 else Color("5a3c22")  # the dark shop, the shutters
+				if y > 44 and absi(dx) < 14:
+					c = Color("8a7458")  # the counter
+			if absi(dx) >= 20 and absi(dx) < 23 and y > 10 and y < 21 and (dx * dx + (y - 20) * (y - 20) >= 400):
+				c = Color("c8baa0")  # the arch's stones
+			if y >= 60:
+				c = Color("d0c6b0")  # the step
+			if rng.randf() < 0.05:
+				c = c.darkened(0.1)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+static func _r_roof() -> ImageTexture:
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 229
+	for y in 64:
+		for x in 64:
+			var col := x % 8
+			var c := Color("a4563a")
+			if col < 3:
+				c = Color("b8684a") if col == 1 else Color("944a30")  # the round cover tile
+			elif col == 7:
+				c = Color("6e3622")
+			if y % 16 == 0:
+				c = c.darkened(0.25)
+			if rng.randf() < 0.06:
+				c = c.darkened(0.12)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+static func _r_slab() -> ImageTexture:
+	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 233
+	for y in 64:
+		for x in 64:
+			var c := Color("d6ccb4")
+			if y % 32 == 0 or (x + (16 if (y / 32) % 2 else 0)) % 32 == 0:
+				c = Color("9a9078")
+			elif rng.randf() < 0.18:
+				c = c.darkened(0.06)
+			img.set_pixel(x, y, c)
 	return ImageTexture.create_from_image(img)
 
 

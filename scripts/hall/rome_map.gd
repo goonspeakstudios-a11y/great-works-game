@@ -178,11 +178,18 @@ static func ground(p: Vector3) -> float:
 static func terrain(world: Node3D, mat: String) -> void:
 	var lo := Vector2(INF, INF)
 	var hi := Vector2(-INF, -INF)
-	for p: Vector3 in walkable():
+	var outer: Array = (city_data().get("outer", []) as Array).map(func(q: Array) -> Vector3: return at(q))
+	for p: Vector3 in (outer if not outer.is_empty() else walkable()):
 		lo = Vector2(minf(lo.x, p.x), minf(lo.y, p.z))
 		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.z))
 	lo -= Vector2(120, 120)
 	hi += Vector2(120, 120)
+	var noise := FastNoiseLite.new()  # patches of the ground: dusty, trodden dark, sun-bleached
+	noise.seed = 21
+	noise.frequency = 0.018
+	var grain := FastNoiseLite.new()
+	grain.seed = 5
+	grain.frequency = 0.11
 	var cols := int((hi.x - lo.x) / CELL) + 1
 	var rows := int((hi.y - lo.y) / CELL) + 1
 	var heights := PackedFloat32Array()
@@ -192,12 +199,21 @@ static func terrain(world: Node3D, mat: String) -> void:
 			heights[j * cols + i] = ground(Vector3(lo.x + i * CELL, 0, lo.y + j * CELL))
 	var verts := PackedVector3Array()
 	var normals := PackedVector3Array()
+	var colours := PackedColorArray()
 	verts.resize(cols * rows)
 	normals.resize(cols * rows)
+	colours.resize(cols * rows)
 	for j in rows:
 		for i in cols:
 			var k := j * cols + i
 			verts[k] = Vector3(lo.x + i * CELL, heights[k], lo.y + j * CELL)
+			var n := noise.get_noise_2d(verts[k].x, verts[k].z) + 0.35 * grain.get_noise_2d(verts[k].x, verts[k].z)
+			var col := Color(1.0, 0.97, 0.92).lerp(Color(0.78, 0.74, 0.7), clampf(0.5 - n, 0.0, 1.0))
+			if n > 0.45:
+				col = col.lerp(Color(1.08, 1.02, 0.92), n - 0.45)  # bleached where the sun sits all day
+			if heights[k] > 4.0:
+				col = col.lerp(Color(1.0, 0.94, 0.86), 0.3)  # the hills' lighter, drier ground
+			colours[k] = col
 			var hx := heights[j * cols + mini(i + 1, cols - 1)] - heights[j * cols + maxi(i - 1, 0)]
 			var hz := heights[mini(j + 1, rows - 1) * cols + i] - heights[maxi(j - 1, 0) * cols + i]
 			normals[k] = Vector3(-hx, 2.0 * CELL, -hz).normalized()
@@ -210,10 +226,12 @@ static func terrain(world: Node3D, mat: String) -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = verts
 	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_COLOR] = colours
 	arrays[Mesh.ARRAY_INDEX] = idx
 	var am := ArrayMesh.new()
 	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	var sheet := Kit.mesh(world, am, mat, Vector3.ZERO)
+	sheet.material_override = tinted(mat)  # the patches of the ground tint its texture
 	sheet.name = "Ground"
 	# the same ground to walk on: a height map, one unit a cell, scaled up evenly to CELL metres
 	var shape := HeightMapShape3D.new()
@@ -240,7 +258,7 @@ static func terrain(world: Node3D, mat: String) -> void:
 
 ## The kept-for-the-Rhetorica ground: the sheet of brick (or, lost, of rubble).
 static func plain(world: Node3D, whole: bool) -> void:
-	terrain(world, "cobble" if whole else "rubble")
+	terrain(world, "r_ground" if whole else "rubble")
 
 
 ## A strip laid on the ground along a line of world points (a street, the river): `width` wide,
@@ -344,7 +362,8 @@ static func footprint(m: Dictionary) -> float:
 ##   "clear": world points the houses keep clear of (where you arrive, the gateways),
 ##   "blocks": false to leave out the houses (for quick tests), "no_terrain": the ground is laid already.
 ## Returns {"flicker": lights, "monuments": [{m, at, yaw, state}], "streets": [[world points]...],
-## "stalls": spots for stalls along the streets, "fountains": spots of the street fountains}.
+## "stalls": spots for stalls along the streets, "fountains": spots of the street fountains,
+## "doors": [spot, yaw] before shops, "banks": spots along the river, "flames": the night's lamps}.
 static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dictionary:
 	var c := city_data()
 	var year := int(age.get("year", -50))
@@ -353,11 +372,11 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	var skip: Array = opts.get("skip", [])
 	var flicker: Array = []
 	if not opts.get("no_terrain", false):
-		terrain(world, "rubble" if fallen else str(age.get("ground", "cobble")))
+		terrain(world, "rubble" if fallen else "r_ground")
 	_river(world, year, fallen)
 	var bridges := _bridges(world, year, fallen)
 	_servian_wall(world, year, lost)
-	_aurelian_wall(world, year)
+	_edges(world, year)
 	var streets: Array = []
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = (r["points"] as Array).map(func(p: Array) -> Vector3: return on_ground(p))
@@ -389,7 +408,7 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	if skip.is_empty() or not inside(skip, forum):  # the Forum's paving of travertine slabs
 		Kit.box(world, forum + Vector3(0, 0.03, 0), Vector3(70.0, 0.06, 30.0), "paving", false, Vector3(0, -0.617 + PI / 2.0, 0))
 	var out := {"flicker": flicker, "monuments": standing, "streets": streets, "bridges": bridges, "stalls": [], "fountains": [],
-		"clear": opts.get("clear", [])}
+		"clear": opts.get("clear", []), "doors": [], "banks": [], "flames": []}
 	if opts.get("blocks", true):
 		_blocks(world, age, standing, streets, skip, lost, out)
 	return out
@@ -538,13 +557,11 @@ static func _servian_wall(world: Node3D, year: int, lost: bool) -> void:
 			Kit.box(world, Vector3(t.x, ground(t) + wall_h * 0.7 - 1.0, t.z), Vector3(3.0, wall_h * 1.4 + 2.0, 3.0), "tufa")
 
 
-## The edge of the city you walk in: before Aurelian, a line of boundary stones; from AD 275,
-## his wall of brick with square towers, and a gate where each road leaves. Unseen walls hold you
-## in either way.
-static func _aurelian_wall(world: Node3D, year: int) -> void:
+## The edge of the city: where you can walk, a line of boundary stones (the pomerium's cippi) and
+## an unseen wall; from AD 275, far off round the whole city, Aurelian's wall of brick with square
+## towers and a gate where each road leaves.
+static func _edges(world: Node3D, year: int) -> void:
 	var pts := walkable()
-	var built := year >= int(city_data().get("aurelian_wall", {}).get("from", 275))
-	var h := float(city_data().get("aurelian_wall", {}).get("height", 10))
 	for i in pts.size():
 		var a: Vector3 = pts[i]
 		var b: Vector3 = pts[(i + 1) % pts.size()]
@@ -553,41 +570,96 @@ static func _aurelian_wall(world: Node3D, year: int) -> void:
 		var yaw := atan2(dir.x, dir.z)
 		var n := maxi(1, int(length / 12.0))
 		for k in n:
-			var t := (k + 0.5) / n
-			var p := a.lerp(b, t)
+			var p := a.lerp(b, (k + 0.5) / n)
 			var y := ground(p)
 			var shape := BoxShape3D.new()
-			shape.size = Vector3(1.0, 12.0, length / n + 0.4)
+			shape.size = Vector3(1.0, 14.0, length / n + 0.4)
 			Kit.solid(world, shape, Vector3(p.x, y + 5.0, p.z), Vector3(0, yaw, 0))
+			if y > WATER and k % 2 == 0:
+				Kit.box(world, Vector3(p.x, y + 0.6, p.z), Vector3(0.5, 1.2, 0.5), "travertine", false)  # a boundary stone
+	if year < int(city_data().get("aurelian_wall", {}).get("from", 275)):
+		return
+	var outer: Array = (city_data().get("outer", []) as Array).map(func(q: Array) -> Vector3: return at(q))
+	var h := float(city_data().get("aurelian_wall", {}).get("height", 10))
+	for i in outer.size():
+		var a: Vector3 = outer[i]
+		var b: Vector3 = outer[(i + 1) % outer.size()]
+		var dir := b - a
+		var yaw := atan2(dir.x, dir.z)
+		var n := maxi(1, int(dir.length() / 14.0))
+		for k in n:
+			var p := a.lerp(b, (k + 0.5) / n)
+			var y := ground(p)
 			if y < WATER:
 				continue  # where the line crosses the river
-			if built:
-				Kit.box(world, Vector3(p.x, y + h / 2.0 - 1.0, p.z), Vector3(3.2, h + 2.0, length / n + 0.2), "brick", false, Vector3(0, yaw, 0))
-				if k % 2 == 0:
-					Kit.box(world, Vector3(p.x, y + h * 0.65 - 1.0, p.z) - Vector3(dir.z, 0, -dir.x).normalized() * 2.0,
-						Vector3(5.0, h * 1.3 + 2.0, 5.0), "brick", false, Vector3(0, yaw, 0))
-			elif k % 3 == 0:
-				Kit.box(world, Vector3(p.x, y + 0.6, p.z), Vector3(0.5, 1.2, 0.5), "travertine", false)  # a boundary stone
-		if built:  # the gate at the corner: two round towers
-			for s: float in [-1.0, 1.0]:
-				var q := a + dir.normalized() * 5.0 * s
-				Kit.cylinder(world, Vector3(q.x, ground(q) - 1.0, q.z), 3.2, h * 1.4 + 1.0, "travertine", false, 10)
+			Kit.box(world, Vector3(p.x, y + h / 2.0 - 1.0, p.z), Vector3(3.2, h + 2.0, dir.length() / n + 0.2), "brick", false, Vector3(0, yaw, 0))
+			if k % 2 == 0:
+				Kit.box(world, Vector3(p.x, y + h * 0.65 - 1.0, p.z) - Vector3(dir.z, 0, -dir.x).normalized() * 2.0,
+					Vector3(5.0, h * 1.3 + 2.0, 5.0), "brick", false, Vector3(0, yaw, 0))
+		for s: float in [-1.0, 1.0]:  # the gate at the corner: two round towers
+			var q := a + dir.normalized() * 5.0 * s
+			Kit.cylinder(world, Vector3(q.x, ground(q) - 1.0, q.z), 3.2, h * 1.4 + 1.0, "travertine", false, 10)
 
 
-## The houses and flats: blocks on a crooked grid across the city, each turned a little to the
-## lie of its quarter, so the streets between them run at odd angles and narrow into alleys; kept
-## off the streets, the river, the open squares and the monuments. Drawn in a few MultiMeshes (one
-## per surface) and each made solid. Shops open on the ground floors, with awnings and wares;
-## balconies and fountains; on the hills, the lower houses of the rich. In the emptied city most
-## of the blocks are broken walls without roofs, and people live only in the bend of the river.
+static var _glass: StandardMaterial3D
+static var _tints := {}
+
+
+## The windows' glass (dark shutters by day, lamplight by night: urbs_life.gd sets how bright).
+static func window_glass() -> StandardMaterial3D:
+	if _glass == null:
+		_glass = StandardMaterial3D.new()
+		_glass.albedo_color = Color("2a1e14")
+		_glass.emission_enabled = true
+		_glass.emission = Color("ffb060")
+		_glass.emission_energy_multiplier = 0.0
+		_glass.roughness = 0.9
+	return _glass
+
+
+## A texture that takes each instance's colour (a MultiMesh's), so one plaster can be ochre, rose,
+## cream or blue-grey from house to house.
+static func tinted(kind: String) -> StandardMaterial3D:
+	if not _tints.has(kind):
+		var m: StandardMaterial3D = (load("res://scripts/hall/textures.gd").material(kind) as StandardMaterial3D).duplicate()
+		m.vertex_color_use_as_albedo = true
+		_tints[kind] = m
+	return _tints[kind]
+
+
+## The colours of plaster in each age: creams and whites under the Republic, ochres, roses and reds
+## under the emperors, all of it duller and dirtier later.
+const PLASTER := {
+	"republic": ["f2ead8", "ece0c4", "e8d4a8", "f4f0e6", "d8c8a8", "e8c8a0"],
+	"empire": ["e0b070", "d8907a", "f0e4c8", "c8704e", "ecd898", "b8c4c8", "f4f0e8", "d8a878"],
+	"late": ["c8a878", "b88a74", "d8ccb4", "a8745a", "c8c0a8", "a8b0b0"],
+	"fall": ["a89a88", "9a8a7a", "b0a898", "8a7e70"],
+}
+
+
+## The houses and flats: blocks on a crooked grid, each block split into two or three houses of
+## their own height and kind, so the roofline jumps and the walls change colour door by door.
+##   - Flats (insulae): a ground storey of shops behind arches, storeys of plaster or brick above
+##     with their windows, a top storey set back, a tiled roof or a roof terrace (some with a
+##     garden and a pergola), wooden balconies, awnings over the shops and wares set out.
+##   - On the hills and here and there below, the houses of the rich (domus): two storeys round a
+##     courtyard garden with its tree and its pool.
+##   - By the river, warehouses (horrea); along some streets, single-storey rows of shops.
+##   - In the emptied city most are broken walls without roofs, overgrown; people live only in the
+##     bend of the river.
+## Beyond where you can walk the city goes on to Aurelian's line, simpler, not solid. Trees stand in
+## the squares, the courtyards, the roof gardens, on the hills and along the river. Drawn in
+## MultiMeshes (one per mesh and surface, each house its own colour).
 static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Array, skip: Array, lost: bool, out: Dictionary) -> void:
 	var c := city_data()
+	var id: String = age.get("id", "republic")
 	var year := int(age.get("year", -50))
-	var fallen: bool = age.get("id", "") == "fall" or lost
+	var fallen: bool = id == "fall" or lost
 	var republic := year < -30
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 753 + year
 	var edge := walkable()
+	var outer: Array = (c.get("outer", []) as Array).map(func(q: Array) -> Vector3: return at(q))
 	var clear: Array = out.get("clear", [])
 	var servian: Array = (data()["wall"]["gates"] as Array).map(func(g: Dictionary) -> Vector3: return at(g["at"]))
 	var opens: Array = []
@@ -604,129 +676,334 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	var ab: Dictionary = c.get("abitato", {})
 	var abitato := at(ab.get("at", [-800, 450]))
 	var abitato_r := span(float(ab.get("radius", 500)))
+	var palette: Array = PLASTER.get(id, PLASTER["empire"])
 	var lo := Vector2(INF, INF)
 	var hi := Vector2(-INF, -INF)
-	for p: Vector3 in edge:
+	for p: Vector3 in outer:
 		lo = Vector2(minf(lo.x, p.x), minf(lo.y, p.z))
 		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.z))
-	var parts := {}  # [mesh kind, material] -> transforms
-	var add := func(kind: String, mat: String, xf: Transform3D) -> void:
+	var parts := {}  # "mesh|material" -> [[transform, colour], ...]
+	var add := func(kind: String, mat: String, xf: Transform3D, col: Color = Color.WHITE) -> void:
 		var key := kind + "|" + mat
 		if not parts.has(key):
 			parts[key] = []
-		parts[key].append(xf)
-	var walls_rich := ["insula_white", "insula_ochre", "insula_rose"]
-	var walls_old := ["insula_white", "insula_ochre", "tufa", "reticulatum"]
-	var walls_new := ["insula", "insula", "insula", "insula_ochre", "insula_rose", "insula_white"]
-	var taken := {}  # cells already covered by a long block from the cell before
+		parts[key].append([xf, col])
+	var trees: Array = []  # [where, kind, size]
+	var doors: Array = out.get("doors", [])
+	var taken := {}
 	for j in int((hi.y - lo.y) / PITCH) + 1:
 		for i in int((hi.x - lo.x) / PITCH) + 1:
 			if taken.has(Vector2i(i, j)):
 				continue
 			var bx := lo.x + i * PITCH
 			var bz := lo.y + j * PITCH
-			var bend := _warp(bx, bz)  # the grid bends and twists, quarter by quarter
+			var bend := _warp(bx, bz)
 			var p := Vector3(bx + bend.x + rng.randf_range(-1.0, 1.0), 0, bz + bend.y + rng.randf_range(-1.0, 1.0))
 			var roll := rng.randf()
 			var roll2 := rng.randf()
-			if not inside(edge, p):
+			if not inside(outer, p):
+				continue
+			var far := not inside(edge, p)  # beyond where you walk: seen, not visited
+			if far and roll < 0.35:
 				continue
 			if clear.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 16.0):
 				continue
 			if not skip.is_empty() and (inside(skip, p) or skip.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 12.0)):
 				continue
 			if river_edge(p) < 9.0:
+				if river_edge(p) > 4.0 and roll < 0.25:
+					trees.append([p, "round" if roll2 < 0.5 else "pine", rng.randf_range(0.8, 1.2)])  # trees along the bank
 				continue
 			if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
+				if roll < 0.08:
+					trees.append([p, "round", rng.randf_range(0.8, 1.2)])
 				continue
 			if keep_off.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
+				if roll < 0.12:
+					trees.append([p, "cypress", rng.randf_range(0.9, 1.2)])  # the sacred groves by the temples
 				continue
 			if roads.any(func(r: Array) -> bool: return _to_segment(p, r[0], r[1]) < r[2] + 6.0):
-				if roll < 0.5 and not fallen:
+				if roll < 0.5 and not fallen and not far:
 					out["stalls"].append(p)
-				continue
-			var in_old := inside(servian, p)
-			var keep := 0.93
-			if republic and not in_old:
-				keep = 0.4
-			if fallen and not lost:
-				keep = 0.7 if p.distance_to(abitato) < abitato_r else 0.4
-			if roll > keep:  # a little square: sometimes a fountain in it
-				if roll2 < 0.35:
-					out["fountains"].append(p)
 				continue
 			var y := ground(p)
 			var hill := y > 4.0
+			var keep := 0.93
+			if republic and not inside(servian, p):
+				keep = 0.45
+			if hill:
+				keep = 0.8
+			if fallen and not lost:
+				keep = 0.75 if p.distance_to(abitato) < abitato_r else 0.5
+			if roll > keep:  # a little square: a fountain, a tree, or a garden on the hills
+				if roll2 < 0.35 and not far:
+					out["fountains"].append(p)
+				elif roll2 < 0.8 or hill:
+					trees.append([p, "pine" if hill and roll2 < 0.6 else "round", rng.randf_range(0.8, 1.3)])
+					if hill:
+						trees.append([p + Vector3(rng.randf_range(-5, 5), 0, rng.randf_range(-5, 5)), "cypress", rng.randf_range(0.8, 1.1)])
+				continue
 			var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
 			var yaw := atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
-			var w := rng.randf_range(9.0, 12.5)
-			var d := rng.randf_range(9.0, 12.5)
-			if rng.randf() < 0.22 and not hill_at(p):  # a long block over two cells, the alley between them built over
+			var basis := Basis(Vector3.UP, yaw)
+			var w := rng.randf_range(9.5, 12.5)
+			var d := rng.randf_range(9.5, 12.5)
+			if rng.randf() < 0.22 and not hill:  # a long block over two cells, the alley between built over
 				taken[Vector2i(i + 1, j)] = true
 				w += PITCH
-				p += Basis(Vector3.UP, yaw) * Vector3(PITCH / 2.0, 0, 0)
-			var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
-			var mat: String = (walls_old if republic else walls_new)[rng.randi() % (walls_old if republic else walls_new).size()]
-			if hill:  # the houses of the rich on the hills: lower, broader, plastered
-				floors = 2
-				w += 3.0
-				d += 3.0
-				mat = walls_rich[rng.randi() % walls_rich.size()]
-			var ruin := false
-			if fallen and not lost:
-				ruin = p.distance_to(abitato) > abitato_r or roll2 < 0.3
-				if not ruin:
+				p += basis * Vector3(PITCH / 2.0, 0, 0)
+			var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
+			if not far:
+				var shape := BoxShape3D.new()
+				shape.size = Vector3(w, 14.0 if not ruin else 6.0, d)
+				Kit.solid(world, shape, Vector3(p.x, ground(p) + 2.0, p.z), Vector3(0, yaw, 0))
+			if ruin:
+				_ruin(add, p, basis, w, d, rng, trees)
+				continue
+			if far:
+				_far_house(add, p, basis, w, d, rng, palette, republic)
+				continue
+			var near_river := river_edge(p) < 40.0
+			if hill or (roll2 < 0.1 and not near_river):
+				_domus(add, p, basis, w, d, rng, palette, trees)
+				continue
+			# the block split into two or three houses side by side along its length
+			var lots := 1 if w < 11.0 else (2 if w < 20.0 else 3)
+			var x0 := -w / 2.0
+			for k in lots:
+				var lw := w / lots
+				var centre := p + basis * Vector3(x0 + lw * (k + 0.5), 0, 0)
+				var kind := "insula"
+				if near_river and rng.randf() < 0.5:
+					kind = "horreum"
+				elif rng.randf() < 0.12:
+					kind = "row"
+				var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
+				if fallen:
 					floors = rng.randi_range(1, 2)
-					mat = "insula_white" if roll2 < 0.6 else "rubble"
-			elif lost:
-				ruin = true
-			var h := floors * 4.0
-			if ruin:
-				h = rng.randf_range(0.8, 4.5)
-				mat = "brick" if roll2 < 0.6 else "rubble"
-			var low := minf(y, minf(ground(p + Vector3(w / 2.0, 0, d / 2.0)), ground(p - Vector3(w / 2.0, 0, d / 2.0)))) - 1.0
-			var basis := Basis(Vector3.UP, yaw)
-			var body_h := y + h - low
-			add.call("box", mat, Transform3D(basis.scaled(Vector3(w, body_h, d)), Vector3(p.x, low + body_h / 2.0, p.z)))
-			var shape := BoxShape3D.new()
-			shape.size = Vector3(w, body_h, d)
-			Kit.solid(world, shape, Vector3(p.x, low + body_h / 2.0, p.z), Vector3(0, yaw, 0))
-			if ruin:
-				if roll2 < 0.25:  # one wall still standing high
-					add.call("box", mat, Transform3D(basis.scaled(Vector3(w, rng.randf_range(6.0, 12.0), 0.8)),
-						Vector3(p.x, y, p.z) + basis * Vector3(0, 3.0, d / 2.0 - 0.4)))
+				_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors)
+	out["doors"] = doors
+	_draw(world, parts)
+	_trees(world, trees, fallen)
+	# the street fountains, with a lamp on a post by each
+	var flames := MultiMesh.new()
+	flames.transform_format = MultiMesh.TRANSFORM_3D
+	var flame_mesh := SphereMesh.new()
+	flame_mesh.radius = 0.16
+	flame_mesh.height = 0.4
+	flames.mesh = flame_mesh
+	var fountains: Array = out["fountains"]
+	flames.instance_count = fountains.size()
+	for k in fountains.size():
+		var f: Vector3 = fountains[k]
+		var y := ground(f)
+		Rome.fountain(world, Vector3(f.x, y, f.z), rng.randf() * TAU, year < 537 and not lost)
+		Kit.box(world, Vector3(f.x + 1.6, y + 1.3, f.z), Vector3(0.12, 2.6, 0.12), "bronze", false)
+		flames.set_instance_transform(k, Transform3D(Basis.IDENTITY, Vector3(f.x + 1.6, y + 2.75, f.z)))
+	var fmi := MultiMeshInstance3D.new()
+	fmi.name = "Flames"
+	fmi.multimesh = flames
+	fmi.material_override = load("res://scripts/hall/textures.gd").material("fire")
+	fmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	world.add_child(fmi)
+	out["flames"] = [fmi]
+	# where the river folk work: along the banks inside the city
+	var banks: Array = []
+	var course: Array = (data()["tiber"]["course"] as Array).map(func(q: Array) -> Vector3: return at(q))
+	for i in course.size() - 1:
+		var a: Vector3 = course[i]
+		var b: Vector3 = course[i + 1]
+		var across := Vector3((b - a).normalized().z, 0, -(b - a).normalized().x)
+		for k in int(a.distance_to(b) / 20.0):
+			for s: float in [-1.0, 1.0]:
+				var q := a.lerp(b, (k + 0.5) / int(a.distance_to(b) / 20.0)) + across * s * (_half_width() + BANK + 3.0)
+				if inside(edge, q) and ground(q) > -0.3:
+					banks.append(q)
+	out["banks"] = banks
+
+
+## One house of a block. `kind`: "insula" (flats over shops), "horreum" (a warehouse), "row" (a
+## single storey of shops).
+static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floors: int, kind: String, rng: RandomNumberGenerator,
+		palette: Array, republic: bool, fallen: bool, trees: Array, doors: Array) -> void:
+	var y := ground(c)
+	var low := minf(y, minf(ground(c + b * Vector3(w / 2.0, 0, d / 2.0)), ground(c - b * Vector3(w / 2.0, 0, d / 2.0)))) - 1.0
+	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
+	var brick := not republic and rng.randf() < 0.35
+	if kind == "horreum":  # a warehouse: plain brick, a few small high windows, a flat roof
+		var h := 8.0
+		add.call("box", "r_brick", Transform3D(b.scaled(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)))
+		add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, y + h + 0.15, c.z)))
+		for s: float in [1.0, -1.0]:
+			for k in maxi(1, int(w / 4.0)):
+				var x := -w / 2.0 + (k + 0.5) * w / maxi(1, int(w / 4.0))
+				add.call("quad", "glass", _face(b, c, Vector3(x, y + 6.0 - c.y, s * (d / 2.0 + 0.03)), s, Vector2(0.6, 0.6)))
+			add.call("box", "wood", Transform3D(b.scaled(Vector3(2.4, 3.2, 0.1)), Vector3(c.x, y, c.z) + b * Vector3(0, 1.6, s * (d / 2.0 + 0.04))))
+		return
+	var ground_h := 4.0
+	# the ground storey: shops behind arches
+	add.call("box", "r_shop", Transform3D(b.scaled(Vector3(w, y + ground_h - low, d)), Vector3(c.x, (low + y + ground_h) / 2.0, c.z)),
+		Color.WHITE.lerp(tint, 0.25))
+	var top := y + ground_h
+	if kind == "row" or floors <= 1:  # a row of shops: a lean-to of tiles
+		add.call("prism", "r_roof", Transform3D(b.scaled(Vector3(w + 0.6, 1.6, d + 0.8)), Vector3(c.x, top + 0.8, c.z)))
+	else:
+		var upper := (floors - 1) * 4.0
+		var setback := floors >= 4 and rng.randf() < 0.35
+		if setback:
+			upper -= 4.0
+		add.call("box", "r_brick" if brick else "r_wall", Transform3D(b.scaled(Vector3(w, upper, d)), Vector3(c.x, top + upper / 2.0, c.z)),
+			Color.WHITE if brick else tint)
+		for f in int(upper / 4.0):  # the windows, storey by storey
+			_windows(add, c, b, w, d, top + f * 4.0 + 1.9, rng)
+		top += upper
+		if setback:  # a top storey set back, lighter, often timber-framed
+			var tw := w - 1.8
+			var td := d - 1.8
+			var tint2 := Color("#" + str(palette[rng.randi() % palette.size()]))
+			add.call("box", "r_wall", Transform3D(b.scaled(Vector3(tw, 3.4, td)), Vector3(c.x, top + 1.7, c.z)), tint2)
+			_windows(add, c, b, tw, td, top + 1.6, rng)
+			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.25, d)), Vector3(c.x, top + 0.12, c.z)))  # the terrace round it
+			top += 3.4
+		if rng.randf() < 0.6 or republic:  # a tiled roof
+			add.call("prism", "r_roof", Transform3D(b.scaled(Vector3(w + 0.8 if not setback else w - 1.0, 2.2, d + 0.8 if not setback else d - 1.0)),
+				Vector3(c.x, top + 1.1, c.z)))
+		else:  # a roof terrace with its parapet, sometimes a garden and a pergola on it
+			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, top + 0.15, c.z)))
+			add.call("box", "r_wall", Transform3D(b.scaled(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, d / 2.0)), tint)
+			add.call("box", "r_wall", Transform3D(b.scaled(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, -d / 2.0)), tint)
+			if rng.randf() < 0.55 and not fallen:
+				for k in rng.randi_range(2, 4):  # planters of box and myrtle, and a little tree in a pot
+					var q := Vector3(c.x, top, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0.5, rng.randf_range(-d * 0.35, d * 0.35))
+					add.call("box", "terracotta", Transform3D(b.scaled(Vector3(1.4, 0.6, 0.6)), q))
+					add.call("box", "leaves", Transform3D(b.scaled(Vector3(1.3, 0.5, 0.5)), q + Vector3(0, 0.5, 0)))
+				trees.append([Vector3(c.x, top + 0.3, c.z) + b * Vector3(w * 0.2, 0, 0), "round", 0.45])
+				for x: float in [-1.0, 1.0]:  # the pergola's posts and beams, a vine over it
+					for z: float in [-1.0, 1.0]:
+						add.call("box", "wood", Transform3D(b.scaled(Vector3(0.15, 2.4, 0.15)), Vector3(c.x, top, c.z) + b * Vector3(x * w * 0.25 - w * 0.15, 1.2, z * d * 0.2)))
+				add.call("box", "leaves", Transform3D(b.scaled(Vector3(w * 0.55, 0.25, d * 0.45)), Vector3(c.x, top, c.z) + b * Vector3(-w * 0.15, 2.5, 0)))
+		if floors >= 3 and rng.randf() < 0.45 and not fallen:  # a wooden balcony along the second storey
+			var s := 1.0 if rng.randf() < 0.5 else -1.0
+			add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.8, 0.2, 1.1)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.0, s * (d / 2.0 + 0.55))))
+			add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, 0.08)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.5, s * (d / 2.0 + 1.08))))
+			for k in 3:  # pots and washing on it
+				add.call("box", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.35, 0.35, 0.35)),
+					Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.3, s * (d / 2.0 + 0.8))))
+			add.call("box", "awning", Transform3D(b.scaled(Vector3(w * 0.3, 0.9, 0.04)), Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.2, w * 0.2), 9.4, s * (d / 2.0 + 1.0))))
+	for s: float in [1.0, -1.0]:  # before the shops: a step of slabs, an awning, wares, a door to keep
+		if rng.randf() < 0.55:
+			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.1, 1.5)), Vector3(c.x, y + 0.02, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.75))))
+		if fallen:
+			continue
+		if rng.randf() < 0.4:
+			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled(Vector3(w * 0.6, 0.06, 1.8)),
+				Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 3.3, s * (d / 2.0 + 0.9))))
+			for k in rng.randi_range(2, 5):
+				var q := Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, s * (d / 2.0 + rng.randf_range(0.5, 1.4)))
+				if rng.randf() < 0.6:
+					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY, q + Vector3(0, 0.45, 0)))
+				else:
+					add.call("box", "wood", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(0.7, 0.6, 0.7)), q + Vector3(0, 0.3, 0)))
+		if rng.randf() < 0.3 and doors.size() < 900:
+			var at_door := Vector3(c.x, 0, c.z) + b * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, s * (d / 2.0 + 1.1))
+			at_door.y = ground(at_door)
+			doors.append([at_door, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z)])
+
+
+## A window on a face: a quad of glass (a dark shutter by day, lamplight by night) facing out along
+## the house's `s` side. `local` is from the house's centre.
+static func _face(b: Basis, c: Vector3, local: Vector3, s: float, size: Vector2, side: bool = false) -> Transform3D:
+	var turn := b * (Basis(Vector3.UP, PI / 2.0 * s) if side else (Basis.IDENTITY if s > 0.0 else Basis(Vector3.UP, PI)))
+	return Transform3D(turn.scaled(Vector3(size.x, size.y, 1.0)), c + b * local)
+
+
+## A storey's windows round a house, at height `h`: a few to each face, not all alike.
+static func _windows(add: Callable, c: Vector3, b: Basis, w: float, d: float, h: float, rng: RandomNumberGenerator) -> void:
+	var y := h - c.y
+	for s: float in [1.0, -1.0]:
+		var n := maxi(1, int(w / 3.2))
+		for k in n:
+			if rng.randf() < 0.15:
 				continue
-			var top := y + h
-			if hill or republic or roll2 < 0.55:  # a pitched roof of tiles
-				add.call("prism", "roof", Transform3D(basis.scaled(Vector3(w + 0.8, 2.2, d + 0.8)), Vector3(p.x, top + 1.1, p.z)))
-			else:  # a flat roof terrace with its parapet
-				add.call("box", "roof", Transform3D(basis.scaled(Vector3(w + 0.4, 0.4, d + 0.4)), Vector3(p.x, top + 0.2, p.z)))
-			if hill:
+			var x := -w / 2.0 + (k + 0.5) * w / n
+			add.call("quad", "glass", _face(b, c, Vector3(x, y, s * (d / 2.0 + 0.03)), s, Vector2(0.9, 1.3)))
+		var m := maxi(1, int(d / 3.6))
+		for k in m:
+			if rng.randf() < 0.3:
 				continue
-			for s: float in [1.0, -1.0]:  # the shops opening on the street on both long faces
-				add.call("box", "#241a12", Transform3D(basis.scaled(Vector3(w * 0.8, 2.6, 0.1)), Vector3(p.x, y, p.z) + basis * Vector3(0, 1.3, s * (d / 2.0 + 0.03))))
-				if rng.randf() < 0.35 and not fallen:  # an awning over them, and wares set out
-					add.call("box", "awning", Transform3D(basis * Basis(Vector3.RIGHT, 0.35 * s).scaled(Vector3(w * 0.5, 0.06, 1.8)),
-						Vector3(p.x, y, p.z) + basis * Vector3(rng.randf_range(-w * 0.2, w * 0.2), 3.0, s * (d / 2.0 + 0.9))))
-					for k in rng.randi_range(2, 5):
-						var at_shop := Vector3(p.x, y, p.z) + basis * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, s * (d / 2.0 + rng.randf_range(0.5, 1.4)))
-						if rng.randf() < 0.6:
-							add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY, at_shop + Vector3(0, 0.45, 0)))
-						else:
-							add.call("box", "wood", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(0.7, 0.6, 0.7)), at_shop + Vector3(0, 0.3, 0)))
-			if not republic and floors >= 3 and rng.randf() < 0.45 and not fallen:  # a wooden balcony on the second floor
-				add.call("box", "wood", Transform3D(basis.scaled(Vector3(w * 0.7, 0.25, 1.2)), Vector3(p.x, y, p.z) + basis * Vector3(0, 4.2, d / 2.0 + 0.6)))
+			var z := -d / 2.0 + (k + 0.5) * d / m
+			add.call("quad", "glass", _face(b, c, Vector3(s * (w / 2.0 + 0.03), y, z), s, Vector2(0.9, 1.3), true))
+
+
+## A house of the rich: two storeys of blank plaster round a courtyard garden with its tree and its
+## pool, tiled roofs on the four wings, a door with a porch to the street.
+static func _domus(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: RandomNumberGenerator, palette: Array, trees: Array) -> void:
+	var y := ground(c)
+	var low := y - 1.5
+	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
+	var t := 3.6  # a wing's depth
+	var h := 7.0
+	var wings := [[Vector3(0, 0, d / 2.0 - t / 2.0), Vector3(w, 0, t)], [Vector3(0, 0, -d / 2.0 + t / 2.0), Vector3(w, 0, t)],
+		[Vector3(w / 2.0 - t / 2.0, 0, 0), Vector3(t, 0, d - 2.0 * t)], [Vector3(-w / 2.0 + t / 2.0, 0, 0), Vector3(t, 0, d - 2.0 * t)]]
+	for wing: Array in wings:
+		var q: Vector3 = c + b * (wing[0] as Vector3)
+		var size: Vector3 = wing[1]
+		add.call("box", "r_wall", Transform3D(b.scaled(Vector3(size.x, y + h - low, size.z)), Vector3(q.x, (low + y + h) / 2.0, q.z)), tint)
+		add.call("prism", "r_roof", Transform3D(b.scaled(Vector3(size.x + 0.6, 1.8, size.z + 0.6)) if size.x > size.z else
+			(b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
+	add.call("box", "leaves", Transform3D(b.scaled(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
+	add.call("box", "water", Transform3D(b.scaled(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
+	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7])
+	for s: float in [1.0, -1.0]:  # a few small windows high up, and the door
+		for k in 2:
+			add.call("quad", "glass", _face(b, c, Vector3(-w * 0.25 + k * w * 0.5, 5.2 + y - c.y, s * (d / 2.0 + 0.03)), s, Vector2(0.6, 0.8)))
+	add.call("box", "wood", Transform3D(b.scaled(Vector3(1.6, 2.8, 0.12)), Vector3(c.x, y + 1.4, c.z) + b * Vector3(0, 0, d / 2.0 + 0.05)))
+
+
+## A house far off, beyond where you walk: a plain block and its roof.
+static func _far_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: RandomNumberGenerator, palette: Array, republic: bool) -> void:
+	var y := ground(c)
+	var h := rng.randf_range(6.0, 10.0) if republic else rng.randf_range(8.0, 20.0)
+	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
+	add.call("box", "r_wall", Transform3D(b.scaled(Vector3(w, h + 1.0, d)), Vector3(c.x, y + h / 2.0 - 0.5, c.z)), tint)
+	add.call("prism", "r_roof", Transform3D(b.scaled(Vector3(w + 0.8, 2.2, d + 0.8)), Vector3(c.x, y + h + 1.1, c.z)))
+
+
+## A house fallen to ruin: broken walls without a roof, sometimes one wall still high, bushes and a
+## tree growing in it.
+static func _ruin(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: RandomNumberGenerator, trees: Array) -> void:
+	var y := ground(c)
+	for wall: Array in [[Vector3(0, 0, d / 2.0), Vector3(w, 0, 0.8)], [Vector3(0, 0, -d / 2.0), Vector3(w, 0, 0.8)],
+			[Vector3(w / 2.0, 0, 0), Vector3(0.8, 0, d)], [Vector3(-w / 2.0, 0, 0), Vector3(0.8, 0, d)]]:
+		if rng.randf() < 0.25:
+			continue
+		var h := rng.randf_range(0.8, 4.5) if rng.randf() < 0.85 else rng.randf_range(6.0, 11.0)
+		var q: Vector3 = c + b * (wall[0] as Vector3)
+		var size: Vector3 = wall[1]
+		add.call("box", "r_brick", Transform3D(b.scaled(Vector3(size.x, h + 1.0, size.z)), Vector3(q.x, y + h / 2.0 - 0.5, q.z)))
+	add.call("box", "rubble", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, d * 0.6)), Vector3(c.x, y + 0.1, c.z)))
+	if rng.randf() < 0.45:
+		trees.append([c + b * Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2)), "bush" if rng.randf() < 0.6 else "round", rng.randf_range(0.6, 1.1)])
+
+
+## Draws all the houses' parts: one MultiMesh for each mesh and surface, each part its own colour.
+static func _draw(world: Node3D, parts: Dictionary) -> void:
 	for key: String in parts:
 		var kind := key.split("|")[0]
 		var mat := key.split("|")[1]
-		var xfs: Array = parts[key]
+		var items: Array = parts[key]
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.use_colors = true
 		match kind:
 			"prism":
 				var pm := PrismMesh.new()
 				pm.size = Vector3.ONE
 				mm.mesh = pm
+			"quad":
+				var q := QuadMesh.new()
+				q.size = Vector2.ONE
+				mm.mesh = q
 			"amphora":
 				var cm := CylinderMesh.new()
 				cm.top_radius = 0.12
@@ -737,17 +1014,81 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				mm.mesh = cm
 			_:
 				mm.mesh = BoxMesh.new()
+		mm.instance_count = items.size()
+		for k in items.size():
+			mm.set_instance_transform(k, items[k][0])
+			mm.set_instance_color(k, items[k][1])
+		var mmi := MultiMeshInstance3D.new()
+		mmi.name = "Houses_%s_%s" % [kind, mat]
+		mmi.multimesh = mm
+		if mat == "glass":
+			mmi.material_override = window_glass()
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		else:
+			mmi.material_override = tinted(mat)
+		world.add_child(mmi)
+
+
+## The city's trees, all in a few MultiMeshes: the stone pine (a tall bare trunk and a flat dark
+## crown), the cypress (a dark spire), the round-headed plane, fig and laurel, and bushes in the
+## ruins. [where, kind, size].
+static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
+	var trunks: Array = []
+	var crowns := {"pine": [], "cypress": [], "round": [], "bush": []}
+	for t: Array in trees:
+		var p: Vector3 = t[0]
+		var kind: String = t[1]
+		var s: float = t[2]
+		var y := p.y if p.y > 0.5 else ground(p)
+		var lean := Basis(Vector3(1, 0, 0), randf_range(-0.05, 0.05))
+		match kind:
+			"pine":
+				trunks.append(Transform3D(lean.scaled(Vector3(0.35, 9.0, 0.35) * s), Vector3(p.x, y + 4.5 * s, p.z)))
+				crowns["pine"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(6.5, 2.0, 6.5) * s), Vector3(p.x, y + 9.4 * s, p.z)))
+			"cypress":
+				trunks.append(Transform3D(Basis.IDENTITY.scaled(Vector3(0.25, 1.5, 0.25) * s), Vector3(p.x, y + 0.75 * s, p.z)))
+				crowns["cypress"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(1.6, 9.0, 1.6) * s), Vector3(p.x, y + 5.5 * s, p.z)))
+			"bush":
+				crowns["bush"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(2.2, 1.4, 2.2) * s), Vector3(p.x, y + 0.5 * s, p.z)))
+			_:
+				trunks.append(Transform3D(lean.scaled(Vector3(0.3, 3.4, 0.3) * s), Vector3(p.x, y + 1.7 * s, p.z)))
+				crowns["round"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(4.6, 3.8, 4.6) * s), Vector3(p.x, y + 4.4 * s, p.z)))
+	var draw := func(xfs: Array, mesh: Mesh, mat: String, name: String) -> void:
+		if xfs.is_empty():
+			return
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = mesh
 		mm.instance_count = xfs.size()
 		for k in xfs.size():
 			mm.set_instance_transform(k, xfs[k])
 		var mmi := MultiMeshInstance3D.new()
-		mmi.name = "Blocks_" + kind
+		mmi.name = name
 		mmi.multimesh = mm
 		mmi.material_override = load("res://scripts/hall/textures.gd").material(mat)
 		world.add_child(mmi)
-	# the street fountains
-	for f: Vector3 in out["fountains"]:
-		Rome.fountain(world, Vector3(f.x, ground(f), f.z), rng.randf() * TAU, year < 537 and not lost)
+	var trunk := CylinderMesh.new()
+	trunk.top_radius = 0.4
+	trunk.bottom_radius = 0.5
+	trunk.height = 1.0
+	trunk.radial_segments = 6
+	trunk.rings = 1
+	var ball := SphereMesh.new()
+	ball.radius = 0.5
+	ball.height = 1.0
+	ball.radial_segments = 10
+	ball.rings = 5
+	var spire := CylinderMesh.new()
+	spire.top_radius = 0.05
+	spire.bottom_radius = 0.5
+	spire.height = 1.0
+	spire.radial_segments = 8
+	spire.rings = 2
+	draw.call(trunks, trunk, "trunk", "TreeTrunks")
+	draw.call(crowns["pine"], ball, "pine", "TreePines")
+	draw.call(crowns["cypress"], spire, "cypress", "TreeCypresses")
+	draw.call(crowns["round"], ball, "olive" if fallen else "leaves", "TreeCrowns")
+	draw.call(crowns["bush"], ball, "leaves", "Bushes")
 
 
 ## How the grid of blocks is bent at a point: two slow waves each way, so streets wander and

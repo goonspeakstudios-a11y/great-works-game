@@ -1,0 +1,2303 @@
+{
+ "about": "The citizens of the city of Rome (places_rome.gd, citizen.gd): names, the jobs they walk the city at (docs/rome-jobs.md has the full list), and what they say. {name} is their name, {home} the part of the city they live in, {partner} and {kids} their family, {patron} the great house they belong to.",
+ "names": {
+  "praenomina": [
+   "Gaius",
+   "Lucius",
+   "Marcus",
+   "Publius",
+   "Quintus",
+   "Titus",
+   "Tiberius",
+   "Sextus",
+   "Aulus",
+   "Decimus",
+   "Gnaeus",
+   "Spurius",
+   "Manius",
+   "Servius",
+   "Numerius"
+  ],
+  "nomina": [
+   "Julius",
+   "Cornelius",
+   "Claudius",
+   "Aemilius",
+   "Valerius",
+   "Fabius",
+   "Junius",
+   "Licinius",
+   "Sempronius",
+   "Caecilius",
+   "Domitius",
+   "Pompeius",
+   "Tullius",
+   "Antonius",
+   "Octavius",
+   "Livius",
+   "Calpurnius",
+   "Sulpicius",
+   "Terentius",
+   "Vibius",
+   "Plautius",
+   "Hortensius",
+   "Marius",
+   "Sergius",
+   "Postumius",
+   "Papirius",
+   "Fulvius",
+   "Annius",
+   "Aurelius",
+   "Cassius",
+   "Egnatius",
+   "Lucilius",
+   "Manlius",
+   "Mucius",
+   "Numisius",
+   "Popillius",
+   "Salvius",
+   "Scribonius",
+   "Titinius",
+   "Veturius",
+   "Volusius",
+   "Flavius",
+   "Ulpius",
+   "Aelius"
+  ],
+  "cognomina": [
+   "Rufus",
+   "Niger",
+   "Longus",
+   "Paullus",
+   "Priscus",
+   "Felix",
+   "Celer",
+   "Saturninus",
+   "Varus",
+   "Naso",
+   "Balbus",
+   "Bassus",
+   "Macer",
+   "Capito",
+   "Pollio",
+   "Gallus",
+   "Sabinus",
+   "Verus",
+   "Secundus",
+   "Tertius",
+   "Faustus",
+   "Fronto",
+   "Lupus",
+   "Silo",
+   "Rusticus",
+   "Crispus",
+   "Pulcher",
+   "Firmus",
+   "Primus",
+   "Severus"
+  ],
+  "women_cognomina": [
+   "Prima",
+   "Secunda",
+   "Tertia",
+   "Maior",
+   "Minor",
+   "Paulla",
+   "Rufa",
+   "Procula",
+   "Lucilla",
+   "Tertulla",
+   "Vera",
+   "Maxima",
+   "Quarta",
+   "Fausta"
+  ],
+  "greek_men": [
+   "Eros",
+   "Hermes",
+   "Philemon",
+   "Diodorus",
+   "Hilarus",
+   "Pamphilus",
+   "Anteros",
+   "Epaphroditus",
+   "Stephanus",
+   "Onesimus",
+   "Thallus",
+   "Nicias",
+   "Zosimus",
+   "Callistus",
+   "Dionysius",
+   "Apollonius",
+   "Demetrius",
+   "Menander",
+   "Hyacinthus",
+   "Alexander"
+  ],
+  "greek_women": [
+   "Chrysis",
+   "Tyche",
+   "Daphne",
+   "Chloe",
+   "Phoebe",
+   "Helpis",
+   "Irene",
+   "Syra",
+   "Primigenia",
+   "Myrto",
+   "Philematio",
+   "Nike",
+   "Callisto",
+   "Hedone",
+   "Thais"
+  ],
+  "foreign": {
+   "Greek": {
+    "m": [
+     "Demetrios",
+     "Apollonios",
+     "Nikias",
+     "Philinos",
+     "Theodoros",
+     "Kallias"
+    ],
+    "f": [
+     "Chrysis",
+     "Myrto",
+     "Ariste"
+    ]
+   },
+   "Syrian": {
+    "m": [
+     "Barates",
+     "Malichus",
+     "Zabdas",
+     "Abdas",
+     "Iarhai"
+    ],
+    "f": [
+     "Martha",
+     "Bathsabbai",
+     "Aqmat"
+    ]
+   },
+   "Egyptian": {
+    "m": [
+     "Pamonthes",
+     "Harpocras",
+     "Petosiris",
+     "Sarapion",
+     "Ammonius"
+    ],
+    "f": [
+     "Isidora",
+     "Tathotes",
+     "Thermouthis"
+    ]
+   },
+   "Jew": {
+    "m": [
+     "Iudas",
+     "Simon",
+     "Iohannes",
+     "Eleazar",
+     "Ioses",
+     "Theodotus"
+    ],
+    "f": [
+     "Mariam",
+     "Salome",
+     "Sara"
+    ]
+   },
+   "Gaul": {
+    "m": [
+     "Matugenos",
+     "Andecamulos",
+     "Cintusmus",
+     "Ateboduus",
+     "Brigomaglos"
+    ],
+    "f": [
+     "Senovara",
+     "Epona",
+     "Cintugena"
+    ]
+   },
+   "Spaniard": {
+    "m": [
+     "Reburrus",
+     "Tancinus",
+     "Boutius",
+     "Aemilianus"
+    ],
+    "f": [
+     "Boutia",
+     "Reburrina"
+    ]
+   },
+   "African": {
+    "m": [
+     "Iddibal",
+     "Namphamo",
+     "Baricbal",
+     "Saturninus"
+    ],
+    "f": [
+     "Arisat",
+     "Nampulla"
+    ]
+   },
+   "German": {
+    "m": [
+     "Arpo",
+     "Hariso",
+     "Gaisio",
+     "Frumo",
+     "Chariovalda"
+    ],
+    "f": [
+     "Hludana",
+     "Frija"
+    ]
+   },
+   "Goth": {
+    "m": [
+     "Gundila",
+     "Wiliarit",
+     "Unigis",
+     "Sunnia"
+    ],
+    "f": [
+     "Ranilo",
+     "Gudeliva"
+    ]
+   }
+  },
+  "christian": {
+   "m": [
+    "Petrus",
+    "Paulus",
+    "Laurentius",
+    "Iohannes",
+    "Bonifatius",
+    "Deusdedit",
+    "Cyprianus",
+    "Felix",
+    "Anastasius",
+    "Gaudentius"
+   ],
+   "f": [
+    "Agnes",
+    "Felicitas",
+    "Anastasia",
+    "Theodora",
+    "Maria",
+    "Susanna",
+    "Cecilia",
+    "Proba"
+   ]
+  }
+ },
+ "jobs": [
+  {
+   "id": "pistor",
+   "title": "baker",
+   "latin": "pistor",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "d8ccb0",
+    "apron": true
+   },
+   "intro": "{name}. I've got the bakery with the donkey mill, round the corner. You'll have smelled it.",
+   "work": [
+    "Up in the dark, every day. The donkeys turn the millstones, I knead, the boy stokes the oven.",
+    "Good bread wants a hot oven and a cold baker. I have the one, never the other.",
+    "Every loaf gets my stamp before it goes in. That way nobody can say a bad one was mine."
+   ],
+   "worry": [
+    "If the grain ships are late from Egypt, flour doubles overnight and they shout at me, not at the grain men."
+   ],
+   "call": [
+    "Bread! Hot bread!",
+    "Fresh loaves, still warm!"
+   ]
+  },
+  {
+   "id": "molitor",
+   "title": "miller",
+   "latin": "molendarius",
+   "class": "pleb",
+   "place": "river",
+   "ages": [
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "c8bca0",
+    "apron": true
+   },
+   "intro": "{name}. I work the mill boats down on the river.",
+   "work": [
+    "The Goths cut the aqueducts, so the old mills stopped. Belisarius had mills put on boats in the Tiber. The current turns them now.",
+    "When the river's high we grind all night. When it's low, we wait and pray."
+   ],
+   "worry": [
+    "If they cut the river too, we're done for."
+   ],
+   "call": []
+  },
+  {
+   "id": "lanius",
+   "title": "butcher",
+   "latin": "lanius",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a3a2a",
+    "apron": true
+   },
+   "intro": "{name}, butcher. Pork's my trade, and beef when the cattle market has any worth having.",
+   "work": [
+    "Sausages, trotters, a nice bit of belly. The rich want the udders of a sow. I don't ask.",
+    "The knife's the easy part. It's keeping the flies off in summer that makes you old.",
+    "The meat left over from the sacrifices comes to us to sell. The gods take the smoke, we take the rest."
+   ],
+   "worry": [
+    "My landlord wants the rent on the Kalends, whether the pigs came in or not."
+   ],
+   "call": [
+    "Pork! Good pork!",
+    "Sausages here!"
+   ]
+  },
+  {
+   "id": "cetarius",
+   "title": "fishmonger",
+   "latin": "cetarius",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "5a6a7a",
+    "apron": true
+   },
+   "intro": "{name}. Fish. You can tell from the smell, can't you?",
+   "work": [
+    "Mullet in the morning, eels in the evening. If it came up the Tiber after dark, I'd rather not sell it.",
+    "The rich pay a fortune for a big mullet. They fight over it at the auctions like it's a racehorse.",
+    "Salt fish from Spain keeps. Fresh fish is gone by noon or it's gone off."
+   ],
+   "worry": [
+    "The fish between the bridges comes out of the drain of the city. The good stuff comes up from Ostia."
+   ],
+   "call": [
+    "Fresh fish! This morning's!",
+    "Eels! Mullet!"
+   ]
+  },
+  {
+   "id": "holitor",
+   "title": "greengrocer",
+   "latin": "holitor",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "7a6a3a"
+   },
+   "intro": "{name}. I grow them myself, out past the gate, and bring them in on the donkey.",
+   "work": [
+    "Cabbage is the best thing in the world. Cato said so, and he was never wrong about a vegetable.",
+    "Leeks, lettuces, beans, turnips. Whatever the season gives, that's what you eat.",
+    "I'm in at dawn, sold out by noon, home by dark. It's a good life if it doesn't rain."
+   ],
+   "worry": [
+    "The carts on the road at night, the noise, the thieves. My knees are going too."
+   ],
+   "call": [
+    "Cabbages! Leeks!",
+    "Lettuces, fresh this morning!"
+   ]
+  },
+  {
+   "id": "pomarius",
+   "title": "fruit seller",
+   "latin": "pomarius",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "8a5a3a"
+   },
+   "intro": "{name}. Figs, apples, pears, whatever's ripe.",
+   "work": [
+    "Figs from Tusculum, the best. Taste one. Go on.",
+    "Apples keep through the winter if you store them right. I know the right way and I'm not telling."
+   ],
+   "worry": [
+    "The wasps in autumn. They get the figs before the customers do."
+   ],
+   "call": [
+    "Figs! Sweet figs!",
+    "Apples, pears!"
+   ]
+  },
+  {
+   "id": "olearius",
+   "title": "oil seller",
+   "latin": "olearius",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a7a3a"
+   },
+   "intro": "{name}. Oil. For lamps, for cooking, for the baths. You need oil for everything.",
+   "work": [
+    "The best comes from Venafrum, the cheap stuff from Spain. I sell both and I tell you which is which. Mostly.",
+    "Every jar that comes up the river ends up on the big pile of broken ones by the port. A hill of pots, going up every year."
+   ],
+   "worry": [
+    "A cracked jar in the storeroom and a month's profit runs into the drain."
+   ],
+   "call": []
+  },
+  {
+   "id": "vinarius",
+   "title": "wine seller",
+   "latin": "vinarius",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a2a3a"
+   },
+   "intro": "{name}. Wine. Falernian if you've money, the house red if you haven't.",
+   "work": [
+    "Always mix it with water. Only barbarians drink it neat.",
+    "The Greeks put resin in theirs. The Gauls drink beer. Pity them.",
+    "A merchant from Campania comes up every month. His jars are sealed with pitch, so you can trust them, almost."
+   ],
+   "worry": [
+    "The aediles came round checking my measures again. As if I'd cheat. Much."
+   ],
+   "call": [
+    "Wine! Good wine, cheap!"
+   ]
+  },
+  {
+   "id": "caupo",
+   "title": "innkeeper",
+   "latin": "caupo",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "7a4a2a",
+    "apron": true
+   },
+   "intro": "{name}, and this is my inn. Beds upstairs, a jug and a stew down here.",
+   "work": [
+    "The carters come in at night and the drovers at dawn. I sleep in between, when I sleep.",
+    "Travellers write on my walls. Some of it's even polite.",
+    "Dice in the back room? I don't know what you're talking about. The aediles don't either."
+   ],
+   "worry": [
+    "People say innkeepers water the wine. People say a lot of things."
+   ],
+   "call": [
+    "Beds! Hot food!"
+   ]
+  },
+  {
+   "id": "popinarius",
+   "title": "cook-shop keeper",
+   "latin": "popinarius",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a6a4a",
+    "apron": true
+   },
+   "intro": "{name}. Hot food at my counter, all day. Chickpeas, lentils, a bit of sausage.",
+   "work": [
+    "Most people up in the flats can't cook: no kitchen, and the landlord won't have a fire. So they eat at mine.",
+    "The pots sit in the counter, over the coals. Point at what you want, pay, eat. Simple."
+   ],
+   "worry": [
+    "The rich say places like mine are where the idle and the wicked go. They've never been hungry at noon."
+   ],
+   "call": [
+    "Hot chickpeas! Lentils!",
+    "Hot food here!"
+   ]
+  },
+  {
+   "id": "botularius",
+   "title": "sausage seller",
+   "latin": "botularius",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "7a5a3a",
+    "tray": true
+   },
+   "intro": "{name}. Sausages. I sell them hot from the tray, all over.",
+   "work": [
+    "You shout, you walk, you shout. The baths are the best: everyone comes out hungry."
+   ],
+   "worry": [
+    "My voice is going. Too much shouting, not enough wine."
+   ],
+   "call": [
+    "Sausages! Hot sausages!"
+   ]
+  },
+  {
+   "id": "crustularius",
+   "title": "pastry cook",
+   "latin": "crustularius",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "d8c8a8",
+    "apron": true
+   },
+   "intro": "{name}. Cakes with honey, cakes with cheese, little cakes for the gods.",
+   "work": [
+    "Honey cakes for the children, cheese cakes for the priests, the best ones for the rich man's dinner.",
+    "Libum, now: cheese, flour, an egg, bay leaves under it. You bake it for someone's birthday, for his genius."
+   ],
+   "worry": [
+    "Honey's so dear this year. The bees don't care what I charge."
+   ],
+   "call": [
+    "Honey cakes!",
+    "Sweet cakes, fresh!"
+   ]
+  },
+  {
+   "id": "aquarius",
+   "title": "water carrier",
+   "latin": "aquarius",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a6a5a",
+    "load": true
+   },
+   "intro": "{name}. I carry water up to the top floors for the ones who pay.",
+   "work": [
+    "The fountain's down here, the family's up on the fifth floor. Up and down, all day. My legs are like a mule's.",
+    "Rich houses have a pipe from the aqueduct right into the house. The rest of us have me."
+   ],
+   "worry": [
+    "If the fountain runs dry, they blame me, as if I drank it all."
+   ],
+   "call": []
+  },
+  {
+   "id": "fullo",
+   "title": "fuller",
+   "latin": "fullo",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "b8b0a0",
+    "apron": true
+   },
+   "intro": "{name}, fuller. I clean togas. You'd be amazed what gets on a toga.",
+   "work": [
+    "We tread the cloth in the vats with fuller's earth and urine. Yes, urine. There's a pot for it on every corner, and I pay for it.",
+    "Our guild has its own feast day, the Quinquatrus, for Minerva. We drink to her and to the vats.",
+    "Then we card it, bleach it over sulphur, and press it. White as snow when it goes back."
+   ],
+   "worry": [
+    "The smell? You stop noticing after twenty years. Your wife never does."
+   ],
+   "call": []
+  },
+  {
+   "id": "sutor",
+   "title": "cobbler",
+   "latin": "sutor",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a4a2a",
+    "apron": true
+   },
+   "intro": "{name}, cobbler. Sit down, show me your feet. Hm. Those won't last the month.",
+   "work": [
+    "Soldiers' boots, ladies' slippers, senators' red shoes with the little moon on them. I make the lot.",
+    "Hobnails in the sole. Wears them longer and it makes a racket on the paving. The soldiers love it."
+   ],
+   "worry": [
+    "Leather's gone up again. The tanners across the river do what they like."
+   ],
+   "call": []
+  },
+  {
+   "id": "vestiarius",
+   "title": "clothes dealer",
+   "latin": "vestiarius",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "3a5a7a"
+   },
+   "intro": "{name}. Tunics, cloaks, the odd toga for a funeral. New and second-hand.",
+   "work": [
+    "The Vicus Tuscus is where you buy clothes. Everyone knows. The best stock is mine.",
+    "Wool from Tarentum is the softest. The cheap rough stuff is for slaves and it itches."
+   ],
+   "worry": [
+    "Thieves at the baths steal clothes off the benches. Then they come and try to sell them to me."
+   ],
+   "call": []
+  },
+  {
+   "id": "textrix",
+   "title": "weaver",
+   "latin": "textrix",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "f",
+   "look": {
+    "robe": "8a4a5a"
+   },
+   "intro": "{name}. I weave. My mother did, and hers.",
+   "work": [
+    "The loom stands upright, the weights pull the threads straight. Clack, clack, all day.",
+    "A good woman works wool, the old tombstones say. Mine will say I worked it better than anyone on this street."
+   ],
+   "worry": [
+    "My eyes. You squint at threads for thirty years, then you can't see the street."
+   ],
+   "call": []
+  },
+  {
+   "id": "purpurarius",
+   "title": "purple dealer",
+   "latin": "purpurarius",
+   "class": "foreign",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "5a1a4a"
+   },
+   "intro": "{name}, from Tyre. Purple, the real thing, from the shellfish.",
+   "work": [
+    "Ten thousand shells for a little dye. That's why a senator's stripe costs what it costs.",
+    "There's cheap purple from plants. You can tell the moment the sun hits it."
+   ],
+   "worry": [
+    "The laws against luxury come and go. When they come, nobody buys."
+   ],
+   "call": []
+  },
+  {
+   "id": "faber",
+   "title": "blacksmith",
+   "latin": "faber ferrarius",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "3a3a3a",
+    "apron": true
+   },
+   "intro": "{name}. Smith. Knives, hinges, nails, cramps for the builders.",
+   "work": [
+    "Iron from Noricum is the best. I don't often get it.",
+    "Vulcan's my god. You don't want to be on the wrong side of the god of your own fire."
+   ],
+   "worry": [
+    "The neighbours complain about the hammering. The neighbours can live in the country."
+   ],
+   "call": []
+  },
+  {
+   "id": "aurifex",
+   "title": "goldsmith",
+   "latin": "aurifex",
+   "class": "freed",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a6a2a"
+   },
+   "intro": "{name}. Goldsmith, on the Sacred Way, like all the good ones.",
+   "work": [
+    "Rings, brooches, a little gold leaf for the gods' statues. The work's small, the price isn't.",
+    "My master taught me when I was a slave. When he freed me, I took his name and his customers."
+   ],
+   "worry": [
+    "You can't turn your back for a moment. Gold walks."
+   ],
+   "call": []
+  },
+  {
+   "id": "figulus",
+   "title": "potter",
+   "latin": "figulus",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "9a6a4a",
+    "apron": true
+   },
+   "intro": "{name}. Pots. Cooking pots, jugs, lamps if you want.",
+   "work": [
+    "The clay's from the river valley. The kiln's outside the wall, because of the fires.",
+    "The fancy red ware comes from Arretium, stamped with the maker's name. Mine's for using, not for showing off."
+   ],
+   "worry": [
+    "Every pot that cracks in the kiln is a meal I don't eat."
+   ],
+   "call": [
+    "Pots! Jugs! Good cheap pots!"
+   ]
+  },
+  {
+   "id": "lucernarius",
+   "title": "lamp maker",
+   "latin": "lucernarius",
+   "class": "pleb",
+   "place": "stall",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a7a5a"
+   },
+   "intro": "{name}. Oil lamps. Two moulds, clay in the middle, bake them. Simple.",
+   "work": [
+    "Gladiators on the top, the gods, a pair of lovers. People like a picture on their lamp.",
+    "One nozzle for the poor, three for the rich. Same oil, more smoke."
+   ],
+   "worry": [
+    "Everyone's got a lamp already. Luckily they keep breaking them."
+   ],
+   "call": []
+  },
+  {
+   "id": "unguentarius",
+   "title": "perfumer",
+   "latin": "unguentarius",
+   "class": "freed",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "7a3a6a"
+   },
+   "intro": "{name}. Perfumes, oils, ointments. The best noses in Rome come to me.",
+   "work": [
+    "Rose from Campania, nard from India, saffron. It costs more than silver, weight for weight.",
+    "The rich men wear more of it than the women now. Don't say I said so."
+   ],
+   "worry": [
+    "The old men in the Senate want to ban it. They smell like goats and think it's virtue."
+   ],
+   "call": []
+  },
+  {
+   "id": "librarius",
+   "title": "bookseller",
+   "latin": "librarius",
+   "class": "freed",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "4a4a6a",
+    "scroll": true
+   },
+   "intro": "{name}. Books. New ones are posted on the pillars outside. Come in, have a look.",
+   "work": [
+    "I've got slaves copying all day. Twenty copies of a new poem by the Nones.",
+    "Poets hate me. They say I get rich and they get fame. They're right."
+   ],
+   "worry": [
+    "Mice. They eat the glue. The glue! Then the whole book falls apart."
+   ],
+   "call": []
+  },
+  {
+   "id": "nummularius",
+   "title": "money changer",
+   "latin": "nummularius",
+   "class": "freed",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "5a4a3a"
+   },
+   "intro": "{name}. I change money and I test coin. Show me that, let me ring it on the table.",
+   "work": [
+    "A bad coin rings flat. Silver-plated copper. There's more of it about than you'd think.",
+    "Greek drachmas, Egyptian ones, the new coin from the mint. I know them all by the ring."
+   ],
+   "worry": [
+    "When the mint cheapens the silver, everyone blames the man at the table. Me."
+   ],
+   "call": []
+  },
+  {
+   "id": "tonsor",
+   "title": "barber",
+   "latin": "tonsor",
+   "class": "pleb",
+   "place": "door",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "9a8a7a"
+   },
+   "intro": "{name}, barber. Sit, sit. A shave, a trim? You look like a philosopher, no offence.",
+   "work": [
+    "A barber hears everything. Who's in debt, who's in love, who's in trouble with the praetor.",
+    "Razor, water, no soap. If I cut you, a cobweb soaked in vinegar stops it. Don't worry."
+   ],
+   "worry": [
+    "The young ones all want beards now, like the Greeks. Terrible for business."
+   ],
+   "call": []
+  },
+  {
+   "id": "medicus",
+   "title": "doctor",
+   "latin": "medicus",
+   "class": "foreign",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "e0d8c0",
+    "beard": "short"
+   },
+   "intro": "{name}, a doctor, from Pergamon, trained in the Greek way.",
+   "work": [
+    "Most of what I do is tell people to eat less, walk more and stay out of the Tiber.",
+    "Romans didn't used to have doctors. They had cabbage and their grandfathers' remedies. Some still do."
+   ],
+   "worry": [
+    "If a patient dies, it's my fault. If he lives, it was the gods."
+   ],
+   "call": []
+  },
+  {
+   "id": "obstetrix",
+   "title": "midwife",
+   "latin": "obstetrix",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "f",
+   "look": {
+    "robe": "8a6a6a"
+   },
+   "intro": "{name}. I'm a midwife. Half this street came into the world through my hands.",
+   "work": [
+    "The birthing stool, warm oil, clean cloth, a steady voice. The rest is the gods and the mother.",
+    "They call me at any hour. Babies don't come by the water clock."
+   ],
+   "worry": [
+    "Not every one lives. You remember those ones more."
+   ],
+   "call": []
+  },
+  {
+   "id": "magister",
+   "title": "schoolmaster",
+   "latin": "ludi magister",
+   "class": "freed",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a5a4a",
+    "scroll": true
+   },
+   "intro": "{name}. I teach letters and sums, there, under the awning, from dawn till noon.",
+   "work": [
+    "The boys chant their letters, the neighbours shout at us to shut up, we chant louder.",
+    "A cane helps. I don't like it. Their fathers do."
+   ],
+   "worry": [
+    "Half of them don't pay on time, and I can't keep the boy back for his father's debts."
+   ],
+   "call": []
+  },
+  {
+   "id": "paedagogus",
+   "title": "boy's tutor",
+   "latin": "paedagogus",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "4a5a4a",
+    "beard": "short"
+   },
+   "intro": "{name}. I'm the young master's paedagogus. I take him to school and I make sure he gets there.",
+   "work": [
+    "Greek in the morning, manners all day. I'm a Greek myself, so I'm cheap to keep and good for his accent.",
+    "When he's grown he'll forget me. They always do. Some free you. That's the hope."
+   ],
+   "worry": [
+    "If he falls in the street, it's my back that gets the beating."
+   ],
+   "call": []
+  },
+  {
+   "id": "praeco",
+   "title": "crier",
+   "latin": "praeco",
+   "class": "pleb",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a8a5a"
+   },
+   "intro": "{name}! Crier and auctioneer! You need something shouted? I'm your man.",
+   "work": [
+    "Auctions, lost slaves, games announced, laws posted: I shout it all in the Forum.",
+    "It's a trade despised by the fine folk and it's made more men rich than their estates have."
+   ],
+   "worry": [
+    "You lose your voice, you lose your living."
+   ],
+   "call": [
+    "Hear ye! Auction at noon by the Temple of Castor!",
+    "Games next month! The aediles give games!"
+   ]
+  },
+  {
+   "id": "tignarius",
+   "title": "carpenter",
+   "latin": "faber tignarius",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "7a6a4a",
+    "apron": true
+   },
+   "intro": "{name}. Carpenter. I build floors and roofs, and the frames for the concrete.",
+   "work": [
+    "They build them six storeys high and want them cheap. I build what I'm paid for.",
+    "Our guild's the biggest in Rome. We've got a meeting house, a feast on our holiday, and a burial fund."
+   ],
+   "worry": [
+    "When a block comes down, they always blame the carpenter first and the owner never."
+   ],
+   "call": []
+  },
+  {
+   "id": "marmorarius",
+   "title": "marble mason",
+   "latin": "marmorarius",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "c8c0b0"
+   },
+   "intro": "{name}. Marble. I cut it, I polish it, I set it.",
+   "work": [
+    "It comes in blocks up the river: white from Luna, yellow from Numidia, purple from Egypt.",
+    "In the Republic they built in tufa and plaster. Now they want marble on everything."
+   ],
+   "worry": [
+    "The dust gets in your chest. Old masons all cough."
+   ],
+   "call": []
+  },
+  {
+   "id": "pictor",
+   "title": "wall painter",
+   "latin": "pictor parietarius",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a5a5a"
+   },
+   "intro": "{name}. I paint walls. Red panels, black, a garden with birds if you pay for it.",
+   "work": [
+    "You paint while the plaster's wet, so it lasts. Once it dries, the colour's in the wall for good.",
+    "Cinnabar red costs a fortune. The owner supplies it himself so we can't steal any."
+   ],
+   "worry": [
+    "Some owners want a whole seaside villa painted on a wall the size of a door."
+   ],
+   "call": []
+  },
+  {
+   "id": "tector",
+   "title": "plasterer",
+   "latin": "tector",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "a8a090"
+   },
+   "intro": "{name}. Plasterer. Three coats of lime and sand, then three of marble dust. That's how you do it properly.",
+   "work": [
+    "It's cheap work if it's done badly and good work if it's done slowly. Nobody wants slow."
+   ],
+   "worry": [
+    "The lime eats your hands."
+   ],
+   "call": []
+  },
+  {
+   "id": "baiulus",
+   "title": "porter",
+   "latin": "baiulus",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "5a5448",
+    "load": true
+   },
+   "intro": "{name}. I carry things. That's it. Where to?",
+   "work": [
+    "A sack of flour, a jar of oil, a bed up four flights. It's all the same to my back.",
+    "No carts in the city by day, so everything goes on somebody's shoulders. Mine, mostly."
+   ],
+   "worry": [
+    "The steps up to the Capitol. They'll be the death of me."
+   ],
+   "call": []
+  },
+  {
+   "id": "saccarius",
+   "title": "sack carrier",
+   "latin": "saccarius",
+   "class": "pleb",
+   "place": "river",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a5a48",
+    "load": true
+   },
+   "intro": "{name}. I unload the grain barges down at the port.",
+   "work": [
+    "Sixty pounds a sack, off the barge, into the warehouse, and the clerk marks a tally for each.",
+    "It all comes up from Ostia, from the big ships from Egypt and Africa. Rome eats that much."
+   ],
+   "worry": [
+    "The clerk miscounts. Always against us, funnily enough."
+   ],
+   "call": []
+  },
+  {
+   "id": "mulio",
+   "title": "muleteer",
+   "latin": "mulio",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a5a40"
+   },
+   "intro": "{name}. Muleteer. I bring the carts in at night. Wheels on the stones, all night long.",
+   "work": [
+    "Carts aren't allowed in by day. So Rome sleeps badly and eats well."
+   ],
+   "worry": [
+    "My mule's cleverer than I am and more stubborn than my wife."
+   ],
+   "call": []
+  },
+  {
+   "id": "lecticarius",
+   "title": "litter bearer",
+   "latin": "lecticarius",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a2a2a"
+   },
+   "intro": "{name}. I carry my master's litter. Eight of us. Big Syrians, if he can afford them.",
+   "work": [
+    "He reads and sleeps inside. We sweat outside. Such is life."
+   ],
+   "worry": [
+    "The Clivus Capitolinus with the master inside. Uphill both ways, somehow."
+   ],
+   "call": []
+  },
+  {
+   "id": "nauta",
+   "title": "boatman",
+   "latin": "nauta",
+   "class": "pleb",
+   "place": "river",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "3a4a5a"
+   },
+   "intro": "{name}. I run a boat on the Tiber. Ferry, barge, whatever pays.",
+   "work": [
+    "Against the current it's the oxen on the towpath that do the work. Downstream it's the river.",
+    "Ostia and back, two days, if the river's kind."
+   ],
+   "worry": [
+    "Floods in spring. The river comes up into the Forum some years."
+   ],
+   "call": []
+  },
+  {
+   "id": "balneator",
+   "title": "bath keeper",
+   "latin": "balneator",
+   "class": "freed",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "a8b0b8"
+   },
+   "intro": "{name}. I run the baths, the little ones down the street. A quarter of an as.",
+   "work": [
+    "Cold room, warm room, hot room. The slaves keep the furnace going under the floor all day.",
+    "Women in the morning, men in the afternoon, at mine. At the big ones they have their own rooms."
+   ],
+   "worry": [
+    "People steal clothes. People pee in the pool. People are people."
+   ],
+   "call": []
+  },
+  {
+   "id": "haruspex",
+   "title": "diviner",
+   "latin": "haruspex",
+   "class": "foreign",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "4a3a5a",
+    "beard": "long"
+   },
+   "intro": "{name}, haruspex, from Etruria. I read the liver of the victim.",
+   "work": [
+    "Each part of the liver belongs to a god. If it's swollen here, bad news. If it's clean, good.",
+    "Senators hire me. Generals hire me. Then they do what they wanted anyway."
+   ],
+   "worry": [
+    "Some young men laugh at the old arts. They stop laughing when the lightning strikes."
+   ],
+   "call": []
+  },
+  {
+   "id": "aedituus",
+   "title": "temple keeper",
+   "latin": "aedituus",
+   "class": "freed",
+   "place": "temple",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "d8d0c0"
+   },
+   "intro": "{name}. I keep this temple. I open it, sweep it, and keep an eye on the offerings.",
+   "work": [
+    "People leave all sorts: little clay feet when a foot's healed, cakes, coins, wishes on lead.",
+    "At festivals it's full. On ordinary days it's me and the pigeons and the god."
+   ],
+   "worry": [
+    "The pigeons are no respecters of gods."
+   ],
+   "call": []
+  },
+  {
+   "id": "victimarius",
+   "title": "sacrificial attendant",
+   "latin": "victimarius",
+   "class": "pleb",
+   "place": "temple",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "d8d0c0"
+   },
+   "intro": "{name}. I lead the beasts to the altar and see they go quietly.",
+   "work": [
+    "A beast that goes willing is a good sign. So you don't pull. You coax.",
+    "The gods get the smoke and the insides, and the people get a feast out of the rest."
+   ],
+   "worry": [
+    "If the ox bolts at the altar, it's a bad omen and they start the whole thing over."
+   ],
+   "call": []
+  },
+  {
+   "id": "libitinarius",
+   "title": "undertaker",
+   "latin": "libitinarius",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "2a2a2a"
+   },
+   "intro": "{name}. Undertaker. We don't take it personally when people avoid us.",
+   "work": [
+    "Mourners, pipers, torch bearers, the pyre outside the walls. I arrange the whole thing.",
+    "Poor folk pay into a burial club, a few coins a month, so they get a proper send-off."
+   ],
+   "worry": [
+    "Nobody wants to talk to the undertaker. Until they need one."
+   ],
+   "call": []
+  },
+  {
+   "id": "tibicen",
+   "title": "piper",
+   "latin": "tibicen",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a4a6a"
+   },
+   "intro": "{name}. Piper. Weddings, funerals, sacrifices. Rome can't do anything without a pipe.",
+   "work": [
+    "At a sacrifice, the pipe drowns out any bad word said by mistake. That's what I'm for.",
+    "Once the pipers went on strike and walked out to Tibur. The Senate got them back drunk in carts."
+   ],
+   "worry": [
+    "Funerals are steady work. I'd rather do weddings."
+   ],
+   "call": []
+  },
+  {
+   "id": "mimus",
+   "title": "street performer",
+   "latin": "mimus",
+   "class": "pleb",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "9a3a2a"
+   },
+   "intro": "{name}! Actor, singer, juggler, whatever you'll pay to see.",
+   "work": [
+    "The real theatre's for the proper actors. The street's for me. The street pays better.",
+    "I do the jealous husband, the stupid slave and the greedy old man. Everyone's seen them, everyone laughs."
+   ],
+   "worry": [
+    "The aediles move us on if we're too rude. Rude is what they laugh at hardest."
+   ],
+   "call": []
+  },
+  {
+   "id": "auriga",
+   "title": "charioteer",
+   "latin": "auriga",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "3a7a3a"
+   },
+   "intro": "{name}. I drive for the Greens. You've heard of me. No? You will.",
+   "work": [
+    "Four horses, seven laps, the turning posts close enough to touch. That's where men die.",
+    "Win enough and they free you, and the crowd knows your name, and the rich invite you to dinner."
+   ],
+   "worry": [
+    "The Blues put a curse tablet on my horses. Buried it right under the starting gate. I know it."
+   ],
+   "call": []
+  },
+  {
+   "id": "gladiator",
+   "title": "gladiator",
+   "latin": "gladiator",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "7a5a3a"
+   },
+   "intro": "{name}. Thracian style. Small shield, curved sword. I've fought eleven times.",
+   "work": [
+    "Most fights, the loser lives if he fought well. The crowd decides, and the man giving the games.",
+    "We eat barley and beans at the school, to put a layer of fat on. They call us barley men."
+   ],
+   "worry": [
+    "If I make it to the wooden sword, I'm free. Three more fights. Maybe four."
+   ],
+   "call": []
+  },
+  {
+   "id": "lanista",
+   "title": "gladiator trainer",
+   "latin": "lanista",
+   "class": "pleb",
+   "place": "stand",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "4a3a2a"
+   },
+   "intro": "{name}. I own a troupe of gladiators. The best in the city, so I tell the magistrates.",
+   "work": [
+    "I hire them out to men giving games. Every one who dies, I get paid for. Handsomely.",
+    "People look down on my trade. Then they buy tickets."
+   ],
+   "worry": [
+    "Feeding them costs a fortune. Barley men, they eat like horses."
+   ],
+   "call": []
+  },
+  {
+   "id": "scriba",
+   "title": "clerk",
+   "latin": "scriba",
+   "class": "freed",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "b8b0a0",
+    "scroll": true
+   },
+   "intro": "{name}. Clerk of the treasury, under the Temple of Saturn. The state's accounts go through my hands.",
+   "work": [
+    "Magistrates come and go every year. We stay. We know where everything is.",
+    "Wax tablets for the drafts, papyrus for the records, bronze for the laws."
+   ],
+   "worry": [
+    "A new quaestor every year who thinks he knows better. Every single year."
+   ],
+   "call": []
+  },
+  {
+   "id": "lictor",
+   "title": "lictor",
+   "latin": "lictor",
+   "class": "state",
+   "place": "patrol",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "e8e2d2",
+    "fasces": true
+   },
+   "intro": "{name}. Lictor. I carry the rods before the magistrate. Make way.",
+   "work": [
+    "Inside the city the axe stays out of the rods, because a citizen can appeal to the people.",
+    "Twelve before a consul, six before a praetor. We go in single file and people step aside."
+   ],
+   "worry": [
+    "Standing about in the heat while the magistrate talks. That's most of it."
+   ],
+   "call": []
+  },
+  {
+   "id": "vigil",
+   "title": "watchman",
+   "latin": "vigil",
+   "class": "state",
+   "place": "patrol",
+   "ages": [
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "7a3a2a",
+    "helmet": "bronze"
+   },
+   "intro": "{name}. Of the watch, the vigiles. Fire's our business, and thieves at night.",
+   "work": [
+    "Buckets, axes, hooks for pulling down a burning wall, blankets soaked in vinegar.",
+    "Seven cohorts, a station for every two regions. Most of us are freedmen. Six years' service and you're a citizen."
+   ],
+   "worry": [
+    "The top floors of those insulae. A lamp tips over and forty families are on the street."
+   ],
+   "call": []
+  },
+  {
+   "id": "miles",
+   "title": "soldier",
+   "latin": "miles",
+   "class": "state",
+   "place": "patrol",
+   "ages": [
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a2a2a",
+    "helmet": "iron"
+   },
+   "intro": "{name}. Soldier. I keep order, as ordered.",
+   "work": [
+    "We walk the streets, we stand at the games, we break up fights. Boring, mostly. Better than the frontier.",
+    "Pay's on time here in the city. That's why every man in the army wants a posting to Rome."
+   ],
+   "worry": [
+    "Some nights it's all brawls and burning. Some nights it's nothing, and those are worse, waiting."
+   ],
+   "call": []
+  },
+  {
+   "id": "senator",
+   "title": "senator",
+   "latin": "senator",
+   "class": "rich",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "toga": true,
+    "stripe": true
+   },
+   "intro": "I am {name}. My family has sat in the Senate for generations.",
+   "work": [
+    "The morning is for my clients, the afternoon for the Senate or the courts, the evening for dinner. There's no rest in being important.",
+    "You don't trade, as a senator. It's beneath us. We own land. And sometimes the men who trade."
+   ],
+   "worry": [
+    "Elections cost more every year. My father bought votes cheaper."
+   ],
+   "call": []
+  },
+  {
+   "id": "cliens",
+   "title": "client",
+   "latin": "cliens",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late"
+   ],
+   "gender": "m",
+   "look": {
+    "toga": true
+   },
+   "intro": "{name}. I'm a client of the house of {patron}. You'll have heard of them.",
+   "work": [
+    "At dawn I put on my toga and go and greet my patron. He gives me a little basket of food, or some coins.",
+    "I walk behind him to the Forum. The more of us, the greater he looks. That's my job, if you like."
+   ],
+   "worry": [
+    "The toga's hot, the patron's late, and the basket's smaller than last year."
+   ],
+   "call": []
+  },
+  {
+   "id": "matrona",
+   "title": "householder",
+   "latin": "matrona",
+   "class": "rich",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "f",
+   "look": {
+    "robe": "7a4a6a",
+    "long_hair": true
+   },
+   "intro": "I'm {name}. I run my husband's household, and I run it well.",
+   "work": [
+    "The slaves, the stores, the children, the accounts. Men think a house runs itself.",
+    "I go to the temple of Bona Dea, the Good Goddess. Men aren't allowed. That suits us fine."
+   ],
+   "worry": [
+    "My son wants to go into politics. It costs everything we have."
+   ],
+   "call": []
+  },
+  {
+   "id": "ancilla",
+   "title": "maid",
+   "latin": "ancilla",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "f",
+   "look": {
+    "robe": "8a8a7a",
+    "load": true
+   },
+   "intro": "{name}. I'm a maid in the house of {patron}. I'm out for the shopping.",
+   "work": [
+    "Fish, bread, oil, and the mistress's thread from the Vicus Tuscus. And I'm back before she notices I stopped to talk.",
+    "Some houses are kind. Mine is kind enough."
+   ],
+   "worry": [
+    "I'm saving my allowance. Twelve years, maybe, and I can buy myself free."
+   ],
+   "call": []
+  },
+  {
+   "id": "servus",
+   "title": "slave",
+   "latin": "servus",
+   "class": "slave",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a6458"
+   },
+   "intro": "{name}. I belong to the house of {patron}. I run errands for the steward.",
+   "work": [
+    "Letters to deliver, a message to a friend, the bread. I know every shortcut in Rome.",
+    "My master's not bad. The steward is the one you watch out for."
+   ],
+   "worry": [
+    "They say if I work hard I'll be freed before I'm thirty. They say a lot of things."
+   ],
+   "call": []
+  },
+  {
+   "id": "mercator",
+   "title": "merchant",
+   "latin": "mercator",
+   "class": "foreign",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "8a2a4a",
+    "headcloth": true
+   },
+   "intro": "{name}. A merchant. Glass and cloth from Syria, and I buy wine to take back.",
+   "work": [
+    "Rome has everything, because everything comes here. And it all has to be paid for.",
+    "Sea from Antioch to Puteoli, road to Rome. Six weeks if the gods are kind."
+   ],
+   "worry": [
+    "Pirates, storms, customs men. Customs men are the worst."
+   ],
+   "call": []
+  },
+  {
+   "id": "presbyter",
+   "title": "priest",
+   "latin": "presbyter",
+   "class": "church",
+   "place": "walk",
+   "ages": [
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "2a2622",
+    "beard": "short"
+   },
+   "intro": "{name}, a priest of the church of this quarter.",
+   "work": [
+    "On the Lord's day we meet at dawn. On the other days, the sick, the widows, the ones in debt.",
+    "The bishop sends bread to the poor through us. There's always less bread than poor."
+   ],
+   "worry": [
+    "The old families still sacrifice to their old gods behind closed doors. We pray for them."
+   ],
+   "call": []
+  },
+  {
+   "id": "diaconus",
+   "title": "deacon",
+   "latin": "diaconus",
+   "class": "church",
+   "place": "stand",
+   "ages": [
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "e0d8c8"
+   },
+   "intro": "{name}, deacon. I see to the food for the poor.",
+   "work": [
+    "The church's farms send grain and wine. We give it out here on the steps.",
+    "Seven regions of the city, seven deacons. We keep lists, name by name."
+   ],
+   "worry": [
+    "When the grain doesn't come, the lists are all we have to give out."
+   ],
+   "call": []
+  },
+  {
+   "id": "monachus",
+   "title": "monk",
+   "latin": "monachus",
+   "class": "church",
+   "place": "walk",
+   "ages": [
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "5a4a3a",
+    "hood": true
+   },
+   "intro": "{name}. A monk. We keep the psalms, day and night.",
+   "work": [
+    "We pray at the hours, work with our hands, eat once a day.",
+    "People bring us their sick. We nurse them. Sometimes they live."
+   ],
+   "worry": [
+    "The world is ending, some of the brothers say. Look around. They may be right."
+   ],
+   "call": []
+  },
+  {
+   "id": "fossor",
+   "title": "catacomb digger",
+   "latin": "fossor",
+   "class": "church",
+   "place": "walk",
+   "ages": [
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "6a5a4a"
+   },
+   "intro": "{name}. I dig the galleries outside the walls where the Christians are buried.",
+   "work": [
+    "Down in the tufa with a lamp and a pick. Shelf after shelf, gallery below gallery.",
+    "The martyrs are buried down there. Pilgrims come to pray at their tombs."
+   ],
+   "worry": [
+    "The Goths went through the cemeteries looking for gold. There's no gold. Only bones and prayers."
+   ],
+   "call": []
+  },
+  {
+   "id": "mendicus",
+   "title": "beggar",
+   "latin": "mendicus",
+   "class": "pleb",
+   "place": "stand",
+   "ages": [
+    "late",
+    "fall"
+   ],
+   "gender": "m",
+   "look": {
+    "robe": "5a5048"
+   },
+   "intro": "{name}. Nobody. A beggar. Spare something?",
+   "work": [
+    "I was a baker once, when there were people to buy bread.",
+    "The church steps are best. The Christians have to give, it's in their book."
+   ],
+   "worry": [
+    "Winter. Winter's what I worry about."
+   ],
+   "call": []
+  },
+  {
+   "id": "pilgrim",
+   "title": "pilgrim",
+   "latin": "peregrinus",
+   "class": "foreign",
+   "place": "walk",
+   "ages": [
+    "late",
+    "fall"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "8a7a5a",
+    "hood": true
+   },
+   "intro": "{name}. A pilgrim, come to pray at the tomb of Peter.",
+   "work": [
+    "I walked from Gaul. Four months. My feet are all blisters and my heart is full.",
+    "Peter across the river, Paul out on the Ostian Way, and all the martyrs in the catacombs."
+   ],
+   "worry": [
+    "The roads aren't safe. Goths, bandits, hunger. We came anyway."
+   ],
+   "call": []
+  },
+  {
+   "id": "peregrinus",
+   "title": "foreigner",
+   "latin": "peregrinus",
+   "class": "foreign",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "3a5a8a"
+   },
+   "intro": "{name}. Not from here, as you can tell by my accent.",
+   "work": [
+    "I came for work and stayed. Half the city came from somewhere else.",
+    "In my country the food is better and the rents are lower. But this is Rome."
+   ],
+   "worry": [
+    "Some Romans think anyone who isn't Roman is a fool. Some Romans are fools."
+   ],
+   "call": []
+  },
+  {
+   "id": "proletarius",
+   "title": "citizen of the plebs",
+   "latin": "proletarius",
+   "class": "pleb",
+   "place": "walk",
+   "ages": [
+    "republic",
+    "empire",
+    "late",
+    "fall"
+   ],
+   "gender": "any",
+   "look": {
+    "robe": "7a6a58"
+   },
+   "intro": "{name}. Citizen. No land, no money, but a citizen.",
+   "work": [
+    "I take the grain dole each month. Five modii. Without it I'd be in the river.",
+    "I work where there's work: the docks, the building sites, the games."
+   ],
+   "worry": [
+    "Rents. Rents rents rents. Room on the fifth floor costs what a house in the country does."
+   ],
+   "call": []
+  }
+ ],
+ "life": {
+  "pleb": [
+   "I've a room on the fourth floor of a block on the {home}. It's small, it's noisy, it's home.",
+   "My {partner} keeps me honest. The {kids} keep me poor.",
+   "Work, eat, sleep, the baths when I can. The games when they're free. It's not a bad life.",
+   "Some days are good. Today's middling."
+  ],
+  "slave": [
+   "I don't have a life, stranger, I have a master. But I've friends in the household, and the Saturnalia once a year.",
+   "At the Saturnalia the masters serve us dinner. One day. It's a good day.",
+   "I was born in the house. My mother too. I've never been further than Ostia."
+  ],
+  "freed": [
+   "I was a slave once. Now I'm a freedman, and my son will be a citizen born, and his son could be anything.",
+   "I still take my old master's name and go to him on holidays. That's how it's done.",
+   "I've a shop, a {partner}, and {kids}. More than I ever thought I'd have."
+  ],
+  "rich": [
+   "We've the house on the {home} and a villa near Tusculum for the summer. The city in August is unbearable.",
+   "Life is duty, mostly. To the family, to the city, to the gods. And a good dinner at the end of it."
+  ],
+  "foreign": [
+   "I send money home when I can. My family thinks Rome's paved with gold. It's paved with basalt.",
+   "I live near the others from my country, across the river. We have our own gods, our own food, our own gossip."
+  ],
+  "state": [
+   "I serve. I get paid, I get fed, I get a pension if I live. Not many can say that.",
+   "My {partner} lives near the station. I see the {kids} when I'm off duty."
+  ],
+  "church": [
+   "My life is given to God. It's simpler that way.",
+   "I was baptised at the Lateran at Easter, in the great font. Everything before that is another life."
+  ]
+ },
+ "news": {
+  "republic": [
+   "They say Caesar's taken all of Gaul and he's coming back richer than Crassus ever was.",
+   "Pompey's new theatre! Stone! With a temple on top so the old men can't pull it down.",
+   "Clodius's gangs and Milo's gangs had another fight on the Appian Way. Clodius is dead, they say. The Senate House burned with his body.",
+   "Cicero's back from exile and talking again. He never stops talking.",
+   "The price of grain's up again. The tribunes say they'll fix it. The tribunes always say that.",
+   "Crassus went east to fight the Parthians and never came back. They say they poured gold down his throat."
+  ],
+  "empire": [
+   "The emperor's old and kind and never leaves Italy. Good. Emperors who travel get ideas.",
+   "Rome was nine hundred years old two years ago. The games went on for weeks.",
+   "There's new marble going up by the Colosseum. There's always new marble going up somewhere.",
+   "The Greens won six races yesterday. Six! The Blues are furious.",
+   "A block in the Subura came down in the night. Three families. The owner says it was an earthquake.",
+   "There's a Christian preacher across the river who says the world will end. Not before the games, I hope."
+  ],
+  "late": [
+   "The emperor's building a new Rome in the east. We'll see how long that lasts.",
+   "The bishop's a great man now. The emperor gave him the Lateran palace and a church of gold.",
+   "They took the carvings for Constantine's arch off older monuments. Couldn't find anyone good enough to carve new ones.",
+   "The bread dole's baked bread now, not grain, and there's pork and oil on top. Can't complain.",
+   "The Senate's full of old families who still sacrifice to Jupiter and don't say so to the emperor."
+  ],
+  "fall": [
+   "Narses beat the Goth king in the north. Totila's dead. Maybe now it stops.",
+   "The Pope's been in Constantinople for years. The emperor won't let him come home.",
+   "They say in the siege there were a million people here once. I've never seen more than a crowd at Mass.",
+   "The aqueducts are cut. The baths are dry. We drink from the river.",
+   "Plague, then war, then hunger, then war. God must be very angry with Rome."
+  ]
+ },
+ "gods": {
+  "republic": [
+   "Jupiter on the Capitol keeps the city. Vesta keeps the fire. My household gods keep my house. Everybody has their job.",
+   "A cake for the Lares at every meal, a lamb for Jupiter on the festival. You keep the gods sweet, they keep you."
+  ],
+  "empire": [
+   "Jupiter, Mars, the emperor's genius, Isis for my wife, Mithras for my brother in the army. Why choose?",
+   "The emperors become gods when they die. Well, the good ones. The bad ones just die."
+  ],
+  "late": [
+   "My grandmother sacrificed to Jupiter. My mother lit candles to the martyrs. I do both, quietly.",
+   "The Christians have the emperor now. The old gods have the Senate. And the people have whatever works."
+  ],
+  "fall": [
+   "God is great and Rome is small now. We pray at the tombs of the martyrs.",
+   "The old temples are shut. Some are churches now. The gods moved out and the saints moved in."
+  ]
+ },
+ "reacts": {
+  "greet": {
+   "pleb": [
+    "Salve!",
+    "Morning!",
+    "Watch your purse, stranger.",
+    "Hot one today."
+   ],
+   "slave": [
+    "Excuse me.",
+    "Pardon, sir.",
+    "Coming through!"
+   ],
+   "freed": [
+    "Salve, friend.",
+    "Good day to you."
+   ],
+   "rich": [
+    "...",
+    "Hm.",
+    "Step aside, please."
+   ],
+   "foreign": [
+    "Hello, hello.",
+    "Peace be with you.",
+    "Salve."
+   ],
+   "state": [
+    "Move along.",
+    "Keep it quiet.",
+    "All in order?"
+   ],
+   "church": [
+    "God keep you.",
+    "Peace, friend."
+   ]
+  },
+  "bump": [
+   "Oi! Watch it!",
+   "Mind where you're going!",
+   "Hey! Eyes in your head!",
+   "Careful, careful!",
+   "Do you mind?",
+   "Clumsy barbarian!",
+   "Ow! My foot!"
+  ],
+  "night": [
+   "Late to be out, friend.",
+   "Get home before the thieves find you.",
+   "Mind the pots from the windows!"
+  ],
+  "puzzled": [
+   "Eh? You talk funny, stranger.",
+   "I don't follow you.",
+   "Say that again, slower?",
+   "Ask the Greeks, they know about that sort of thing."
+  ],
+  "bye": [
+   "Vale!",
+   "Go well.",
+   "Gods keep you.",
+   "See you around.",
+   "Off with you then."
+  ]
+ },
+ "topics": [
+  {
+   "id": "who",
+   "label": "Who are you?"
+  },
+  {
+   "id": "work",
+   "label": "What's your work like?"
+  },
+  {
+   "id": "life",
+   "label": "How's life?"
+  },
+  {
+   "id": "news",
+   "label": "What's the news?"
+  },
+  {
+   "id": "gods",
+   "label": "Which gods do you keep?"
+  },
+  {
+   "id": "around",
+   "label": "What's around here?"
+  }
+ ],
+ "moods": [
+  [
+   "cheerful",
+   "Can't complain, and I'm not going to."
+  ],
+  [
+   "tired",
+   "Up since before cockcrow. My eyes are shutting as I stand."
+  ],
+  [
+   "grumpy",
+   "Don't ask. Really. Don't."
+  ],
+  [
+   "hurried",
+   "Quick, I've somewhere to be."
+  ],
+  [
+   "chatty",
+   "Oh, you want to talk? Sit, sit, I've got all day. Well, not all day."
+  ],
+  [
+   "worried",
+   "There's a lot on my mind."
+  ],
+  [
+   "merry",
+   "A bit of wine at lunch, you know how it is."
+  ]
+ ],
+ "patrons": [
+  "the Cornelii",
+  "the Claudii",
+  "the Aemilii",
+  "the Valerii",
+  "the Caecilii Metelli",
+  "the Licinii",
+  "the Junii",
+  "the Sempronii",
+  "the Fabii",
+  "the Domitii"
+ ]
+}

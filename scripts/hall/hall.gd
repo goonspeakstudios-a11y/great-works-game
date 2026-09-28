@@ -17,6 +17,8 @@ const Choice := preload("res://scripts/hall/choice.gd")
 const Library := preload("res://scripts/hall/library.gd")
 const AuthorAI := preload("res://scripts/hall/author_ai.gd")
 const Portrait := preload("res://scripts/hall/portrait.gd")
+const Talk := preload("res://scripts/hall/talk.gd")
+const Citizen := preload("res://scripts/hall/citizen.gd")
 const Player := preload("res://scripts/hall/player.gd")
 const Progress := preload("res://scripts/hall/progress.gd")
 const Worlds := preload("res://scripts/hall/worlds.gd")
@@ -108,6 +110,11 @@ var _fade: ColorRect
 var _read_panel: PanelContainer
 var _read_text: RichTextLabel
 var _ask_panel: Panel
+var _talk_panel: Talk  # talking with someone in the city
+var _talking := {}  # the citizen you are talking with (their interactable)
+var life: RefCounted  # the city's day and its voices (urbs_life.gd), where there is one
+var landmarks: Array = []  # what stands in the city, for saying what's around: {name, pos}
+var _here_zone := ""  # the music zone the place asks for, when it is not the room's (the city's age)
 var _ask_portrait: TextureRect
 var _ask_name: Label
 var _ask_life: Label
@@ -199,6 +206,7 @@ func _ready() -> void:
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
+	author.chatted.connect(_on_chatted)
 	add_child(author)
 	if not offline:
 		music = Music.new()
@@ -232,6 +240,9 @@ func _ready() -> void:
 func _stage_shot(view: String) -> void:
 	if _args.has("age"):  # --age=N: the city of Rome in its Nth age (0 Republic ... 3 the fall)
 		progress.data["rome_age"] = clampi(int(_args["age"]), 0, ROME_AGES - 1)
+		progress.data["rome_reached"] = ROME_AGES - 1
+	if _args.has("hour"):  # --hour=H: the city at that hour of its day
+		progress.data["rome_hour"] = float(_args["hour"])
 	if _args.has("city"):
 		progress.data["city_stage"] = clampi(int(_args["city"]), 0, CITY_LAST)
 	if view == "place" and _args.has("stage"):
@@ -256,6 +267,12 @@ func _stage_shot(view: String) -> void:
 	match view:
 		"place":
 			_stand(_vec(_args.get("at", "0,0,20")), _vec(_args.get("look", "0,0,0")))
+			if _args.has("talk"):  # --talk: stop the nearest citizen and ask about their work
+				var near: Array = interactables.filter(func(i): return i["kind"] == "citizen")
+				near.sort_custom(func(a, b): return player.position.distance_to(a["pos"]) < player.position.distance_to(b["pos"]))
+				if not near.is_empty():
+					activate(near[0])
+					_on_said("work", "What's your work like?")
 			if _args.has("fly"):  # --fly: hang where --at says (no falling) and look down at --look
 				player.seated = true
 				var to := _vec(_args.get("look", "0,0,0")) - player.position
@@ -392,6 +409,8 @@ func _fade_through(color: Color, out_s: float, in_s: float, build: Callable) -> 
 func _load_place(to: String, keep: bool = false) -> void:
 	if beat:
 		_end_beat(false)
+	if here == "urbs" and life:
+		progress.data["rome_hour"] = life.hour  # the city's day goes on where you left it
 	var held := _where_everyone_is() if keep else {}
 	var area_target := ""
 	if not to in ["hub", "nexus"] and Rooms.room(to).get("area_of", "") != "":
@@ -420,7 +439,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	elif to == "hub":
 		built = Places.hub(world, doors, progress)
 	elif to == "urbs":
-		built = load("res://scripts/hall/places_rome.gd").urbs(world, Rooms.doors_of("rome"), progress, rome_age())
+		built = load("res://scripts/hall/places_rome.gd").urbs(world, Rooms.doors_of("rome"), progress, rome_age(), rome_age_reached())
 	elif to == "asset_test":
 		built = Places.asset_test(world)
 	else:
@@ -438,10 +457,13 @@ func _load_place(to: String, keep: bool = false) -> void:
 	restored_here = built.get("back", [])
 	areas = built.get("areas", [])
 	regions = built.get("regions", [])
+	landmarks = built.get("landmarks", [])
+	life = built.get("life")
+	_here_zone = str(built.get("zone", ""))
 	backs = built.get("backs", {})
 	area = ""  # worked out again on the next frame
 	if music:
-		music.play(_zone(to), restored_here)
+		music.play(_zone(to), life.music_back() if life else restored_here)
 	people = built.get("people", [])
 	squads = built.get("squads", [])
 	boats = built.get("boats", [])
@@ -592,6 +614,8 @@ func _switch_mode() -> void:
 
 
 func _zone(place: String) -> String:
+	if place == here and _here_zone != "":
+		return _here_zone
 	if place == "hub":
 		return "shore"
 	if place == "urbs":
@@ -950,6 +974,10 @@ func _build_ui() -> void:
 	_read_text.add_theme_color_override("default_color", Color("e8dcc0"))
 	_read_panel.add_child(_read_text)
 	_build_ask_panel()
+	_talk_panel = Talk.new()
+	_talk_panel.build(_style, _label, Citizen.data().get("topics", []))
+	_talk_panel.said.connect(_on_said)
+	_root.add_child(_talk_panel)
 	_build_map_panel()
 	_build_tree_panel()
 	_fade = ColorRect.new()
@@ -1353,17 +1381,19 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
+	return _talk_panel.visible or _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu]:
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _talk_panel]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
+	_talk_panel.release()
+	_talking = {}
 	player.frozen = false
 	if not offline:
 		Input.mouse_mode = _mouse_before
@@ -1388,6 +1418,10 @@ func _process(delta: float) -> void:
 		if is_instance_valid(f["light"]):
 			f["light"].light_energy = f["base"] * (0.85 + 0.15 * sin(_t * 9.0 + f["seed"]) * sin(_t * 3.7 + f["seed"]))
 	_check_area()
+	if life:
+		var turned: String = life.step(delta, player.global_position)
+		if turned != "" and music:
+			music.play(_zone(here), life.music_back())  # the day's music, or the night's
 	_animate_people(delta)
 	_animate_life(delta)
 	_catch_fall()
@@ -1623,6 +1657,8 @@ func _nearest() -> Dictionary:
 	var at := player.global_position
 	for it in interactables:
 		if it.has("follow") and is_instance_valid(it["follow"]):
+			if not it["follow"].visible:
+				continue  # gone home for the night
 			it["pos"] = it["follow"].global_position  # someone who moves about
 		var to: Vector3 = it["pos"] - at
 		to.y = 0.0
@@ -1677,6 +1713,8 @@ func activate(it: Dictionary) -> void:
 			_start_beat(it)
 		"city_again":
 			_set_city_stage(0)
+		"citizen":
+			_open_talk(it)
 		"rome_age":
 			_set_rome_age(int(it["to"]))
 
@@ -1765,7 +1803,18 @@ const ROME_AGES := 4
 
 
 func rome_age() -> int:
-	return clampi(int(progress.data.get("rome_age", 0)), 0, ROME_AGES - 1)
+	return clampi(int(progress.data.get("rome_age", 0)), 0, rome_age_reached())
+
+
+## How far the years have gone: the age of the latest Roman book you have begun (the Rhetorica
+## belongs to the Republic, so for now Rome stays young). "rome_reached" in the save can open more.
+func rome_age_reached() -> int:
+	var ids: Array = load("res://scripts/hall/rome_map.gd").ages().map(func(a): return a["id"])
+	var reached := int(progress.data.get("rome_reached", 0))
+	for d in Rooms.doors_of("rome"):
+		if not progress.understood(d["work"]).is_empty():
+			reached = maxi(reached, ids.find(d.get("age", "republic")))
+	return clampi(reached, 0, ROME_AGES - 1)
 
 
 func _set_rome_age(to: int) -> void:
@@ -1805,6 +1854,52 @@ func _set_city_stage(to: int) -> void:
 			_load_place(here, true)
 		else:
 			_load_place.call_deferred(here, true)  # after the beat that asked for it has finished its frame
+
+
+# ---------- talking with the people of a city ----------
+
+## Stop someone in the street and talk: their name, their trade, their first words.
+func _open_talk(it: Dictionary) -> void:
+	_talking = it
+	var c: Dictionary = it["citizen"]
+	var trade := "%s (%s)" % [c["title"], c["latin"]]
+	if c["origin"] != "Roman":
+		trade += ", %s" % c["origin"]
+	_talk_panel.open(c["name"], trade, _esc(Citizen.greeting(c)))
+	_show_panel(_talk_panel)
+
+
+## What stands nearest you in the city, by name, nearest first.
+func near_names(count: int = 2) -> Array:
+	var at := player.global_position
+	var sorted := landmarks.duplicate()
+	sorted.sort_custom(func(a, b): return at.distance_to(a["pos"]) < at.distance_to(b["pos"]))
+	return sorted.slice(0, count).map(func(l): return str(l["name"]))
+
+
+## You asked something (a topic) or said something (typed). With Claude on the line, typed words go
+## to the citizen in character; otherwise, and for the topics, they answer from their own lines.
+func _on_said(topic: String, text: String) -> void:
+	if _talking.is_empty():
+		return
+	var c: Dictionary = _talking["citizen"]
+	_talk_panel.show_you(_esc(text))
+	if topic == "" and AuthorAI.api_key() != "" and not author.chat_busy:
+		author.chat(c["id"], Citizen.persona(c, here_name, near_names()), text)
+		return
+	if topic == "":
+		topic = Citizen.heard(text)
+	_talk_panel.show_reply(c["name"], _esc(Citizen.reply(c, topic, near_names())))
+
+
+func _on_chatted(id: String, reply: Dictionary) -> void:
+	if _talking.is_empty() or _talking["citizen"]["id"] != id:
+		return
+	var c: Dictionary = _talking["citizen"]
+	var line: String = reply.get("text", "")
+	if line == "":  # no one on the line after all: they answer from their own lines
+		line = Citizen.reply(c, "", near_names())
+	_talk_panel.show_reply(c["name"], _esc(line))
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.
@@ -1906,14 +2001,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and not player.frozen and not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		return
-	if event.is_action_pressed("tablet") and not _ask_panel.visible:
+	if event.is_action_pressed("tablet") and not _ask_panel.visible and not _talk_panel.visible:
 		get_viewport().set_input_as_handled()
 		if _read_panel.visible:
 			_close_panels()
 		else:
 			_show_read(_tablet_text())
 		return
-	if _ask_panel.visible or _menu.visible or _choice.visible:
+	if _ask_panel.visible or _talk_panel.visible or _menu.visible or _choice.visible:
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()

@@ -9,6 +9,7 @@ extends Node
 
 signal answered(reply: Dictionary)
 signal judged(work: String, understood: Array)
+signal chatted(id: String, reply: Dictionary)  # a citizen of a city answering you (chat())
 
 const MODEL := "claude-haiku-4-5"
 const URL := "https://api.anthropic.com/v1/messages"
@@ -52,6 +53,11 @@ Lesson points:
 Already understood: %s"""
 
 var histories := {}  # work -> [question, answer] pairs, newest last
+var chats := {}  # a citizen's id -> [what you said, what they said] pairs, newest last
+var chat_busy := false
+var _chat_http: HTTPRequest
+var _chat_id := ""
+var _chat_text := ""
 var busy := false
 var _http: HTTPRequest
 var _judge_http: HTTPRequest
@@ -260,3 +266,52 @@ func _reply(work: String, question: String, reply: Dictionary) -> void:
 	reply["work"] = work
 	reply["question"] = question
 	answered.emit(reply)
+
+
+# ---------- talking with the people of a city ----------
+
+const CHAT_TOKENS := 160
+
+
+## A request for a citizen's answer: who they are (`system`), the last few things said, and yours.
+static func build_chat(system: String, past: Array, text: String) -> Dictionary:
+	var messages: Array = []
+	for pair in past.slice(maxi(0, past.size() - KEEP_EXCHANGES)):
+		messages.append({"role": "user", "content": pair[0]})
+		messages.append({"role": "assistant", "content": pair[1]})
+	messages.append({"role": "user", "content": text})
+	return {"model": MODEL, "max_tokens": CHAT_TOKENS, "system": system, "messages": messages}
+
+
+## Someone in the street answers what you said, in character. Without a key there is no one on
+## the line: the reply comes back with an error and the city answers from its own lines instead.
+func chat(id: String, system: String, text: String) -> void:
+	if chat_busy:
+		return
+	var key := api_key()
+	if key == "":
+		chatted.emit(id, {"text": "", "error": "no key"})
+		return
+	if _chat_http == null:
+		_chat_http = _new_http(_on_chatted)
+	chat_busy = true
+	_chat_id = id
+	_chat_text = text
+	var err := _chat_http.request(URL, _headers(key), HTTPClient.METHOD_POST, JSON.stringify(build_chat(system, chats.get(id, []), text)))
+	if err != OK:
+		chat_busy = false
+		chatted.emit(id, {"text": "", "error": "could not send (%d)" % err})
+
+
+func _on_chatted(result: int, code: int, _headers_in: PackedStringArray, body: PackedByteArray) -> void:
+	chat_busy = false
+	var data: Variant = JSON.parse_string(body.get_string_from_utf8()) if result == HTTPRequest.RESULT_SUCCESS else null
+	if code != 200 or not data is Dictionary:
+		chatted.emit(_chat_id, {"text": "", "error": "status %d" % code})
+		return
+	var reply := parse_reply(data)
+	if reply["error"] == "" and data.get("stop_reason", "") != "refusal":
+		if not chats.has(_chat_id):
+			chats[_chat_id] = []
+		chats[_chat_id].append([_chat_text, reply["text"]])
+	chatted.emit(_chat_id, reply)
