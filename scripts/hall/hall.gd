@@ -24,8 +24,6 @@ const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Lettering := preload("res://scripts/hall/lettering.gd")
 const Beat := preload("res://scripts/hall/beat.gd")
-const City := preload("res://scripts/hall/city.gd")
-const Council := preload("res://scripts/hall/council.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -126,8 +124,6 @@ var _map_note: Label
 var _tree_panel: Panel
 var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
 var _choice: PanelContainer  # a world asks who you are there (Choice)
-var _council: Panel  # the council table of the city in speech (Council)
-var _council_board := -1  # the city's stage when you sat down, to rebuild the board if it changed
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -199,9 +195,6 @@ func _ready() -> void:
 	_choice = Choice.new()
 	_choice.chosen.connect(_on_chosen)
 	_root.add_child(_choice)
-	_council = Council.new()
-	_council.acted.connect(_on_council_acted)
-	_root.add_child(_council)
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
@@ -237,9 +230,7 @@ func _ready() -> void:
 ## [--city=N: the city in speech at stage N, 0-9, on the Academy's board]
 func _stage_shot(view: String) -> void:
 	if _args.has("city"):
-		var c: RefCounted = City.found(380)
-		c.stage = clampi(int(_args["city"]), 0, City.LAST_STAGE)
-		progress.data["city"] = c.to_dict()
+		progress.data["city_stage"] = clampi(int(_args["city"]), 0, CITY_LAST)
 	if view == "place" and _args.has("stage"):
 		var w: String = _args.get("work", "")
 		progress.learn(w, Rooms.room(w).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
@@ -427,7 +418,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 			if Rooms.room(d["work"]).get("area_of", "") == to:
 				stages[d["work"]] = _stage(d["work"])
 		if Rooms.room(to).get("place", "") == "academy":
-			stages["city"] = city().stage  # the city in speech stands on its board as far as you have governed it
+			stages["city"] = city_stage()  # the city in speech stands on its board as far as the talk has gone
 		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
 	if not to in ["hub", "nexus", "asset_test"] and not keep:
 		progress.visit(to)
@@ -1319,16 +1310,14 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible \
-		or _council.visible
+	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	var rebuild: bool = _council.visible and _city != null and _city.stage != _council_board
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _council]:
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
@@ -1339,8 +1328,6 @@ func _close_panels() -> void:
 	_restore_pending = ""
 	if due:
 		_restore()
-	elif rebuild:
-		_load_place(here, true)  # the city on the board has grown
 
 
 # ---------- moment to moment ----------
@@ -1611,7 +1598,7 @@ func _nearest() -> Dictionary:
 
 
 func activate(it: Dictionary) -> void:
-	if it.has("needs_city") and city().board_stage() < int(it["needs_city"]):
+	if it.has("needs_city") and mini(city_stage(), CITY_JUST) < int(it["needs_city"]):
 		_show_read(it.get("not_yet", "Not yet."))  # a stone of the city in speech, before the city has got so far
 		return
 	match it.get("kind", ""):
@@ -1643,8 +1630,8 @@ func activate(it: Dictionary) -> void:
 			pat_toad()
 		"beat":
 			_start_beat(it)
-		"council":
-			_open_council()
+		"city_again":
+			_set_city_stage(0)
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1714,41 +1701,35 @@ func _end_beat(finished: bool) -> void:
 		_read_stone(it)
 	elif finished and it.has("after"):
 		_show_read(it["after"])
+	if finished and it.has("city_to"):
+		_set_city_stage(int(it["city_to"]))  # the step of the city is done: it stands on the board now
 
 
-## The city in speech you are founding with Socrates (city.gd): kept in your progress, founded the
-## first time you sit at the council table.
-func city() -> RefCounted:
-	var saved: Variant = progress.data.get("city")
-	if not saved is Dictionary:
-		var c: RefCounted = City.found(380)
-		progress.data["city"] = c.to_dict()
-		return c
-	return City.from_dict(saved)
+## The city in speech (the Republic, at the Academy): how far the talk has built it, 0 (the bare
+## site) to CITY_JUST (the just city), then on to CITY_LAST as it falls; kept in your progress.
+const CITY_JUST := 5
+const CITY_LAST := 9
 
 
-var _city: RefCounted  # the city while you sit at the table
+func city_stage() -> int:
+	return int(progress.data.get("city_stage", 0))
 
 
-func _open_council() -> void:
-	_city = city()
-	_council_board = _city.stage
-	_council.open(_city)
-	_show_panel(_council)
-
-
-## Something was decided at the table: keep the city, and as it reaches the book's stages its
-## points count (for a Theoros; a Mathetes must still explain them to the teacher).
-func _on_council_acted() -> void:
-	progress.data["city"] = _city.to_dict()
+## A step of the city is done (or the city founded again): keep it, count the book's points it
+## reaches (for a Theoros), and build the Academy again round the city as it now stands.
+func _set_city_stage(to: int) -> void:
+	progress.data["city_stage"] = clampi(to, 0, CITY_LAST)
 	var work := "plato-republic"
 	if progress.mode(_world_of(here)) == "zen":
-		for pair in [[1, "one_work"], [City.JUST_CITY, "just_city"]]:
-			if _city.stage >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
-				var note := _learned(work, [pair[1]])
-				if note != "":
-					_council._socrates.append_text(note)  # what goes on your tablet, under what Socrates said
+		for pair in [[1, "one_work"], [CITY_JUST, "just_city"]]:
+			if to >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
+				_learned(work, [pair[1]])
 	progress.save()
+	if here == work:
+		if offline:
+			_load_place(here, true)
+		else:
+			_load_place.call_deferred(here, true)  # after the beat that asked for it has finished its frame
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.

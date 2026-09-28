@@ -611,7 +611,7 @@ const SLOTS := [
 ## (375-417); 5 the just city, walled, each order in its place, which turns round into the soul
 ## (434d-441c): a tall figure over the city, its belly, chest and head glowing bronze, silver and gold.
 ## Returns, besides the usual, "stage", "slots": where the next stage's additions go (in the parent's
-## space; none at 5), "buildings": every building raised so far, "orders": {"producers",
+## space; none at 5), "added": {stage: the nodes that stage raised, in order}, "buildings": every building raised so far, "orders": {"producers",
 ## "auxiliaries", "guardians"}: each order's people and troops, and "soul": {"root", "parts":
 ## {"appetite", "spirit", "reason"}}, hidden until stage 5.
 static func city_in_speech(parent: Node3D, at: Vector3, yaw: float, stage: int, back: Array) -> Dictionary:
@@ -628,6 +628,8 @@ static func city_in_speech(parent: Node3D, at: Vector3, yaw: float, stage: int, 
 	for k in 10:
 		var a := TAU * k / 10.0
 		Kit.box(g, Vector3(cos(a) * bound, 0.5, sin(a) * bound * 0.8), Vector3(0.4, 1.0, 0.3), "stone")
+	var added := {}  # stage -> the nodes that stage raised on the board, in order
+	var mark := g.get_child_count()
 	if stage >= 1:  # the city of pigs: one man, one work
 		var trades := ["farmer", "builder", "weaver", "cobbler", "smith", "herdsman", "merchant"]
 		for k in trades.size():
@@ -643,6 +645,8 @@ static func city_in_speech(parent: Node3D, at: Vector3, yaw: float, stage: int, 
 			Kit.box(g, Vector3(cos(a) * 1.6, 0.06, 3.0 + sin(a) * 1.6), Vector3(1.8, 0.1, 0.7), "#5a7a3a" if back.has("leaves") else "withered",
 				false, Vector3(0, -a, 0))
 		Kit.cylinder(g, Vector3(0, 0, 3.0), 0.3, 0.5, "clay", false, 8, 0.2)
+	added[1] = g.get_children().slice(mark)
+	mark = g.get_child_count()
 	if stage >= 2:  # the fevered city
 		for k in 2:
 			var p: Vector3 = SLOTS[2][k]
@@ -658,12 +662,16 @@ static func city_in_speech(parent: Node3D, at: Vector3, yaw: float, stage: int, 
 		for p: Vector3 in [Vector3(-3, 0, -3), Vector3(3, 0, -3), Vector3(-15, 0, -6), Vector3(15, 0, -6), Vector3(0, 0, -4.5)]:  # more houses crowding in
 			buildings.append(_house(g, p, 0.0, 2.8, whole))
 		Greek.field(g, SLOTS[2][4], Vector2(8.0, 8.0), 0.0, back.has("leaves"))  # the neighbours' land
+	added[2] = g.get_children().slice(mark)
+	mark = g.get_child_count()
 	if stage >= 3:  # the army, camped on the land it took
 		for k in 3:
 			buildings.append(_tent(g, SLOTS[3][k], PI / 2.0, whole))
 		var army := Greek.phalanx(g, Vector3(29.0, 0, 9.0), 2, 5, "athens", not back.has("soldiers"))
 		area["squads"].append(army)
 		orders["auxiliaries"].append(army)
+	added[3] = g.get_children().slice(mark)
+	mark = g.get_child_count()
 	if stage >= 4:  # the guardians: common houses, the training ground, the educators, the rulers on the height
 		var mess := Kit.group(g, SLOTS[4][0])
 		Kit.box(mess, Vector3(0, 1.6, 0), Vector3(10.0, 3.2, 4.0), "plaster" if whole else "ashbed")
@@ -684,6 +692,8 @@ static func city_in_speech(parent: Node3D, at: Vector3, yaw: float, stage: int, 
 		for k in 3:
 			var p: Vector3 = SLOTS[4][2] + Vector3(-1.5 + k * 1.5, 0, 1.5)
 			orders["guardians"].append(Areas._person(area, g, p, Vector3(0, 0, 4.0), "ruler", back, "teacher"))
+	added[4] = g.get_children().slice(mark)
+	mark = g.get_child_count()
 	if stage >= 5:  # the just city: its wall round it, the temple on the height
 		for k in 24:
 			var a := TAU * k / 24.0
@@ -693,6 +703,8 @@ static func city_in_speech(parent: Node3D, at: Vector3, yaw: float, stage: int, 
 				continue
 			Kit.box(g, Vector3(cos(a) * 25.0, 1.6, sin(a) * 25.0), Vector3(6.6, 3.2, 1.0), "stone", true, Vector3(0, -a + PI / 2.0, 0))
 		buildings.append(Props.shrine(g, Vector3(0, 1.5, -17.0), 0.0, "athena", whole))
+		added[5] = g.get_children().slice(mark)
+	area["added"] = added
 	# the soul: the city turned round, one person, a head of gold, a chest of silver, a belly of bronze
 	const S := 14.0  # the soul stands this many times a man's height, over the whole city
 	var soul := Kit.group(g, Vector3(0, 0, -36.0))

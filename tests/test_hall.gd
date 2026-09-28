@@ -387,8 +387,6 @@ func test_the_villa_feels_lived_in() -> void:
 
 
 const Lettering := preload("res://scripts/hall/lettering.gd")
-const City := preload("res://scripts/hall/city.gd")
-const CityTest := preload("res://tests/test_city.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 
@@ -409,7 +407,6 @@ func test_every_word_on_screen_uses_our_lettering() -> void:
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	hall.progress.data = {"works": {}}
 	hall.travel("plato-republic")
-	hall._open_council()  # the council table's people, laws and choices too
 	hall._open_ask("plato-republic")
 	var cheap: Array = []
 	var stack: Array = [hall._ui]
@@ -926,15 +923,16 @@ static func _play_through(hall: Node, it: Dictionary) -> int:
 	return -1
 
 
-## The Republic's heart: at the Academy's council table you found and govern the city in speech. Its
-## board stands as far as you have governed it; its stones and the soul over it wait until the city
-## has got that far; the city is kept; and after the just city it falls, regime by regime.
-func test_the_city_in_speech_is_governed_at_the_academy() -> void:
+## The Republic's heart: at the table on the Academy's terrace you found the city in speech with
+## Socrates, one step of the argument at a time, and each step's buildings rise on the board below
+## as you play it; the city is kept; its stones and the soul over it wait until it has got that
+## far; after the just city it falls, regime by regime; and then it can be founded again.
+func test_the_city_in_speech_rises_step_by_step_at_the_academy() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	var work := "plato-republic"
-	hall.progress.data = {"works": {}, "city": City.found(7).to_dict()}
+	hall.progress.data = {"works": {}}
 	hall.progress.set_mode("greece", "zen")
 	hall.travel(work)
 	var find := func(id: String) -> Dictionary:
@@ -945,27 +943,32 @@ func test_the_city_in_speech_is_governed_at_the_academy() -> void:
 	hall.activate(find.call("soul"))
 	check(hall.beat == null, "the soul does not rise over a city that is not yet just")
 	hall._close_panels()
-	var table: Array = hall.interactables.filter(func(i): return i["kind"] == "council")
-	check_eq(table.size(), 1, "there is a council table")
-	hall.activate(table[0])
-	check(hall._council.visible, "you sit down at it")
-	check(CityTest._govern(hall._city, 80) >= 0, "a careful founder makes the city just")
-	hall._on_council_acted()
-	check(hall.progress.understood(work).has("one_work") and hall.progress.understood(work).has("just_city"),
-		"for a Theoros the city's stages count as they are reached")
-	hall._close_panels()
-	check_eq(hall.here, work, "the Academy is rebuilt round the grown city")
-	check_eq(hall.city().stage, City.JUST_CITY, "the city is kept")
-	check(_play_through(hall, find.call("soul")) >= 0, "now the soul can be looked into")
-	hall._close_panels()
-	check(hall.progress.understood(work).has("soul"), "and it counts")
-	hall.activate(hall.interactables.filter(func(i): return i["kind"] == "council")[0])
-	for k in City.LAST_STAGE - City.JUST_CITY:
-		hall._city.let_generations_pass()
-	hall._on_council_acted()
-	hall._close_panels()
-	check_eq(hall.city().stage, City.LAST_STAGE, "the generations pass, and the city falls to tyranny")
-	check_eq(hall.here, work, "the Academy stands round the fallen city")
+	check(hall.interactables.all(func(i): return i["kind"] != "council"), "there is no council game any more")
+	for step in range(1, 10):
+		var talk: Array = hall.interactables.filter(func(i): return i.has("city_to"))
+		check_eq(talk.size(), 1, "one step of the argument waits at the table (%d)" % step)
+		if talk.is_empty():
+			break
+		check_eq(int(talk[0]["city_to"]), step, "and it is the next one")
+		check(not Beat.find(work, talk[0]["beat"]).is_empty(), "its talk is written: %s" % talk[0]["beat"])
+		var hidden: Array = talk[0]["cast"].values()
+		if step <= 5:
+			check(not hidden.is_empty() and hidden.all(func(n): return not (n as Node3D).visible), "what step %d builds waits hidden" % step)
+		check(_play_through(hall, talk[0]) >= 0, "step %d plays to its end" % step)
+		hall._close_panels()
+		check_eq(hall.city_stage(), step, "the city has come to step %d, and is kept" % step)
+		check_eq(hall.here, work, "the Academy is built again round it")
+		if step == 5:
+			check(hall.progress.understood(work).has("one_work") and hall.progress.understood(work).has("just_city"),
+				"for a Theoros the city of pigs and the just city count as they are reached")
+			check(_play_through(hall, find.call("soul")) >= 0, "now the soul can be looked into")
+			hall._close_panels()
+			check(hall.progress.understood(work).has("soul"), "and it counts")
+	var again: Array = hall.interactables.filter(func(i): return i["kind"] == "city_again")
+	check_eq(again.size(), 1, "after tyranny, the city can be founded again")
+	if not again.is_empty():
+		hall.activate(again[0])
+		check_eq(hall.city_stage(), 0, "and it is back to the bare site")
 	hall.free()
 
 
