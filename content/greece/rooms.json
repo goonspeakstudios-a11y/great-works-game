@@ -1110,5 +1110,112 @@
         "line": "Sappho is herself, and sings."
       }
     ]
+  },
+  "aeschylus-the-oresteia": {
+    "open": true,
+    "place": "argos",
+    "zone": "theatre",
+    "where": "Argos, and the hill of Ares",
+    "when": "staged 458 BC",
+    "map": "480bc",
+    "map_note": "Aeschylus fought the Persians at Marathon in 490 BC and probably at Salamis in 480, when Xerxes' empire reached from India to the Aegean and Athens was burned. The Oresteia was staged in 458, when Athens, victorious, was building an empire of its own and had just cut back the powers of the old council of the Areopagus.",
+    "statues": [
+      {
+        "name": "Miltiades",
+        "beard": "long",
+        "note": "Miltiades, who led the Athenians at Marathon in 490 BC, where Aeschylus fought and his brother Cynegeirus died. Aeschylus's epitaph speaks of Marathon and says nothing of his plays."
+      }
+    ],
+    "greeting": "Welcome, stranger. Sit in the theatre while the light holds. I will show you a house where every killing answers another, and how a city learned to stop it.",
+    "greeting_lost": "A shade in an empty theatre. The beacon is dark and the house of Atreus is rubble. The Furies are still here, though; they always are.",
+    "gift": "Aeschylus gives you a white pebble, smoothed by many hands. \"A juror's vote. Twelve of these ended what no sword could. Keep it for when you are asked to judge.\"",
+    "author": "Aeschylus",
+    "life": "about 525 - 456 BC",
+    "book": "Oresteia",
+    "portrait": {
+      "skin": "c09070",
+      "hair": "short",
+      "hair_color": "8a8278",
+      "beard": "long",
+      "beard_color": "8a8278",
+      "robe": "4a3a4a",
+      "trim": "b8863a",
+      "old": true
+    },
+    "persona": "You are Aeschylus of Eleusis, about 458 BC, the first of the three great tragic poets of Athens. You fought at Marathon. You wrote the Oresteia, the only complete trilogy of Greek tragedy to survive: Agamemnon (the watchman waiting for the beacon; the chorus remembering how Agamemnon sacrificed his daughter Iphigenia for a wind to Troy; Clytemnestra's welcome and the purple tapestries; Cassandra's prophecy; the murder in the bath, in a robe like a net), The Libation Bearers (Orestes returns and kills his mother), and The Eumenides (the Furies hunt Orestes; Athena sets up a court of citizens on the Areopagus; the votes fall even and her vote frees him; she persuades the Furies to stay as honoured goddesses of the city). You believe men learn by suffering, that Zeus's justice is slow and sure, and that law must take the place of revenge. You speak gravely, in rich images, and you quote your plays in E. D. A. Morshead's verse translation.",
+    "summary": "The only complete Greek tragic trilogy. In Agamemnon the king comes home from Troy; his wife Clytemnestra, who has never forgiven him for sacrificing their daughter Iphigenia, welcomes him over purple tapestries and kills him in his bath, with his captive Cassandra, who foresaw it and was not believed. In The Libation Bearers their son Orestes kills his mother to avenge his father. In The Eumenides the Furies pursue him until Athena founds a court of Athenian citizens on the Areopagus; the votes are even, Athena's vote acquits him, and the Furies are persuaded to become the city's kindly guardians. Revenge gives way to law.",
+    "facts": [
+      "Aeschylus fought at Marathon in 490 BC. His epitaph mentions the battle, not his plays.",
+      "The Oresteia won first prize in 458 BC. It is the only complete Greek tragic trilogy that survives.",
+      "He is said to have added the second actor to tragedy, so that characters could face each other.",
+      "The Areopagus was a real Athenian court for murder. Its powers had just been cut back in 462 BC.",
+      "He wrote about ninety plays. Seven survive."
+    ],
+    "questions": [
+      "Why does Clytemnestra kill her husband?",
+      "What does it mean to learn by suffering?",
+      "Why does no one believe Cassandra?",
+      "How does the killing finally stop?"
+    ],
+    "home": "theatre",
+    "props": "the palace of Atreus with the watchman on its roof, the beacon on the far height, the chariot home from Troy with Cassandra, the purple tapestries, the bath and its net; the hill of Ares with the judges' seats, Athena, Orestes at the altar, the Furies and the voting urns; the theatre of Dionysus where it was played",
+    "lesson": [
+      {
+        "id": "beacon",
+        "label": "The watchman's beacon",
+        "point": "The watchman has waited a whole year on the palace roof for the chain of beacons that will say Troy has fallen. The trilogy begins in darkness and hope, in a house where something is wrong."
+      },
+      {
+        "id": "curse",
+        "label": "Blood for blood",
+        "point": "Agamemnon sacrificed his daughter Iphigenia for a wind to Troy. His wife kills him for it; their son kills her; the Furies hunt the son. In this house every killing answers the one before."
+      },
+      {
+        "id": "learning",
+        "label": "Learning by suffering",
+        "point": "The chorus sings that Zeus has laid down the law that we learn through suffering: understanding comes, if at all, only after pain, even against our will."
+      },
+      {
+        "id": "tapestries",
+        "label": "The purple tapestries",
+        "point": "Clytemnestra spreads purple cloth for the king to walk into his house. Treading the gods' riches, he shows the pride that dooms him; inside she kills him in the bath, caught in a robe like a net."
+      },
+      {
+        "id": "cassandra",
+        "label": "Cassandra",
+        "point": "Cassandra, Agamemnon's captive from Troy, sees the house's murders past and to come, and no one believes her. She walks into the house knowing she will die there."
+      },
+      {
+        "id": "court",
+        "label": "The first court",
+        "point": "Athena ends the chain with a court: citizens judge Orestes on the hill of Ares. The votes fall even and Athena's vote frees him; the Furies are persuaded to stay as the city's guardians. Law replaces revenge."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The beacon blazes on the far height: Troy has fallen."
+      },
+      {
+        "what": "walkway",
+        "line": "The palace of Atreus stands, and the theatre with it."
+      },
+      {
+        "what": "household",
+        "line": "The chorus of old men is back, and the city's judges."
+      },
+      {
+        "what": "leaves",
+        "line": "The olives on the hill of Ares are green."
+      },
+      {
+        "what": "sun",
+        "line": "Dawn comes up over Argos."
+      },
+      {
+        "what": "teacher",
+        "line": "Aeschylus is himself again."
+      }
+    ]
   }
 }

@@ -126,6 +126,16 @@ BOOKS = {
         "drop": [r"^.*\[Greek:.*$", r"_"],
         "start": r"(?m)^Fragment 1\s*$", "end": r"\Zx", "chapter": r"^Fragment (\d+)\s*$", "chapter_label": "Fragment",
     },
+    "aeschylus-the-oresteia": {  # the first and last plays of the trilogy, as the reading takes them
+        "title": "Aeschylus",
+        "translation": "tr. E. D. A. Morshead (1881), public domain",
+        "parts": [
+            {"title": "Agamemnon", "urls": [["https://www.gutenberg.org/cache/epub/8604/pg8604.txt", ""]],
+             "start": r"(?m)^_A Watchman_\s*$", "end": r"(?m)^THE LIBATION-BEARERS\s*$", "chapter": r"^\Zx", "drop": [r"_"]},
+            {"title": "The Eumenides", "urls": [["https://www.gutenberg.org/cache/epub/8604/pg8604.txt", ""]],
+             "start": r"(?m)^_The Temple at Delphi_\s*$", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx", "drop": [r"_"]},
+        ],
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",
@@ -349,7 +359,11 @@ def build(work_id: str) -> Path:
         text = source_text(part)
         if "segments" in part:
             text = tidy(segments(text, part))
-        for c in chunk(body_of(text, part), part, part["title"]):
+        body = body_of(text, part)
+        if "segments" not in part:  # (a segmented book has had its debris dropped already)
+            for pattern in part.get("drop", []):
+                body = re.sub(pattern, "", body, flags=re.M)
+        for c in chunk(body, part, part["title"]):
             c["id"] = len(chunks)
             chunks.append(c)
     OUT.mkdir(parents=True, exist_ok=True)

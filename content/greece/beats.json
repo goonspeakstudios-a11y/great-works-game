@@ -1272,5 +1272,141 @@
     }
    ]
   }
+ },
+ "aeschylus-the-oresteia": {
+  "the_watch": {
+   "hero": "",
+   "title": "The watchman, Agamemnon",
+   "point": "beacon",
+   "steps": [
+    {
+     "look": "roof"
+    },
+    {
+     "line": "“I pray the gods to quit me of my toils, To close the watch I keep, this livelong year.”"
+    },
+    {
+     "line": "A year on the palace roof, “as a watch-dog lying,” waiting for the fire that will say Troy has fallen."
+    },
+    {
+     "look": "beacon"
+    },
+    {
+     "act": "Watch the far height through the night",
+     "hold": 3.0
+    },
+    {
+     "line": "“Fire of the night, that brings my spirit day, Shedding on Argos light, and dance, and song.”"
+    },
+    {
+     "line": "Mountain to mountain the beacons have run from Troy. The king is coming home. The watchman is glad, and afraid."
+    },
+    {
+     "line": "“The home itself might soothliest tell its tale.” Ten years ago, at Aulis, the king killed his daughter for a wind."
+    }
+   ]
+  },
+  "the_tapestries": {
+   "hero": "agamemnon",
+   "title": "Agamemnon, Agamemnon",
+   "point": "tapestries",
+   "steps": [
+    {
+     "line": "You are Agamemnon, home from Troy after ten years, the captive Cassandra in your chariot."
+    },
+    {
+     "look": "queen"
+    },
+    {
+     "line": "“Sweet lord, step forth, Step from thy car, I pray—nay, not on earth Plant the proud foot, O king, that trod down Troy!”"
+    },
+    {
+     "line": "“Women! why tarry ye, whose task it is To spread your monarch’s path with tapestry?”"
+    },
+    {
+     "act": "Refuse: such honour is for gods, not men"
+    },
+    {
+     "line": "She presses. What would Priam have done, if he had won? You are tired, and you give way."
+    },
+    {
+     "act": "Take off your sandals",
+     "hold": 1.0
+    },
+    {
+     "line": "“Stepping thus upon the sea’s rich dye, I pray, Let none among the gods look down With jealous eye on me.”"
+    },
+    {
+     "move": "clytemnestra",
+     "by": [
+      1.6,
+      0,
+      0
+     ],
+     "secs": 1.0
+    },
+    {
+     "go": "door",
+     "text": "Walk the purple into your house"
+    },
+    {
+     "eye": -1.2
+    },
+    {
+     "line": "“O I am sped—a deep, a mortal blow.”"
+    },
+    {
+     "line": "“O! O! again, another, another blow!” In the bath, caught in a robe like a net. Outside, the old men cannot agree what to do."
+    },
+    {
+     "eye": 1.2
+    }
+   ]
+  },
+  "the_vote": {
+   "hero": "",
+   "title": "The court, The Eumenides",
+   "point": "court",
+   "steps": [
+    {
+     "line": "Athens. Orestes has killed his mother to avenge his father. The Furies have hunted him here, to Athena's city."
+    },
+    {
+     "look": "orestes"
+    },
+    {
+     "line": "“Slaying her husband, she did slay my sire.” “Therefore thou livest.” The Furies will not let a mother's blood be."
+    },
+    {
+     "look": "athena"
+    },
+    {
+     "line": "Athena will not judge alone. She chooses citizens, sworn to judge by the evidence, and sets them on the hill of Ares."
+    },
+    {
+     "line": "“Ye who judge, Arise, take each his vote, mete out the right, Your oath revering.”"
+    },
+    {
+     "go": "urns",
+     "text": "Go down to the urns"
+    },
+    {
+     "act": "Cast your pebble",
+     "hold": 1.0
+    },
+    {
+     "line": "The votes are counted. They fall even: half for the Furies, half for Orestes."
+    },
+    {
+     "line": "“Mine is the right to add the final vote, And I award it to Orestes’ cause.”"
+    },
+    {
+     "line": "The Furies rage. Athena does not drive them out: she offers them a home under the hill, and honour in the city."
+    },
+    {
+     "line": "“If Persuasion’s grace be sacred to thee ... Tarry, I pray thee.” They stay, as the city's kindly guardians."
+    }
+   ]
+  }
  }
 }

@@ -13,6 +13,7 @@ extends RefCounted
 ##             with Socrates' trial, Agathon's dinner and the prison
 ##   ascra()   #7 Hesiod: the farm at Ascra and Mount Helicon above it, the Muses, Chaos, Kronos
 ##   lesbos()  #8 Sappho: her garden above the sea on Lesbos, and the torn poems
+##   argos()   #9 Aeschylus: the house of Atreus, the hill of Ares, and the theatre it was played in
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1036,4 +1037,96 @@ static func _lesbos_lessons(world: Node3D, work: String, room: Dictionary, out: 
 	out.append({"kind": "beat", "pos": gate, "work": work, "id": "fragments", "beat": "the_pieces", "text": "Gather the torn papyrus",
 		"note": note.call("fragments"), "cast": cast, "marks": marks})
 	spots["fragments"] = gate
+	return flicker
+
+
+# ---------- #9 Aeschylus, the Oresteia ----------
+
+## Argos and the hill of Ares: the palace of Atreus (the watchman on the roof, the beacon on the far
+## height, the chariot home from Troy with Cassandra in it, the purple tapestries to the door,
+## Clytemnestra on the step, the bath inside); behind it the Areopagus, with the judges, Athena,
+## Orestes at the altar, the Furies and the urns; and to the west the theatre of Dionysus where the
+## trilogy was played in 458 BC, Aeschylus by its orchestra. Lost, the beacon is dark, the palace
+## and the theatre broken, the chorus and the judges shades.
+static func argos(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 50.0)
+	Kit.plateau(world, 90.0, "earth", false)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 10), 5, 16.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 80.0, 52.0, "path")
+
+	# Aeschylus by the way in, with the mask of his watchman
+	var poet := _teacher(world, room, b, stage, Vector3(0, 0, 45.0), 0.0, Vector3(0, 0, 47.8), out, spots)
+	Greek.mask(world, Vector3(0.9, 1.0, 45.2), 0.0, "tragic", 0.6, b.has("teacher"))
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 46.5), 0.0, Vector3(-4.2, 0, 48.1)]],
+		Vector3(-7.0, 1.6, 43.5), 0.3, Vector3(-6.4, 0, 45.3), Vector3(6.5, 0, 44.0), Vector3(6.5, 0, 45.2))
+	for p: Vector3 in [Vector3(-14, 0, 40), Vector3(15, 0, 36), Vector3(-22, 0, -48), Vector3(24, 0, -52), Vector3(-10, 0, -86)]:
+		sway.append(Kit.olive(world, p, 1.2, b.has("leaves")))
+
+	var house := Areas.argos_palace(world, Vector3(0, 0, -10), 0.0, b)
+	take.call(house)
+	var hill := Areas.areopagus(world, Vector3(0, 0, -62), 0.0, b)
+	take.call(hill)
+	var stage_of := Greek.theatre(world, Vector3(-58, 0, 5), PI / 2.0, 12, b.has("walkway"))
+	for k in 6:  # the chorus of old men of Argos in the orchestra, with their staffs
+		var at: Vector3 = (stage_of["root"] as Node3D).transform * Vector3(-3.0 + (k % 3) * 3.0, 0, -2.0 + (k / 3) * 2.5)
+		people.append(People.figure(world, at, PI / 2.0, "phoenix", not b.has("household"), "", "5a5048"))
+	_way(world, [Vector3(0, 0, 42), Vector3(0, 0, 22)])
+	_way(world, [Vector3(-12, 0, 20), Vector3(-36, 0, 8)])
+	_way(world, [Vector3(14, 0, -24), Vector3(14, 0, -40)])
+	out.append(Places.seat(world, Vector3(20.0, 0, 44.0), Vector3(1, 0, 1), "Sit and watch the far height"))
+	flicker.append_array(_argos_lessons(world, work, room, out, spots, house, hill, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 77.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [poet] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## The Oresteia's six points: the watchman's night (a beat), the curse at the bath, learning by
+## suffering at the altar where the chorus sings, the purple tapestries (a beat, as Agamemnon),
+## Cassandra in the chariot, and the court on the hill of Ares (a beat, as one of its judges).
+static func _argos_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, house: Dictionary,
+		hill: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var hr: Node3D = house["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("curse", Areas._at(hr, Vector3(-6.0, 0, -2.4)), Areas._at(hr, Vector3(-6.0, 0, -5.0)), "Look at the bath")
+	stele_stone.call("learning", Areas._at(hr, Vector3(8.0, 0, 4.0)), Areas._at(hr, Vector3(8.0, 0, 0.0)), "Listen to the old men of Argos")
+	stele_stone.call("cassandra", Areas._at(hr, Vector3(2.4, 0, 16.0)), Areas._at(hr, Vector3(0.3, 0, 15.5)), "Look at the woman in the chariot")
+
+	# the watchman's night: the long wait for the beacon
+	var watch := Areas._at(hr, Vector3(-4.0, 0, 6.0))
+	out.append({"kind": "beat", "pos": watch, "work": work, "id": "beacon", "beat": "the_watch", "text": "Keep the watchman's watch",
+		"note": note.call("beacon"), "cast": {}, "marks": {"beacon": Areas._at(hr, Vector3(30.0, 10.0, 70.0)), "roof": Areas._at(hr, Vector3(0, 7.0, -6.0))}})
+	spots["beacon"] = watch
+
+	# the purple tapestries, from the chariot to the door
+	var queen: Node3D = house["people"][2]["root"]
+	out.append({"kind": "beat", "pos": Areas._at(hr, Vector3(-1.8, 0, 12.0)), "start": Areas._at(hr, Vector3(-0.8, 0, 12.4)),
+		"face": Areas._at(hr, Vector3(0, 0, -6.0)), "work": work, "id": "tapestries", "beat": "the_tapestries",
+		"text": "Come home from Troy, as Agamemnon", "note": note.call("tapestries"), "cast": {"clytemnestra": queen},
+		"marks": {"door": [Areas._at(hr, Vector3(0, 0, 8.0)), Areas._at(hr, Vector3(0, 0, 2.0)), Areas._at(hr, Vector3(0, 0, -2.2))],
+			"queen": Areas._at(hr, Vector3(0, 2.2, -3.5))}})
+	spots["tapestries"] = Areas._at(hr, Vector3(-1.8, 0, 12.0))
+
+	# the court on the hill of Ares
+	var ar: Node3D = hill["root"]
+	var urns: Vector3 = Areas._at(ar, hill["urns"]) if hill["urns"] is Vector3 else Areas._at(ar, Vector3(0, 0, -3.5))
+	out.append({"kind": "beat", "pos": Areas._at(ar, Vector3(-4.0, 0, 1.0)), "work": work, "id": "court", "beat": "the_vote",
+		"text": "Sit as a judge on the hill of Ares", "note": note.call("court"), "cast": {},
+		"marks": {"urns": urns + Vector3(0, 0, 1.2), "athena": Areas._at(ar, Vector3(0, 2.0, -6.0)), "orestes": Areas._at(ar, Vector3(0, 1.6, 4.4))}})
+	spots["court"] = Areas._at(ar, Vector3(-4.0, 0, 1.0))
 	return flicker

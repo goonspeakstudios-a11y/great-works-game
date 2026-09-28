@@ -18,6 +18,7 @@ const HEROES := {
 	"odysseus": {"skin": "#b8906a", "sleeve": "#7a3a24", "left": "bow", "right": "arrow"},
 	"odysseus_bound": {"skin": "#b8906a", "sleeve": "#7a3a24", "left": "rope", "right": "rope"},
 	"gyges": {"skin": "#b89070", "sleeve": "#6a5a44", "left": "", "right": ""},
+	"agamemnon": {"skin": "#c09070", "sleeve": "#5a1a3a", "left": "", "right": "spear"},
 	"socrates": {"skin": "#c09070", "sleeve": "#8a8274", "left": "", "right": ""},
 }
 

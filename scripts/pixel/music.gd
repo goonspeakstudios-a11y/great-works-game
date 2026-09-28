@@ -82,6 +82,7 @@ const ZONES := {
 		{"file": "theatre_drone", "db": -10.0, "music": true, "needs": "sun"},
 		{"file": "theatre_aulos", "db": -10.0, "music": true, "needs": "teacher"},
 		{"file": "theatre_chorus", "db": -10.0, "music": true, "needs": "household"},
+		{"file": "fire", "db": -26.0, "needs": "lamps"},  # the beacon, the torches
 		{"file": "cicadas", "db": -24.0, "needs": "leaves"},
 		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
 	# Lesbos (Sappho): the barbitos to the Sapphic stanza, a woman's voice, the sea below.
