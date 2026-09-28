@@ -1545,5 +1545,123 @@
     }
    ]
   }
+ },
+ "euripides-the-tragedies": {
+  "the_stranger": {
+   "hero": "pentheus",
+   "title": "Pentheus, the Bacchae",
+   "point": "pentheus",
+   "steps": [
+    {
+     "line": "You are Pentheus, king of Thebes. You come home to find the women gone to the mountain, and your old grandfather in a fawnskin."
+    },
+    {
+     "look": "stranger"
+    },
+    {
+     "line": "“Track out this effeminate stranger, who brings this new disease upon women, and pollutes our beds.”"
+    },
+    {
+     "act": "Have him bound and shut in the stables"
+    },
+    {
+     "line": "He goes quietly, smiling. “Finding a bull in the stable ... he cast halters round the knees of that.”"
+    },
+    {
+     "look": "palace"
+    },
+    {
+     "line": "The ground shakes. Fire leaps from Semele's tomb, and your palace cracks. The stranger walks out, free, unhurried."
+    },
+    {
+     "line": "“I would rather sacrifice to him than, being wrath, kick against the pricks; a mortal against a God.”"
+    },
+    {
+     "act": "Refuse him"
+    },
+    {
+     "line": "“I will sacrifice, making a great slaughter of the women, as they deserve, in the glens of Cithæron.”"
+    }
+   ]
+  },
+  "the_dressing": {
+   "hero": "pentheus",
+   "title": "Pentheus, the Bacchae",
+   "point": "disguise",
+   "steps": [
+    {
+     "look": "stranger"
+    },
+    {
+     "line": "“Do you no longer wish to be a spectator of the Mænads?” You do. More than anything."
+    },
+    {
+     "line": "“With what dress—a woman’s? but shame possesses me.” “I will spread out your hair at length on your head.”"
+    },
+    {
+     "act": "Put on the long linen dress",
+     "hold": 2.0
+    },
+    {
+     "swap": "right",
+     "what": "thyrsus"
+    },
+    {
+     "act": "Take the thyrsus"
+    },
+    {
+     "line": "“And indeed I think I see two suns, and twin Thebes, and seven-gated city.”"
+    },
+    {
+     "line": "“You seem to guide me, being like a bull, and horns seem to grow on your head.”"
+    },
+    {
+     "go": "road",
+     "text": "Follow the stranger toward the mountain"
+    },
+    {
+     "line": "“You alone labor for this city, you alone; therefore the labors, which are meet, await you.”"
+    }
+   ]
+  },
+  "the_fir": {
+   "hero": "",
+   "title": "On Cithaeron, the Bacchae",
+   "point": "agave",
+   "steps": [
+    {
+     "go": "glade",
+     "text": "Creep down toward the glade"
+    },
+    {
+     "look": "fir"
+    },
+    {
+     "line": "The stranger takes the top of a tall fir, “pulled it down, pulled it, pulled it to the dark earth, and it was bent like a bow.”"
+    },
+    {
+     "line": "“Having placed Pentheus on the pine branches, he let it go upright through his hands steadily.”"
+    },
+    {
+     "line": "A voice from the sky: here is the man who mocks you. The women see him. His mother is the first to reach the tree."
+    },
+    {
+     "act": "Look away",
+     "hold": 1.5
+    },
+    {
+     "look": "agave"
+    },
+    {
+     "line": "“I have caught him without a noose, a young lion, as you may see.” Agave comes down the mountain rejoicing."
+    },
+    {
+     "line": "Her father Cadmus makes her look, slowly, at what she carries. It is her son's head."
+    },
+    {
+     "line": "“Ye have learned it too late; but when it behooved you, you knew it not.”"
+    }
+   ]
+  }
  }
 }

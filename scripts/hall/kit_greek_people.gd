@@ -21,6 +21,7 @@ const HEROES := {
 	"agamemnon": {"skin": "#c09070", "sleeve": "#5a1a3a", "left": "", "right": "spear"},
 	"oedipus": {"skin": "#c09070", "sleeve": "#5a2a4a", "left": "", "right": "staff"},
 	"antigone": {"skin": "#d8b090", "sleeve": "#2a2a2a", "left": "", "right": ""},
+	"pentheus": {"skin": "#c8a078", "sleeve": "#4a3a5a", "left": "", "right": ""},
 	"socrates": {"skin": "#c09070", "sleeve": "#8a8274", "left": "", "right": ""},
 }
 
@@ -86,6 +87,9 @@ static func _held(hand: Node3D, what: String, side: float) -> Node3D:
 			Kit.box(g, Vector3(0, -0.04, -0.05), Vector3(0.22, 0.08, 0.3), "#6a2e4a", false)
 		"staff":  # a traveller's staff, held upright
 			Kit.box(g, Vector3(0, 0.3, -0.05), Vector3(0.03, 1.4, 0.03), "wood", false, Vector3(-0.2, 0, 0))
+		"thyrsus":  # a fennel stalk wound with ivy, a pine cone at its tip
+			Kit.box(g, Vector3(0, 0.35, -0.08), Vector3(0.025, 1.1, 0.025), "#8a9a5a", false, Vector3(-0.25, 0, 0))
+			Kit.blob(g, Vector3(0, 0.9, -0.22), 0.05, "#6a4a2a", Vector3(1.0, 1.6, 1.0), 5)
 		"dust":  # a handful of dry earth
 			Kit.blob(g, Vector3(0, 0.02, -0.04), 0.05, "earth", Vector3(1.2, 0.6, 1.2), 5)
 		"ring":  # Gyges' gold ring on a finger, its collet turned out

@@ -15,6 +15,7 @@ extends RefCounted
 ##   lesbos()  #8 Sappho: her garden above the sea on Lesbos, and the torn poems
 ##   argos()   #9 Aeschylus: the house of Atreus, the hill of Ares, and the theatre it was played in
 ##   thebes()  #10 Sophocles: Thebes in the plague, where three roads meet, Antigone's tomb, the theatre
+##   cithaeron() #11 Euripides: Pentheus's palace, Mount Cithaeron and its maenads, the theatre
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1225,4 +1226,84 @@ static func _thebes_lessons(world: Node3D, work: String, room: Dictionary, out: 
 		"marks": {"body": Areas._at(tr, Vector3(5.0, 0, 7.6)), "creon": Areas._at(tr, Vector3(-6.0, 2.0, 4.0)),
 			"tomb": Areas._at(tr, Vector3(0, 0, -5.8))}})
 	spots["unwritten"] = Areas._at(tr, Vector3(2.0, 0, 12.0))
+	return flicker
+
+
+# ---------- #11 Euripides, the Bacchae ----------
+
+## Thebes and Mount Cithaeron: the palace of Pentheus split by the god's earthquake, fire on
+## Semele's tomb, Dionysus in his mortal shape, Pentheus and old Teiresias before it; up on the
+## mountain the glade of firs where the maenads dance, milk welling from the ground, and the tall
+## fir with Pentheus in its top; to the east the theatre of Dionysus, the god's own, and Euripides
+## by the way in. Lost, the firs are bare, the dancers shades.
+static func cithaeron(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 50.0)
+	Kit.plateau(world, 100.0, "earth", false)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, -40), 5, 16.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 88.0, 58.0, "path")
+	var poet := _teacher(world, room, b, stage, Vector3(0, 0, 50.0), 0.0, Vector3(0, 0, 52.8), out, spots)
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 51.5), 0.0, Vector3(-4.2, 0, 53.1)]],
+		Vector3(-7.0, 1.6, 48.5), 0.3, Vector3(-6.4, 0, 50.3), Vector3(6.5, 0, 49.0), Vector3(6.5, 0, 50.2))
+	var palace := Areas.pentheus_palace(world, Vector3(0, 0, 8), 0.0, b)
+	take.call(palace)
+	var mount := Areas.cithaeron(world, Vector3(0, 0, -52), 0.0, b)
+	take.call(mount)
+	var play := Greek.theatre(world, Vector3(58, 0, 0), -PI / 2.0, 12, b.has("walkway"))
+	for k in 6:  # the chorus of Asian maenads in the orchestra
+		var at: Vector3 = (play["root"] as Node3D).transform * Vector3(-3.0 + (k % 3) * 3.0, 0, 1.0 + (k / 3) * 2.5)
+		people.append(People.figure(world, at, -PI / 2.0, "maenad", not b.has("household")))
+	_way(world, [Vector3(0, 0, 46), Vector3(0, 0, 28)])
+	_way(world, [Vector3(0, 0, -8), Vector3(0, 0, -28)])
+	_way(world, [Vector3(14, 0, 12), Vector3(36, 0, 2)])
+	out.append(Places.seat(world, Vector3(-16.0, 0, 46.0), Vector3(0, 0, -1), "Sit and look up at the mountain"))
+	flicker.append_array(_cithaeron_lessons(world, work, room, out, spots, palace, mount, play, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 85.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [poet] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## The Bacchae's six points: the god come home at Semele's tomb, the king who resists (a beat, as
+## Pentheus), the mountain's ecstasy, the disguise (a beat, as Pentheus), Agave and the fir (a beat),
+## and cleverness that is not wisdom, sung in the theatre.
+static func _cithaeron_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, palace: Dictionary,
+		mount: Dictionary, play: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var pr: Node3D = palace["root"]
+	var mr: Node3D = mount["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("the_god", Areas._at(pr, Vector3(-8.0, 0, 4.0)), Areas._at(pr, Vector3(-8.0, 0, 0.0)), "Look at the fire on Semele's tomb")
+	stele_stone.call("ecstasy", Areas._at(mr, Vector3(6.5, 0, 7.0)), Areas._at(mr, Vector3(3.0, 0, 4.0)), "Watch the women dance")
+	var orch: Vector3 = (play["root"] as Node3D).transform * Vector3(0, 0, 6.0)
+	stele_stone.call("wisdom", orch + Vector3(-3.0, 0, 3.0), orch, "Hear the chorus")
+
+	var god: Node3D = palace["people"][0]["root"]
+	var stranger := Areas._at(pr, Vector3(2.0, 1.6, 3.0))
+	out.append({"kind": "beat", "pos": Areas._at(pr, Vector3(-3.0, 0, 7.0)), "work": work, "id": "pentheus", "beat": "the_stranger",
+		"text": "Face the stranger, as Pentheus", "note": note.call("pentheus"), "cast": {"stranger": god},
+		"marks": {"stranger": stranger, "palace": Areas._at(pr, Vector3(0, 3.0, -6.0))}})
+	spots["pentheus"] = Areas._at(pr, Vector3(-3.0, 0, 7.0))
+	out.append({"kind": "beat", "pos": Areas._at(pr, Vector3(5.5, 0, 7.0)), "work": work, "id": "disguise", "beat": "the_dressing",
+		"text": "Let the stranger dress you, as Pentheus", "note": note.call("disguise"), "cast": {},
+		"marks": {"stranger": stranger, "road": [Areas._at(pr, Vector3(0, 0, -2.0 + 10.0)), Vector3(0, 0, -10.0)]}})
+	spots["disguise"] = Areas._at(pr, Vector3(5.5, 0, 7.0))
+	out.append({"kind": "beat", "pos": Areas._at(mr, Vector3(-3.0, 0, 12.0)), "work": work, "id": "agave", "beat": "the_fir",
+		"text": "Watch from the rocks above the glade", "note": note.call("agave"), "cast": {},
+		"marks": {"glade": Areas._at(mr, Vector3(-4.0, 0, 9.0)), "fir": Areas._at(mr, Vector3(0, 14.0, -6.0)),
+			"agave": Areas._at(mr, Vector3(5.0, 1.6, 2.0))}})
+	spots["agave"] = Areas._at(mr, Vector3(-3.0, 0, 12.0))
 	return flicker

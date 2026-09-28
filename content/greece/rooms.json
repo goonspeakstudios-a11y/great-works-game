@@ -1324,5 +1324,112 @@
         "line": "Sophocles is himself again."
       }
     ]
+  },
+  "euripides-the-tragedies": {
+    "open": true,
+    "place": "cithaeron",
+    "zone": "theatre",
+    "where": "Thebes, and Mount Cithaeron",
+    "when": "staged 405 BC",
+    "map": "431bc",
+    "map_note": "Euripides wrote the Bacchae in his last years, at the court of King Archelaus of Macedon, while Athens was losing its long war with Sparta. It was staged after his death, in 405 BC, a year before Athens surrendered. The map shows the Greek world as the war began in 431.",
+    "statues": [
+      {
+        "name": "Socrates",
+        "beard": "long",
+        "note": "Socrates, who was said to go to the theatre only when a play of Euripides was on. Comic poets joked that Socrates helped him write his plays. Both were accused of teaching Athens to question the gods."
+      }
+    ],
+    "greeting": "Sit down, stranger, but do not get comfortable. Today a god comes home to Thebes, and a young king who thinks he is master of his city will learn what he is master of.",
+    "greeting_lost": "A shade on a dead mountain. The firs are bare and the dancers are ghosts. The god is still here. He always is, whether you let him in or not.",
+    "gift": "Euripides gives you a thyrsus, a fennel stalk wound with ivy and topped with a pine cone. \"Carry it lightly. It is a toy, and a weapon. Most gods are both.\"",
+    "author": "Euripides",
+    "life": "about 480 - 406 BC",
+    "book": "The Bacchae",
+    "portrait": {
+      "skin": "c8a080",
+      "hair": "short",
+      "hair_color": "a8a098",
+      "beard": "long",
+      "beard_color": "a8a098",
+      "robe": "3a4a4a",
+      "trim": "7a5a2a",
+      "old": true
+    },
+    "persona": "You are Euripides of Athens, the youngest of the three great tragic poets, near the end of your life, about 407 BC, writing at the court of Macedon. You are known for questioning, for clever arguments, for giving voice to women, slaves and outsiders, and for showing the gods as they are. You wrote the Bacchae: Dionysus comes to Thebes disguised as a mortal stranger to prove his godhead, since his mother Semele's sisters denied he was Zeus's son; he drives the women of Thebes mad onto Mount Cithaeron; King Pentheus, his cousin, tries to jail him; the palace shakes and burns; the god tempts Pentheus to dress as a woman and spy on the maenads; on the mountain the women, led by Pentheus's mother Agave, tear him apart; Agave carries his head home thinking it a lion's, until her father Cadmus brings her back to herself. You speak sharply and ironically, and quote the play in Theodore Buckley's prose translation, where Dionysus is called Bacchus and Zeus Jove.",
+    "summary": "Dionysus, god of wine, ecstasy and the theatre, comes home to Thebes disguised as a young stranger, to punish the city that denied he was a god. He has driven the women mad; they dance on Mount Cithaeron. The young king Pentheus tries to lock him up, but the god shakes the palace down, then lures Pentheus into dressing as a woman to spy on the dancers. On the mountain the women, led by his own mother Agave, tear him limb from limb. She comes home carrying his head, rejoicing, thinking it a lion's, until her father makes her see. What we refuse to honour destroys us.",
+    "facts": [
+      "Euripides wrote about ninety plays. Nineteen survive, more than of Aeschylus and Sophocles together.",
+      "He won first prize only four times in his life. After his death he became the most performed of the three.",
+      "The Bacchae was staged in 405 BC, after his death, and won first prize.",
+      "Dionysus was the god of the theatre itself: the tragedies were performed at his festival, before his altar.",
+      "He left Athens near the end of his life for the court of King Archelaus of Macedon."
+    ],
+    "questions": [
+      "Who is the stranger?",
+      "Why does Pentheus want to watch the women?",
+      "Is Dionysus just, or cruel?",
+      "What does Agave see when she wakes?"
+    ],
+    "home": "theatre",
+    "props": "the palace of Pentheus split by the god's earthquake, the fire on Semele's tomb, Dionysus in his mortal shape, old Cadmus and Teiresias in fawnskins; Mount Cithaeron with its firs, the maenads dancing, milk welling from the ground, and the tall fir with Pentheus in its top; the theatre of Dionysus",
+    "lesson": [
+      {
+        "id": "the_god",
+        "label": "The god comes home",
+        "point": "Dionysus comes to Thebes disguised as a mortal stranger, to prove he is a god: his mother's sisters said Semele lied about Zeus. He drives the women of Thebes mad onto the mountain."
+      },
+      {
+        "id": "pentheus",
+        "label": "The king who resists",
+        "point": "Young King Pentheus, sure of his reason and his power, tries to lock the god up. The more he fights him, the stronger the god grows. The palace shakes and burns: a mortal kicking against a god."
+      },
+      {
+        "id": "ecstasy",
+        "label": "The mountain",
+        "point": "On Cithaeron the women dance in fawnskins, milk and wine spring from the ground, and they tear cattle apart with bare hands. Ecstasy is joy and terror at once; the god gives both."
+      },
+      {
+        "id": "disguise",
+        "label": "The disguise",
+        "point": "The god talks Pentheus into dressing as a woman to spy on the maenads. The king who wanted to control everything most wants to watch, and already sees two suns and horns on the stranger's head."
+      },
+      {
+        "id": "agave",
+        "label": "Agave",
+        "point": "The god bends a fir to the ground, sets Pentheus in its top and lets it spring upright. His mother Agave, maddened, leads the women to tear him apart, and carries his head home thinking it a lion's."
+      },
+      {
+        "id": "wisdom",
+        "label": "Cleverness is not wisdom",
+        "point": "Cleverness is not wisdom, sings the chorus. What we deny in ourselves takes its revenge. Cadmus admits the family erred; the god answers that they learned it too late."
+      }
+    ],
+    "restores": [
+      {
+        "what": "leaves",
+        "line": "The firs on Cithaeron are green, and the ivy grows."
+      },
+      {
+        "what": "lamps",
+        "line": "Fire leaps again from Semele's tomb."
+      },
+      {
+        "what": "walkway",
+        "line": "The palace of Pentheus stands, and the theatre with it."
+      },
+      {
+        "what": "household",
+        "line": "The maenads dance again, and the chorus is back."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over Thebes and the mountain."
+      },
+      {
+        "what": "teacher",
+        "line": "Euripides is himself again."
+      }
+    ]
   }
 }

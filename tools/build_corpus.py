@@ -146,6 +146,23 @@ BOOKS = {
              "start": r"(?m)^\s*ANTIGONE and ISMENE before the Palace gates", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
         ],
     },
+    "euripides-the-tragedies": {  # the Bacchae, as the reading takes it
+        "title": "Euripides",
+        "translation": "tr. Theodore Alois Buckley (1850), prose, public domain",
+        "parts": [
+            {"title": "The Bacchae", "urls": [["https://www.gutenberg.org/cache/epub/15081/pg15081.txt", ""]],
+             "start": r"(?m)^THE BACCH\u00c6\.\[1\]", "end": r"(?m)^NOTES ON THE BACCH", "chapter": r"^\Zx",
+             "drop": [r"\[\d+\]", r"^\s*\*\s+\*.*$"]},
+        ],
+    },
+    "aristophanes-the-comedies": {  # the Clouds, as the reading takes it
+        "title": "Aristophanes",
+        "translation": "tr. William James Hickie (1853), prose, public domain",
+        "parts": [
+            {"title": "The Clouds", "urls": [["https://www.gutenberg.org/cache/epub/2562/pg2562.txt", ""]],
+             "start": r"(?m)^\s*Scene: The interior of a sleeping-apartment", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+        ],
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",
