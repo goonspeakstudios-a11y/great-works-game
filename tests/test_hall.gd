@@ -104,10 +104,10 @@ func test_plural_filler_words_are_ignored() -> void:
 
 ## The books whose places are built so far; every other gateway on the Shore is sealed.
 const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium", "euclid-elements",
-	"homer-the-iliad",
+	"homer-the-iliad", "plato-republic",
 	"aristotle-nicomachean-ethics"]
-## The places built in sprint 4 (places_greek.gd), each tested like the villa and the Lyceum.
-const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad"]
+## The places built in sprints 4 and 5 (places_greek.gd), each tested like the villa and the Lyceum.
+const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad", "plato-republic"]
 
 
 func test_rooms_follow_the_reading_list() -> void:
@@ -384,6 +384,8 @@ func test_the_villa_feels_lived_in() -> void:
 
 
 const Lettering := preload("res://scripts/hall/lettering.gd")
+const City := preload("res://scripts/hall/city.gd")
+const CityTest := preload("res://tests/test_city.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 
 
@@ -402,8 +404,10 @@ func test_every_word_on_screen_uses_our_lettering() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	hall.travel("porphyry-isagoge")
-	hall._open_ask("porphyry-isagoge")
+	hall.progress.data = {"works": {}}
+	hall.travel("plato-republic")
+	hall._open_council()  # the council table's people, laws and choices too
+	hall._open_ask("plato-republic")
 	var cheap: Array = []
 	var stack: Array = [hall._ui]
 	while not stack.is_empty():
@@ -919,6 +923,49 @@ static func _play_through(hall: Node, it: Dictionary) -> int:
 	return -1
 
 
+## The Republic's heart: at the Academy's council table you found and govern the city in speech. Its
+## board stands as far as you have governed it; its stones and the soul over it wait until the city
+## has got that far; the city is kept; and after the just city it falls, regime by regime.
+func test_the_city_in_speech_is_governed_at_the_academy() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	var work := "plato-republic"
+	hall.progress.data = {"works": {}, "city": City.found(7).to_dict()}
+	hall.progress.set_mode("greece", "zen")
+	hall.travel(work)
+	var find := func(id: String) -> Dictionary:
+		return hall.interactables.filter(func(i): return i.get("id", "") == id)[0]
+	hall.activate(find.call("one_work"))
+	check(not hall.progress.understood(work).has("one_work"), "the city of pigs is not read before it is founded")
+	hall._close_panels()
+	hall.activate(find.call("soul"))
+	check(hall.beat == null, "the soul does not rise over a city that is not yet just")
+	hall._close_panels()
+	var table: Array = hall.interactables.filter(func(i): return i["kind"] == "council")
+	check_eq(table.size(), 1, "there is a council table")
+	hall.activate(table[0])
+	check(hall._council.visible, "you sit down at it")
+	check(CityTest._govern(hall._city, 80) >= 0, "a careful founder makes the city just")
+	hall._on_council_acted()
+	check(hall.progress.understood(work).has("one_work") and hall.progress.understood(work).has("just_city"),
+		"for a Theoros the city's stages count as they are reached")
+	hall._close_panels()
+	check_eq(hall.here, work, "the Academy is rebuilt round the grown city")
+	check_eq(hall.city().stage, City.JUST_CITY, "the city is kept")
+	check(_play_through(hall, find.call("soul")) >= 0, "now the soul can be looked into")
+	hall._close_panels()
+	check(hall.progress.understood(work).has("soul"), "and it counts")
+	hall.activate(hall.interactables.filter(func(i): return i["kind"] == "council")[0])
+	for k in City.LAST_STAGE - City.JUST_CITY:
+		hall._city.let_generations_pass()
+	hall._on_council_acted()
+	hall._close_panels()
+	check_eq(hall.city().stage, City.LAST_STAGE, "the generations pass, and the city falls to tyranny")
+	check_eq(hall.here, work, "the Academy stands round the fallen city")
+	hall.free()
+
+
 ## Every beat of every new place can be played to its end, and in Zen each counts its point.
 func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
 	var hall: Node = Hall.new()
@@ -931,6 +978,8 @@ func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
 		var beats: Array = hall.interactables.filter(func(i): return i["kind"] == "beat")
 		for k in beats.size():
 			var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "beat")[k]  # the place is rebuilt as it mends
+			if it.has("needs_city"):
+				continue  # played once the city is far enough on (test_the_city_in_speech_is_governed_at_the_academy)
 			check(_play_through(hall, it) >= 0, "%s/%s plays to its end" % [work, it["beat"]])
 			hall._close_panels()
 			if it.has("id"):

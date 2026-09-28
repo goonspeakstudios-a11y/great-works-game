@@ -127,7 +127,7 @@ var _tree_panel: Panel
 var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
 var _choice: PanelContainer  # a world asks who you are there (Choice)
 var _council: Panel  # the council table of the city in speech (Council)
-var _council_board := -1  # the board's stage when you sat down, to rebuild it if it grew
+var _council_board := -1  # the city's stage when you sat down, to rebuild the board if it changed
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -234,7 +234,12 @@ func _ready() -> void:
 ## Screenshot mode for checking the look without playing:
 ##   godot --path . -- --shot=C:/out.png --view=nexus|hub|assets|assets_mid|props|gate|ruins|head|toad|villa|path|study|hut|map|tree|ask|read|lyceum|walk|march|lyceum_map|hill|grove|stones|yard|garden|garden_w [--stage=0-6]
 ## Any book's place from any spot: --view=place --work=<work id> --at=x,y,z --look=x,y,z [--stage=N]
+## [--city=N: the city in speech at stage N, 0-9, on the Academy's board]
 func _stage_shot(view: String) -> void:
+	if _args.has("city"):
+		var c: RefCounted = City.found(380)
+		c.stage = clampi(int(_args["city"]), 0, City.LAST_STAGE)
+		progress.data["city"] = c.to_dict()
 	if view == "place" and _args.has("stage"):
 		var w: String = _args.get("work", "")
 		progress.learn(w, Rooms.room(w).get("lesson", []).slice(0, int(_args["stage"])).map(func(p): return p["id"]))
@@ -421,6 +426,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 		for d in doors:
 			if Rooms.room(d["work"]).get("area_of", "") == to:
 				stages[d["work"]] = _stage(d["work"])
+		if Rooms.room(to).get("place", "") == "academy":
+			stages["city"] = city().stage  # the city in speech stands on its board as far as you have governed it
 		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
 	if not to in ["hub", "nexus", "asset_test"] and not keep:
 		progress.visit(to)
@@ -1320,7 +1327,7 @@ func _any_panel() -> bool:
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	var rebuild: bool = _council.visible and _city != null and _city.board_stage() != _council_board
+	var rebuild: bool = _council.visible and _city != null and _city.stage != _council_board
 	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _council]:
 		p.hide()
 	_where.show()
@@ -1604,6 +1611,9 @@ func _nearest() -> Dictionary:
 
 
 func activate(it: Dictionary) -> void:
+	if it.has("needs_city") and city().board_stage() < int(it["needs_city"]):
+		_show_read(it.get("not_yet", "Not yet."))  # a stone of the city in speech, before the city has got so far
+		return
 	match it.get("kind", ""):
 		"fact":
 			_show_read(it["text"])
@@ -1722,7 +1732,7 @@ var _city: RefCounted  # the city while you sit at the table
 
 func _open_council() -> void:
 	_city = city()
-	_council_board = _city.board_stage()
+	_council_board = _city.stage
 	_council.open(_city)
 	_show_panel(_council)
 
@@ -1735,7 +1745,9 @@ func _on_council_acted() -> void:
 	if progress.mode(_world_of(here)) == "zen":
 		for pair in [[1, "one_work"], [City.JUST_CITY, "just_city"]]:
 			if _city.stage >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
-				_learned(work, [pair[1]])
+				var note := _learned(work, [pair[1]])
+				if note != "":
+					_council._socrates.append_text(note)  # what goes on your tablet, under what Socrates said
 	progress.save()
 
 

@@ -592,5 +592,376 @@
     }
    ]
   }
+ },
+ "plato-republic": {
+  "gyges": {
+   "hero": "gyges",
+   "title": "Gyges, Republic II",
+   "point": "gyges",
+   "steps": [
+    {
+     "hide": "gyges"
+    },
+    {
+     "line": "You are Gyges, a shepherd of the king of Lydia. There was a storm, and an earthquake opened the ground where your flock was feeding."
+    },
+    {
+     "go": "chasm",
+     "text": "Go down into the opening"
+    },
+    {
+     "line": "Among other marvels, “a hollow brazen horse, having doors.” Inside lies a dead body more than human, wearing only a gold ring."
+    },
+    {
+     "go": "horse",
+     "text": "Stoop and look in at the horse's door"
+    },
+    {
+     "act": "Take the ring from the finger of the dead"
+    },
+    {
+     "swap": "right",
+     "what": "ring"
+    },
+    {
+     "go": "meeting",
+     "text": "Climb out, and join the shepherds at their monthly meeting"
+    },
+    {
+     "line": "They are making their report about the flocks to the king. You sit among them, turning the ring on your finger."
+    },
+    {
+     "act": "Turn the collet of the ring inward",
+     "hold": 1.0
+    },
+    {
+     "line": "“Instantly he became invisible to the rest of the company and they began to speak of him as if he were no longer present.”"
+    },
+    {
+     "act": "Turn it outward again"
+    },
+    {
+     "line": "They see you again. Gyges went to court, seduced the queen, killed the king with her help, and took the kingdom."
+    },
+    {
+     "line": "Glaucon: give a just man such a ring and he will do as the unjust do. No one is just of his own free will."
+    },
+    {
+     "line": "Would you be? Socrates must show that justice is worth having even if no one ever sees it."
+    }
+   ]
+  },
+  "the_soul": {
+   "hero": "",
+   "title": "The soul, Republic IV",
+   "point": "soul",
+   "steps": [
+    {
+     "line": "The city is just: each order doing its own work. Now turn it round. The same three are in you."
+    },
+    {
+     "look": "appetite"
+    },
+    {
+     "line": "Appetite, in the belly: it wants food, drink and gain, many-headed. Bronze and iron, like the producers."
+    },
+    {
+     "look": "spirit"
+    },
+    {
+     "line": "Spirit, in the chest: anger, honour, courage. Silver, like the soldiers. Well trained, it sides with reason."
+    },
+    {
+     "look": "reason"
+    },
+    {
+     "line": "Reason, in the head: it loves learning and sees the whole. Gold, like the rulers. It should rule."
+    },
+    {
+     "act": "Let reason rule, with spirit its ally",
+     "hold": 2.0
+    },
+    {
+     "line": "“The just man does not permit the several elements within him to interfere with one another.”"
+    },
+    {
+     "line": "“He sets in order his own inner life, and is his own master and his own law, and at peace with himself.”"
+    }
+   ]
+  },
+  "the_line": {
+   "hero": "",
+   "title": "The divided line, Republic VI",
+   "point": "line",
+   "steps": [
+    {
+     "line": "“Now take a line which has been cut into two unequal parts, and divide each of them again in the same proportion.”"
+    },
+    {
+     "go": "images",
+     "text": "Walk into the first length: images"
+    },
+    {
+     "line": "“By images I mean, in the first place, shadows, and in the second place, reflections in water.”"
+    },
+    {
+     "look": "pool"
+    },
+    {
+     "act": "Look into the still pool"
+    },
+    {
+     "go": "things",
+     "text": "Walk on to the things themselves"
+    },
+    {
+     "line": "“The animals which we see, and everything that grows or is made”: the tree, the horse, the bowl."
+    },
+    {
+     "go": "mathematicals",
+     "text": "Walk on to the figures inlaid in the terrace"
+    },
+    {
+     "line": "Here the mind reasons from hypotheses, using drawn figures to think about the square itself, the diagonal itself."
+    },
+    {
+     "act": "Trace the square and its diagonal"
+    },
+    {
+     "go": "forms",
+     "text": "Walk out onto the white terrace"
+    },
+    {
+     "line": "Now reason itself, with no images, climbing to a first principle that rests on nothing else."
+    },
+    {
+     "look": "sun"
+    },
+    {
+     "line": "“The sun is not only the author of visibility in all visible things, but of generation and nourishment and growth.”"
+    },
+    {
+     "line": "So the good gives things their being and the mind its knowledge, “yet the good is not essence, but far exceeds essence.”"
+    },
+    {
+     "act": "Look up into the light",
+     "hold": 1.5
+    },
+    {
+     "line": "Four faculties: reason, understanding, faith, and the perception of shadows. Each is as clear as its objects are true."
+    }
+   ]
+  },
+  "cave": {
+   "hero": "",
+   "title": "The cave, Republic VII",
+   "point": "cave",
+   "steps": [
+    {
+     "eye": -0.7
+    },
+    {
+     "line": "“Behold! human beings living in a underground den, which has a mouth open towards the light.”"
+    },
+    {
+     "look": "wall"
+    },
+    {
+     "line": "Shadows pass on the wall: a horse, a jar, a man, a tree. You have never seen anything else. You give them names."
+    },
+    {
+     "line": "“You have shown me a strange image, and they are strange prisoners.” “Like ourselves, I replied.”"
+    },
+    {
+     "act": "Your chains are loosed. Turn round",
+     "hold": 1.0
+    },
+    {
+     "eye": 0.7
+    },
+    {
+     "look": "fire"
+    },
+    {
+     "line": "A fire, and men carrying figures along a wall. What you took for the real were shadows of copies. The light hurts."
+    },
+    {
+     "go": "up",
+     "text": "Climb the steep and rugged way up"
+    },
+    {
+     "line": "“When he approaches the light his eyes will be dazzled, and he will not be able to see anything at all.”"
+    },
+    {
+     "look": "pool"
+    },
+    {
+     "line": "“First he will see the shadows best, next the reflections of men and other objects in the water, and then the objects.”"
+    },
+    {
+     "act": "Lift your eyes to the sky",
+     "hold": 1.5
+    },
+    {
+     "line": "Last of all the sun itself, which makes the seasons and governs all that you once saw below."
+    },
+    {
+     "line": "He would rather be “the poor servant of a poor master” than live as they live. But the others are still down there."
+    },
+    {
+     "go": "down",
+     "text": "Go back down into the den"
+    },
+    {
+     "line": "Your eyes are full of darkness. They laugh: he went up and came back blind. Education is turning the whole soul round."
+    }
+   ]
+  },
+  "er": {
+   "hero": "",
+   "title": "The myth of Er, Republic X",
+   "point": "er",
+   "steps": [
+    {
+     "line": "You are a soul in the meadow, a thousand years after your last life. Before you, the Fates, and the spindle of Necessity."
+    },
+    {
+     "go": "prophet",
+     "text": "Go before the prophet of Lachesis"
+    },
+    {
+     "line": "“Your genius will not be allotted to you, but you will choose your genius.”"
+    },
+    {
+     "line": "“Virtue is free ... the responsibility is with the chooser—God is justified.”"
+    },
+    {
+     "act": "Take up your lot"
+    },
+    {
+     "line": "The first lot comes forward and in a moment chooses the greatest tyranny. Too late he sees he must devour his children."
+    },
+    {
+     "line": "Odysseus has the last lot. Tired of ambition, he searches a long time for the life of a private man with no cares."
+    },
+    {
+     "go": "lives",
+     "text": "Walk among the patterns of lives"
+    },
+    {
+     "act": "Choose a life, and think what it will make of your soul",
+     "hold": 2.0
+    },
+    {
+     "go": "lethe",
+     "text": "March on to the river of Unmindfulness"
+    },
+    {
+     "act": "Drink no more than you must",
+     "hold": 1.0
+    },
+    {
+     "line": "“Those who were not saved by wisdom drank more than was necessary; and each one as he drank forgot all things.”"
+    },
+    {
+     "line": "Er did not drink. He woke on his pyre on the twelfth day and told it: “the tale has been saved and has not perished.”"
+    }
+   ]
+  },
+  "apology": {
+   "hero": "socrates",
+   "title": "Socrates, the Apology",
+   "point": "",
+   "steps": [
+    {
+     "hide": "socrates"
+    },
+    {
+     "line": "Athens, 399 BC. You are Socrates, seventy years old, before five hundred and one jurors. Meletus accuses you."
+    },
+    {
+     "go": "platform",
+     "text": "Step up to speak"
+    },
+    {
+     "line": "“I am that gadfly which God has attached to the state, and all day long and in all places am always fastening upon you.”"
+    },
+    {
+     "act": "Tell them what you really think"
+    },
+    {
+     "line": "“The unexamined life is not worth living.”"
+    },
+    {
+     "look": "urns"
+    },
+    {
+     "line": "They vote: guilty, by a few votes. As your penalty you propose free meals for life. They vote again: death."
+    },
+    {
+     "line": "“The hour of departure has arrived, and we go our ways—I to die, and you to live. Which is better God only knows.”"
+    }
+   ]
+  },
+  "the_cup": {
+   "hero": "socrates",
+   "title": "Socrates, the Phaedo",
+   "point": "",
+   "steps": [
+    {
+     "hide": "socrates"
+    },
+    {
+     "line": "The evening of the last day. Your friends are round you. Crito: “the sun is still upon the hill-tops.”"
+    },
+    {
+     "line": "Do not hurry, he says; there is time enough. But you ask for the cup to be brought."
+    },
+    {
+     "act": "Take the cup from the servant of the Eleven"
+    },
+    {
+     "hide": "cup"
+    },
+    {
+     "swap": "right",
+     "what": "cup"
+    },
+    {
+     "line": "“Then raising the cup to his lips, quite readily and cheerfully he drank off the poison.”"
+    },
+    {
+     "act": "Drink",
+     "hold": 2.0
+    },
+    {
+     "swap": "right",
+     "what": ""
+    },
+    {
+     "go": "walk",
+     "text": "Walk about until your legs begin to fail"
+    },
+    {
+     "go": "bed",
+     "text": "Lie down on the bed"
+    },
+    {
+     "eye": -1.2
+    },
+    {
+     "line": "They weep. You ask them to be quiet: a man should die in peace."
+    },
+    {
+     "line": "“Crito, I owe a cock to Asclepius; will you remember to pay the debt?”"
+    },
+    {
+     "line": "“Of all the men of his time whom I have known, he was the wisest and justest and best.”"
+    },
+    {
+     "eye": 1.2
+    }
+   ]
+  }
  }
 }

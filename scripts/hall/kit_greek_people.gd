@@ -17,6 +17,8 @@ const HEROES := {
 	"telemachus": {"skin": "#d0a880", "sleeve": "#8a6a44", "left": "", "right": "spear"},
 	"odysseus": {"skin": "#b8906a", "sleeve": "#7a3a24", "left": "bow", "right": "arrow"},
 	"odysseus_bound": {"skin": "#b8906a", "sleeve": "#7a3a24", "left": "rope", "right": "rope"},
+	"gyges": {"skin": "#b89070", "sleeve": "#6a5a44", "left": "", "right": ""},
+	"socrates": {"skin": "#c09070", "sleeve": "#8a8274", "left": "", "right": ""},
 }
 
 
@@ -79,6 +81,12 @@ static func _held(hand: Node3D, what: String, side: float) -> Node3D:
 			Kit.blob(g, Vector3(0, 0.17, -0.94), 0.05, "fire", Vector3(1.0, 1.0, 1.6), 5)
 		"ransom":  # a fold of the robes Priam brings, over the arm
 			Kit.box(g, Vector3(0, -0.04, -0.05), Vector3(0.22, 0.08, 0.3), "#6a2e4a", false)
+		"ring":  # Gyges' gold ring on a finger, its collet turned out
+			Kit.mesh(g, TorusMesh.new(), "gold", Vector3(0, 0.03, -0.04), Vector3(PI / 2.0, 0, 0), Vector3(0.03, 0.05, 0.03))
+			Kit.blob(g, Vector3(0, 0.07, -0.04), 0.012, "gold")
+		"cup":  # the cup the servant of the Eleven brings, held up to drink
+			Kit.cylinder(g, Vector3(0, 0.02, -0.04), 0.04, 0.06, "clay", false, 10, 0.07)
+			Kit.cylinder(g, Vector3(0, 0.072, -0.04), 0.064, 0.006, "#3a3a2a", false, 10)  # the hemlock
 	for mi in g.find_children("*", "MeshInstance3D", true, false):
 		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return g

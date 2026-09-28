@@ -115,6 +115,8 @@ const ZONES := {
 		{"file": "academy_voices", "db": -10.0, "music": true, "needs": "household"},
 		{"file": "stream", "db": -23.0, "needs": "water"},
 		{"file": "birds", "db": -22.0, "needs": "leaves"},
+		{"file": "crowd", "db": -27.0, "needs": "walkway"},  # the city in speech, peopled
+		{"file": "salpinx", "db": -28.0, "needs": "soldiers"},  # its guardians
 		{"file": "wind", "db": -26.0, "loud_db": -16.0, "loud_until": "sun"}]},
 	# Helicon (Hesiod): a shepherd's pipe, the nine Muses, the flock on the mountain, their spring.
 	"helicon": {"bells": false, "layers": [

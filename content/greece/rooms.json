@@ -767,5 +767,135 @@
         "line": "The Achaeans are men again, and the Cyclops is alive in his cave."
       }
     ]
+  },
+  "plato-republic": {
+    "open": true,
+    "place": "academy",
+    "zone": "academy",
+    "where": "The Academy at Athens",
+    "when": "about 380 BC",
+    "map": "380bc",
+    "map_note": "About 380 BC Athens has lost its empire and its walls to Sparta (404), and Sparta keeps Greece under the King's Peace, dictated by Persia (387/386). In Sicily Dionysius I is tyrant of Syracuse, where Plato visited him, and Carthage holds the island's west. Macedon is still a small kingdom in the north.",
+    "statues": [
+      {
+        "name": "Socrates",
+        "beard": "long",
+        "note": "Socrates (470 - 399 BC), Plato's teacher, who wrote nothing and questioned everyone. Athens put him to death; Plato spent his life writing him back to life, talking."
+      },
+      {
+        "name": "Pythagoras",
+        "beard": "long",
+        "note": "Pythagoras (about 570 - 495 BC), who taught that the world is ordered by number and the soul outlives the body. Plato learned from his followers in Italy; you can hear them in the divided line and in Er."
+      }
+    ],
+    "greeting": "Welcome to the Academy. Sit with us: Socrates is about to found a city, in speech, to see justice written large. You will be its founder.",
+    "greeting_lost": "A shade in a dead grove. I am Plato, or his echo. The city we were building is only boundary stones. Still, we could begin again: that is what speech is for.",
+    "gift": "Plato gives you a wax tablet with a line cut into it in four unequal lengths. \"Keep turning toward the light. And when you have seen it, go back down and tell the others.\"",
+    "author": "Plato",
+    "life": "about 428 - 348 BC",
+    "book": "Republic",
+    "portrait": {
+      "skin": "c8a080",
+      "hair": "short",
+      "hair_color": "8a7a6a",
+      "beard": "long",
+      "beard_color": "8a7a6a",
+      "robe": "d8d0c0",
+      "trim": "5a6a8a",
+      "old": true
+    },
+    "persona": "You are Plato, about 380 BC, in the Academy, the school you founded in the olive grove of Academus outside Athens. You wrote the Republic: Socrates, at Cephalus's house in the Piraeus, is asked what justice is; Thrasymachus says it is the interest of the stronger; Glaucon tells the story of Gyges' ring; to find justice Socrates founds a city in speech (one man, one work; the fevered city and war; the guardians, the noble lie of the metals, no property for the rulers, women guardians, philosopher-kings), finds justice in each order doing its own work, and the same three parts in the soul (reason, spirit, appetite); then the sun, the divided line and the cave; the decline of cities and souls from timocracy to tyranny; and the myth of Er. You also wrote the Apology, the Symposium and the Phaedo, and you remember Socrates' trial and death. Here visitors found the city in speech themselves at the council table with Socrates, Glaucon and Adeimantus, season by season. You never speak in your dialogues yourself; here you do, gently, ironically, always asking back. You quote Benjamin Jowett's translation.",
+    "summary": "A dialogue in ten books. Asked what justice is, Socrates builds a city in speech to see justice written large: each person doing the one work they are fitted for, the city ruled by guardians who own nothing and are chosen and trained for wisdom, until philosophers are kings. Justice in the city is each order doing its own work; justice in the soul is reason ruling spirit and appetite. The sun, the divided line and the cave show what the philosopher learns: to turn from shadows to the real and to the good. Cities and souls decline through honour, wealth and freedom into tyranny, the most wretched life. The myth of Er ends it: each soul chooses its next life, and the blame is the chooser's.",
+    "facts": [
+      "Plato (about 428 - 348 BC) was Socrates' pupil. He wrote dialogues, and never speaks in them himself.",
+      "He founded the Academy about 387 BC in a grove outside Athens sacred to the hero Academus.",
+      "The Republic is set in the Piraeus about 411 BC, in the war with Sparta. Plato wrote it about 375 BC.",
+      "Athens tried and executed Socrates in 399 BC for impiety and corrupting the young. Plato was about 28.",
+      "Aristotle studied at the Academy for twenty years, until Plato died."
+    ],
+    "questions": [
+      "What is justice?",
+      "Would you stay just if no one could see you?",
+      "Why must philosophers rule?",
+      "What does the cave mean?"
+    ],
+    "home": "Academy",
+    "props": "the olive grove of the Academy, the council table above the city in speech, Cephalus's house in the Piraeus, Gyges' chasm, the divided line, the cave, Er's meadow, the court where Socrates was tried, Agathon's dinner, and the prison",
+    "lesson": [
+      {
+        "id": "justice",
+        "label": "What is justice?",
+        "point": "Cephalus says justice is telling the truth and paying your debts; Polemarchus, helping friends and harming enemies; Thrasymachus, the interest of the stronger. Socrates refutes each, and no one yet knows what it is."
+      },
+      {
+        "id": "gyges",
+        "label": "The ring of Gyges",
+        "point": "Glaucon's challenge: give a just man a ring that makes him invisible, and he will act like the unjust. If people are just only for fear of being caught, Socrates must show that justice is good in itself."
+      },
+      {
+        "id": "one_work",
+        "label": "One man, one work",
+        "point": "A city begins because no one is enough for himself. Each does the one work he is fitted for by nature. The healthy city of farmers and craftsmen wants luxuries, needs more land, and so goes to war."
+      },
+      {
+        "id": "just_city",
+        "label": "The just city",
+        "point": "The city has three orders: rulers, soldiers who help them, and producers, bound by the noble lie of the metals. It is just when each order does its own work and does not meddle in another's."
+      },
+      {
+        "id": "soul",
+        "label": "The soul written small",
+        "point": "The soul has the same three parts: reason, spirit and appetite. A person is just when reason rules, spirit is its ally, and appetite obeys. Injustice is civil war inside the soul."
+      },
+      {
+        "id": "line",
+        "label": "The sun and the line",
+        "point": "The divided line runs from images to things, then to mathematics, then to the forms. As the sun gives the eye its sight and things their growth, the good gives the mind its knowledge and things their being."
+      },
+      {
+        "id": "cave",
+        "label": "The cave",
+        "point": "Prisoners chained in a cave take shadows for the real. Education is not putting sight into blind eyes but turning the whole soul round toward the light. Whoever gets out must go back down."
+      },
+      {
+        "id": "er",
+        "label": "The choice of lives",
+        "point": "In the myth of Er the souls choose their next lives. The first seizes a tyranny without thinking; Odysseus chooses the quiet life of a private man. \"The responsibility is with the chooser.\""
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The Cephisus runs again, and the spring in the grove."
+      },
+      {
+        "what": "leaves",
+        "line": "The olives of the grove of Academus are green."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit in the Academy, and the fire burns in the cave."
+      },
+      {
+        "what": "walkway",
+        "line": "The city in speech stands whole: its walls, its houses, its paths."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over the grove, and over the terrace of the forms."
+      },
+      {
+        "what": "teacher",
+        "line": "Plato is himself, and the talk goes on."
+      },
+      {
+        "what": "household",
+        "line": "The company is back: Socrates, the brothers, the city's people."
+      },
+      {
+        "what": "soldiers",
+        "line": "The city's guardians stand at their posts."
+      }
+    ]
   }
 }
