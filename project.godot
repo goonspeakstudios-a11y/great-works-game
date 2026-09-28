@@ -2,6 +2,10 @@
 
 config_version=5
 
+[autoload]
+
+Updater="*res://scripts/updater.gd"
+
 [application]
 
 config/name="Great Works"

@@ -1,0 +1,84 @@
+# Builds the Windows game on every push to main and publishes it as the latest GitHub release
+# (tag build-<run number>): GreatWorks.exe for a fresh install, GreatWorks.pck for the in-game
+# updater (scripts/updater.gd). Keeps the newest 5 builds.
+name: build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+env:
+  GODOT_VERSION: 4.7.2
+  GODOT: ./godot/Godot_v4.7.2-stable_linux.x86_64
+
+jobs:
+  windows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot and export templates
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-windows
+
+      - name: Get Godot and the Windows export template
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          base=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          mkdir -p godot
+          curl -fsSL --retry 4 -o godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d godot && rm godot.zip
+          curl -fsSL --retry 4 -o templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest"
+          unzip -q -j templates.tpz 'templates/version.txt' 'templates/windows_release_x86_64*.exe' -d "$dest"
+          rm templates.tpz
+
+      - name: Stamp the build number
+        run: echo "${{ github.run_number }}" > build.txt
+
+      - name: Import
+        run: timeout 600 $GODOT --headless --path . --import || true
+
+      - name: Test
+        run: |
+          set -o pipefail
+          timeout 900 $GODOT --headless --path . --script res://tests/run_tests.gd 2>&1 | tee test.log
+          grep -q ", 0 failed" test.log
+
+      - name: Export
+        run: |
+          set -euo pipefail
+          mkdir -p export
+          $GODOT --headless --path . --export-release "Windows Desktop" export/GreatWorks.exe
+          $GODOT --headless --path . --export-pack "Windows Desktop" export/GreatWorks.pck
+          ls -la export
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=build-${{ github.run_number }}
+          version=$(grep -oP 'VERSION := "\K[^"]+' scripts/version.gd)
+          (cd export && zip -9 -q "GreatWorks-v${version}-build${{ github.run_number }}-windows.zip" GreatWorks.exe)
+          gh release create "$tag" export/GreatWorks.pck export/*.zip \
+            --title "v${version} (build ${{ github.run_number }})" \
+            --notes "Built from ${GITHUB_SHA::7}: $(git log -1 --format=%s)" --latest
+          gh release list --limit 100 --json tagName --jq '.[].tagName' | grep '^build-' | tail -n +6 |
+            xargs -r -I{} gh release delete {} --yes --cleanup-tag

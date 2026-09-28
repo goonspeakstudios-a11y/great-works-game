@@ -732,6 +732,28 @@ static func stream(parent: Node3D, from: Vector3, to: Vector3, width: float, flo
 			rng.randf_range(0.12, 0.28), "rock", Vector3(1.4, 0.6, 1.0), 5)
 
 
+## A small rowing boat, bow toward +Z of its group, with an eye painted on each side of the bow
+## and an oar on each side. Returns {"root", "oars"}: the oars swing about their pivots as it rows.
+static func boat(parent: Node3D, at: Vector3, yaw: float) -> Dictionary:
+	var g := group(parent, at, yaw)
+	box(g, Vector3(0, 0.12, -0.1), Vector3(0.9, 0.12, 3.0), "wood", false)  # the bottom
+	for side in [-1.0, 1.0]:
+		box(g, Vector3(side * 0.47, 0.34, -0.1), Vector3(0.08, 0.4, 3.0), "wood", false)
+		box(g, Vector3(side * 0.24, 0.34, 1.62), Vector3(0.08, 0.4, 0.62), "wood", false, Vector3(0, -side * 0.72, 0))  # the bow
+		box(g, Vector3(side * 0.3, 0.42, 1.55), Vector3(0.02, 0.08, 0.08), "dark", false, Vector3(0, -side * 0.72, 0))  # its eye
+	box(g, Vector3(0, 0.34, -1.6), Vector3(0.9, 0.4, 0.08), "wood", false)  # the stern
+	box(g, Vector3(0, 0.44, 0.2), Vector3(0.88, 0.06, 0.3), "wood", false)  # the thwart you sit on
+	var oars: Array = []
+	for side in [-1.0, 1.0]:
+		var pivot := Node3D.new()
+		pivot.position = Vector3(side * 0.5, 0.56, 0.2)
+		g.add_child(pivot)
+		box(pivot, Vector3(side * 0.8, -0.2, 0), Vector3(1.7, 0.05, 0.05), "wood", false, Vector3(0, 0, side * 0.28))
+		box(pivot, Vector3(side * 1.55, -0.44, 0), Vector3(0.4, 0.02, 0.16), "wood", false, Vector3(0, 0, side * 0.28))
+		oars.append(pivot)
+	return {"root": g, "oars": oars}
+
+
 ## A plank footbridge over the stream, crossing along X of its group.
 static func bridge(parent: Node3D, at: Vector3, yaw: float, length: float) -> void:
 	var g := group(parent, at, yaw)

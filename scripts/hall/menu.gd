@@ -22,6 +22,17 @@ func _init() -> void:
 	title.text = "PAUSED"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	var version := Label.new()
+	var show_version := func() -> void:
+		version.text = preload("res://scripts/version.gd").label()
+		var updater: Node = get_node_or_null("/root/Updater") if is_inside_tree() else null
+		if updater and updater.status != "":
+			version.text += "\n" + updater.status
+	show_version.call()
+	visibility_changed.connect(show_version)
+	version.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	version.modulate = Color(1, 1, 1, 0.55)
+	box.add_child(version)
 	_slider(box, "volume", "Volume", 0.0, 1.0, 0.8)
 	_slider(box, "walk", "Walking speed", 0.5, 2.0, 1.0)
 	_slider(box, "look", "Mouse speed", 0.25, 3.0, 1.0)
