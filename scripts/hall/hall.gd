@@ -50,7 +50,8 @@ const TEACH_BUTTONS := ["Teach me the next thing", "Say that more simply", "Give
 
 var offline := false  # tests: no music, no mouse capture, instant travel
 var doors: Array = []
-var here := ""  # "nexus", "hub" or a work id
+var here := ""  # "nexus", "hub" (Greece's Shore), "urbs" (the city of Rome) or a work id
+var regions: Array = []  # the parts of a city you walk through, named in the corner: {c: Vector2, r, name}
 var areas: Array = []  # other books with ground in this place: {work, c: Vector2, r, name}
 var backs := {}  # work -> the pieces of its part of this place that are back
 var area := ""  # the book whose ground you stand on (here, or one of the areas)
@@ -229,6 +230,8 @@ func _ready() -> void:
 ## Any book's place from any spot: --view=place --work=<work id> --at=x,y,z --look=x,y,z [--stage=N]
 ## [--city=N: the city in speech at stage N, 0-9, on the Academy's board]
 func _stage_shot(view: String) -> void:
+	if _args.has("age"):  # --age=N: the city of Rome in its Nth age (0 Republic ... 3 the fall)
+		progress.data["rome_age"] = clampi(int(_args["age"]), 0, ROME_AGES - 1)
 	if _args.has("city"):
 		progress.data["city_stage"] = clampi(int(_args["city"]), 0, CITY_LAST)
 	if view == "place" and _args.has("stage"):
@@ -253,6 +256,10 @@ func _stage_shot(view: String) -> void:
 	match view:
 		"place":
 			_stand(_vec(_args.get("at", "0,0,20")), _vec(_args.get("look", "0,0,0")))
+			if _args.has("fly"):  # --fly: hang where --at says (no falling) and look down at --look
+				player.seated = true
+				var to := _vec(_args.get("look", "0,0,0")) - player.position
+				player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
 			if _args.has("beat"):  # --beat=<name> [--press=N]: start that beat and go N steps into it
 				var it: Array = interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == _args["beat"])
 				if not it.is_empty():
@@ -401,6 +408,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 	var world_id: String = "greece"
 	if to == "nexus":
 		world_id = Nexus.world_reached(progress)
+	elif to == "urbs":
+		world_id = "rome"
 	elif not to in ["hub", "asset_test"]:
 		world_id = Rooms.room(to).get("world", "greece")
 	_view.size = Worlds.render_size(world_id, DisplayServer.window_get_size())
@@ -410,6 +419,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 		built = Nexus.build(world, Worlds.all(), doors, _nexus_shown(keep))
 	elif to == "hub":
 		built = Places.hub(world, doors, progress)
+	elif to == "urbs":
+		built = load("res://scripts/hall/places_rome.gd").urbs(world, Rooms.doors_of("rome"), progress, rome_age())
 	elif to == "asset_test":
 		built = Places.asset_test(world)
 	else:
@@ -420,12 +431,13 @@ func _load_place(to: String, keep: bool = false) -> void:
 		if Rooms.room(to).get("place", "") == "academy":
 			stages["city"] = city_stage()  # the city in speech stands on its board as far as the talk has gone
 		built = Places.place(world, to, Rooms.room(to), _stage(to), stages)
-	if not to in ["hub", "nexus", "asset_test"] and not keep:
+	if not to in ["hub", "urbs", "nexus", "asset_test"] and not keep:
 		progress.visit(to)
 		progress.save()
 	here = to
 	restored_here = built.get("back", [])
 	areas = built.get("areas", [])
+	regions = built.get("regions", [])
 	backs = built.get("backs", {})
 	area = ""  # worked out again on the next frame
 	if music:
@@ -469,6 +481,9 @@ func _load_place(to: String, keep: bool = false) -> void:
 		_where.text = here_name
 	if to == "nexus" and not keep:
 		_arrive_in_nexus()
+	if str(built.get("line", "")) != "":  # the city says what year it is
+		_quip = str(built["line"])
+		_quip_until = _t + 8.0
 	if not keep:
 		_ask_mode()
 
@@ -485,6 +500,9 @@ func _work_here() -> String:
 ## Crossing from one book's ground to another's: its name in the corner, its teacher at his age,
 ## and its music as far as its part of the place is back.
 func _check_area() -> void:
+	if not regions.is_empty():
+		_check_region()
+		return
 	var now := _work_here()
 	if now == area:
 		return
@@ -502,12 +520,31 @@ func _check_area() -> void:
 		music.play(_zone(area), backs.get(area, restored_here))
 
 
+## Walking a city: the name of the part of it you are in, in the corner (the nearest region's).
+func _check_region() -> void:
+	var at := Vector2(player.position.x, player.position.z)
+	var best := ""
+	var best_d := INF
+	for r in regions:
+		var d: float = at.distance_to(r["c"]) / float(r["r"])
+		if d < best_d:
+			best_d = d
+			best = r["name"]
+	if best == area:
+		return
+	area = best
+	if _where:
+		_where.text = "%s\n%s" % [here_name, best] if best != "" else here_name
+
+
 ## The world a place belongs to ("" for the Nexus, which is above them all).
 func _world_of(place: String) -> String:
 	if place == "nexus":
 		return ""
 	if place == "hub":
 		return "greece"
+	if place == "urbs":
+		return "rome"
 	return str(Rooms.room(place).get("world", "greece"))
 
 
@@ -557,6 +594,8 @@ func _switch_mode() -> void:
 func _zone(place: String) -> String:
 	if place == "hub":
 		return "shore"
+	if place == "urbs":
+		return "rome"
 	if place == "nexus":
 		return "nexus"
 	return Rooms.room(place).get("zone", "shore")
@@ -1232,6 +1271,10 @@ func _learned(work: String, ids: Array) -> String:
 func _tablet_text() -> String:
 	if here == "hub":
 		return "[color=#e0b660]Your tablet[/color]\n\nBooks mastered: %d of %d." % [progress.mastered_count(), doors.size()]
+	if here == "urbs":
+		var rome: Array = Rooms.doors_of("rome")
+		var done: int = rome.filter(func(d): return progress.is_mastered(d["work"])).size()
+		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nRoman books mastered: %d of %d." % [here_name, area, done, rome.size()]
 	if here == "nexus":
 		var now := Nexus.now(progress, doors)
 		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nIdeas understood: %d\nBooks mastered: %d of %d" % [
@@ -1374,7 +1417,7 @@ F: Yes" if _ready_to_land() else ""
 	elif target["kind"] == "gate" and not target["open"]:
 		_prompt.text = target["text"] + "\n(not open yet)"
 	elif target["kind"] == "gate":
-		_prompt.text = target["text"] + ("\nF: Enter" if target["to"] != "hub" else "\nF: Go")
+		_prompt.text = target["text"] + ("\nF: Enter" if not target["to"] in ["hub", "urbs"] else "\nF: Go")
 	else:
 		_prompt.text = "F: " + target["text"]
 
@@ -1477,6 +1520,8 @@ func _walk(person: Dictionary, to: Vector3, delta: float, t: float) -> void:
 		person["leg"] = (leg_i + 1) % path.size()
 		return
 	root.position += d.normalized() * minf(d.length(), person.get("speed", 1.0) * delta)
+	if person.has("ground"):  # up and down the hills of a city
+		root.position.y = person["ground"].call(root.position)
 	root.rotation.y = lerp_angle(root.rotation.y, atan2(d.x, d.z), k)
 	for j in legs.size():
 		legs[j].rotation.x = sin(t * 6.0 + j * PI) * 0.45
@@ -1632,6 +1677,8 @@ func activate(it: Dictionary) -> void:
 			_start_beat(it)
 		"city_again":
 			_set_city_stage(0)
+		"rome_age":
+			_set_rome_age(int(it["to"]))
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1709,6 +1756,34 @@ func _end_beat(finished: bool) -> void:
 ## site) to CITY_JUST (the just city), then on to CITY_LAST as it falls; kept in your progress.
 const CITY_JUST := 5
 const CITY_LAST := 9
+
+
+## The city of Rome stands in one of four ages (content/rome/city.json): the Republic, the Empire at
+## its height, the late Empire, and the emptied city after the Gothic War. The navel of the city in
+## the Forum lets the years pass, and brings you back to the Republic at the end.
+const ROME_AGES := 4
+
+
+func rome_age() -> int:
+	return clampi(int(progress.data.get("rome_age", 0)), 0, ROME_AGES - 1)
+
+
+func _set_rome_age(to: int) -> void:
+	progress.data["rome_age"] = posmod(to, ROME_AGES)
+	progress.save()
+	if here == "urbs":  # the city is built again in its new age round where you stand
+		if offline:
+			_rebuild_where_you_stand()
+		else:
+			_fade_through(Color.WHITE, 1.2, 2.5, _rebuild_where_you_stand)
+
+
+func _rebuild_where_you_stand() -> void:
+	var at := player.position
+	var yaw := player.rotation.y
+	_load_place(here)
+	player.position = at
+	player.rotation.y = yaw
 
 
 func city_stage() -> int:

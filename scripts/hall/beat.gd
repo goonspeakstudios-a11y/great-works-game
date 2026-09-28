@@ -1,7 +1,7 @@
 extends RefCounted
 ## A beat: one moment of a book played in the first person, as the scene's hero (Achilles with his
 ## hand on his sword, Priam kneeling), or as yourself in a hands-on activity (walking the memory
-## house, pegging out Euclid's circles). A beat is a list of steps from content/greece/beats.json:
+## house, pegging out Euclid's circles). A beat is a list of steps from each world's beats.json:
 ##   {"line": text}                      one short line on screen; F goes on
 ##   {"act": text, "hold": secs}         the one thing you do: press F, or hold it for `hold` seconds
 ##   {"go": mark, "text": text}          walk to a mark (or through a list of marks, in order)
@@ -15,7 +15,7 @@ extends RefCounted
 ## beat moved is put back when it ends, so it can be played again.
 
 const People := preload("res://scripts/hall/kit_greek_people.gd")
-const FILE := "res://content/greece/beats.json"
+const FILES := ["res://content/greece/beats.json", "res://content/rome/beats.json"]
 const KINDS := ["line", "act", "go", "look", "swap", "move", "show", "hide", "eye", "wait"]
 const REACH := 1.6  # how near a mark you must come
 const TURN_SECS := 0.6
@@ -42,13 +42,16 @@ var _eye := 0.0
 
 ## Every beat of every book, as written in beats.json: {work: {beat: {hero, title, steps}}}.
 static func all() -> Dictionary:
-	if not FileAccess.file_exists(FILE):
-		return {}
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(FILE))
-	if not data is Dictionary:
-		push_error("beats.json does not parse")
-		return {}
-	return data
+	var out := {}
+	for file: String in FILES:
+		if not FileAccess.file_exists(file):
+			continue
+		var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(file))
+		if not data is Dictionary:
+			push_error("%s does not parse" % file)
+			continue
+		out.merge(data)
+	return out
 
 
 static func find(for_work: String, name: String) -> Dictionary:

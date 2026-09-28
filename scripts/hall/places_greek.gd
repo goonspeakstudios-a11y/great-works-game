@@ -131,7 +131,7 @@ static func domus(world: Node3D, work: String, room: Dictionary, stage: int = 0)
 	# the way in: down the Sacred Way from the Velia
 	var gate := RomeMap.landmark("velia") + Vector3(-5.0, 0, -4.0)
 	var gate_to := gate.lerp(RomeMap.landmark("regia"), 0.45)
-	_arrival_toward(world, room, out, spots, flicker, gate, gate_to, "basalt")
+	_arrival_toward(world, room, out, spots, flicker, gate, gate_to, "basalt", "urbs")
 	Rome.via(world, gate_to, RomeMap.landmark("regia"), 4.2, whole)
 	Rome.via(world, RomeMap.landmark("regia"), RomeMap.landmark("temple_of_saturn"), 4.2, whole)
 	_forum(world, b, flicker, people)
@@ -225,11 +225,15 @@ static func _forum(world: Node3D, b: Array, flicker: Array, people: Array) -> vo
 ## The gateway back to the Shore at `gate`, and the way from it toward `to`, with the room's facts on
 ## steles either side (the arrival of _arrival, in any direction).
 static func _arrival_toward(world: Node3D, room: Dictionary, out: Array, spots: Dictionary, flicker: Array, gate: Vector3,
-		to: Vector3, path_mat: String = "path") -> void:
+		to: Vector3, path_mat: String = "path", back_to: String = "hub") -> void:
 	var dir := (to - gate).normalized()
 	var side := Vector3(dir.z, 0, -dir.x)
-	flicker.append(Kit.gateway(world, gate, Kit.face_yaw(gate, to), true))
-	out.append({"kind": "gate", "pos": gate + dir * 1.7, "to": "hub", "open": true, "text": "Back to the Shore"})
+	if back_to == "urbs":
+		flicker.append(Rome.gateway(world, gate, Kit.face_yaw(gate, to), true))
+	else:
+		flicker.append(Kit.gateway(world, gate, Kit.face_yaw(gate, to), true))
+	out.append({"kind": "gate", "pos": gate + dir * 1.7, "to": back_to, "open": true,
+		"text": "Back into the city" if back_to == "urbs" else "Back to the Shore"})
 	Kit.box(world, (gate + to) / 2.0 + Vector3(0, 0.01, 0), Vector3(3.0, 0.02, gate.distance_to(to)), path_mat, false,
 		Vector3(0, Kit.face_yaw(gate, to), 0))
 	var facts: Array = room.get("facts", [])

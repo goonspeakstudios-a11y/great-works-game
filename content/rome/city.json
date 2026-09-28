@@ -1,0 +1,2191 @@
+{
+  "about": "The city of Rome as the Rome world's hub (places_rome.gd): the whole city, walked on the map of content/rome/republican_rome.json (real metres east and north of the Forum, shrunk by its scale). It stands in one of four ages; a monument stands from the year it was built ('from'), is a ruin from 'ruin', and is gone from 'gone'. Years are negative before Christ. Positions not marked in republican_rome.json are read off modern coordinates of the remains and are approximate.",
+  "ages": [
+    {
+      "id": "republic",
+      "name": "The Republic",
+      "year": -50,
+      "when": "about 50 BC",
+      "mood": "morning",
+      "people": 190,
+      "ground": "cobble",
+      "line": "Rome, about 50 BC: the Republic at the height of its power and the edge of its civil wars. Pompey's theatre is new; Caesar is in Gaul.",
+      "navel": "Let the years pass: to the Empire at its height"
+    },
+    {
+      "id": "empire",
+      "name": "The Empire",
+      "year": 150,
+      "when": "about AD 150",
+      "mood": "noon",
+      "people": 240,
+      "ground": "cobble",
+      "line": "Rome, about AD 150, under Antoninus Pius: a city of perhaps a million, marble over brick, two years past its nine hundredth birthday.",
+      "navel": "Let the years pass: to the late Empire"
+    },
+    {
+      "id": "late",
+      "name": "The Late Empire",
+      "year": 330,
+      "when": "about AD 330",
+      "mood": "golden",
+      "people": 190,
+      "ground": "cobble",
+      "line": "Rome, about AD 330: Constantine has built a new Rome on the Bosporus. The old one keeps its Senate, its games and its walls, and now its churches.",
+      "navel": "Let the years pass: to the emptied city"
+    },
+    {
+      "id": "fall",
+      "name": "The Fall",
+      "year": 552,
+      "when": "AD 552",
+      "mood": "twilight",
+      "people": 36,
+      "ground": "rubble",
+      "line": "Rome, AD 552, at the end of the Gothic War: besieged, taken and emptied again and again. The aqueducts are cut. A few thousand live by the river.",
+      "navel": "Go back to the Republic"
+    }
+  ],
+  "navel": {
+    "name": "The Navel of the City (Umbilicus Urbis)",
+    "at": [
+      -25,
+      35
+    ],
+    "note": "The round stone that marks the centre of Rome, beside the Rostra. Every road, it was said, began here."
+  },
+  "gates": {
+    "rhetorica-ad-herennium": {
+      "at": [
+        180,
+        -110
+      ],
+      "toward": [
+        90,
+        -40
+      ]
+    }
+  },
+  "arrival": {
+    "at": [
+      140,
+      -75
+    ],
+    "toward": [
+      0,
+      10
+    ]
+  },
+  "abitato": {
+    "at": [
+      -800,
+      450
+    ],
+    "radius": 520,
+    "note": "In the 6th century the people drew in to the bend of the Tiber in the Campus Martius, near the river and its mills, when the aqueducts failed."
+  },
+  "walkable": [
+    [
+      -729,
+      2142
+    ],
+    [
+      306,
+      1887
+    ],
+    [
+      961,
+      2031
+    ],
+    [
+      1549,
+      1943
+    ],
+    [
+      2196,
+      866
+    ],
+    [
+      2519,
+      -44
+    ],
+    [
+      1798,
+      -833
+    ],
+    [
+      1011,
+      -1432
+    ],
+    [
+      1326,
+      -1643
+    ],
+    [
+      1293,
+      -2098
+    ],
+    [
+      837,
+      -1965
+    ],
+    [
+      -315,
+      -1765
+    ],
+    [
+      -886,
+      -1343
+    ],
+    [
+      -1839,
+      -833
+    ],
+    [
+      -1425,
+      89
+    ],
+    [
+      -1180,
+      300
+    ],
+    [
+      -1180,
+      900
+    ],
+    [
+      -930,
+      1500
+    ]
+  ],
+  "aurelian_wall": {
+    "from": 275,
+    "height": 10,
+    "note": "Aurelian's wall, begun AD 271 against the barbarians: 19 km of brick, raised higher under Honorius."
+  },
+  "open": [
+    {
+      "at": [
+        0,
+        10
+      ],
+      "r": 70,
+      "why": "the Forum"
+    },
+    {
+      "at": [
+        -800,
+        700
+      ],
+      "r": 260,
+      "until": -30,
+      "why": "the open Campus Martius, where the army mustered and the people voted"
+    },
+    {
+      "at": [
+        41,
+        -701
+      ],
+      "r": 230,
+      "why": "the Circus Maximus"
+    },
+    {
+      "at": [
+        -340,
+        -350
+      ],
+      "r": 70,
+      "why": "the cattle market (Forum Boarium)"
+    },
+    {
+      "at": [
+        -420,
+        -120
+      ],
+      "r": 50,
+      "why": "the vegetable market (Forum Holitorium)"
+    },
+    {
+      "at": [
+        -560,
+        -700
+      ],
+      "r": 110,
+      "why": "the river port (Emporium)"
+    }
+  ],
+  "roads": [
+    {
+      "name": "the Sacred Way",
+      "width": 6,
+      "points": [
+        [
+          -90,
+          60
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          120,
+          -60
+        ],
+        [
+          265,
+          -167
+        ],
+        [
+          440,
+          -210
+        ],
+        [
+          560,
+          -222
+        ]
+      ]
+    },
+    {
+      "name": "the Vicus Tuscus",
+      "width": 4,
+      "points": [
+        [
+          0,
+          -20
+        ],
+        [
+          -120,
+          -200
+        ],
+        [
+          -290,
+          -367
+        ]
+      ]
+    },
+    {
+      "name": "the Vicus Iugarius",
+      "width": 4,
+      "points": [
+        [
+          -90,
+          40
+        ],
+        [
+          -260,
+          -110
+        ],
+        [
+          -420,
+          -120
+        ]
+      ]
+    },
+    {
+      "name": "the Argiletum and the Clivus Suburanus",
+      "width": 5,
+      "points": [
+        [
+          20,
+          80
+        ],
+        [
+          300,
+          280
+        ],
+        [
+          522,
+          367
+        ],
+        [
+          900,
+          480
+        ],
+        [
+          1310,
+          490
+        ]
+      ]
+    },
+    {
+      "name": "the Vicus Patricius",
+      "width": 4,
+      "points": [
+        [
+          300,
+          280
+        ],
+        [
+          700,
+          800
+        ],
+        [
+          1351,
+          1147
+        ]
+      ]
+    },
+    {
+      "name": "the Vicus Longus",
+      "width": 4,
+      "points": [
+        [
+          160,
+          300
+        ],
+        [
+          520,
+          750
+        ],
+        [
+          900,
+          1300
+        ]
+      ]
+    },
+    {
+      "name": "the Alta Semita",
+      "width": 5,
+      "points": [
+        [
+          40,
+          380
+        ],
+        [
+          500,
+          1000
+        ],
+        [
+          1020,
+          1625
+        ],
+        [
+          1200,
+          1990
+        ]
+      ]
+    },
+    {
+      "name": "the Via Lata",
+      "width": 7,
+      "points": [
+        [
+          -150,
+          250
+        ],
+        [
+          -330,
+          800
+        ],
+        [
+          -500,
+          1500
+        ],
+        [
+          -729,
+          2142
+        ]
+      ]
+    },
+    {
+      "name": "the Via Appia",
+      "width": 6,
+      "points": [
+        [
+          330,
+          -900
+        ],
+        [
+          481,
+          -913
+        ],
+        [
+          800,
+          -1300
+        ],
+        [
+          1293,
+          -2098
+        ]
+      ]
+    },
+    {
+      "name": "the Via Labicana",
+      "width": 5,
+      "points": [
+        [
+          640,
+          -222
+        ],
+        [
+          1200,
+          -120
+        ],
+        [
+          1900,
+          -60
+        ],
+        [
+          2519,
+          -44
+        ]
+      ]
+    },
+    {
+      "name": "the Via Tiburtina",
+      "width": 5,
+      "points": [
+        [
+          1310,
+          490
+        ],
+        [
+          1750,
+          700
+        ],
+        [
+          2196,
+          866
+        ]
+      ]
+    },
+    {
+      "name": "the road to the Janiculum",
+      "width": 5,
+      "points": [
+        [
+          -420,
+          -120
+        ],
+        [
+          -520,
+          -280
+        ],
+        [
+          -900,
+          -420
+        ],
+        [
+          -1400,
+          -620
+        ],
+        [
+          -1839,
+          -833
+        ]
+      ]
+    },
+    {
+      "name": "the Via Recta",
+      "width": 5,
+      "points": [
+        [
+          -330,
+          800
+        ],
+        [
+          -800,
+          800
+        ],
+        [
+          -1180,
+          820
+        ]
+      ]
+    },
+    {
+      "name": "the Via Ostiensis",
+      "width": 5,
+      "points": [
+        [
+          -290,
+          -367
+        ],
+        [
+          -400,
+          -900
+        ],
+        [
+          -315,
+          -1765
+        ]
+      ]
+    },
+    {
+      "name": "the Clivus Scauri",
+      "width": 4,
+      "points": [
+        [
+          480,
+          -560
+        ],
+        [
+          900,
+          -600
+        ],
+        [
+          1500,
+          -750
+        ],
+        [
+          1798,
+          -833
+        ]
+      ]
+    },
+    {
+      "name": "the street of the Esquiline",
+      "width": 4,
+      "points": [
+        [
+          1310,
+          490
+        ],
+        [
+          1500,
+          1200
+        ],
+        [
+          1549,
+          1943
+        ]
+      ]
+    }
+  ],
+  "bridges": [
+    {
+      "name": "the Sublician Bridge",
+      "at": [
+        -560,
+        -520
+      ],
+      "from": -640,
+      "material": "wood",
+      "note": "The oldest bridge, all of wood and not an iron nail in it, as religion required: the one Horatius held."
+    },
+    {
+      "name": "the Aemilian Bridge",
+      "at": [
+        -600,
+        -330
+      ],
+      "from": -142,
+      "note": "The first stone bridge over the Tiber, 142 BC."
+    },
+    {
+      "name": "the Fabrician Bridge",
+      "at": [
+        -597,
+        -110
+      ],
+      "from": -62,
+      "island": true,
+      "note": "Lucius Fabricius, keeper of the roads, built it to the island in 62 BC. It still carries people today."
+    },
+    {
+      "name": "the Cestian Bridge",
+      "at": [
+        -680,
+        -240
+      ],
+      "from": -46,
+      "island": true,
+      "note": "From the island to the far bank."
+    },
+    {
+      "name": "the Bridge of Agrippa",
+      "at": [
+        -1100,
+        420
+      ],
+      "from": -25
+    },
+    {
+      "name": "Nero's Bridge",
+      "at": [
+        -1230,
+        950
+      ],
+      "from": 60,
+      "ruin": 450
+    },
+    {
+      "name": "the Aelian Bridge",
+      "at": [
+        -1330,
+        1140
+      ],
+      "from": 134,
+      "note": "Hadrian's bridge to his tomb."
+    }
+  ],
+  "aqueducts": [
+    {
+      "name": "the Aqua Marcia",
+      "from": [
+        2400,
+        100
+      ],
+      "to": [
+        1400,
+        500
+      ],
+      "year": -144,
+      "tiers": 1
+    },
+    {
+      "name": "the Aqua Claudia",
+      "from": [
+        2519,
+        -44
+      ],
+      "to": [
+        1800,
+        -300
+      ],
+      "year": 52,
+      "tiers": 2
+    },
+    {
+      "name": "Nero's arches of the Claudia",
+      "from": [
+        1800,
+        -300
+      ],
+      "to": [
+        950,
+        -560
+      ],
+      "year": 64,
+      "tiers": 1
+    }
+  ],
+  "regions": [
+    {
+      "at": [
+        0,
+        30
+      ],
+      "r": 160,
+      "republic": "The Forum",
+      "empire": "Regio VIII, the Roman Forum"
+    },
+    {
+      "at": [
+        -190,
+        120
+      ],
+      "r": 110,
+      "republic": "The Capitol",
+      "empire": "Regio VIII, the Capitol"
+    },
+    {
+      "at": [
+        150,
+        -430
+      ],
+      "r": 200,
+      "republic": "Palatina, the Palatine",
+      "empire": "Regio X, the Palatium"
+    },
+    {
+      "at": [
+        600,
+        250
+      ],
+      "r": 300,
+      "republic": "Suburana, the Subura",
+      "empire": "Regio IV, the Temple of Peace and the Subura"
+    },
+    {
+      "at": [
+        750,
+        -150
+      ],
+      "r": 260,
+      "republic": "Suburana, the Carinae",
+      "empire": "Regio III, Isis and Serapis"
+    },
+    {
+      "at": [
+        900,
+        -600
+      ],
+      "r": 320,
+      "republic": "Suburana, the Caelian",
+      "empire": "Regio II, the Caelian"
+    },
+    {
+      "at": [
+        1300,
+        400
+      ],
+      "r": 420,
+      "republic": "Esquilina, the Esquiline",
+      "empire": "Regio V, the Esquiline"
+    },
+    {
+      "at": [
+        600,
+        1150
+      ],
+      "r": 450,
+      "republic": "Collina, the Quirinal and the Viminal",
+      "empire": "Regio VI, Alta Semita"
+    },
+    {
+      "at": [
+        -250,
+        900
+      ],
+      "r": 350,
+      "republic": "The Via Lata, outside the wall",
+      "empire": "Regio VII, the Via Lata"
+    },
+    {
+      "at": [
+        -800,
+        650
+      ],
+      "r": 450,
+      "republic": "The Campus Martius",
+      "empire": "Regio IX, the Flaminian Circus"
+    },
+    {
+      "at": [
+        -100,
+        -650
+      ],
+      "r": 260,
+      "republic": "The valley of the Circus",
+      "empire": "Regio XI, the Circus Maximus"
+    },
+    {
+      "at": [
+        -300,
+        -1050
+      ],
+      "r": 350,
+      "republic": "The Aventine",
+      "empire": "Regio XIII, the Aventine"
+    },
+    {
+      "at": [
+        500,
+        -1350
+      ],
+      "r": 400,
+      "republic": "Outside the Capene Gate",
+      "empire": "Regio I, the Capene Gate"
+    },
+    {
+      "at": [
+        1300,
+        -1300
+      ],
+      "r": 400,
+      "republic": "The road south",
+      "empire": "Regio XII, the Public Pool"
+    },
+    {
+      "at": [
+        -1300,
+        -350
+      ],
+      "r": 550,
+      "republic": "Across the Tiber",
+      "empire": "Regio XIV, Across the Tiber"
+    }
+  ],
+  "monuments": [
+    {
+      "id": "jupiter",
+      "name": "the Temple of Jupiter Best and Greatest",
+      "kind": "temple",
+      "at": [
+        -190,
+        90
+      ],
+      "face": 180,
+      "size": 1.0,
+      "from": -509,
+      "ruin": 455,
+      "note": "The greatest temple of Rome, on the Capitol: Jupiter in the middle, Juno and Minerva either side. Triumphs end here.",
+      "fall": "The Vandals stripped its gilded bronze roof tiles in 455. The temple of the city's god stands open to the sky."
+    },
+    {
+      "id": "juno_moneta",
+      "name": "the Temple of Juno Moneta",
+      "kind": "temple",
+      "at": [
+        -157,
+        200
+      ],
+      "face": 135,
+      "size": 0.8,
+      "from": -344,
+      "ruin": 400,
+      "note": "Juno the Warner, on the Citadel. The mint stands beside her, and so the word money."
+    },
+    {
+      "id": "tabularium",
+      "name": "the Tabularium",
+      "kind": "tabularium",
+      "at": [
+        -116,
+        108
+      ],
+      "face": 120,
+      "from": -78,
+      "ruin": 500,
+      "note": "The record office, 78 BC: the state's laws and treaties on bronze, behind a great arcade over the Forum."
+    },
+    {
+      "id": "saturn",
+      "name": "the Temple of Saturn",
+      "kind": "temple",
+      "at": [
+        -76,
+        50
+      ],
+      "face": "forum",
+      "size": 0.9,
+      "from": -497,
+      "ruin": 450,
+      "note": "The oldest temple in the Forum. Under its podium is the treasury of the Roman people.",
+      "fall": "Rebuilt after a fire in the 4th century with columns taken from other buildings. Now only its porch stands."
+    },
+    {
+      "id": "concord",
+      "name": "the Temple of Concord",
+      "kind": "temple",
+      "at": [
+        -75,
+        92
+      ],
+      "face": "forum",
+      "size": 0.85,
+      "from": -121,
+      "ruin": 450,
+      "note": "Built in 121 BC after the killing of Gaius Gracchus, to celebrate a concord the murder had made."
+    },
+    {
+      "id": "vespasian",
+      "name": "the Temple of Vespasian and Titus",
+      "kind": "temple",
+      "at": [
+        -94,
+        72
+      ],
+      "face": "forum",
+      "size": 0.6,
+      "from": 87,
+      "ruin": 450
+    },
+    {
+      "id": "castor",
+      "name": "the Temple of Castor and Pollux",
+      "kind": "temple",
+      "at": [
+        41,
+        -45
+      ],
+      "face": "forum",
+      "size": 0.85,
+      "from": -484,
+      "ruin": 450,
+      "note": "The twin horsemen who watered their horses at the spring of Juturna here, bringing news of victory at Lake Regillus."
+    },
+    {
+      "id": "vesta",
+      "name": "the Temple of Vesta",
+      "kind": "round_temple",
+      "at": [
+        78,
+        -59
+      ],
+      "size": 1.0,
+      "from": -700,
+      "ruin": 394,
+      "fire": true,
+      "note": "The round house of the hearth of Rome. Six Vestal Virgins keep its fire burning; if it goes out, Rome is in danger.",
+      "fall": "Theodosius closed the temple and the fire went out in 394."
+    },
+    {
+      "id": "regia",
+      "name": "the Regia",
+      "kind": "hall",
+      "at": [
+        91,
+        -45
+      ],
+      "face": 225,
+      "size": 0.6,
+      "from": -600,
+      "ruin": 400,
+      "note": "The house of the kings, then of the chief priest, the Pontifex Maximus. Caesar holds the office."
+    },
+    {
+      "id": "rostra",
+      "name": "the Rostra",
+      "kind": "rostra",
+      "at": [
+        -58,
+        22
+      ],
+      "face": "forum",
+      "from": -338,
+      "note": "The speakers' platform, faced with the bronze beaks of ships taken at Antium in 338 BC."
+    },
+    {
+      "id": "curia_hostilia",
+      "name": "the Senate House",
+      "kind": "curia",
+      "at": [
+        -41,
+        67
+      ],
+      "face": "forum",
+      "from": -600,
+      "gone": -44,
+      "note": "The Senate House. Clodius' supporters burned it with his body in 52 BC; Faustus Sulla is building it again."
+    },
+    {
+      "id": "curia_julia",
+      "name": "the Senate House (Curia Julia)",
+      "kind": "curia",
+      "at": [
+        8,
+        80
+      ],
+      "face": 210,
+      "from": -29,
+      "ruin": 630,
+      "note": "Caesar's Senate House, finished by Augustus. Inside, the altar and statue of Victory.",
+      "fall": "The Senate still meets, a few old families; in a few years it will be gone from the sources."
+    },
+    {
+      "id": "basilica_aemilia",
+      "name": "the Basilica Aemilia",
+      "kind": "basilica",
+      "at": [
+        41,
+        56
+      ],
+      "face": 210,
+      "size": 0.7,
+      "from": -179,
+      "ruin": 410,
+      "note": "A great hall for the law and for business, with the money-changers' shops along its front.",
+      "fall": "Burned when Alaric's Goths sacked Rome in 410. Coins melted into its floor are still there."
+    },
+    {
+      "id": "basilica_sempronia",
+      "name": "the Basilica Sempronia",
+      "kind": "basilica",
+      "at": [
+        -33,
+        -45
+      ],
+      "face": 30,
+      "size": 0.6,
+      "from": -170,
+      "gone": -46
+    },
+    {
+      "id": "basilica_julia",
+      "name": "the Basilica Julia",
+      "kind": "basilica",
+      "at": [
+        -33,
+        -45
+      ],
+      "face": 30,
+      "size": 0.7,
+      "from": -46,
+      "ruin": 410,
+      "note": "Caesar's basilica. The Centumviral court hears inheritance cases here; idlers scratch game boards into its steps."
+    },
+    {
+      "id": "divus_julius",
+      "name": "the Temple of the Deified Julius",
+      "kind": "temple",
+      "at": [
+        83,
+        0
+      ],
+      "face": 270,
+      "size": 0.7,
+      "from": -29,
+      "ruin": 450,
+      "note": "Built where Caesar's body was burned by the crowd in 44 BC. The first Roman to be made a god."
+    },
+    {
+      "id": "antoninus",
+      "name": "the Temple of Antoninus and Faustina",
+      "kind": "temple",
+      "at": [
+        133,
+        33
+      ],
+      "face": 210,
+      "size": 0.8,
+      "from": 141,
+      "note": "Antoninus built it for his wife Faustina, dead in 141. When he dies the Senate will add his name.",
+      "fall": "Its porch stands whole. In a few centuries it will be a church, and it still is."
+    },
+    {
+      "id": "janus",
+      "name": "the Shrine of Janus",
+      "kind": "shrine",
+      "at": [
+        0,
+        70
+      ],
+      "face": 180,
+      "from": -700,
+      "ruin": 450,
+      "note": "The twin doors of Janus stand open while Rome is at war, and close only in peace. They are almost never closed."
+    },
+    {
+      "id": "sep_severus",
+      "name": "the Arch of Septimius Severus",
+      "kind": "arch",
+      "at": [
+        -41,
+        89
+      ],
+      "face": 120,
+      "from": 203,
+      "note": "Severus' arch, 203, for his wars in Parthia. The name of his son Geta was chiselled out after Caracalla killed him."
+    },
+    {
+      "id": "titus",
+      "name": "the Arch of Titus",
+      "kind": "arch",
+      "at": [
+        273,
+        -167
+      ],
+      "face": 300,
+      "from": 82,
+      "note": "For the taking of Jerusalem in 70. Inside, the relief of the Temple's menorah carried in triumph."
+    },
+    {
+      "id": "constantine",
+      "name": "the Arch of Constantine",
+      "kind": "arch",
+      "at": [
+        447,
+        -266
+      ],
+      "face": 0,
+      "from": 315,
+      "note": "Constantine's arch, 315, for his victory over Maxentius at the Milvian Bridge. Much of its sculpture is taken from older monuments."
+    },
+    {
+      "id": "venus_roma",
+      "name": "the Temple of Venus and Rome",
+      "kind": "double_temple",
+      "at": [
+        373,
+        -133
+      ],
+      "face": 90,
+      "size": 0.8,
+      "from": 135,
+      "ruin": 600,
+      "note": "Hadrian's own design: Venus, mother of Rome, and Roma, back to back. The largest temple in the city. ROMA backwards is AMOR."
+    },
+    {
+      "id": "maxentius",
+      "name": "the Basilica of Maxentius",
+      "kind": "vaulted_hall",
+      "at": [
+        248,
+        -55
+      ],
+      "face": 90,
+      "size": 0.7,
+      "from": 312,
+      "ruin": 500,
+      "note": "Begun by Maxentius, finished by Constantine: vaults so wide they taught the builders of St Peter's."
+    },
+    {
+      "id": "peace",
+      "name": "the Temple of Peace",
+      "kind": "forum",
+      "at": [
+        149,
+        67
+      ],
+      "face": 330,
+      "w": 110,
+      "d": 105,
+      "from": 75,
+      "ruin": 450,
+      "note": "Vespasian's garden square of peace, with the spoils of Jerusalem and a library. The marble plan of Rome hangs on one wall.",
+      "fall": "Part of its library hall has been a church of Saints Cosmas and Damian since 527."
+    },
+    {
+      "id": "caesar_forum",
+      "name": "the Forum of Caesar",
+      "kind": "forum",
+      "at": [
+        -25,
+        150
+      ],
+      "face": 150,
+      "w": 60,
+      "d": 150,
+      "from": -46,
+      "ruin": 500,
+      "note": "Caesar's square, paid for with Gallic gold."
+    },
+    {
+      "id": "venus_genetrix",
+      "name": "the Temple of Venus the Mother",
+      "kind": "temple",
+      "at": [
+        -58,
+        190
+      ],
+      "face": 150,
+      "size": 1.0,
+      "from": -46,
+      "ruin": 500,
+      "note": "Venus Genetrix, from whom Caesar's family claims descent through Aeneas. He vowed her this temple at Pharsalus."
+    },
+    {
+      "id": "augustus_forum",
+      "name": "the Forum of Augustus",
+      "kind": "forum",
+      "at": [
+        140,
+        190
+      ],
+      "face": 225,
+      "w": 90,
+      "d": 110,
+      "from": -2,
+      "ruin": 500,
+      "note": "Augustus' square, with statues of the great men of Rome down its colonnades."
+    },
+    {
+      "id": "mars_ultor",
+      "name": "the Temple of Mars the Avenger",
+      "kind": "temple",
+      "at": [
+        174,
+        240
+      ],
+      "face": 225,
+      "size": 1.0,
+      "from": -2,
+      "ruin": 500,
+      "note": "Vowed by the young Octavian at Philippi, to avenge Caesar. Generals set out for war from here.",
+      "fall": "Its roof is gone; its high fire wall still shuts out the Subura behind it."
+    },
+    {
+      "id": "nerva_forum",
+      "name": "the Forum of Nerva",
+      "kind": "forum",
+      "at": [
+        90,
+        130
+      ],
+      "face": 135,
+      "w": 40,
+      "d": 120,
+      "from": 97,
+      "ruin": 500
+    },
+    {
+      "id": "minerva",
+      "name": "the Temple of Minerva",
+      "kind": "temple",
+      "at": [
+        120,
+        170
+      ],
+      "face": 225,
+      "size": 0.7,
+      "from": 97,
+      "ruin": 500
+    },
+    {
+      "id": "trajan_forum",
+      "name": "the Forum of Trajan",
+      "kind": "forum",
+      "at": [
+        -20,
+        290
+      ],
+      "face": 150,
+      "w": 120,
+      "d": 190,
+      "from": 112,
+      "ruin": 550,
+      "note": "The last and grandest of the imperial fora, paid for with the gold of Dacia. Ammianus says Constantius II stood speechless in it."
+    },
+    {
+      "id": "basilica_ulpia",
+      "name": "the Basilica Ulpia",
+      "kind": "basilica",
+      "at": [
+        -50,
+        350
+      ],
+      "face": 150,
+      "size": 1.2,
+      "from": 112,
+      "ruin": 550
+    },
+    {
+      "id": "trajan_column",
+      "name": "Trajan's Column",
+      "kind": "column",
+      "at": [
+        -75,
+        400
+      ],
+      "size": 1.0,
+      "from": 113,
+      "note": "A hundred Roman feet high, its spiral frieze tells the Dacian wars in 2,500 figures. Trajan's ashes lie in its base."
+    },
+    {
+      "id": "trajan_markets",
+      "name": "Trajan's Markets",
+      "kind": "markets",
+      "at": [
+        75,
+        389
+      ],
+      "face": 240,
+      "from": 110,
+      "ruin": 550,
+      "note": "A hemicycle of brick shops cut into the Quirinal: pepper, oil, wine, the grain office."
+    },
+    {
+      "id": "colosseum",
+      "name": "the Flavian Amphitheatre",
+      "kind": "amphitheatre",
+      "at": [
+        580,
+        -222
+      ],
+      "size": 0.45,
+      "from": 80,
+      "ruin": 450,
+      "note": "The Flavian Amphitheatre: fifty thousand watch the games. Titus opened it in 80 with a hundred days of them.",
+      "fall": "Earthquakes cracked it in 443 and 484. The last beast hunt was in 523. People are moving into its arches."
+    },
+    {
+      "id": "colossus",
+      "name": "the Colossus",
+      "kind": "colossus",
+      "at": [
+        470,
+        -170
+      ],
+      "from": 75,
+      "gone": 500,
+      "note": "Nero's bronze statue of himself, 30 m high, made the Sun by Vespasian. The amphitheatre is named for it: the Colosseum."
+    },
+    {
+      "id": "meta_sudans",
+      "name": "the Meta Sudans",
+      "kind": "fountain_cone",
+      "at": [
+        500,
+        -240
+      ],
+      "from": 90,
+      "ruin": 537,
+      "note": "The Sweating Post: a tall cone fountain, like a turning post of the circus, running with water."
+    },
+    {
+      "id": "ludus",
+      "name": "the Great Gladiator School",
+      "kind": "ludus",
+      "at": [
+        690,
+        -150
+      ],
+      "from": 90,
+      "ruin": 450
+    },
+    {
+      "id": "titus_baths",
+      "name": "the Baths of Titus",
+      "kind": "baths",
+      "at": [
+        700,
+        -50
+      ],
+      "face": 200,
+      "size": 0.45,
+      "from": 80,
+      "ruin": 500
+    },
+    {
+      "id": "trajan_baths",
+      "name": "the Baths of Trajan",
+      "kind": "baths",
+      "at": [
+        880,
+        150
+      ],
+      "face": 210,
+      "size": 0.8,
+      "from": 109,
+      "ruin": 537,
+      "note": "Built over Nero's Golden House, buried to make them. The first of the great imperial baths."
+    },
+    {
+      "id": "caracalla_baths",
+      "name": "the Baths of Caracalla",
+      "kind": "baths",
+      "at": [
+        596,
+        -1454
+      ],
+      "face": 45,
+      "size": 1.0,
+      "from": 216,
+      "ruin": 537,
+      "note": "1,600 bathers at once: hot rooms, cold pool, gymnasia, libraries, gardens.",
+      "fall": "The Goths cut the aqueducts in 537. With no water the baths are empty halls."
+    },
+    {
+      "id": "diocletian_baths",
+      "name": "the Baths of Diocletian",
+      "kind": "baths",
+      "at": [
+        1036,
+        1210
+      ],
+      "face": 225,
+      "size": 1.1,
+      "from": 306,
+      "ruin": 537,
+      "note": "The largest baths of all, for 3,000. Tradition says Christian prisoners built them."
+    },
+    {
+      "id": "palace",
+      "name": "the Palace of the Caesars",
+      "kind": "palace",
+      "at": [
+        149,
+        -410
+      ],
+      "face": 330,
+      "size": 1.0,
+      "from": 92,
+      "ruin": 600,
+      "note": "Domitian's palace, the Domus Augustana: the word palace comes from this hill, the Palatium."
+    },
+    {
+      "id": "palatine_houses",
+      "name": "the houses of the great on the Palatine",
+      "kind": "houses",
+      "at": [
+        130,
+        -400
+      ],
+      "from": -700,
+      "gone": 64,
+      "note": "The hill of the rich: Cicero, Crassus, Clodius and Hortensius all have houses here."
+    },
+    {
+      "id": "magna_mater",
+      "name": "the Temple of the Great Mother",
+      "kind": "temple",
+      "at": [
+        -58,
+        -322
+      ],
+      "face": 230,
+      "size": 0.7,
+      "from": -191,
+      "ruin": 400,
+      "note": "Cybele, brought from Phrygia in 204 BC as a black stone, to win the war against Hannibal."
+    },
+    {
+      "id": "apollo_palatinus",
+      "name": "the Temple of Apollo on the Palatine",
+      "kind": "temple",
+      "at": [
+        33,
+        -433
+      ],
+      "face": 210,
+      "size": 0.9,
+      "from": -28,
+      "ruin": 363,
+      "note": "Augustus' temple to Apollo, beside his own house, with Greek and Latin libraries."
+    },
+    {
+      "id": "circus",
+      "name": "the Circus Maximus",
+      "kind": "circus",
+      "at": [
+        41,
+        -701
+      ],
+      "from": -600,
+      "ruin": 550,
+      "note": "The great racecourse: 150,000 in the stands, later perhaps a quarter of a million. The Reds, Whites, Greens and Blues.",
+      "fall": "The last recorded races were held in 549, under Totila the Goth."
+    },
+    {
+      "id": "circus_obelisk",
+      "name": "the obelisk of the Circus",
+      "kind": "obelisk",
+      "at": [
+        41,
+        -701
+      ],
+      "size": 1.0,
+      "from": -10,
+      "ruin": 550,
+      "note": "Brought from Heliopolis by Augustus after the conquest of Egypt, set on the spina of the Circus."
+    },
+    {
+      "id": "ceres",
+      "name": "the Temple of Ceres, Liber and Libera",
+      "kind": "temple",
+      "at": [
+        -310,
+        -600
+      ],
+      "face": 45,
+      "size": 0.8,
+      "from": -493,
+      "ruin": 400,
+      "note": "The plebs' own temple, and the office of their aediles. The grain goddess."
+    },
+    {
+      "id": "diana",
+      "name": "the Temple of Diana on the Aventine",
+      "kind": "temple",
+      "at": [
+        -431,
+        -955
+      ],
+      "face": 90,
+      "size": 0.9,
+      "from": -540,
+      "ruin": 410
+    },
+    {
+      "id": "juno_regina",
+      "name": "the Temple of Juno the Queen",
+      "kind": "temple",
+      "at": [
+        -348,
+        -855
+      ],
+      "face": 90,
+      "size": 0.7,
+      "from": -392,
+      "ruin": 410,
+      "note": "Juno of Veii, invited to Rome when the city fell in 396 BC. The statue, they say, nodded."
+    },
+    {
+      "id": "hercules",
+      "name": "the Temple of Hercules the Victor",
+      "kind": "round_temple",
+      "at": [
+        -315,
+        -377
+      ],
+      "size": 0.9,
+      "from": -120,
+      "note": "The round marble temple of the cattle market, the oldest marble building in Rome. It still stands."
+    },
+    {
+      "id": "portunus",
+      "name": "the Temple of Portunus",
+      "kind": "temple",
+      "at": [
+        -381,
+        -322
+      ],
+      "face": 20,
+      "size": 0.6,
+      "from": -100,
+      "note": "The god of harbours, by the river port. It still stands, because it became a church."
+    },
+    {
+      "id": "sant_omobono",
+      "name": "the Temples of Fortune and Mother Dawn",
+      "kind": "temple",
+      "at": [
+        -307,
+        -133
+      ],
+      "face": 180,
+      "size": 0.55,
+      "from": -500,
+      "ruin": 400
+    },
+    {
+      "id": "aesculapius",
+      "name": "the Temple of Aesculapius",
+      "kind": "temple",
+      "at": [
+        -625,
+        -175
+      ],
+      "face": 90,
+      "size": 0.55,
+      "from": -291,
+      "ruin": 400,
+      "note": "The god of healing came from Epidaurus as a snake in 291 BC and chose the island. The sick still sleep here."
+    },
+    {
+      "id": "marcellus",
+      "name": "the Theatre of Marcellus",
+      "kind": "theatre",
+      "at": [
+        -439,
+        -44
+      ],
+      "face": 30,
+      "size": 0.65,
+      "from": -13,
+      "note": "Augustus' theatre, named for his nephew Marcellus, dead young. 20,000 seats.",
+      "fall": "A fortress in waiting: in centuries to come families will live in its arches, and still do."
+    },
+    {
+      "id": "bellona",
+      "name": "the Temple of Bellona",
+      "kind": "temple",
+      "at": [
+        -514,
+        33
+      ],
+      "face": 180,
+      "size": 0.6,
+      "from": -296,
+      "ruin": 400,
+      "note": "The Senate meets here, outside the sacred boundary, to receive generals who may not yet enter the city."
+    },
+    {
+      "id": "apollo_sosianus",
+      "name": "the Temple of Apollo the Healer",
+      "kind": "temple",
+      "at": [
+        -470,
+        0
+      ],
+      "face": 180,
+      "size": 0.6,
+      "from": -431,
+      "ruin": 400
+    },
+    {
+      "id": "flaminian_circus",
+      "name": "the Flaminian Circus",
+      "kind": "open_circus",
+      "at": [
+        -760,
+        200
+      ],
+      "face": 90,
+      "from": -221,
+      "gone": 300,
+      "note": "An open field for the Plebeian Games and for triumphs gathering before they march."
+    },
+    {
+      "id": "mars_in_circo",
+      "name": "the Temple of Mars in the Circus",
+      "kind": "temple",
+      "at": [
+        -886,
+        144
+      ],
+      "face": 0,
+      "size": 0.7,
+      "from": -132,
+      "ruin": 400,
+      "note": "Mars of the army, beside the Flaminian Circus, where the army mustered outside the city."
+    },
+    {
+      "id": "pompey",
+      "name": "the Theatre of Pompey",
+      "kind": "theatre",
+      "at": [
+        -1003,
+        345
+      ],
+      "face": 90,
+      "size": 0.8,
+      "from": -55,
+      "ruin": 537,
+      "note": "The first stone theatre in Rome, 55 BC. To get round the ban on permanent theatres, Pompey set a temple of Venus on top of the seats."
+    },
+    {
+      "id": "venus_victrix",
+      "name": "the Temple of Venus the Victor",
+      "kind": "temple",
+      "at": [
+        -1045,
+        345
+      ],
+      "face": 90,
+      "size": 0.7,
+      "from": -55,
+      "ruin": 537,
+      "raised": 11,
+      "note": "Venus Victrix, on top of Pompey's theatre: the seats are the stair to her temple."
+    },
+    {
+      "id": "pompey_portico",
+      "name": "the Portico of Pompey",
+      "kind": "forum",
+      "at": [
+        -890,
+        345
+      ],
+      "face": 270,
+      "w": 60,
+      "d": 180,
+      "from": -55,
+      "ruin": 537,
+      "note": "Behind the theatre: a garden portico, and at its far end the hall where the Senate met on the Ides of March, 44 BC."
+    },
+    {
+      "id": "saepta",
+      "name": "the Voting Pens (Saepta)",
+      "kind": "forum",
+      "at": [
+        -580,
+        560
+      ],
+      "face": 0,
+      "w": 90,
+      "d": 280,
+      "from": -26,
+      "ruin": 450,
+      "note": "The great enclosure where the people once voted by tribes. Under the emperors, a market of luxury goods."
+    },
+    {
+      "id": "villa_publica",
+      "name": "the Villa Publica",
+      "kind": "hall",
+      "at": [
+        -560,
+        330
+      ],
+      "face": 180,
+      "size": 0.8,
+      "from": -435,
+      "gone": 80,
+      "note": "Where the censors count the citizens and generals wait for their triumph."
+    },
+    {
+      "id": "pantheon",
+      "name": "the Pantheon",
+      "kind": "pantheon",
+      "at": [
+        -688,
+        710
+      ],
+      "face": 0,
+      "size": 0.6,
+      "from": 125,
+      "note": "Hadrian's temple of all the gods: a dome 43 m across with an open eye at the top. No one has built a larger dome of concrete since.",
+      "fall": "Shut, and falling to no one. In 609 the Pope will make it a church, and that will save it."
+    },
+    {
+      "id": "agrippa_pantheon",
+      "name": "Agrippa's Pantheon",
+      "kind": "temple",
+      "at": [
+        -688,
+        710
+      ],
+      "face": 0,
+      "size": 0.9,
+      "from": -27,
+      "gone": 80
+    },
+    {
+      "id": "iseum",
+      "name": "the Temple of Isis",
+      "kind": "forum",
+      "at": [
+        -555,
+        678
+      ],
+      "face": 0,
+      "w": 50,
+      "d": 160,
+      "from": 80,
+      "ruin": 400,
+      "note": "Isis and Serapis of Egypt, with obelisks and sphinxes. Her priests shave their heads; her rites are open to women and slaves."
+    },
+    {
+      "id": "iseum_obelisk",
+      "name": "an obelisk of Isis",
+      "kind": "obelisk",
+      "at": [
+        -555,
+        740
+      ],
+      "size": 0.5,
+      "from": 80,
+      "ruin": 537
+    },
+    {
+      "id": "agrippa_baths",
+      "name": "the Baths of Agrippa",
+      "kind": "baths",
+      "at": [
+        -760,
+        660
+      ],
+      "face": 0,
+      "size": 0.45,
+      "from": -25,
+      "ruin": 537
+    },
+    {
+      "id": "domitian_stadium",
+      "name": "the Stadium of Domitian",
+      "kind": "stadium",
+      "at": [
+        -1002,
+        777
+      ],
+      "face": 0,
+      "from": 86,
+      "ruin": 537,
+      "note": "A Greek stadium for athletics, 30,000 seats. Its oval is still the shape of the Piazza Navona."
+    },
+    {
+      "id": "hadrian_temple",
+      "name": "the Temple of the Deified Hadrian",
+      "kind": "temple",
+      "at": [
+        -480,
+        855
+      ],
+      "face": 90,
+      "size": 1.0,
+      "from": 145,
+      "ruin": 450
+    },
+    {
+      "id": "sol",
+      "name": "the Temple of the Sun",
+      "kind": "forum",
+      "at": [
+        -348,
+        844
+      ],
+      "face": 90,
+      "w": 80,
+      "d": 130,
+      "from": 274,
+      "ruin": 450,
+      "note": "Aurelian's temple of the Unconquered Sun, built with the treasure of Palmyra. His feast is 25 December."
+    },
+    {
+      "id": "ara_pacis",
+      "name": "the Altar of Augustan Peace",
+      "kind": "altar",
+      "at": [
+        -804,
+        1554
+      ],
+      "face": 270,
+      "from": -9,
+      "ruin": 400,
+      "note": "The Senate's altar to the peace Augustus brought, 9 BC: the imperial family in procession in marble."
+    },
+    {
+      "id": "augustus_tomb",
+      "name": "the Mausoleum of Augustus",
+      "kind": "mausoleum",
+      "at": [
+        -729,
+        1532
+      ],
+      "size": 0.7,
+      "from": -28,
+      "ruin": 410,
+      "note": "The round tomb of Augustus and his family, 90 m across, his bronze statue on top. His deeds are cut on bronze at the door.",
+      "fall": "Alaric's Goths looted it in 410 and scattered the ashes."
+    },
+    {
+      "id": "hadrian_tomb",
+      "name": "the Mausoleum of Hadrian",
+      "kind": "mausoleum",
+      "at": [
+        -1560,
+        1210
+      ],
+      "size": 0.6,
+      "from": 139,
+      "note": "Hadrian's tomb across the river, where the emperors lie until Caracalla.",
+      "fall": "A fortress now. In 537 the Greek garrison broke its statues and threw them down on the Goths."
+    },
+    {
+      "id": "marcus_column",
+      "name": "the Column of Marcus Aurelius",
+      "kind": "column",
+      "at": [
+        -500,
+        950
+      ],
+      "size": 1.0,
+      "from": 193
+    },
+    {
+      "id": "quirinus",
+      "name": "the Temple of Quirinus",
+      "kind": "temple",
+      "at": [
+        481,
+        977
+      ],
+      "face": 270,
+      "size": 0.9,
+      "from": -293,
+      "ruin": 400,
+      "note": "Quirinus, who was Romulus made a god, on the hill that bears his name."
+    },
+    {
+      "id": "serapis",
+      "name": "the Temple of Serapis",
+      "kind": "temple",
+      "at": [
+        -41,
+        733
+      ],
+      "face": 270,
+      "size": 1.0,
+      "from": 211,
+      "ruin": 450
+    },
+    {
+      "id": "divus_claudius",
+      "name": "the Temple of the Deified Claudius",
+      "kind": "forum",
+      "at": [
+        646,
+        -577
+      ],
+      "face": 0,
+      "w": 150,
+      "d": 170,
+      "from": 70,
+      "ruin": 450
+    },
+    {
+      "id": "jupiter_stator",
+      "name": "the Temple of Jupiter the Stayer",
+      "kind": "temple",
+      "at": [
+        235,
+        -135
+      ],
+      "face": 300,
+      "size": 0.6,
+      "from": -294,
+      "ruin": 400,
+      "note": "Romulus vowed it when the Romans ran from the Sabines, if Jupiter would stay their flight. Cicero spoke against Catiline in it."
+    },
+    {
+      "id": "lateran",
+      "name": "the Lateran Basilica",
+      "kind": "church",
+      "at": [
+        1698,
+        -700
+      ],
+      "face": 90,
+      "size": 0.5,
+      "from": 324,
+      "note": "Constantine's gift to the bishop of Rome, on the site of his horse guards' barracks: the cathedral of the Pope.",
+      "fall": "The Pope's own church and house. Grain for the poor is handed out from the church's farms."
+    },
+    {
+      "id": "st_peter",
+      "name": "the Basilica of St Peter",
+      "kind": "church",
+      "at": [
+        -2594,
+        1110
+      ],
+      "face": 90,
+      "size": 0.6,
+      "from": 330,
+      "note": "Constantine's great church over the grave of the apostle Peter, on the Vatican hill across the river."
+    },
+    {
+      "id": "santa_maria_antiqua",
+      "name": "the church of Holy Mary the Old",
+      "kind": "church",
+      "at": [
+        60,
+        -95
+      ],
+      "face": 30,
+      "size": 0.35,
+      "from": 540,
+      "note": "A hall at the foot of the Palatine made a church in the 6th century, its walls painted with saints."
+    },
+    {
+      "id": "cosma_damiano",
+      "name": "the church of Saints Cosmas and Damian",
+      "kind": "church",
+      "at": [
+        205,
+        40
+      ],
+      "face": 210,
+      "size": 0.35,
+      "from": 527
+    },
+    {
+      "id": "sessorian",
+      "name": "the church of the Holy Cross",
+      "kind": "church",
+      "at": [
+        2250,
+        -380
+      ],
+      "face": 270,
+      "size": 0.4,
+      "from": 330,
+      "note": "The empress Helena's palace hall, holding the pieces of the Cross she brought from Jerusalem."
+    }
+  ],
+  "people": {
+    "republic": {
+      "merchant": [
+        "Sausages! Hot sausages! Fresh from Lucania!",
+        "Garum from Spain, the best: it costs more than perfume and it is worth it.",
+        "Figs, dates, the new wine. Don't touch unless you're buying.",
+        "I sell books too, you know. Greek ones. Very improving.",
+        "Money-changer. Denarii for your drachmas, a fair rate, near enough.",
+        "They say Crassus buys houses while they burn. Cheap, then he rebuilds and rents them to us."
+      ],
+      "patrol": [
+        "Make way! Make way for the praetor!",
+        "The lictors carry the rods and the axe. Inside the city the axe stays out of the bundle, for a citizen may appeal.",
+        "Stand aside, citizen. The magistrate passes.",
+        "At night the three men for capital crimes keep the watch. Very few of them for a city this size."
+      ],
+      "patrician": [
+        "My clients come to my door at dawn and walk me to the Forum. A man is known by his following.",
+        "The Senate is the Republic. The tribunes forget it.",
+        "Pompey was made sole consul, no colleague at all. It is not the old way.",
+        "My son goes to Rhodes to study rhetoric. A Roman must be able to speak.",
+        "Caesar writes his dispatches from Gaul as if he were a god reporting the weather."
+      ],
+      "plebeian": [
+        "Clodius gave us our grain free. Then Milo's men killed him on the Appian Way.",
+        "Third floor of an insula, forty families to a stair. If it burns, you jump.",
+        "Did you vote? They buy the tribes now, a denarius a head.",
+        "The Tiber came up again last spring. The whole Velabrum under water.",
+        "My son is with Caesar in Gaul. Nine years he signed for. He'll have land, they say."
+      ],
+      "peregrinus": [
+        "I came from Alexandria with the grain ships. Your Rome is loud and crooked, and very rich.",
+        "A Greek teacher? Every rich Roman wants one and none of them respect us.",
+        "I am of the Aedui, a friend of the Roman people. That is what the treaty says.",
+        "Syrian? No, from Tyre. Purple dye. The senators' stripes are my trade.",
+        "I am a Jew of the city. We live across the river; we send our tribute to the Temple."
+      ]
+    },
+    "empire": {
+      "merchant": [
+        "Pepper, from India, by way of Alexandria! Trajan's markets have nothing better.",
+        "Oil from Baetica, wine from Gaul, grain from Egypt: all the world comes up the Tiber.",
+        "Books! Martial's epigrams, new copies. Four sesterces, and cheap at that.",
+        "Bread from the public ovens? That's for citizens with the token. The rest of you buy mine.",
+        "Hot food! Chickpeas, sausages, eggs: I light the brazier before dawn."
+      ],
+      "patrol": [
+        "Vigiles. We are the watch: seven cohorts, a station for every two regions. Buckets, axes, blankets soaked in vinegar.",
+        "Keep a jar of water in your room, the prefect's orders. Fires start in the upper floors.",
+        "The urban cohorts keep the peace in the streets. At the games we keep it in the stands.",
+        "Carts only at night, the law says. So nobody sleeps, but the streets are clear by day."
+      ],
+      "patrician": [
+        "The Senate meets. The emperor decides. Antoninus is a good emperor, and we are glad of him.",
+        "Two years ago Rome was nine hundred years old. The games went on for weeks.",
+        "I have a villa at Tibur and another at Baiae, and I prefer this city to both. Nobody believes me.",
+        "My freedman is richer than I am. He trades in Ostia and wears more rings than a king.",
+        "My sons will go into the army as tribunes for a year and then into the courts."
+      ],
+      "plebeian": [
+        "Bread and circuses, the poet said. Well, the bread is free and the circus is free.",
+        "The Greens will win. Never bet against the Greens.",
+        "The baths cost a quarter of an as. For that you get hot water, a massage and all the gossip in Rome.",
+        "My landlord is Greek, my neighbour Syrian, my baker a Gaul. Who is Roman now?",
+        "Six floors, and the builders cut corners. You hear the walls creak at night."
+      ],
+      "peregrinus": [
+        "I am from Lepcis, in Africa. My cousin is in the Senate now. It can be done.",
+        "I came from Britain with the tin. So much marble! And so many people!",
+        "A Christian? Yes. We meet in houses. We harm no one.",
+        "An Egyptian priest of Isis. Your emperors have built her a temple on the Campus. Rome takes every god.",
+        "I am a Greek doctor. Romans distrust doctors and cannot do without us."
+      ]
+    },
+    "late": {
+      "merchant": [
+        "Pork! The state gives it out now, and oil and wine, but you want more than your ration.",
+        "Relics? No, only oil lamps with the sign of Christ on them. The best sellers.",
+        "The new coin is the solidus, gold. The old silver is worth nothing.",
+        "Wine from the south of Italy. The Emperor lives in the east now, but Rome still drinks.",
+        "Everything costs more since Diocletian set the prices, and then it all went to the black market."
+      ],
+      "patrol": [
+        "The Urban Prefect keeps the city now. The Emperor is far away.",
+        "The walls! Aurelian's walls. Nineteen kilometres of brick, and a gate on every road.",
+        "No brawls at the chariot races. The factions fight with knives now.",
+        "Move along. The Prefect's bread is given at the steps, not here."
+      ],
+      "patrician": [
+        "The Emperor has built a new Rome on the Bosporus. The old one keeps its Senate. For now.",
+        "My family has sat in the Senate for four hundred years. We keep the old gods, most of us.",
+        "The bishop has become a great man. Constantine gave him the Lateran palace.",
+        "Rome is not where the Emperor is. Rome is here. We are Rome.",
+        "I hold games for my son's praetorship. It will cost two thousand pounds of gold."
+      ],
+      "plebeian": [
+        "The Emperor was here in 326, for his twenty years. He would not go up to the Capitol. They booed him.",
+        "I go to the church of the Lateran on Sunday and the Circus on Monday.",
+        "My grandfather built walls when the barbarians came. Aurelian made everyone dig.",
+        "Bread every day, baked, not grain. Aurelian did that. Good man.",
+        "They took the old sculpture for Constantine's arch. Nobody carves like that now."
+      ],
+      "peregrinus": [
+        "I came from Milan. The emperors lived there before Constantinople. Rome is old now.",
+        "A Goth? I serve in the army. There are more of us in it every year.",
+        "I am from Antioch, a Christian, on pilgrimage to the tombs of Peter and Paul.",
+        "From Carthage, with the grain fleet. Africa feeds Rome still.",
+        "A Persian? A trader. The war comes and goes; the silk keeps coming."
+      ],
+      "cleric": [
+        "The bishop of Rome sits in Peter's chair.",
+        "Constantine has given us churches as great as basilicas. We have never had so many hearers.",
+        "Pray for the Emperor."
+      ]
+    },
+    "fall": {
+      "merchant": [
+        "Nothing to sell. Some fish from the river, if you have bronze.",
+        "The mills are on the river now, since the Goths cut the aqueducts. Belisarius thought of it.",
+        "Stone from the old buildings. Take what you want; nobody owns them now."
+      ],
+      "patrol": [
+        "Soldiers of the Emperor Justinian. Narses has taken the city back from the Goths, again.",
+        "Five times this city has changed hands in these wars. We hold it now.",
+        "Stay inside the walls after dark. There are not enough of us to guard them."
+      ],
+      "patrician": [
+        "The Senate? A few of us left. Totila took the senators away as hostages.",
+        "My family's house on the Caelian is empty. We live near the river now, like everyone.",
+        "Boethius was one of us, and the Goth king had him killed. Now the Goths are gone too."
+      ],
+      "plebeian": [
+        "In the year Totila took the city, they say there was no one here at all for forty days.",
+        "My grandmother said there were a million people once. There are not a million stones left standing.",
+        "The Pope's men give bread at the Lateran. God keep them.",
+        "No water in the fountains. We drink from the Tiber and pray."
+      ],
+      "peregrinus": [
+        "A pilgrim, from Gaul, come to pray at Peter's tomb. The city is empty and very holy.",
+        "A Greek, from Constantinople, with the army. This is Rome? It looks like the end of the world."
+      ],
+      "cleric": [
+        "We pray at the tombs of the martyrs. Rome is the city of Peter now, not of Caesar.",
+        "The Pope is in Constantinople, called by the Emperor. We wait.",
+        "Plague, war, hunger. And still they come to pray."
+      ]
+    }
+  },
+  "talks": {
+    "republic": [
+      [
+        "Patrician: Pompey is master of Rome, and Caesar has an army of veterans in Gaul.",
+        "Plebeian: Caesar gave us land and the free games. What did Pompey give us?",
+        "Patrician: Order, which you do not know how to value."
+      ],
+      [
+        "Shopkeeper: The interest on my loan is twelve a hundred a year.",
+        "Neighbour: Catiline promised to cancel all debts. Look how he ended."
+      ],
+      [
+        "Client: My patron will speak for me in court. He learned his art from the Greeks.",
+        "Friend: And from the Rhetorica. Invention, arrangement, style, memory, delivery."
+      ],
+      [
+        "Freedman: My master freed me in his will. Now I'm a citizen, and my son may be a knight.",
+        "Slave: And I carry your baskets."
+      ],
+      [
+        "Old man: When I was young no senator would be seen at the games.",
+        "Young man: Now they pay for them. How else do you get elected?"
+      ]
+    ],
+    "empire": [
+      [
+        "Patrician: The emperor asks the Senate's advice. It is a courtesy, and we are grateful.",
+        "Plebeian: You're grateful. We just want the grain ships on time."
+      ],
+      [
+        "Greek: Your poet Juvenal says Rome is a Greek city now.",
+        "Roman: Juvenal complains about everything. Pass the oil."
+      ],
+      [
+        "Baker: Another fire in the Subura last night.",
+        "Watchman: Top floor, as always. A lamp, a straw mattress, six floors of timber."
+      ],
+      [
+        "Gladiator fan: Did you see the net-fighter yesterday?",
+        "Friend: The crowd spared him. He fought well."
+      ],
+      [
+        "Mother: My son will be a lawyer and argue in the Basilica Julia.",
+        "Neighbour: Then teach him to speak, and to remember his speech."
+      ]
+    ],
+    "late": [
+      [
+        "Senator: They say the gods left Rome when Constantine turned his back on them.",
+        "Christian: God is not a Roman. He is everywhere, even here."
+      ],
+      [
+        "Blue: The Emperor is in the East and the Prefect fears the crowd more than the barbarians.",
+        "Green: As he should. We are Rome."
+      ],
+      [
+        "Old man: My grandfather saw Aurelian's triumph, with Queen Zenobia of Palmyra walking in gold chains.",
+        "Boy: Is it true the chains were so heavy she had to be helped?"
+      ]
+    ],
+    "fall": [
+      [
+        "Monk: The Pope asks us to give bread.",
+        "Woman: There is so little, Father, and so many hungry."
+      ],
+      [
+        "Soldier: Narses beat Totila at Busta Gallorum. The Goth is dead.",
+        "Old man: And Rome? Who will give us back Rome?"
+      ],
+      [
+        "Boy: What was this building?",
+        "Old woman: A bath, they say. Hot water for everyone. I never saw it."
+      ]
+    ]
+  }
+}

@@ -118,7 +118,7 @@ func test_rooms_follow_the_reading_list() -> void:
 	check(c.load_all(), "content loads")
 	var doors := Rooms.doors()
 	check_eq(doors.map(func(d): return d["work"]), c.work_order, "doors come straight from the reading list")
-	check_eq(doors.size(), 17, "one door for every Greek work")
+	check_eq(doors.size(), 16, "one door for every Greek work")
 	check_eq(doors[0]["work"], "porphyry-isagoge", "the first door is the Isagoge")
 	check(doors[0]["open"] and doors[1]["open"], "the Isagoge and the Categories have their places")
 	for d in doors:
@@ -137,7 +137,7 @@ func test_the_shore_has_a_gateway_per_book() -> void:
 	check_eq(hall.here, "hub", "Greece's hub is the Shore")
 	var gates: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and not i["to"] in ["nexus", "asset_test"])
 	var places: Array = Rooms.doors().filter(func(d): return Rooms.room(d["work"]).get("area_of", "") == "")
-	check_eq(gates.size(), 15, "one gateway for every place (Aristotle's three books share one)")
+	check_eq(gates.size(), 14, "one gateway for every place (Aristotle's three books share one)")
 	check_eq(gates.map(func(g): return g["to"]), places.map(func(d): return d["work"]), "gateways follow the reading list")
 	for g in gates:
 		check_eq(g["open"], OPEN_WORKS.has(g["to"]), "the gateway to %s is %s" % [g["to"], "open" if OPEN_WORKS.has(g["to"]) else "sealed"])
@@ -846,7 +846,8 @@ func test_the_new_places_are_built_like_the_first() -> void:
 		var kinds: Array = hall.interactables.map(func(i): return i["kind"])
 		for k in ["author", "book", "map", "gate"]:
 			check(kinds.has(k), "%s has its %s" % [work, k])
-		check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == "hub"), "%s: a way back to the Shore" % work)
+		var home: String = "urbs" if room.get("world", "greece") == "rome" else "hub"  # the Shore, or the city of Rome
+		check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == home), "%s: a way back to %s" % [work, home])
 		check_eq(hall.interactables.filter(func(i): return i["kind"] == "fact").size(), room["facts"].size(), "%s: a stone for each fact" % work)
 		for p in room["lesson"]:
 			var stones: Array = hall.interactables.filter(func(i): return i.get("id", "") == p["id"] and i.get("work", work) == work)
@@ -880,7 +881,7 @@ func test_the_memory_walk_can_be_walked() -> void:
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	hall.progress.data = {"works": {}}
-	hall.progress.set_mode("greece", "zen")
+	hall.progress.set_mode("rome", "zen")
 	hall.travel("rhetorica-ad-herennium")
 	var it: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == "memory_walk")[0]
 	hall.activate(it)
@@ -996,6 +997,82 @@ func test_the_rhetorica_is_the_first_zone_of_rome() -> void:
 	hall.free()
 
 
+## The Rhetorica has left Greece for Rome: it is not on the Shore or among the Nexus's columns, but
+## the first book of Rome's own reading list, in the Rome world.
+func test_the_rhetorica_is_rome_s_book() -> void:
+	check(not Rooms.doors().any(func(d): return d["work"] == "rhetorica-ad-herennium"), "not a Greek door")
+	var rome := Rooms.doors_of("rome")
+	check_eq(rome.map(func(d): return d["work"]), ["rhetorica-ad-herennium"], "Rome's reading list begins with it")
+	check_eq(Rooms.room("rhetorica-ad-herennium").get("world", ""), "rome", "its room is in the Rome world")
+	check(Rooms.doors().any(func(d): return d["work"] == "porphyry-isagoge"), "the Isagoge stays in Greece")
+
+
+## The city of Rome is the Rome world's hub: the whole city, paved in brick with no grass, full of
+## people who talk, its monuments telling their stories, the Rhetorica's gateway in the Forum, and
+## the navel of the city letting the years pass through its four ages to the emptied city and back.
+func test_rome_is_a_city_that_lives_through_its_ages() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var Tex: GDScript = load("res://scripts/hall/textures.gd")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.travel("urbs")
+	check_eq(hall.here, "urbs", "the city is a place of its own")
+	check_eq(hall._world_of("urbs"), "rome", "in the Rome world")
+	check_eq(hall.rome_age(), 0, "it begins in the Republic")
+	check(hall.here_name.contains("50 BC"), "the corner says when: %s" % hall.here_name)
+	var gate: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and i["to"] == "rhetorica-ad-herennium")
+	check(gate.size() == 1 and gate[0]["open"], "the Rhetorica's gateway is open")
+	check(RomeMap.inside(RomeMap.outline("palatine_forum"), gate[0]["pos"]), "and it stands in the Rhetorica's zone")
+	var people_then: int = hall.people.size()
+	check(people_then >= 120, "the Republic's streets are full (%d people)" % people_then)
+	var talkers: Array = hall.interactables.filter(func(i): return i["kind"] == "person")
+	check(talkers.size() >= 60, "and they talk (%d)" % talkers.size())
+	check(talkers.all(func(i): return str(i["note"]).length() > 10), "every one of them has something to say")
+	check(hall.interactables.filter(func(i): return i["kind"] == "statue").size() >= 25, "the monuments tell their stories")
+	var ground: Array = hall.world.find_children("Ground", "MeshInstance3D", true, false)
+	check(ground.size() == 1 and ground[0].material_override == Tex.material("cobble"), "the ground is the city's brick paving")
+	check(not hall.regions.is_empty(), "the city has its regions")
+	var navel: Dictionary = hall.interactables.filter(func(i): return i["kind"] == "rome_age")[0]
+	var names: Array = [hall.here_name]
+	for k in 3:
+		hall.activate(hall.interactables.filter(func(i): return i["kind"] == "rome_age")[0])
+		names.append(hall.here_name)
+		check_eq(hall.here, "urbs", "still in the city after the years pass")
+	check_eq(hall.rome_age(), 3, "through the Empire and the late Empire to the fall")
+	check(names[1].contains("150") and names[2].contains("330") and names[3].contains("552"), "each age says its year: %s" % str(names))
+	check(hall.people.size() < people_then / 3, "the emptied city has few people left (%d)" % hall.people.size())
+	var fallen: Array = hall.world.find_children("Ground", "MeshInstance3D", true, false)
+	check(fallen.size() == 1 and fallen[0].material_override == Tex.material("rubble"), "its ground is rubble")
+	hall.activate(hall.interactables.filter(func(i): return i["kind"] == "rome_age")[0])
+	check_eq(hall.rome_age(), 0, "and the navel brings you back to the Republic")
+	check(navel["note"] != "", "the navel says what it is")
+	hall.travel("rhetorica-ad-herennium")
+	check_eq(hall.here, "rhetorica-ad-herennium", "through the gateway, the Rhetorica's Forum")
+	check(hall.interactables.any(func(i): return i["kind"] == "gate" and i["to"] == "urbs"), "and a way back into the city")
+	hall.free()
+
+
+## Each monument stands from the year it was built, as a ruin from its fall, and is gone after.
+func test_the_monuments_keep_their_years() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var by_id := {}
+	for m in RomeMap.city_data()["monuments"]:
+		by_id[m["id"]] = m
+	for want in ["saturn", "jupiter", "venus_genetrix", "mars_ultor", "venus_roma", "mars_in_circo", "castor", "vesta", "concord",
+			"colosseum", "pantheon", "trajan_column", "caracalla_baths", "lateran", "st_peter", "circus", "pompey"]:
+		check(by_id.has(want), "Rome has %s" % want)
+	check_eq(RomeMap.state(by_id["colosseum"], -50), "", "no Colosseum in the Republic")
+	check_eq(RomeMap.state(by_id["colosseum"], 150), "whole", "the Colosseum under the Antonines")
+	check_eq(RomeMap.state(by_id["colosseum"], 552), "ruin", "and cracked by 552")
+	check_eq(RomeMap.state(by_id["curia_hostilia"], 150), "gone", "the old Senate House is gone under the emperors")
+	check_eq(RomeMap.state(by_id["lateran"], 150), "", "no churches before Constantine")
+	check_eq(RomeMap.state(by_id["lateran"], 552), "whole", "the Lateran stands in the emptied city")
+	for m in RomeMap.city_data()["monuments"]:
+		check(int(m.get("ruin", 9999)) > int(m["from"]) and int(m.get("gone", 9999)) > int(m["from"]), "%s falls after it is built" % m["id"])
+
+
 ## Every beat of every new place can be played to its end, and in Zen each counts its point.
 func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
 	var hall: Node = Hall.new()
@@ -1004,6 +1081,7 @@ func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
 	for work in NEW_PLACES:
 		hall.progress.data = {"works": {}}
 		hall.progress.set_mode("greece", "zen")
+		hall.progress.set_mode("rome", "zen")
 		hall.travel(work)
 		var beats: Array = hall.interactables.filter(func(i): return i["kind"] == "beat")
 		for k in beats.size():

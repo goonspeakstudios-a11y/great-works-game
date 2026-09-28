@@ -185,6 +185,16 @@ static func material(kind: String) -> Material:
 			world_tex.call(_blocks(Color("9a4a32"), Color("cbbd9c"), 16, 4), 0.5)
 		"reticulatum":  # a net of small square stones set on the diagonal (opus reticulatum)
 			world_tex.call(_reticulate(Color("b0a078"), Color("8a7c5c"), Color("d0c4a4")), 0.5)
+		"cobble":  # the city's floor: small bricks set on edge in herringbone (opus spicatum)
+			world_tex.call(_herringbone(Color("7a4c3a"), Color("6a4032"), Color("857260")), 0.35)
+		"rubble":  # the emptied city's floor: broken brick, mortar dust and stone chips
+			world_tex.call(_rubble(), 0.35)
+		"insula", "insula_ochre", "insula_rose", "insula_white":  # a block of flats: its storeys of windows
+			world_tex.call(_storeys(kind), 0.25)
+		"awning":  # a shop's striped awning
+			world_tex.call(_stripes(Color("a8342a"), Color("e0d0b0")), 1.0)
+		"terracotta":
+			world_tex.call(_noise(Color("b0643e"), Color("94502e"), Color("c47a52"), 131), 1.0)
 		"basalt":  # the dark polygonal blocks of a paved Roman road
 			world_tex.call(_polygons(Color("4c4c50"), Color("2c2c30"), 71), 0.4)
 		"mosaic":  # a floor of small white stones with a black pattern
@@ -471,6 +481,81 @@ static func _travertine() -> ImageTexture:
 		var x0 := rng.randi_range(0, 31)
 		for dx in rng.randi_range(2, 5):
 			img.set_pixel((x0 + dx) % 32, y, Color("a89a7c"))
+	return ImageTexture.create_from_image(img)
+
+
+## Opus spicatum: small bricks laid on edge in a herringbone, in pale mortar.
+static func _herringbone(face: Color, dark: Color, mortar: Color) -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 127
+	for y in 32:
+		for x in 32:
+			var u := (x + y) % 16  # two diagonal courses, each brick 8 px long and 4 wide
+			var v := (x - y + 64) % 16
+			var c := face
+			if (u < 8 and v % 4 == 0) or (u >= 8 and (x + y) % 4 == 0):
+				c = mortar
+			elif rng.randf() < 0.2:
+				c = dark
+			elif rng.randf() < 0.08:
+				c = face.lightened(0.06)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## The ground of a city gone to ruin: dust, broken brick and chips of marble.
+static func _rubble() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 139
+	for y in 32:
+		for x in 32:
+			var n := rng.randf()
+			var c := Color("8a7a66")
+			if n < 0.2:
+				c = Color("6e604e")
+			elif n > 0.92:
+				c = Color("c8bca8")
+			img.set_pixel(x, y, c)
+	for k in 26:  # brick shards
+		var x0 := rng.randi_range(0, 31)
+		var y0 := rng.randi_range(0, 31)
+		var tint := Color("8e4a34") if rng.randf() < 0.7 else Color("a89c86")
+		for dx in rng.randi_range(2, 4):
+			for dy in rng.randi_range(1, 2):
+				img.set_pixel((x0 + dx) % 32, (y0 + dy) % 32, tint)
+	return ImageTexture.create_from_image(img)
+
+
+## One storey of an apartment block (4 m of wall): its face (brick, or plaster in ochre, rose or
+## white), a window with its wooden shutter, and a string course of stone under the next floor.
+static func _storeys(kind: String) -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = kind.length() * 7 + 151
+	var face: Color = {"insula": Color("9a4a32"), "insula_ochre": Color("c89a5a"), "insula_rose": Color("b8766a"),
+		"insula_white": Color("d8cebc")}[kind]
+	for y in 32:
+		for x in 32:
+			var c := face
+			if kind == "insula" and (y % 4 == 0 or (x + (4 if (y / 4) % 2 else 0)) % 8 == 0):
+				c = Color("c8b898")  # mortar between the bricks
+			elif rng.randf() < 0.15:
+				c = face.darkened(0.1)
+			if y >= 30:
+				c = Color("d0c4a8")  # the string course
+			elif x >= 12 and x <= 19 and y >= 8 and y <= 19:
+				c = Color("1c1612") if x > 13 else Color("5a4028")  # the window, a shutter folded back
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+static func _stripes(a: Color, b: Color) -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	for y in 32:
+		for x in 32:
+			img.set_pixel(x, y, a if (x / 4) % 2 == 0 else b)
 	return ImageTexture.create_from_image(img)
 
 
