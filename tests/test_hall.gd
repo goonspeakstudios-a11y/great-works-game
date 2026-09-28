@@ -104,12 +104,13 @@ func test_plural_filler_words_are_ignored() -> void:
 
 ## The books whose places are built so far; every other gateway on the Shore is sealed.
 const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium", "euclid-elements",
-	"homer-the-iliad", "hesiod-theogony", "sappho-fragments", "aeschylus-the-oresteia", "sophocles-the-theban-plays", "euripides-the-tragedies", "aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war", "plato-republic",
+	"homer-the-iliad", "hesiod-theogony", "sappho-fragments", "aeschylus-the-oresteia", "sophocles-the-theban-plays", "euripides-the-tragedies", "aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war", "the-pre-socratics", "plato-republic",
 	"aristotle-nicomachean-ethics"]
 ## The places built in sprints 4 to 6 (places_greek.gd), each tested like the villa and the Lyceum.
 const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad", "hesiod-theogony", "sappho-fragments",
 	"aeschylus-the-oresteia", "sophocles-the-theban-plays", "euripides-the-tragedies",
-	"aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war", "plato-republic"]
+	"aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war",
+	"the-pre-socratics", "plato-republic"]
 
 
 func test_rooms_follow_the_reading_list() -> void:

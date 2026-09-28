@@ -2033,5 +2033,121 @@
     }
    ]
   }
+ },
+ "the-pre-socratics": {
+  "the_river": {
+   "hero": "",
+   "title": "Heraclitus, the river",
+   "point": "flux",
+   "steps": [
+    {
+     "look": "water"
+    },
+    {
+     "line": "“You cannot step twice into the same rivers; for fresh waters are ever flowing in upon you.”"
+    },
+    {
+     "go": "across",
+     "text": "Cross the river on the stepping stones"
+    },
+    {
+     "act": "Look back at the water you crossed",
+     "hold": 1.5
+    },
+    {
+     "line": "The water that was round the stones a moment ago is already out to sea. Is this the river you crossed?"
+    },
+    {
+     "go": "back",
+     "text": "Cross back"
+    },
+    {
+     "line": "“We step and do not step into the same rivers; we are and are not.”"
+    },
+    {
+     "line": "The river stays the river only because it keeps changing. Stop the flow, and there is no river at all."
+    }
+   ]
+  },
+  "the_stair": {
+   "hero": "",
+   "title": "Heraclitus, the way up and the way down",
+   "point": "opposites",
+   "steps": [
+    {
+     "go": "foot",
+     "text": "Go to the foot of the stair"
+    },
+    {
+     "look": "top"
+    },
+    {
+     "line": "“The way up and the way down is one and the same.” From the top it is a way down."
+    },
+    {
+     "act": "Draw an imaginary bow, and feel the pull both ways",
+     "hold": 2.0
+    },
+    {
+     "line": "“It is an attunement of opposite tensions, like that of the bow and the lyre.” Slacken it, and there is no bow."
+    },
+    {
+     "line": "“War is the father of all and the king of all; and some he has made gods and some men, some bond and some free.”"
+    },
+    {
+     "line": "“We must know that war is common to all and strife is justice.” Take away strife, and the world falls still."
+    }
+   ]
+  },
+  "the_ways": {
+   "hero": "",
+   "title": "Parmenides, the poem",
+   "point": "it_is",
+   "steps": [
+    {
+     "line": "“The car that bears me carried me as far as ever my heart desired ... on the renowned way of the goddess.”"
+    },
+    {
+     "go": "gates",
+     "text": "Ride on to the gates of Night and Day"
+    },
+    {
+     "look": "dike"
+    },
+    {
+     "line": "“They themselves, high in the air, are closed by mighty doors, and Avenging Justice keeps the keys that fit them.”"
+    },
+    {
+     "act": "Ask Justice to unbar the gates",
+     "hold": 1.5
+    },
+    {
+     "go": "goddess",
+     "text": "Go through to the goddess"
+    },
+    {
+     "line": "“The goddess greeted me kindly, and took my right hand in hers.” There are two ways only: it is, or it is not."
+    },
+    {
+     "line": "“For thou canst not know what is not—that is impossible—nor utter it; for it is the same thing that can be thought and that can be.”"
+    },
+    {
+     "look": "fog"
+    },
+    {
+     "line": "Down there, mortals “knowing naught wander two-faced ... like men deaf and blind,” saying things are and are not."
+    },
+    {
+     "go": "truth",
+     "text": "Take the straight way of truth"
+    },
+    {
+     "look": "sphere"
+    },
+    {
+     "line": "“One path only is left for us to speak of, namely, that It is ... uncreated and indestructible.”"
+    }
+   ]
+  }
  }
 }

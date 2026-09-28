@@ -193,6 +193,22 @@ BOOKS = {
              "start": r"Book I", "end": r"\Zx", "chapter": r"^Book ([IV]+)\s*$", "chapter_label": "Book"},
         ],
     },
+    "the-pre-socratics": {  # the fragments of Heraclitus and the poem of Parmenides, as the reading takes them
+        "title": "The Pre-Socratics",
+        "translation": "tr. John Burnet, Early Greek Philosophy (2nd ed. 1908), public domain",
+        "parts": [
+            {"title": "Early Greek Philosophy", "urls": [["https://www.gutenberg.org/cache/epub/67097/pg67097.txt", ""]],
+             "segments": [
+                 {"start": r"^\s*\(1\) It is wise to hearken", "end": r"(?=^\[Sidenote: The doxographical tradition)",
+                  "heading": "Heraclitus", "once": True},
+                 {"start": r"^\[Sidenote: The poem\.\]", "end": r"(?=^\[Sidenote: \u201cIt is\.\u201d\])", "heading": "Parmenides", "once": True},
+             ],
+             "drop": [r"^Footnote \d+:\s*\n\n(?:  [^\n]*\n)+", r"\[\d+\]", r"R\. P\. \d+[a-z]?\.?( [a-z]\.)?", r"<<\d+>>",
+                      r"^\[Sidenote:.*$", r"(?<=\)) ?[a-z]\. (?=\()"],
+             "start": r"Heraclitus", "end": r"\Zx", "chapter": r"^(Heraclitus|Parmenides)\s*$",
+             "chapter_names": {"Heraclitus": "Heraclitus, the fragments", "Parmenides": "Parmenides, the poem"}},
+        ],
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",

@@ -19,6 +19,7 @@ extends RefCounted
 ##   thinkery() #12 Aristophanes: Strepsiades' house, Socrates' Thinkery across the street, the theatre
 ##   sardis()  #13 Herodotus: Croesus's Sardis, Delphi, and the pass of Thermopylae
 ##   athens_war() #14 Thucydides: the Kerameikos, Athens in the plague, Corcyra, Melos
+##   ephesus() #15 the Pre-Socratics: Heraclitus's Ephesus, and Parmenides' road above Elea
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1558,4 +1559,85 @@ static func _athens_war_lessons(world: Node3D, work: String, room: Dictionary, o
 		"text": "Meet the Athenian envoys, as a Melian", "note": note.call("melos"), "cast": {},
 		"marks": {"envoys": Areas._at(ir, Vector3(0, 1.6, -3.0)), "ships": Areas._at(ir, Vector3(20.0, 1.0, 20.0))}})
 	spots["melos"] = Areas._at(ir, Vector3(-3.0, 0, -9.5))
+	return flicker
+
+
+# ---------- #15 the Pre-Socratics, Heraclitus and Parmenides ----------
+
+## Heraclitus's Ephesus and Parmenides' poem as one place: by the way in, Heraclitus; then Ephesus
+## by the river Cayster (the stepping stones, the ever-living fire, the columns of the Artemision,
+## the boys at knucklebones on its steps, the stair of the way up and the way down); beyond it the
+## hill above Elea, laid the other way, so that from Ephesus you come first to the still sphere at
+## the end of the way of truth, then to the goddess, the gates of Night and Day, and the chariot at
+## the far end of the road. Lost, the river is dry, the fire out, the mortals shades.
+static func ephesus(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 55.0)
+	Kit.plateau(world, 110.0, "earth", false)
+	Kit.sea(world, -6.0)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 20), 5, 18.0, 14.0) if b.has("sun") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 100.0, 70.0, "path")
+	var sage := _teacher(world, room, b, stage, Vector3(0, 0, 64.0), 0.0, Vector3(0, 0, 66.8), out, spots)
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 65.5), 0.0, Vector3(-4.2, 0, 67.1)]],
+		Vector3(-7.0, 1.6, 62.5), 0.3, Vector3(-6.4, 0, 64.3), Vector3(6.5, 0, 63.0), Vector3(6.5, 0, 64.2))
+	var city := Thinkers.ephesus(world, Vector3(0, 0, 30), 0.0, b)
+	take.call(city)
+	var hill := Thinkers.elea(world, Vector3(0, 0, -62), PI, b)
+	take.call(hill)
+	_way(world, [Vector3(0, 0, 60), Vector3(0, 0, 58)])
+	_way(world, [Vector3(0, 0, 2), Vector3(0, 0, -22)])
+	out.append(Places.seat(world, Vector3(-16.0, 0, 64.0), Vector3(0, 0, -1), "Sit and watch the river"))
+	flicker.append_array(_ephesus_lessons(world, work, room, out, spots, city, hill, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 97.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [sage] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## The six points: the Word (by Heraclitus), the river (a beat: cross it and cross back), the
+## ever-living fire, the unity of opposites (a beat, at the stair), the two ways (a beat, on
+## Parmenides' road through the gates to the goddess), and the still sphere of what is.
+static func _ephesus_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, city: Dictionary,
+		hill: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var cr: Node3D = city["root"]
+	var hr: Node3D = hill["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("logos", Vector3(4.0, 0, 60.0), Vector3(0, 0, 63.0), "Read the first saying of his book")
+	stele_stone.call("fire", Areas._at(cr, Vector3(9.0, 0, 13.8)), Areas._at(cr, Vector3(9.0, 0, 11.0)), "Look into the ever-living fire")
+	stele_stone.call("being", Areas._at(hr, Vector3(2.8, 0, -29.0)), Areas._at(hr, Vector3(0, 0, -34.0)), "Look at the still sphere")
+	out.append({"kind": "look", "pos": Areas._at(cr, Vector3(-5.85, 0, -1.4)), "text": "Watch the boys at knucklebones",
+		"note": "Heraclitus would rather play knucklebones with the boys at the temple than make laws for the Ephesians. \"Time is a child playing draughts, the kingly power is a child's.\""})
+
+	var stones: Array = city["stepping"]
+	var back_over: Array = stones.duplicate()
+	back_over.reverse()
+	back_over.append(Areas._at(cr, Vector3(0, 0, 0)))
+	out.append({"kind": "beat", "pos": Areas._at(cr, Vector3(-1.5, 0, 0.2)), "work": work, "id": "flux", "beat": "the_river",
+		"text": "Step into the river", "note": note.call("flux"), "cast": {},
+		"marks": {"across": stones + [Areas._at(cr, Vector3(0, 0, 8.4))], "back": back_over, "water": Areas._at(cr, Vector3(-6.0, 0, 4.0))}})
+	spots["flux"] = Areas._at(cr, Vector3(-1.5, 0, 0.2))
+	out.append({"kind": "beat", "pos": Areas._at(cr, Vector3(21.5, 0, -3.0)), "work": work, "id": "opposites", "beat": "the_stair",
+		"text": "Stand at the foot of the stair", "note": note.call("opposites"), "cast": {},
+		"marks": {"foot": Areas._at(cr, Vector3(24.0, 0, -4.2)), "top": Areas._at(cr, Vector3(24.0, 8.0, -15.0))}})
+	spots["opposites"] = Areas._at(cr, Vector3(21.5, 0, -3.0))
+	out.append({"kind": "beat", "pos": Areas._at(hr, Vector3(2.6, 0, 18.0)), "work": work, "id": "it_is", "beat": "the_ways",
+		"text": "Ride to the goddess, with Parmenides", "note": note.call("it_is"), "cast": {},
+		"marks": {"gates": Areas._at(hr, Vector3(0, 0, 3.0)), "dike": Areas._at(hr, Vector3(6.2, 1.6, 2.5)),
+			"goddess": Areas._at(hr, Vector3(0, 0, -6.4)), "truth": hill["truth"], "fog": Areas._at(hr, Vector3(18.0, 1.0, -22.0)),
+			"sphere": Areas._at(hr, Vector3(0, 2.0, -34.0))}})
+	spots["it_is"] = Areas._at(hr, Vector3(2.6, 0, 18.0))
 	return flicker

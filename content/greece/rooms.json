@@ -1752,5 +1752,112 @@
         "line": "Thucydides is himself again."
       }
     ]
+  },
+  "the-pre-socratics": {
+    "open": true,
+    "place": "ephesus",
+    "zone": "ephesus",
+    "where": "Ephesus, and the road above Elea",
+    "when": "about 500 - 475 BC",
+    "map": "480bc",
+    "map_note": "About 500 BC the Greek cities of Ionia, Ephesus among them, are subjects of the Persian king; in 499 they revolt, and are crushed. Far to the west, Greek colonists have founded Elea on the coast of Italy, fleeing the Persians. Philosophy begins in these edges of the Greek world, in Ionia and in Italy, not in Athens.",
+    "statues": [
+      {
+        "name": "Pythagoras",
+        "beard": "long",
+        "note": "Pythagoras of Samos, who settled in Italy and taught that the world is number and harmony. Heraclitus sneered at him: learning many things does not teach understanding. Parmenides, in Italy, may have been taught by his followers."
+      }
+    ],
+    "greeting": "Stranger. You have come to hear me, I suppose. Do not listen to me: listen to the Word, and see that all things are one. Most people never do. Sit by the river if you like; it will not be the same river when you get up.",
+    "greeting_lost": "A shade by a dry river. The fire has gone out, which is impossible, and the river has stopped, which is also impossible. Perhaps this is what Parmenides meant. Sit.",
+    "gift": "Heraclitus hands you a knucklebone from the boys' game on the temple steps. \"Time is a child playing draughts. Keep it, and remember who is really in charge.\"",
+    "author": "Heraclitus",
+    "life": "about 535 - 475 BC",
+    "book": "Fragments of Heraclitus and Parmenides",
+    "portrait": {
+      "skin": "c09070",
+      "hair": "long",
+      "hair_color": "8a8278",
+      "beard": "long",
+      "beard_color": "8a8278",
+      "robe": "4a4a4a",
+      "trim": "8a3a1a",
+      "old": true
+    },
+    "persona": "You are Heraclitus of Ephesus, about 490 BC, called the Obscure, a proud aristocrat who gave up his claim to be king-priest to his brother and would rather play knucklebones with the boys at the temple of Artemis than make laws for the Ephesians. You wrote one book in short dark sayings: listen to the Word (logos) and agree that all things are one; you cannot step twice into the same rivers; the world is an ever-living fire kindling and going out in measures; war is the father of all and strife is justice; opposites are an attunement like the bow and the lyre; the way up and the way down are one and the same; man's character is his fate. You know the poem of Parmenides of Elea, a younger man in Italy who says the opposite of you: that only what is can be thought, and what is is one, unchanging and still, and all change is the opinion of mortals. You argue with him when asked, fairly. You speak in short paradoxes, scornful of the crowd, and quote the fragments in John Burnet's translation.",
+    "summary": "The earliest Greek philosophers survive only in fragments quoted by later writers. Heraclitus of Ephesus taught in dark sayings that everything flows (you cannot step twice into the same river), that the world is an ever-living fire, that opposites are one and strife holds the world together, and that a hidden Word (logos) orders all things. Parmenides of Elea, in a poem, told how a goddess showed him the way of truth: only what is can be thought, and what is must be one, whole, uncreated, unchanging and still; the changing world mortals see is only opinion.",
+    "facts": [
+      "Heraclitus left his book in the temple of Artemis at Ephesus, one of the seven wonders of the world.",
+      "The Greeks called him the Obscure, for his riddling sayings, and the Weeping Philosopher.",
+      "Parmenides wrote his philosophy as a poem in hexameters, the verse of Homer.",
+      "Plato says Parmenides, old, came to Athens and talked with the young Socrates.",
+      "Everything we have of both men is quotation in later writers: about 130 fragments of Heraclitus, 160 lines of Parmenides."
+    ],
+    "questions": [
+      "Can you step into the same river twice?",
+      "What is the Word?",
+      "Why does Parmenides say nothing changes?",
+      "Who is right, Heraclitus or Parmenides?"
+    ],
+    "home": "Ephesus",
+    "props": "Ephesus by the river Cayster with its stepping stones, the ever-living fire, the columns of the temple of Artemis, the boys at knucklebones on its steps, and the stair of the way up and the way down; above Elea, the road of the goddess with Parmenides in his chariot, the daughters of the Sun, the gates of Night and Day with Justice holding the keys, the goddess, the straight way of truth to the still sphere, and the wandering way of opinion into the fog",
+    "lesson": [
+      {
+        "id": "logos",
+        "label": "The Word",
+        "point": "Heraclitus: listen not to me but to the Word, the logos, and agree that all things are one. The Word is common to all, yet most people live as if each had a private understanding of his own."
+      },
+      {
+        "id": "flux",
+        "label": "The river",
+        "point": "You cannot step twice into the same rivers, for fresh waters are ever flowing in upon you. Everything changes; what stays the same is the measure and pattern of the change."
+      },
+      {
+        "id": "fire",
+        "label": "Ever-living fire",
+        "point": "No god or man made this world: it always was, is and will be an ever-living fire, kindling in measures and going out in measures. Fire turns to sea, sea to earth, and back again."
+      },
+      {
+        "id": "opposites",
+        "label": "The unity of opposites",
+        "point": "War is the father of all, and strife is justice. Opposites hold each other in tension, like the bow and the lyre. The way up and the way down are one and the same."
+      },
+      {
+        "id": "it_is",
+        "label": "The two ways",
+        "point": "The goddess tells Parmenides there are only two ways of inquiry: it is, or it is not. What is not cannot be known or spoken of; so only one way is left: it is."
+      },
+      {
+        "id": "being",
+        "label": "What is is one",
+        "point": "What is cannot come into being or pass away, cannot move or change, and has no parts: it is whole, one and still, like a well-rounded sphere. The changing world mortals see is opinion, not truth."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The river runs again. It is not the same river."
+      },
+      {
+        "what": "lamps",
+        "line": "The ever-living fire is kindled, in its measures."
+      },
+      {
+        "what": "walkway",
+        "line": "The temple's columns stand, and the road of the goddess is paved."
+      },
+      {
+        "what": "household",
+        "line": "The boys are back at their knucklebones, and the mortals wander in the fog."
+      },
+      {
+        "what": "sun",
+        "line": "The sun, new every day, is up."
+      },
+      {
+        "what": "teacher",
+        "line": "Heraclitus is himself again, and scornful."
+      }
+    ]
   }
 }
