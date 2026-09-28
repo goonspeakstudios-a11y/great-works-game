@@ -112,6 +112,8 @@ var _read_text: RichTextLabel
 var _ask_panel: Panel
 var _talk_panel: Talk  # talking with someone in the city
 var _talking := {}  # the citizen you are talking with (their interactable)
+var _favour := {}  # a message you are carrying: {from, target} (citizens)
+var _favour_done := {}  # who you carried a message for -> to whom
 var life: RefCounted  # the city's day and its voices (urbs_life.gd), where there is one
 var landmarks: Array = []  # what stands in the city, for saying what's around: {name, pos}
 var _here_zone := ""  # the music zone the place asks for, when it is not the room's (the city's age)
@@ -243,6 +245,8 @@ func _stage_shot(view: String) -> void:
 		progress.data["rome_reached"] = ROME_AGES - 1
 	if _args.has("hour"):  # --hour=H: the city at that hour of its day
 		progress.data["rome_hour"] = float(_args["hour"])
+	if _args.has("day"):  # --day=N: the city's Nth day (festivals, market days, processions)
+		progress.data["rome_day"] = int(_args["day"])
 	if _args.has("city"):
 		progress.data["city_stage"] = clampi(int(_args["city"]), 0, CITY_LAST)
 	if view == "place" and _args.has("stage"):
@@ -411,6 +415,8 @@ func _load_place(to: String, keep: bool = false) -> void:
 		_end_beat(false)
 	if here == "urbs" and life:
 		progress.data["rome_hour"] = life.hour  # the city's day goes on where you left it
+		if life.town:
+			progress.data["rome_day"] = life.town.day
 	var held := _where_everyone_is() if keep else {}
 	var area_target := ""
 	if not to in ["hub", "nexus"] and Rooms.room(to).get("area_of", "") != "":
@@ -1865,8 +1871,44 @@ func _open_talk(it: Dictionary) -> void:
 	var trade := "%s (%s)" % [c["title"], c["latin"]]
 	if c["origin"] != "Roman":
 		trade += ", %s" % c["origin"]
-	_talk_panel.open(c["name"], trade, _esc(Citizen.greeting(c)))
+	_talk_panel.open(c["name"], trade, _esc(_first_words(c)))
 	_show_panel(_talk_panel)
+
+
+## What someone says when you stop them: a regular's next line in their story; "you again" if you
+## have talked before; the thanks when you bring a message; now and then a favour to ask.
+func _first_words(c: Dictionary) -> String:
+	var met: Dictionary = progress.data.get("rome_met", {})
+	var times: int = met.get(c["id"], 0)
+	met[c["id"]] = times + 1
+	progress.data["rome_met"] = met
+	var town_data: Dictionary = load("res://scripts/hall/urbs_town.gd").data()
+	var fav: Dictionary = town_data.get("favours", {})
+	if not _favour.is_empty() and _favour["target"]["id"] == c["id"]:
+		var from: Dictionary = _favour["from"]
+		_favour = {}
+		_favour_done[from["id"]] = c["call"]
+		return str(fav["thanks"][times % fav["thanks"].size()]).replace("{from}", from["call"])
+	if _favour_done.has(c["id"]):
+		var target: String = _favour_done[c["id"]]
+		_favour_done.erase(c["id"])
+		return str(fav["after"][times % fav["after"].size()]).replace("{target}", target)
+	var words := Citizen.greeting(c)
+	var lines: Array = c.get("regular_lines", [])
+	if not lines.is_empty():
+		words = str(lines[mini(times, lines.size() - 1)])
+	elif times > 0:
+		words = "You again! %s" % c["mood_line"]
+	if _favour.is_empty() and life and randf() < 0.15:  # a message to take to someone nearby
+		var here_at := player.global_position
+		var others: Array = life.people.filter(func(p): return p.has("citizen") and p["citizen"] != c and is_instance_valid(p["root"]) and p["root"].visible and p["root"].global_position.distance_to(here_at) < 90.0)
+		if not others.is_empty():
+			var t: Dictionary = others[randi() % others.size()]["citizen"]
+			_favour = {"from": c, "target": t}
+			var ask := str(fav["asks"][randi() % fav["asks"].size()])
+			words += " " + ask.replace("{target}", t["call"]).replace("{title}", t["title"]).replace(
+				"{msg}", str(fav["messages"][randi() % fav["messages"].size()]))
+	return words
 
 
 ## What stands nearest you in the city, by name, nearest first.
@@ -1889,7 +1931,27 @@ func _on_said(topic: String, text: String) -> void:
 		return
 	if topic == "":
 		topic = Citizen.heard(text)
-	_talk_panel.show_reply(c["name"], _esc(Citizen.reply(c, topic, near_names())))
+	var line := Citizen.reply(c, topic, near_names())
+	if topic == "news" and life and life.town:
+		var today: String = life.town.today_news()
+		if today != "" and c["said"].get("today", 0) == 0:
+			c["said"]["today"] = 1
+			line = today  # what everyone's talking about today
+		elif randf() < 0.4:
+			line = _gossip(c, line)
+	_talk_panel.show_reply(c["name"], _esc(line))
+
+
+## Gossip about someone you have met (town.json's "gossip"), if you have met anyone else here.
+func _gossip(c: Dictionary, otherwise: String) -> String:
+	var met: Dictionary = progress.data.get("rome_met", {})
+	var known: Array = life.people.filter(func(p): return p.has("citizen") and p["citizen"] != c and met.has(p["citizen"]["id"]))
+	var lines: Array = load("res://scripts/hall/urbs_town.gd").data().get("gossip", [])
+	if known.is_empty() or lines.is_empty():
+		return otherwise
+	var o: Dictionary = known[randi() % known.size()]["citizen"]
+	var kin := "husband" if o["gender"] == "f" else "wife"
+	return str(lines[randi() % lines.size()]).replace("{other}", o["call"]).replace("{title}", o["title"]).replace("{kin}", kin)
 
 
 func _on_chatted(id: String, reply: Dictionary) -> void:

@@ -147,6 +147,45 @@ Decided with BB1 (2026-09-28):
   into someone and they curse you. The words appear over their heads and fade.
 - Screenshots: `--talk` stops the nearest citizen and asks about their work.
 
+## The city's days and memory
+These live in `scripts/hall/urbs_town.gd`, with the content in `content/rome/town.json`. Add to that
+file to add life; no code is needed.
+
+- **The calendar:**
+  - A day counter runs, and is kept in the save.
+  - Every eighth day is a market day: a crowd and sellers in the Forum Boarium.
+  - Festivals fall on set days of a 24-day year: the Saturnalia, the Lupercalia, the Parilia, the
+    Roman Games, and Easter in the late ages. Each brings a crowd with its cries, and it is what
+    everyone's news is about that day.
+- **At their hours:**
+  - Processions walk their street and go: a funeral with pipers and mourners, a wedding with
+    torches at dusk, a sacrifice with its garlanded ox.
+  - Gatherings stand for a while: a senator speaking from the Rostra, the crier's auctions, market
+    day, the deacons' bread in the late ages.
+  - Processions and gatherings are citizens like everyone else, and go when their time is over.
+- **Rain:** some days rain comes for an hour or two. Drops fall around you, someone shouts about
+  it, and the music takes a rain layer.
+- **Streets:**
+  - Pigeons peck in the Forum and fly up when you run through them.
+  - Dogs trot along the streets.
+  - Smoke rises from the bakers' and smiths' roofs by day.
+  - Painted election notices and scratched words appear by the shop doors; the chi-rho appears in
+    the late city.
+- **Sounds:** the three nearest trades are heard at their doors: the smith's forge, the weaver's
+  loom, the tavern's crowd at night, the bakery's fire, the fuller's water.
+- **People talk to each other:** two acquaintances passing stop and exchange a word or two, by name.
+- **Memory** (`rome_met` in the save):
+  - Anyone you have talked to says "You again!" and greets you as you pass.
+  - Asking the news brings gossip about people you have met.
+  - Now and then someone asks you to carry a message to someone nearby. Deliver it, and both thank
+    you.
+- **The regulars:**
+  - Five people keep fixed places, and their story moves on each time you talk: Felix the baker,
+    Hilarus the gladiator, Caecilius Rufus the senator, Fabia the fishwife, and Stephanus the barber.
+  - In the later ages their descendants keep the same places. Felix's bakery passes down the family,
+    and in AD 552 a beggar remembers it.
+- **Screenshots:** `--day=N`.
+
 ## Resolution
 - Rome renders at 854x480 with Kit.detail 3, sharper than Greece's 320x180. The later worlds'
   ladder moves up to keep in order.

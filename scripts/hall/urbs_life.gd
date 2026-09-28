@@ -34,6 +34,8 @@ var stars: Node3D
 var windows: StandardMaterial3D  # the windows' glass: lit from within at night
 var flames: Array = []  # braziers and torches, lit at dusk
 var people: Array = []  # {root, citizen?, shift}
+var town: RefCounted  # urbs_town.gd: the calendar, the events, rain, birds, dogs, sounds
+var met := {}  # a citizen's id -> how often you have talked (kept in the save)
 var rng := RandomNumberGenerator.new()
 var _phase := ""
 var _shown := ""
@@ -42,6 +44,8 @@ var _heard := {}  # person index -> when they may speak again
 var _t := 0.0
 var _scan := 0.0
 var _last_at := Vector3.ZERO
+var _speed := 0.0
+var _later: Array = []  # [when, root, line]: a reply a moment after
 
 
 func setup(world: Node3D, start_hour: float, age_gloom: float) -> void:
@@ -67,7 +71,7 @@ func phase() -> String:
 
 ## Which of the city's music layers play now (music.gd's "needs"): the day's or the night's.
 func music_back() -> Array:
-	return [phase()]
+	return [phase(), "rain"] if town and town.raining else [phase()]
 
 
 ## Who is out at `h`: the day's people by day, the night's by night, and at the edges of the day
@@ -87,7 +91,10 @@ static func out_at(shift: String, h: float, lot: float) -> bool:
 
 func step(delta: float, at: Vector3) -> String:
 	_t += delta
+	var was := hour
 	hour = fmod(hour + delta * 24.0 / DAY_SECONDS, 24.0)
+	if town and hour < was:
+		town.next_day()  # midnight: the calendar moves on
 	_apply()
 	var now := phase()
 	var changed := ""
@@ -101,8 +108,19 @@ func step(delta: float, at: Vector3) -> String:
 	_scan -= delta
 	if _scan <= 0.0:
 		_scan = 0.2
-		_voices(at, (at - _last_at).length() / 0.2)
+		_speed = (at - _last_at).length() / 0.2
+		_voices(at, _speed)
 		_last_at = at
+	if town:
+		var wet: bool = town.raining
+		town.step(delta, at, hour, _speed > 1.5)
+		if town.raining != wet and changed == "":
+			changed = "rain" if town.raining else _phase
+	for w: Array in _later.duplicate():
+		if _t >= float(w[0]):
+			_later.erase(w)
+			if is_instance_valid(w[1]):
+				say(w[1], w[2])
 	for b: Dictionary in _bubbles.duplicate():
 		var label: Label3D = b["label"]
 		if not is_instance_valid(label):
@@ -175,11 +193,11 @@ func _who_is_out() -> void:
 ## What people near you say: a greeting as you come up, a cry from a seller, a curse if you walk
 ## into them. Each speaks now and then, not all the time.
 func _voices(at: Vector3, speed: float) -> void:
-	for i in people.size():
-		var p: Dictionary = people[i]
+	for p: Dictionary in people:
 		var root: Node3D = p["root"]
 		if not is_instance_valid(root) or not root.visible or not p.has("citizen"):
 			continue
+		var i := root.get_instance_id()
 		var d := Vector2(root.global_position.x - at.x, root.global_position.z - at.z).length()
 		if d > 9.0 or _t < float(_heard.get(i, 0.0)):
 			continue
@@ -188,9 +206,14 @@ func _voices(at: Vector3, speed: float) -> void:
 		if d < 1.1 and speed > 1.5:
 			line = Citizen.react(c, "bump", rng)
 			_heard[i] = _t + 5.0
+		elif d < 4.0 and met.has(c["id"]) and rng.randf() < 0.6:  # someone you know
+			line = ["Salve again, stranger!", "Ah, you! Still in Rome?", "Hello again, friend.", "You again! Good."][rng.randi() % 4]
+			_heard[i] = _t + 40.0
 		elif d < 4.0 and rng.randf() < 0.35:
 			line = Citizen.react(c, "night" if phase() == "night" else "greet", rng)
 			_heard[i] = _t + 25.0
+		elif d < 14.0 and d > 3.0 and rng.randf() < 0.03 and _chat(root, c):
+			_heard[i] = _t + 30.0
 		elif d < 9.0 and not (Citizen.job(c["job"]).get("call", []) as Array).is_empty() and rng.randf() < 0.08:
 			line = Citizen.react(c, "call", rng)
 			_heard[i] = _t + 12.0
@@ -200,8 +223,30 @@ func _voices(at: Vector3, speed: float) -> void:
 			say(root, line)
 
 
-## A line of speech over someone's head, fading after a few seconds.
-func say(root: Node3D, line: String) -> void:
+## Two people who know each other stop and pass a word or two (town.json's "chatter").
+func _chat(root: Node3D, c: Dictionary) -> bool:
+	var chatter: Array = town.data().get("chatter", []) if town else []
+	if chatter.is_empty():
+		return false
+	for q: Dictionary in people:
+		var other: Node3D = q["root"]
+		if q.has("citizen") and other != root and is_instance_valid(other) and other.visible \
+				and other.global_position.distance_to(root.global_position) < 3.5:
+			var pair: Array = chatter[rng.randi() % chatter.size()]
+			var fill := func(line: String) -> String:
+				return line.replace("{a}", str(c["call"])).replace("{b}", str(q["citizen"]["call"]))
+			say(root, fill.call(str(pair[0])))
+			say(other, fill.call(str(pair[1])), 1.8)
+			_heard[other.get_instance_id()] = _t + 30.0
+			return true
+	return false
+
+
+## A line of speech over someone's head, fading after a few seconds (after `delay`, if given).
+func say(root: Node3D, line: String, delay: float = 0.0) -> void:
+	if delay > 0.0:
+		_later.append([_t + delay, root, line])
+		return
 	var label := Label3D.new()
 	label.text = line
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED

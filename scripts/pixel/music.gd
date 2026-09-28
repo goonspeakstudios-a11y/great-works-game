@@ -68,6 +68,7 @@ const ZONES := {
 	# same tune on a music box, the fountains and the crickets. Its "back" is the hour: "day" or
 	# "night" (urbs_life.gd).
 	"urbs": {"bells": false, "layers": [
+		{"file": "rain", "db": -14.0, "needs": "rain"},
 		{"file": "urbs_bass", "db": -11.0, "music": true, "needs": "day"},
 		{"file": "urbs_keys", "db": -9.0, "music": true, "needs": "day"},
 		{"file": "urbs_lead", "db": -10.0, "music": true, "needs": "day"},
@@ -80,6 +81,7 @@ const ZONES := {
 		{"file": "wind", "db": -32.0}]},
 	# The late Empire: the same tune in F minor and a little out of true; a thinner crowd.
 	"urbs_late": {"bells": false, "layers": [
+		{"file": "rain", "db": -14.0, "needs": "rain"},
 		{"file": "urbs_late_bass", "db": -12.0, "music": true, "needs": "day"},
 		{"file": "urbs_late_keys", "db": -11.0, "music": true, "needs": "day"},
 		{"file": "urbs_late_lead", "db": -11.0, "music": true, "needs": "day"},
@@ -90,6 +92,7 @@ const ZONES := {
 		{"file": "wind", "db": -24.0}]},
 	# The emptied city: only the echo of Rome's old tune, the wind, and the crickets at night.
 	"urbs_fall": {"bells": false, "layers": [
+		{"file": "rain", "db": -14.0, "needs": "rain"},
 		{"file": "rome_ghost", "db": -9.0, "music": true},
 		{"file": "crickets", "db": -24.0, "needs": "night"},
 		{"file": "wind", "db": -17.0}]},
