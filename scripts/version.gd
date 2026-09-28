@@ -2,7 +2,7 @@ extends RefCounted
 ## The game's version, and the build number GitHub Actions stamps into res://build.txt
 ## (0 when run from the editor or the project folder).
 
-const VERSION := "0.6.0"
+const VERSION := "0.7.0"
 
 
 static func build() -> int:
