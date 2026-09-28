@@ -105,6 +105,7 @@ const WHO := {
 	"teiresias": {"robe": "4a4a4a", "skin": "b8b0a8", "hair_color": "e8e4dc", "beard": "long", "props": ["staff"]},
 	"anticleia": {"robe": "4a4450", "skin": "c0b0a0", "hair_color": "c8c4bc", "props": ["veil"]},
 	"elpenor": {"robe": "6a5a4a", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
+	"achilles": {"robe": "8a7a5a", "skin": "c8a078", "hair_color": "b8904a", "props": []},
 	"achilles_shade": {"robe": "8a7a5a", "skin": "c8a078", "hair_color": "b8904a", "props": ["spear"]},
 	"hera": {"robe": "6a2a3a", "skin": "e0c0a0", "hair_color": "2a1810", "size": 1.2, "props": ["crown", "veil", "sceptre"]},
 	"aphrodite": {"robe": "e8d0d8", "skin": "e8c8b0", "hair_color": "b8904a", "props": ["veil", "girdle"]},

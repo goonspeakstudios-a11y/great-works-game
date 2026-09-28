@@ -250,6 +250,18 @@ func _stage_shot(view: String) -> void:
 	match view:
 		"place":
 			_stand(_vec(_args.get("at", "0,0,20")), _vec(_args.get("look", "0,0,0")))
+			if _args.has("beat"):  # --beat=<name> [--press=N]: start that beat and go N steps into it
+				var it: Array = interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == _args["beat"])
+				if not it.is_empty():
+					activate(it[0])
+					for k in int(_args.get("press", "0")):
+						if beat == null:
+							break
+						var mark: Variant = beat.next_mark()
+						if mark != null:
+							player.position = Vector3(mark.x, player.position.y, mark.z)
+						beat.press(player)
+						_play_beat(2.0, true)
 		"assets":
 			_stand(Vector3(0, 0, 1.5), Vector3(0, 0, -20))
 		"assets_mid":

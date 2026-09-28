@@ -241,6 +241,9 @@
    "point": "kleos",
    "steps": [
     {
+     "look": "andromache"
+    },
+    {
      "line": "At the Scaean gate Andromache runs to meet you, and the nurse behind her with your little son."
     },
     {
@@ -383,8 +386,14 @@
      "line": "You are Priam, old king of Troy. Hermes has led you through the Greek camp by night, with a wagon of ransom."
     },
     {
+     "show": "achilles"
+    },
+    {
      "go": "hut",
      "text": "Go into the hut of the man who killed your son"
+    },
+    {
+     "look": "achilles"
     },
     {
      "eye": -0.8

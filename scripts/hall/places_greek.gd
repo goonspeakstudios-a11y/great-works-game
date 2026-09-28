@@ -544,13 +544,16 @@ static func _troy_beats(world: Node3D, work: String, room: Dictionary, out: Arra
 	Kit.box(helmet, Vector3(0, 0.3, 0), Vector3(0.04, 0.12, 0.32), "#2a2a2a", false)
 	helmet.visible = false
 	out.append({"kind": "beat", "pos": gate_at, "start": gate_at, "work": work, "id": "kleos", "beat": "kleos",
-		"text": "Meet Andromache at the gate, as Hector", "cast": {"helmet": helmet}, "marks": {},
+		"text": "Meet Andromache at the gate, as Hector", "cast": {"helmet": helmet}, "marks": {"andromache": gate_at + Vector3(-1.6, 1.5, 1.0)},
 		"note": Places._lesson(room, "kleos").get("point", "")})
 	spots["kleos"] = gate_at
 
 	# Iliad 9 and 24, at Achilles' hut
 	beat.call(hut, "embassy", "time", "time", "Receive the embassy, as Achilles")
-	beat.call(hut, "through_the_camp", "pity", "pity", "Go to Achilles by night, as Priam", {}, {"hut": hut["beats"]["kneel"]["at"]})
+	var kneel: Vector3 = hut["beats"]["kneel"]["at"]
+	var achilles := People.figure(world, kneel + Vector3(0, 0, -1.3), 0.0, "achilles", not b.has("teacher"), "sit")
+	achilles["root"].visible = false  # in his own hut he is you, except when Priam comes
+	beat.call(hut, "through_the_camp", "pity", "pity", "Go to Achilles by night, as Priam", {"achilles": achilles["root"]}, {"hut": kneel})
 
 	# Iliad 18: the shield, laid out to walk ring by ring
 	var shield: Vector3 = smithy["beats"]["the_armour"]["at"]
