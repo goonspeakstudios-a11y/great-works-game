@@ -161,7 +161,7 @@ func refresh() -> void:
 				out.append(safe)
 		_text.text = "\n".join(out)
 	if standing:
-		_purse.text = "%s  |  fides %d" % [standing.money(standing.coin()), standing.fides()]
+		_purse.text = "%s, fides %d" % [standing.money(standing.coin()), standing.fides()]
 	var opts: Array = v.get("options", [])
 	var on: Array = v.get("enabled", [])
 	if scene.done:

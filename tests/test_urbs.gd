@@ -365,3 +365,125 @@ func test_the_calendar_says_when_things_are_on() -> void:
 	check_eq(Activities.next_on(w, 4, 7.0), [0, 9.0], "later today")
 	check(Activities.in_hours(23.0, 20.5, 4.5) and Activities.in_hours(2.0, 20.5, 4.5) and not Activities.in_hours(12.0, 20.5, 4.5), "the night wraps past midnight")
 	check(not Activities.today("republic", 2, 8.0).is_empty(), "the tablet lists what's on")
+
+
+func test_the_regulars_have_their_stories_in_every_age() -> void:
+	var Quests: GDScript = load("res://scripts/hall/urbs_quests.gd")
+	var all: Dictionary = Quests.all()
+	check(all.size() >= 30, "the five families have their stories (%d)" % all.size())
+	for qid: String in all:
+		var steps: Array = all[qid]["steps"]
+		check(Quests.kind(steps[0]) == "talk", "%s begins with a talk" % qid)
+		for st: Dictionary in steps:
+			check(Quests.kind(st) != "", "%s: every step is a kind" % qid)
+			if Quests.kind(st) == "go":
+				check(Quests.target(st, Vector3.ONE, {}) != null, "%s: its place is somewhere" % qid)
+			if Quests.kind(st) == "scene":
+				var def: Dictionary = st["scene"]
+				check(Scene.problems(def).is_empty(), "%s: its scene is sound: %s" % [qid, Scene.problems(def)])
+				var sc: RefCounted = Scene.new(def, "quest", fresh(str(all[qid]["age"])), 5)
+				sc.standing.apply({"coin": 500, "give": "a purse for the Prefect"})
+				sc.start()
+				check(autoplay(sc) >= 0, "%s: its scene plays through" % qid)
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_hour": 10.0, "rome_day": 1}
+	hall.travel("urbs")
+	var numisius: Array = hall.interactables.filter(func(i): return i["kind"] == "citizen" and i["citizen"].get("regular", "") == "baker")
+	check(numisius.size() == 1, "Numisius is in his place")
+	hall.activate(numisius[0])
+	check(hall._talk_panel._log.contains("levy"), "he asks for your help with the harvest before the levy")
+	hall._close_panels()
+	var you: RefCounted = hall.standing()
+	check_eq(Quests.at(you, "baker_heroic"), 1, "the story has begun")
+	var field: Vector3 = Quests.target(Quests.current(you, "baker_heroic"), Vector3.ZERO, hall._fronts)
+	hall.player.position = field
+	hall._check_quest_places()
+	check(hall._activity.visible, "at his field the harvest begins")
+	check(autoplay(hall._activity.scene) >= 0, "and is brought in")
+	hall._close_panels()
+	check_eq(Quests.at(you, "baker_heroic"), 3, "and he waits to hear it")
+	var coin_before: int = you.coin()
+	hall.activate(numisius[0])
+	hall._close_panels()
+	check(Quests.done(you, "baker_heroic"), "the story is done")
+	check(you.collected("voices").has("baker_heroic"), "and his voice remembered")
+	check(you.has({"has": "a loaf"}) or you.coin() >= coin_before, "and he gives what he can")
+	hall.activate(numisius[0])
+	check(not hall._talk_panel._log.contains("levy's called"), "after, he talks of other things")
+	hall._close_panels()
+
+	hall._start_scene("errand_merchant")
+	check(autoplay(hall._activity.scene) >= 0, "an errand is given")
+	check(not hall._errand.is_empty() and str(hall._errand["text"]).contains("past"), "with directions by the landmarks: %s" % hall._errand.get("text", ""))
+	hall._close_panels()
+	var before: int = hall.standing().coin()
+	hall.player.position = hall._errand["pos"]
+	hall._check_errand()
+	check(hall._errand.is_empty(), "delivered where it was going")
+	check(hall.standing().coin() > before, "and paid")
+	hall.free()
+
+
+func test_the_collections_gather_across_the_city() -> void:
+	var sets: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://content/rome/collections.json")) as Dictionary)["sets"]
+	for want: String in ["exempla", "inscriptions", "coins", "masks", "voices"]:
+		check(sets.has(want) and not (sets[want]["ids"] as Array).is_empty(), "the %s are a set" % want)
+	var scenes: Dictionary = Scene.all()
+	var gives := {}
+	for id: String in scenes:
+		var c: Variant = scenes[id].get("collect")
+		if c is Array:
+			gives["%s/%s" % [c[0], c[1]]] = true
+	for want: String in ["exempla", "inscriptions", "coins"]:
+		for piece: String in sets[want]["ids"]:
+			check(gives.has("%s/%s" % [want, piece]), "%s: %s can be found" % [want, piece])
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_hour": 10.0}
+	hall.travel("urbs")
+	var horatius: Array = hall.interactables.filter(func(i): return i["kind"] == "activity" and i["scene"] == "exemplum_horatius")
+	check(horatius.size() == 1, "in the age of heroes you can stand where Horatius held the bridge")
+	hall.activate(horatius[0])
+	autoplay(hall._activity.scene)
+	hall._close_panels()
+	check(hall.standing().collected("exempla").has("horatius"), "and his story is yours")
+	var purse: Array = hall.interactables.filter(func(i): return i["kind"] == "activity" and str(i["scene"]).begins_with("purse"))
+	hall.activate(purse[0])
+	autoplay(hall._activity.scene)
+	hall._close_panels()
+	check(hall.standing().collected("coins").has("heroic"), "the coin in your purse, for the age of heroes")
+	hall.free()
+
+
+func test_what_rome_gathers_comes_back_to_the_nexus() -> void:
+	var Nexus: GDScript = load("res://scripts/hall/nexus.gd")
+	var Rooms: GDScript = load("res://scripts/hall/rooms.gd")
+	var p: RefCounted = Progress.open("")
+	p.data = {"works": {}}
+	var bare: Dictionary = Nexus.now(p, Rooms.doors())
+	check(not bare.has("rome"), "nothing of Rome before you have been there")
+	var s: RefCounted = Standing.open(p, "republic")
+	s.apply({"ledger": "Sold your vote in the consular elections.", "ledger_key": "sold_vote"})
+	s.played("vote")
+	var sets: Dictionary = (JSON.parse_string(FileAccess.get_file_as_string("res://content/rome/collections.json")) as Dictionary)["sets"]
+	for id: String in sets["exempla"]["ids"]:
+		s.collect("exempla", id)
+	for age: String in AGES:
+		s.collect("coins", age)
+	var state: Dictionary = Nexus.now(p, Rooms.doors())
+	check(state.has("rome") and (state["rome"]["sets"] as Array).has("exempla") and (state["rome"]["sets"] as Array).has("coins"), "complete sets are counted")
+	check(not (state["rome"]["sets"] as Array).has("masks"), "and incomplete ones are not")
+	var world := Node3D.new()
+	var built: Dictionary = Nexus.build(world, {}, Rooms.doors(), state)
+	var texts: Array = built["interactables"].map(func(i): return str(i["text"]))
+	check(texts.has("Look at the heroes of Rome"), "the heroes stand by Rome's door")
+	check(texts.has("Look at Rome's treasury"), "the treasury is back")
+	check(not texts.has("Look at the ancestors' masks"), "the masks are not, yet")
+	var ledger: Array = built["interactables"].filter(func(i): return i["text"] == "Read the Ledger")
+	check(ledger.size() == 1 and str(ledger[0]["note"]).contains("Sold your vote") and str(ledger[0]["note"]).contains("still being written"),
+		"the Ledger stands, being written")
+	check(texts.has("Look at the frieze of the rites"), "and the frieze of the rites begins")
+	world.free()

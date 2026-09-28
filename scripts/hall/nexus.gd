@@ -95,7 +95,11 @@ static func now(progress: RefCounted, doors: Array) -> Dictionary:
 				points += 1
 		if entry.get("mastered", false) == true:
 			mastered.append(work)
-	return {"points": points, "mastered": mastered}
+	var out := {"points": points, "mastered": mastered}
+	var rome: Dictionary = load("res://scripts/hall/urbs_standing.gd").nexus_state(progress) if progress else {}
+	if not rome.is_empty():
+		out["rome"] = rome
+	return out
 
 
 ## The named pieces that are back, in order. Each needs every earlier piece back too, so they
@@ -322,6 +326,12 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 		for r in [21.0, 24.5, 28.0, 31.5]:
 			clear.append([Kit.sky_point(bearing, 0.0, r) + Vector3(0, lerpf(0.0, at.y, (r - 17.5) / (ring[0] - 17.5)), 0), 4.0])
 
+	# what Rome has brought back, round its stele: the heroes, the dedication, the treasury, the
+	# masks, the choir, the frieze of the rites and the Ledger
+	var rome_i := ids.find("rome")
+	if rome_i > 0 and state.has("rome"):
+		others.append_array(_rome_pieces(world, rome_i * step_deg, state["rome"]))
+
 	# the Heart's own ruin: cracks, a broken parapet, loose rocks drifting off the edge
 	for cr in CRACKS:
 		_crack(world, cr[0], cr[1], cr[2], cr[3])
@@ -394,6 +404,94 @@ static func build(world: Node3D, worlds: Dictionary, doors: Array, state: Dictio
 		"yaw": Places.look_yaw(Vector3(-2, 0, -24) - SPAWN), "pitch": 0.15, "spots": spots, "flicker": flicker,
 		"people": [], "sway": [], "birds": [], "back": b, "restored": 0, "arrivals": arrivals,
 		"drift": drift, "ground": ground, "rails": rails, "columns": columns_seen, "looks": looks}
+
+
+## Rome's pieces on the Heart, about its stele at `bearing`: each complete set of what you gathered
+## in the city brings its piece back (content/rome/collections.json); the frieze gains a panel for
+## each recurring rite played in all seven ages; the Ledger stands as soon as there is anything in it,
+## written, never scored, and is carved when Rome is complete.
+static func _rome_pieces(world: Node3D, bearing: float, rome: Dictionary) -> Array:
+	const Rome := preload("res://scripts/hall/kit_rome.gd")
+	var out: Array = []
+	var sets: Array = rome.get("sets", [])
+	var all_sets: Dictionary = rome.get("all_sets", {})
+	var place := func(off: float, r: float) -> Vector3: return sky_rim(bearing + off, r)
+	var facing := func(at: Vector3) -> float: return Kit.face_yaw(at, Vector3.ZERO)
+	if sets.has("exempla"):
+		for off: float in [-6.0, 6.0]:
+			var at: Vector3 = place.call(off, 13.0)
+			Kit.cylinder(world, at, 0.45, 0.6, "marble", true, 8)
+			var who: Dictionary = Rome.togatus(world, at + Vector3(0, 0.6, 0), facing.call(at),
+				{"robe": "e8e4dc", "skin": "e8e4dc", "hair_color": "e8e4dc", "beard": "short"})
+			Kit.unsolid(who["root"])
+		out.append({"kind": "look", "pos": place.call(0.0, 12.2), "text": "Look at the heroes of Rome",
+			"note": "Horatius and Decius Mus in marble, by Rome's door. %s" % all_sets.get("exempla", {}).get("line", "")})
+	if sets.has("inscriptions"):
+		var at: Vector3 = place.call(-10.0, 11.0)
+		Kit.box(world, at + Vector3(0, 0.5, 0), Vector3(1.6, 1.0, 0.3), "marble", true, Vector3(0, facing.call(at), 0))
+		out.append({"kind": "look", "pos": at + (Vector3.ZERO - at).normalized() * 1.0, "text": "Read Rome's dedication",
+			"note": "SENATUS POPULUSQUE ROMANUS\n\nThe Senate and the People of Rome. Every inscription you read in the city, from the Black Stone to a tile that said only ROMA."})
+	if sets.has("coins"):
+		var at: Vector3 = place.call(18.0, 12.5)
+		Kit.box(world, at + Vector3(0, 0.3, 0), Vector3(0.9, 0.6, 0.6), "bronze", true, Vector3(0, facing.call(at), 0))
+		for k in 7:
+			Kit.blob(world, at + Vector3(-0.3 + k * 0.1, 0.66, 0), 0.05, "gold" if k < 3 else "bronze", Vector3(1.0, 0.3, 1.0), 6)
+		out.append({"kind": "look", "pos": at + (Vector3.ZERO - at).normalized() * 1.0, "text": "Look at Rome's treasury",
+			"note": "Seven coins on the chest, one for each age: the heavy bronze as, the silver denarius, the moneyers' denarius, the sestertius, the washed bronze, the tiny nummus, and the follis of an emperor who never came, beside a Goth king's copper."})
+	if sets.has("masks"):
+		var at: Vector3 = place.call(-16.0, 11.5)
+		Kit.box(world, at + Vector3(0, 1.0, 0), Vector3(2.0, 2.0, 0.3), "stone", true, Vector3(0, facing.call(at), 0))
+		for k in 3:
+			var m: Vector3 = at + (Vector3.ZERO - at).normalized() * 0.2 + Vector3(0, 1.2, 0) + Basis(Vector3.UP, facing.call(at)) * Vector3(-0.6 + k * 0.6, 0, 0)
+			Kit.blob(world, m, 0.14, "#d8c8a0", Vector3(0.8, 1.0, 0.5), 6)
+		out.append({"kind": "look", "pos": at + (Vector3.ZERO - at).normalized() * 1.2, "text": "Look at the ancestors' masks",
+			"note": "The wax faces in their niches, each with its label: consul, censor, triumphed. The ones that melted are here too, somehow."})
+	if sets.has("voices"):
+		for k in 5:
+			var at: Vector3 = place.call(-8.0 + k * 4.0, 10.2)
+			var g := Kit.group(world, at, facing.call(at))
+			Kit.cylinder(g, Vector3.ZERO, 0.18, 0.9, "#b8a888", false, 6, 0.12)
+			Kit.blob(g, Vector3(0, 1.05, 0), 0.12, "#c8a078")
+		out.append({"kind": "look", "pos": place.call(0.0, 9.5), "text": "Listen to the choir",
+			"note": "The families of the city, all their ages together: the farmer and the beggar, the soldier and the gladiator, the senator with his salt cellar and the one with his masks, the fishwives, the barbers. They are singing the old calendar's names."})
+	var frieze: Array = rome.get("frieze", [])
+	if not (rome.get("rites", {}) as Dictionary).is_empty():
+		var at: Vector3 = place.call(12.0, 11.8)
+		var yaw: float = facing.call(at)
+		Kit.box(world, at + Vector3(0, 0.45, 0), Vector3(3.2, 0.9, 0.35), "stone", true, Vector3(0, yaw, 0))
+		for k in frieze.size():
+			Kit.box(world, at + Vector3(0, 0.5, 0) + Basis(Vector3.UP, yaw) * Vector3(-1.4 + k * 0.31, 0, 0.19), Vector3(0.26, 0.6, 0.04), "marble", false,
+				Vector3(0, yaw, 0))
+		var lines: Array = []
+		for r: String in rome.get("rites", {}):
+			var ages: Array = rome["rites"][r]
+			lines.append("%s: %s" % [r.capitalize(), "carved, in all seven ages" if frieze.has(r) else "%d of seven ages" % ages.size()])
+		out.append({"kind": "look", "pos": at + (Vector3.ZERO - at).normalized() * 1.0, "text": "Look at the frieze of the rites",
+			"note": "[b]The frieze of the rites[/b]\n\nThe same rite, seven times, from the age of heroes to the emptied city.\n\n%s" % "\n".join(lines)})
+	var ledger: Array = rome.get("ledger", [])
+	if not ledger.is_empty():
+		var at: Vector3 = place.call(-22.0, 12.0)
+		var reader := Kit.stele(world, at, facing.call(at))
+		var carved: bool = rome.get("complete", false)
+		var by_age := {}
+		for e: Dictionary in ledger:
+			if not by_age.has(e["age"]):
+				by_age[e["age"]] = []
+			(by_age[e["age"]] as Array).append(str(e["text"]))
+		var text: Array = ["[b]The Ledger[/b]%s" % ("" if carved else " (still being written)"),
+			"What you did in Rome when it cost something. No score."]
+		for age: String in ["heroic", "early", "republic", "empire", "late", "collapse", "fall"]:
+			if by_age.has(age):
+				text.append("[i]%s[/i]\n%s" % [age.capitalize(), "\n".join(by_age[age])])
+		if carved:
+			text.append("Carved. Rome's lesson is that nobody else will keep the record.")
+		out.append({"kind": "look", "pos": reader, "text": "Read the Ledger", "note": "\n\n".join(text)})
+	return out
+
+
+## A point on the Heart, `r` metres out along a bearing.
+static func sky_rim(bearing: float, r: float) -> Vector3:
+	return Kit.sky_point(bearing, 0.0, r)
 
 
 ## A book's short title for its column: "Isagoge", "Iliad" (the leading "The" left to the sentence).

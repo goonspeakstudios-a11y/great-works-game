@@ -1,6 +1,8 @@
 # Rome: activities, tasks and minigames (plan)
 
-Status: plan only (BB1, 2026-09-28). This is the companion to `docs/rome-thematic-plan.md`: the
+Status: built (2026-09-28), all but taking office. What was built, and how to add to it, is in
+`docs/rome-activities.md`. The save keeps the standing under one key, `rome_standing`, rather than
+the four keys named in section 8. The late age is AD 384. Originally planned by BB1, 2026-09-28. This is the companion to `docs/rome-thematic-plan.md`: the
 thematic plan fixes which authors and books belong to which era and zone; this document fixes
 everything the player *does* in the Rome world. The reading list itself will be connected later from
 Essential-Reading-List. Every activity here is written so it can be attached to whichever of those

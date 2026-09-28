@@ -30,6 +30,8 @@ const UrbsPanel := preload("res://scripts/hall/urbs_panel.gd")
 const UrbsScene := preload("res://scripts/hall/urbs_scene.gd")
 const Activities := preload("res://scripts/hall/urbs_activities.gd")
 const Standing := preload("res://scripts/hall/urbs_standing.gd")
+const Quests := preload("res://scripts/hall/urbs_quests.gd")
+const Errands := preload("res://scripts/hall/urbs_errands.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -119,6 +121,12 @@ var _activity: Panel  # a scene of the city being played: a rite, a day's work, 
 var _scene_rite := ""  # the recurring rite the scene being played belongs to
 var _scene_def := {}  # the scene being played, as written
 var _waiting := {}  # a scene you chose to wait for: {scene, subs, rite, days, hour}
+var _quest_scene := ""  # the regular's story whose scene is being played
+var _after_talk := Callable()  # what follows when the talk panel closes (a regular's scene)
+var _errand := {}  # an errand across the city (urbs_errands.gd): {name, pos, pay, limit, text}
+var _errand_since := 0.0
+var _fronts := {}  # where to stand before each standing monument of the city, by id
+var _walk_check := 0.0
 var _talking := {}  # the citizen you are talking with (their interactable)
 var _favour := {}  # a message you are carrying: {from, target} (citizens)
 var _favour_done := {}  # who you carried a message for -> to whom
@@ -289,6 +297,11 @@ func _stage_shot(view: String) -> void:
 				player.seated = true
 				var to := _vec(_args.get("look", "0,0,0")) - player.position
 				player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
+			if _args.has("scene"):  # --scene=<id> [--press=N]: play a scene of the city, N lines into it
+				_start_scene(_args["scene"])
+				for k in int(_args.get("press", "0")):
+					_activity.scene.press()
+				_activity.refresh()
 			if _args.has("beat"):  # --beat=<name> [--press=N]: start that beat and go N steps into it
 				var it: Array = interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == _args["beat"])
 				if not it.is_empty():
@@ -472,6 +485,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	areas = built.get("areas", [])
 	regions = built.get("regions", [])
 	landmarks = built.get("landmarks", [])
+	_fronts = built.get("fronts", {})
 	life = built.get("life")
 	_here_zone = str(built.get("zone", ""))
 	backs = built.get("backs", {})
@@ -1324,6 +1338,11 @@ func _tablet_text() -> String:
 		var on: Array = Activities.today(_age_id(), life.town.day if life and life.town else 0, life.hour if life else 8.0)
 		if not on.is_empty():
 			lines.append("[color=#e0b660]Today in Rome[/color]\n" + "\n".join(on))
+		var doing: Array = Quests.hints(standing(), _age_id())
+		if not _errand.is_empty():
+			doing.push_front(str(_errand["text"]))
+		if not doing.is_empty():
+			lines.append("[color=#e0b660]Things you said you'd do[/color]\n" + "\n".join(doing))
 		lines.append("Roman books mastered: %d of %d." % [done, rome.size()])
 		return "\n\n".join(lines)
 	if here == "nexus":
@@ -1415,6 +1434,9 @@ func _close_panels() -> void:
 	var after := Callable()
 	if _activity.visible:
 		after = _scene_closed()
+	elif _talk_panel.visible and _after_talk.is_valid():
+		after = _after_talk
+	_after_talk = Callable()
 	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _talk_panel, _activity]:
 		p.hide()
 	_where.show()
@@ -1451,6 +1473,11 @@ func _process(delta: float) -> void:
 		var turned: String = life.step(delta, player.global_position)
 		if turned != "" and music:
 			music.play(_zone(here), life.music_back())  # the day's music, or the night's
+		_walk_check -= delta
+		if _walk_check <= 0.0 and not _any_panel() and not travelling:
+			_walk_check = 0.4
+			_check_errand()
+			_check_quest_places()
 	_animate_people(delta)
 	_animate_life(delta)
 	_catch_fall()
@@ -1947,6 +1974,7 @@ func _start_scene(id: String, subs: Dictionary = {}, rite: String = "") -> void:
 
 
 func _play_scene(scene: RefCounted, rite: String, def: Dictionary) -> void:
+	scene.resolve_errand = _resolve_errand
 	_scene_rite = rite
 	_scene_def = def
 	_activity.open(scene, scene.standing)
@@ -1959,6 +1987,7 @@ func _play_scene(scene: RefCounted, rite: String, def: Dictionary) -> void:
 func _scene_closed() -> Callable:
 	var scene: RefCounted = _activity.scene
 	if scene == null or not scene.done:
+		_quest_scene = ""  # left part way: talk to them again to take it up
 		return Callable()
 	var you := standing()
 	if _scene_rite != "":
@@ -1967,6 +1996,14 @@ func _scene_closed() -> Callable:
 		var pair: Array = _scene_def["collect"]
 		you.collect(str(pair[0]), str(pair[1]))
 	var then := Callable()
+	if _quest_scene != "":
+		var qid := _quest_scene
+		_quest_scene = ""
+		var said: String = Quests.advance(you, qid)
+		if said != "":
+			_quest_done(qid, said)
+		elif Quests.kind(Quests.current(you, qid)) == "scene":
+			then = _start_quest_scene.bind(qid)
 	if scene.id == "wait" and scene.hour >= 0.0 and not _waiting.is_empty():
 		var w := _waiting
 		_pass_time(int(w["days"]), float(w["hour"]))
@@ -2004,6 +2041,111 @@ func _chest_text(it: Dictionary) -> String:
 	return "\n\n".join(lines)
 
 
+## A regular's words when their story for this age has something for you: its beginning, its next
+## talk, or the thing you were to bring; otherwise "" (they talk as usual).
+func _quest_words(c: Dictionary) -> String:
+	var qid := Quests.for_regular(str(c["regular"]), _age_id())
+	if qid == "":
+		return ""
+	var you := standing()
+	if Quests.done(you, qid):
+		return ""
+	var step: Dictionary = Quests.steps(qid)[0] if Quests.at(you, qid) < 0 else Quests.current(you, qid)
+	var said := ""
+	match Quests.kind(step):
+		"talk":
+			var line := str(step["talk"])
+			said = Quests.advance(you, qid)
+			if said != "":
+				_quest_done(qid, said)
+			elif Quests.kind(Quests.current(you, qid)) == "scene":
+				_after_talk = _start_quest_scene.bind(qid)
+			return line
+		"bring":
+			if you.has({"has": str(step["bring"])}):
+				var line := str(step["line"])
+				said = Quests.advance(you, qid)
+				if said != "":
+					_quest_done(qid, said)
+				return line
+			return "Have you got %s yet? %s" % [step["bring"], step.get("hint", "")]
+		"scene":
+			_after_talk = _start_quest_scene.bind(qid)
+			return "Well? Go on, then."
+		"go":
+			return "Well? %s" % step.get("hint", "")
+	return ""
+
+
+func _start_quest_scene(qid: String) -> void:
+	var step: Dictionary = Quests.current(standing(), qid)
+	if Quests.kind(step) != "scene":
+		return
+	var def: Dictionary = step["scene"]
+	_quest_scene = qid
+	_play_scene(UrbsScene.new(def, "quest", standing()), "", def)
+
+
+## A regular's story for this age is done: what it gave, and its voice remembered.
+func _quest_done(qid: String, said: String) -> void:
+	var q: Dictionary = Quests.all()[qid]
+	_quip = "%s: done.%s\n%s" % [q["title"], " (%s)" % said if said != "done" else "", q.get("voice", "")]
+	_quip_until = _t + 6.0
+	progress.save()
+
+
+## Walking to where a regular's story sends you: there, the story goes on.
+func _check_quest_places() -> void:
+	if here != "urbs":
+		return
+	var you := standing()
+	for qid: String in Quests.all():
+		if str(Quests.all()[qid]["age"]) != _age_id():
+			continue
+		var step: Dictionary = Quests.current(you, qid)
+		if Quests.kind(step) != "go" or Quests.at(you, qid) < 0:
+			continue
+		var to: Variant = Quests.target(step, spots.get("room", Vector3.ZERO), _fronts)
+		if to == null or Vector2(player.global_position.x - (to as Vector3).x, player.global_position.z - (to as Vector3).z).length() > Quests.REACH:
+			continue
+		_quip = str(step.get("line", ""))
+		_quip_until = _t + 6.0
+		var said: String = Quests.advance(you, qid)
+		if said != "":
+			_quest_done(qid, said)
+		elif Quests.kind(Quests.current(you, qid)) == "scene":
+			_start_quest_scene(qid)
+		progress.save()
+		return
+
+
+## An errand given in a scene: somewhere across the city, with directions.
+func _resolve_errand(spec: Dictionary) -> Dictionary:
+	if here != "urbs" or landmarks.is_empty():
+		return {}
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(_t * 1000.0) + landmarks.size()
+	var to: Dictionary = Errands.pick(landmarks, player.global_position, rng)
+	if to.is_empty():
+		return {}
+	_errand = Errands.make(to, landmarks, player.global_position, _age_id(), int(spec.get("pay", 1)), str(spec.get("what", "it")))
+	_errand_since = _t
+	return _errand
+
+
+func _check_errand() -> void:
+	if _errand.is_empty() or here != "urbs":
+		return
+	var r: Dictionary = Errands.arrive(_errand, player.global_position, _t - _errand_since)
+	if r.is_empty():
+		return
+	var said: String = standing().apply(r["fx"])
+	_quip = "%s (%s)" % [r["line"], said]
+	_quip_until = _t + 5.0
+	_errand = {}
+	progress.save()
+
+
 # ---------- talking with the people of a city ----------
 
 ## Stop someone in the street and talk: their name, their trade, their first words.
@@ -2036,10 +2178,13 @@ func _first_words(c: Dictionary) -> String:
 		var target: String = _favour_done[c["id"]]
 		_favour_done.erase(c["id"])
 		return str(fav["after"][times % fav["after"].size()]).replace("{target}", target)
+	var story := _quest_words(c) if c.has("regular") and here == "urbs" else ""
 	var words := Citizen.greeting(c)
 	var lines: Array = c.get("regular_lines", [])
 	if not lines.is_empty():
 		words = str(lines[mini(times, lines.size() - 1)])
+		if story != "":
+			return words + "\n" + story  # their own news, then what they'd ask of you
 	elif times > 0:
 		words = "You again! %s" % c["mood_line"]
 	if _favour.is_empty() and life and randf() < 0.15:  # a message to take to someone nearby

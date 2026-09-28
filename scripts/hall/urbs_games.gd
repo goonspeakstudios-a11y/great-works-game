@@ -510,7 +510,7 @@ class Changer extends RefCounted:
 		rng.seed = seed_value
 		var ages := {
 			"republic": ["denarius", 3.9, "nearly pure silver (about 95 parts in a hundred)"],
-			"empire": ["denarius", 3.4, "silver, but debased since Nero: about four parts in five"],
+			"empire": ["denarius", 3.4, "silver, but debased since Nero: about three parts in four"],
 			"late": ["follis", 3.0, "copper with a wash of silver on it, a few parts in a hundred at most"],
 		}
 		var a: Array = ages.get(age, ages["republic"])

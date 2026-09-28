@@ -90,6 +90,22 @@
    "Ask to drive a practice run",
    "practice_race"
   ],
+  "mercator": [
+   "Ask if there's a message to carry",
+   "errand_merchant"
+  ],
+  "senator": [
+   "Offer to carry a message",
+   "errand_senator"
+  ],
+  "matrona": [
+   "Offer to run an errand",
+   "errand_matrona"
+  ],
+  "cliens": [
+   "Ask what his patron needs",
+   "errand_client"
+  ],
   "lanius": [
    "Buy something",
    "buy_lanius"
@@ -1707,6 +1723,78 @@
     },
     {
      "end": "They pick you up out of the sand. \"Everyone goes over once,\" the charioteer says. \"The ones who live learn.\""
+    }
+   ]
+  },
+  "errand_merchant": {
+   "title": "An errand",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "The merchant has a sealed tablet for a customer and no slave free to take it."
+    },
+    {
+     "errand": {
+      "pay": 2,
+      "what": "the sealed tablet"
+     }
+    },
+    {
+     "end": "\"Don't read it,\" he says. \"And don't lose it. I know your face now.\""
+    }
+   ]
+  },
+  "errand_senator": {
+   "title": "A message",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "The senator looks you over and decides you'll do. \"A message, by word of mouth. You'll remember it? Good.\""
+    },
+    {
+     "errand": {
+      "pay": 2,
+      "what": "the senator's message"
+     }
+    },
+    {
+     "end": "Men have carried messages for the great all their lives, and been paid in the great men's goodwill."
+    }
+   ]
+  },
+  "errand_matrona": {
+   "title": "An errand",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "She has a basket for her sister and her slave is sick. Eggs, and a letter under the eggs."
+    },
+    {
+     "errand": {
+      "pay": 1,
+      "what": "the basket"
+     }
+    },
+    {
+     "end": "\"Mind the eggs,\" she says, \"and the letter more.\""
+    }
+   ]
+  },
+  "errand_client": {
+   "title": "An errand",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "His patron wants a book fetched from a friend's house. He has three other errands already."
+    },
+    {
+     "errand": {
+      "pay": 1,
+      "what": "the patron's note"
+     }
+    },
+    {
+     "end": "A client runs. A patron waits. That is the whole arrangement."
     }
    ]
   },

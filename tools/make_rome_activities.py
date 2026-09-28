@@ -49,7 +49,7 @@ SPOTS = [
     {"scene": "census", "text": "Declare your property to the tax assessor", "at": [55, 25], "ages": ["late"]},
     {"scene": "practice_race", "text": "Ask at the Greens' stables for a practice run", "at": [120, -620],
      "ages": ["empire", "late"]},
-] + scenes.SPOTS + exempla.SPOTS
+] + scenes.SPOTS + exempla.SPOTS + collections.SPOTS
 
 # The gods of the temples, for an offering at their steps (the temples standing in each age).
 TEMPLES = {
@@ -69,7 +69,7 @@ OFFERING_AGES = ["heroic", "early", "republic", "empire", "late"]
 def check_scene(sid, s):
     labels = {st["label"] for st in s["steps"] if "label" in st}
     kinds = ["say", "ask", "rite", "hold", "still", "timing", "type", "pick", "pay", "gain", "wage", "if", "play", "label",
-             "go", "hour", "end"]
+             "go", "hour", "errand", "end"]
     ends = 0
     for st in s["steps"]:
         k = [x for x in kinds if x in st]
@@ -97,7 +97,7 @@ def write(name, data):
 
 def main():
     every = {}
-    for mod in (rites, sacred, trades, scenes, exempla):
+    for mod in (rites, sacred, trades, scenes, exempla, collections):
         for sid, s in mod.SCENES.items():
             assert sid not in every, sid
             check_scene(sid, s)
@@ -121,8 +121,8 @@ def main():
     write("exempla.json", {"about": "The heroes' stories, played where they happened (tools/rome_acts/exempla.py).",
                            "exempla": exempla.EXEMPLA, "scenes": exempla.SCENES})
     write("quests.json", {"about": "The regulars' stories across the ages (tools/rome_acts/quests.py).", "quests": quests.QUESTS})
-    write("collections.json", {"about": "What you gather in Rome, and what each set brings back to the Nexus.",
-                               "sets": collections.SETS})
+    write("collections.json", {"about": "What you gather in Rome, and what each set brings back to the Nexus (tools/rome_acts/collections.py).",
+                               "sets": collections.SETS, "scenes": collections.SCENES})
     print("%d scenes, %d rites, %d jobs, %d spots, %d quests" % (len(every), len(rites.RITES), len(trades.JOBS), len(SPOTS),
                                                                  len(quests.QUESTS)))
 

@@ -137,6 +137,10 @@ def hour(h):
     return {"hour": h}
 
 
+def errand(pay, what):
+    return {"errand": {"pay": pay, "what": what}}
+
+
 def scene(title, where, *steps, **extra):
     s = {"title": title, "where": where, "steps": list(steps)}
     s.update(extra)

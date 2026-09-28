@@ -164,7 +164,16 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	return {"name": "Rome, %s" % age["when"], "interactables": out, "spawn": arrival + Vector3(0, 0.05, 0),
 		"yaw": Places.look_yaw(arrival_to - arrival), "spots": spots, "flicker": flicker, "people": people, "squads": squads,
 		"restored": 0, "sway": fab.get("sway", []), "birds": birds, "back": [life.phase()], "arrivals": arrivals, "regions": regions,
-		"age": id, "line": str(age.get("line", "")), "life": life, "landmarks": landmarks, "zone": ZONE.get(id, "urbs")}
+		"age": id, "line": str(age.get("line", "")), "life": life, "landmarks": landmarks, "zone": ZONE.get(id, "urbs"),
+		"fronts": _fronts(fab)}
+
+
+## Where to stand before each standing monument, by its id (for the regulars' errands).
+static func _fronts(fab: Dictionary) -> Dictionary:
+	var out := {}
+	for s: Dictionary in fab["monuments"]:
+		out[str(s["m"]["id"])] = _front(s)
+	return out
 
 
 ## The regions of the city in an age, named as they were then (in the emptied city, the empty ones).

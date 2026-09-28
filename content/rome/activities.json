@@ -544,6 +544,179 @@
     "fall"
    ],
    "id": "tell_lucretia"
+  },
+  {
+   "scene": "inscription_lapis_niger",
+   "text": "Read the Black Stone",
+   "at": [
+    -40,
+    60
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic"
+   ],
+   "id": "inscription_lapis_niger"
+  },
+  {
+   "scene": "inscription_tables",
+   "text": "Read the Twelve Tables",
+   "at": [
+    -50,
+    28
+   ],
+   "ages": [
+    "heroic",
+    "early",
+    "republic"
+   ],
+   "id": "inscription_tables"
+  },
+  {
+   "scene": "inscription_graffito",
+   "text": "Read a wall in the Subura",
+   "at": [
+    520,
+    350
+   ],
+   "ages": [
+    "republic",
+    "empire"
+   ],
+   "id": "inscription_graffito"
+  },
+  {
+   "scene": "inscription_pantheon",
+   "text": "Read the Pantheon's porch",
+   "at": [
+    -688,
+    690
+   ],
+   "ages": [
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_pantheon",
+   "monument": "pantheon"
+  },
+  {
+   "scene": "inscription_titus",
+   "text": "Read the Arch of Titus",
+   "at": [
+    273,
+    -150
+   ],
+   "ages": [
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_titus",
+   "monument": "titus"
+  },
+  {
+   "scene": "inscription_trajan_column",
+   "text": "Read the base of Trajan's Column",
+   "at": [
+    -75,
+    385
+   ],
+   "ages": [
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_trajan_column",
+   "monument": "trajan_column"
+  },
+  {
+   "scene": "inscription_severus",
+   "text": "Read the Arch of Septimius Severus",
+   "at": [
+    -41,
+    75
+   ],
+   "ages": [
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_severus",
+   "monument": "sep_severus"
+  },
+  {
+   "scene": "inscription_constantine",
+   "text": "Read the Arch of Constantine",
+   "at": [
+    447,
+    -250
+   ],
+   "ages": [
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_constantine",
+   "monument": "constantine"
+  },
+  {
+   "scene": "inscription_damasus",
+   "text": "Read a martyr's verses",
+   "at": [
+    470,
+    -890
+   ],
+   "ages": [
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_damasus"
+  },
+  {
+   "scene": "inscription_saturn",
+   "text": "Read the Temple of Saturn's front",
+   "at": [
+    -76,
+    40
+   ],
+   "ages": [
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "id": "inscription_saturn",
+   "monument": "saturn"
+  },
+  {
+   "scene": "inscription_phocas_hope",
+   "text": "Read a tile in a ruin",
+   "at": [
+    60,
+    10
+   ],
+   "ages": [
+    "fall"
+   ],
+   "id": "inscription_phocas_hope"
+  },
+  {
+   "scene": "inscription_tomb_road",
+   "text": "Read a tomb on the road",
+   "at": [
+    470,
+    -900
+   ],
+   "ages": [
+    "republic",
+    "empire"
+   ],
+   "id": "inscription_tomb_road"
   }
  ],
  "temples": {

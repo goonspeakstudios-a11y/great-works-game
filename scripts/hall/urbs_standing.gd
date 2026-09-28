@@ -10,6 +10,7 @@ extends RefCounted
 ##   collected the sets you are gathering: {set: [ids]} (the exempla, the coins, the masks...)
 ##   rites     the recurring rites you have played: {rite: [ages]} (the Nexus's frieze)
 ##   done      small things done once: {key: true}
+##   quests    how far you are in the regulars' stories: {quest: step} (urbs_quests.gd)
 ##
 ## Prices and wages are written against the first age's coin and grow with the ages, prices
 ## faster than wages: the same purse buys less and less as the city falls.
@@ -31,7 +32,7 @@ const CENSUS := [20, 50, 100, 200, 400, 1000]
 const FIDES := [-20, 20]
 const DIGNITAS := [0, 20]
 const START := {"fides": 0, "coin": 12, "dignitas": 0, "class": 0, "ledger": [], "goods": {}, "collected": {}, "rites": {},
-	"done": {}}
+	"done": {}, "quests": {}}
 
 var progress: RefCounted
 var age := "heroic"
@@ -261,3 +262,29 @@ func summary() -> String:
 	if not things.is_empty():
 		lines.append("You carry: %s" % ", ".join(things))
 	return "\n".join(lines)
+
+
+## What Rome has brought back to the Nexus, read from the save without changing it: the sets
+## completed (content/rome/collections.json), the Ledger, the rites played in all seven ages (the
+## frieze), and whether Rome is complete (every set, every rite in every age).
+static func nexus_state(the_progress: RefCounted) -> Dictionary:
+	var d: Variant = the_progress.data.get("rome_standing") if the_progress else null
+	if not d is Dictionary:
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/rome/collections.json"))
+	var sets: Dictionary = (parsed as Dictionary).get("sets", {}) if parsed is Dictionary else {}
+	var have: Dictionary = (d as Dictionary).get("collected", {})
+	var done: Array = []
+	for k: String in sets:
+		var got: Array = have.get(k, [])
+		if (sets[k]["ids"] as Array).all(func(id: String) -> bool: return got.has(id)):
+			done.append(k)
+	var rites: Dictionary = (d as Dictionary).get("rites", {})
+	var frieze: Array = []
+	for r: String in rites:
+		if (rites[r] as Array).size() >= AGES.size():
+			frieze.append(r)
+	var all_rites: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/rome/rites.json"))
+	var rite_count: int = ((all_rites as Dictionary).get("rites", {}) as Dictionary).size() if all_rites is Dictionary else 10
+	return {"sets": done, "ledger": (d as Dictionary).get("ledger", []), "frieze": frieze, "rites": rites,
+		"complete": done.size() == sets.size() and not sets.is_empty() and frieze.size() >= rite_count, "all_sets": sets}

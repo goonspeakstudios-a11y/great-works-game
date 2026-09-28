@@ -301,5 +301,6 @@ static func room(world: Node3D, age: String, at: Vector3, yaw: float, note: Stri
 		{"kind": "activity", "pos": here.call(Vector3(0, 0, -1.3)), "scene": scene_id("lararium", age), "text": "Keep the household gods"},
 		{"kind": "activity", "pos": here.call(Vector3(-1.0, 0, -0.6)), "scene": scene_id("sleep", age), "text": "Sleep until morning"},
 		{"kind": "chest", "pos": here.call(Vector3(1.3, 0, -1.3)), "text": "Open your chest", "note": note},
+		{"kind": "activity", "pos": here.call(Vector3(0.9, 0, 0.9)), "scene": scene_id("purse", age), "text": "Look at the coin in your purse"},
 	]
 	return out

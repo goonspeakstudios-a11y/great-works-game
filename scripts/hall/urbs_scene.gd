@@ -24,12 +24,14 @@ extends RefCounted
 ##   {"play": game, "opts": {}, "win": label, "lose": label, "line": text}   a game at the table (urbs_games.gd)
 ##   {"label": name} / {"go": name}            a place in the steps, and a jump to it
 ##   {"hour": h}                               the scene ends at this hour of the day (sleep, waiting)
+##   {"errand": {pay, what}}                   an errand across the city (urbs_errands.gd), given by
+##                                             `resolve_errand`, which says where
 ##   {"end": text}                             the end
 ## An option: {"text", "say": what follows, "then": label, "need": condition, + effects (fides, coin,
 ## dignitas, pay, earn, ledger, ledger_key, give, take, collect, once, class)}.
 
 const KINDS := ["say", "ask", "rite", "hold", "still", "timing", "type", "pick", "pay", "gain", "wage", "if", "play",
-	"label", "go", "hour", "end"]
+	"label", "go", "hour", "errand", "end"]
 const WAITS := ["say", "ask", "rite", "hold", "still", "timing", "type", "pick", "play"]
 
 var id := ""
@@ -46,6 +48,8 @@ var won := false
 var hour := -1.0  # the hour the scene ends at, if it moves the day on
 var lines: Array = []  # everything said so far, oldest first
 var game := {}  # the game the scene waits on: {game, opts}
+var errand := {}  # an errand given in the scene (urbs_errands.gd)
+var resolve_errand: Callable  # (spec) -> the errand, with its directions
 var rng := RandomNumberGenerator.new()
 var _rite_at := 0
 var _rite_opts: Array = []
@@ -63,7 +67,7 @@ var _t := 0.0
 ## Every scene written for Rome: {id: def} from all its files.
 static func all() -> Dictionary:
 	var out := {}
-	for f: String in ["rites", "sacred", "trades", "scenes", "exempla"]:
+	for f: String in ["rites", "sacred", "trades", "scenes", "exempla", "collections"]:
 		var path := "res://content/rome/%s.json" % f
 		if not FileAccess.file_exists(path):
 			continue
@@ -215,6 +219,11 @@ func _advance(to: String = "") -> void:
 				continue
 			"hour":
 				hour = float(s["hour"])
+				i += 1
+				continue
+			"errand":
+				errand = resolve_errand.call(s["errand"]) if resolve_errand.is_valid() else {}
+				_say(str(errand.get("text", "There's nothing to take after all.")))
 				i += 1
 				continue
 			"say":

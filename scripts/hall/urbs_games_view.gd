@@ -65,8 +65,7 @@ func begin(what: String, the_opts: Dictionary, the_standing: RefCounted) -> void
 		"duodecim":
 			game = Games.Duodecim.new(s)
 			(game as RefCounted).roll()
-			status = "Five men each round the three lines. Pick a die (1-3), then a man (arrows, F, or click)."
-			sub = "Stake: %s." % _money(_stake)
+			status = "Five men each round the three lines. Pick a die (1-3), then a man (arrows, F, or click). Stake: %s." % _money(_stake)
 		"haggle":
 			var buying: bool = opts.get("buying", true)
 			var worth: int = standing.price(int(opts.get("value", 4))) if standing else int(opts.get("value", 4))
@@ -340,14 +339,14 @@ func _duo_pos(p: int) -> Vector2:
 	var col := (p - 1) % 12
 	if row == 1:
 		col = 11 - col
-	return Vector2(64 + col * 36, 118 - row * 40)
+	return Vector2(40 + col * 34, 118 - row * 40)
 
 
 func _duo_point_at(at: Vector2) -> int:
 	for p in range(1, 37):
 		if Rect2(_duo_pos(p) - Vector2(16, 16), Vector2(32, 32)).has_point(at):
 			return p
-	if Rect2(4, 100, 48, 36).has_point(at):
+	if Rect2(0, 142, 220, 16).has_point(at):  # "You: n to come on": bring a man on
 		return 0
 	return -1
 
@@ -563,6 +562,11 @@ func _draw() -> void:
 			_draw_tray(font, fs)
 		"race":
 			_draw_race(font, fs)
+	if kind == "duodecim":  # under the board: where the men are, then what just happened
+		draw_string(font, Vector2(8, 150 + fs * 0.5), "You: %d to come on, %d home.   Him: %d to come on, %d home." % [
+			(game.men[0] as Array).count(0), game.home(0), (game.men[1] as Array).count(0), game.home(1)], HORIZONTAL_ALIGNMENT_LEFT, size.x - 16, fs, INK)
+		draw_string(font, Vector2(8, 166 + fs * 0.5), sub if sub != "" else status, HORIZONTAL_ALIGNMENT_LEFT, size.x - 16, fs - 1, DIM)
+		return
 	var text_x := 180.0 if kind in ["terni", "latrunculi"] else 8.0
 	var text_y := 12.0 if kind in ["terni", "latrunculi"] else 142.0
 	var width := size.x - text_x - 8.0
@@ -615,7 +619,7 @@ func _draw_latr() -> void:
 
 
 func _draw_duo(font: Font, fs: int) -> void:
-	draw_rect(Rect2(44, 58, 452, 120), BOARD)
+	draw_rect(Rect2(20, 16, 416, 124), BOARD)
 	for p in range(1, 37):
 		var at := _duo_pos(p)
 		draw_rect(Rect2(at - Vector2(15, 17), Vector2(30, 34)), BOARD.lightened(0.06 if p % 2 == 0 else 0.0))
@@ -624,13 +628,8 @@ func _draw_duo(font: Font, fs: int) -> void:
 			for k in here:
 				var dot := at + Vector2((side * 2 - 1) * 7, -10 + k * 7)
 				draw_circle(dot, 5.0, YOU if side == 0 else THEM)
-	for side in 2:
-		var waiting: int = (game.men[side] as Array).count(0)
-		var home: int = game.home(side)
-		draw_string(font, Vector2(4, 70 + side * 40), "%s: %d to come on, %d home" % ["You" if side == 0 else "Him", waiting, home],
-			HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 2, YOU if side == 0 else Color("c88a6a"))
 	for d in game.dice.size():
-		var r := Rect2(360 + d * 34, 4, 28, 28)
+		var r := Rect2(446 + d * 32, 40, 28, 28)
 		draw_rect(r, Color("e8dcc8"))
 		draw_rect(r, GOLD if d == _die else Color("5a4a3a"), false, 2.0)
 		draw_string(font, r.position + Vector2(9, 20), str(game.dice[d]), HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color("2a2018"))
@@ -638,7 +637,7 @@ func _draw_duo(font: Font, fs: int) -> void:
 		var at_p: int = game.men[0][_cursor]
 		if at_p >= 1 and at_p <= 36:
 			draw_arc(_duo_pos(at_p), 18.0, 0, TAU, 16, GOLD, 2.0)
-	draw_string(font, Vector2(8, 20), "Your throw" if game.turn == 0 else "His throw", HORIZONTAL_ALIGNMENT_LEFT, -1, fs, GOLD)
+	draw_string(font, Vector2(446, 30), "Your throw" if game.turn == 0 else "His throw", HORIZONTAL_ALIGNMENT_LEFT, -1, fs, GOLD)
 
 
 func _draw_stall(font: Font, fs: int) -> void:

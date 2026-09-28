@@ -5,7 +5,7 @@ a scene "<id>_<age>" is used in that age if there is one, else "<id>".
 """
 
 from .common import (say, ask, opt, end, label, go, rite, hold, still, timing, typing, pick, gain, pay, wage, iff, play,
-                     scene, hour)
+                     scene, hour, errand)
 
 S = {}
 
@@ -330,6 +330,33 @@ S["practice_race"] = scene(
     end("They pick you up out of the sand. \"Everyone goes over once,\" the charioteer says. \"The ones who live learn.\""),
 )
 
+# ---------- errands across the city ----------
+
+S["errand_merchant"] = scene(
+    "An errand", "In the street",
+    say("The merchant has a sealed tablet for a customer and no slave free to take it."),
+    errand(2, "the sealed tablet"),
+    end("\"Don't read it,\" he says. \"And don't lose it. I know your face now.\""),
+)
+S["errand_senator"] = scene(
+    "A message", "In the street",
+    say("The senator looks you over and decides you'll do. \"A message, by word of mouth. You'll remember it? Good.\""),
+    errand(2, "the senator's message"),
+    end("Men have carried messages for the great all their lives, and been paid in the great men's goodwill."),
+)
+S["errand_matrona"] = scene(
+    "An errand", "In the street",
+    say("She has a basket for her sister and her slave is sick. Eggs, and a letter under the eggs."),
+    errand(1, "the basket"),
+    end("\"Mind the eggs,\" she says, \"and the letter more.\""),
+)
+S["errand_client"] = scene(
+    "An errand", "In the street",
+    say("His patron wants a book fetched from a friend's house. He has three other errands already."),
+    errand(1, "the patron's note"),
+    end("A client runs. A patron waits. That is the whole arrangement."),
+)
+
 S["patron_help"] = scene(
     "A word with the senator", "The Forum",
     say("You ask the senator if he needs a man."),
@@ -361,6 +388,10 @@ JOBS = {
     "haruspex": ["Watch him read a liver", "haruspicy"],
     "victimarius": ["Help with the sacrifice", "sacrifice"],
     "auriga": ["Ask to drive a practice run", "practice_race"],
+    "mercator": ["Ask if there's a message to carry", "errand_merchant"],
+    "senator": ["Offer to carry a message", "errand_senator"],
+    "matrona": ["Offer to run an errand", "errand_matrona"],
+    "cliens": ["Ask what his patron needs", "errand_client"],
 }
 for job in BUY:
     JOBS.setdefault(job, ["Buy something", "buy_" + job])
