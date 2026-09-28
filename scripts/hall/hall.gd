@@ -24,6 +24,8 @@ const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Lettering := preload("res://scripts/hall/lettering.gd")
 const Beat := preload("res://scripts/hall/beat.gd")
+const City := preload("res://scripts/hall/city.gd")
+const Council := preload("res://scripts/hall/council.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -124,6 +126,8 @@ var _map_note: Label
 var _tree_panel: Panel
 var _menu: PanelContainer  # Esc: volume, speeds, quit (Menu)
 var _choice: PanelContainer  # a world asks who you are there (Choice)
+var _council: Panel  # the council table of the city in speech (Council)
+var _council_board := -1  # the board's stage when you sat down, to rebuild it if it grew
 var _t := 0.0
 var _args := {}
 var _frames := 0
@@ -195,6 +199,9 @@ func _ready() -> void:
 	_choice = Choice.new()
 	_choice.chosen.connect(_on_chosen)
 	_root.add_child(_choice)
+	_council = Council.new()
+	_council.acted.connect(_on_council_acted)
+	_root.add_child(_council)
 	author = AuthorAI.new()
 	author.answered.connect(_on_answer)
 	author.judged.connect(_on_judged)
@@ -1305,14 +1312,16 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
+	return _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible \
+		or _council.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu]:
+	var rebuild: bool = _council.visible and _city != null and _city.board_stage() != _council_board
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _council]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
@@ -1323,6 +1332,8 @@ func _close_panels() -> void:
 	_restore_pending = ""
 	if due:
 		_restore()
+	elif rebuild:
+		_load_place(here, true)  # the city on the board has grown
 
 
 # ---------- moment to moment ----------
@@ -1622,6 +1633,8 @@ func activate(it: Dictionary) -> void:
 			pat_toad()
 		"beat":
 			_start_beat(it)
+		"council":
+			_open_council()
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1691,6 +1704,39 @@ func _end_beat(finished: bool) -> void:
 		_read_stone(it)
 	elif finished and it.has("after"):
 		_show_read(it["after"])
+
+
+## The city in speech you are founding with Socrates (city.gd): kept in your progress, founded the
+## first time you sit at the council table.
+func city() -> RefCounted:
+	var saved: Variant = progress.data.get("city")
+	if not saved is Dictionary:
+		var c: RefCounted = City.found(380)
+		progress.data["city"] = c.to_dict()
+		return c
+	return City.from_dict(saved)
+
+
+var _city: RefCounted  # the city while you sit at the table
+
+
+func _open_council() -> void:
+	_city = city()
+	_council_board = _city.board_stage()
+	_council.open(_city)
+	_show_panel(_council)
+
+
+## Something was decided at the table: keep the city, and as it reaches the book's stages its
+## points count (for a Theoros; a Mathetes must still explain them to the teacher).
+func _on_council_acted() -> void:
+	progress.data["city"] = _city.to_dict()
+	var work := "plato-republic"
+	if progress.mode(_world_of(here)) == "zen":
+		for pair in [[1, "one_work"], [City.JUST_CITY, "just_city"]]:
+			if _city.stage >= pair[0] and Rooms.room(work).get("lesson", []).any(func(p): return p["id"] == pair[1]):
+				_learned(work, [pair[1]])
+	progress.save()
 
 
 ## Sit on a bench: the view settles on the sea, the music rises a little.

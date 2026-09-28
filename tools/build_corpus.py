@@ -101,6 +101,21 @@ BOOKS = {
              "chapter_label": "Book"},
         ],
     },
+    "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
+        "title": "Plato",
+        "translation": "tr. Benjamin Jowett (1871-1892), public domain",
+        "parts": [
+            {"title": "Republic", "urls": [["https://www.gutenberg.org/cache/epub/1497/pg1497.txt", ""]],
+             "start": r"(?m)^ *PERSONS OF THE DIALOGUE\.\s*\n\s*\n\s*Socrates, who is the narrator", "end": r"\*\*\* ?END OF",
+             "chapter": r"^\s*BOOK ([IVX]+)\.\s*$", "chapter_label": "Book"},
+            {"title": "Apology", "urls": [["https://www.gutenberg.org/cache/epub/1656/pg1656.txt", ""]],
+             "start": r"How you, O Athenians, have been affected", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+            {"title": "Symposium", "urls": [["https://www.gutenberg.org/cache/epub/1600/pg1600.txt", ""]],
+             "start": r"PERSONS OF THE DIALOGUE: Apollodorus", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+            {"title": "Phaedo", "urls": [["https://www.gutenberg.org/cache/epub/1658/pg1658.txt", ""]],
+             "start": r"PERSONS OF THE DIALOGUE:\s*\n\s*\nPhaedo, who is the narrator", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+        ],
+    },
     "aristotle-nicomachean-ethics": {
         "file": "Aristotle - Nicomachean Ethics (tr. Chase).txt",
         "title": "Nicomachean Ethics",

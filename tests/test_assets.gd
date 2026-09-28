@@ -211,7 +211,7 @@ func test_every_map_is_ready() -> void:
 	for f in DirAccess.get_files_at("res://content/maps"):
 		if f.ends_with(".json"):
 			ids.append(f.get_basename())
-	for want in ["1200bc", "480bc", "431bc", "335bc", "300bc", "85bc", "44bc", "117ad", "170ad", "270ad"]:
+	for want in ["1200bc", "480bc", "431bc", "335bc", "300bc", "85bc", "380bc", "44bc", "117ad", "170ad", "270ad"]:
 		check(ids.has(want), "the map of %s is made" % want)
 	for id in ids:
 		var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/maps/%s.json" % id))
