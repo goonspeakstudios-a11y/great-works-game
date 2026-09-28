@@ -51,6 +51,9 @@ static func open(at: String = PATH) -> RefCounted:
 				if secs is float or secs is int:
 					fixed_nx["seconds"] = float(secs)
 				p.data["nexus"] = fixed_nx
+			for k: String in d:  # the rest as it was kept (the city of Rome's day, age, standing, who you met)
+				if not p.data.has(k) and not k in ["works", "modes", "nexus"]:
+					p.data[k] = d[k]
 		else:
 			push_warning("Progress file %s is damaged; starting fresh" % at)
 	return p

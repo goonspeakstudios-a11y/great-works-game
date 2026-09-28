@@ -2,7 +2,7 @@ extends RefCounted
 ## The city of Rome: the Rome world's hub. Where Greece has its Shore of gateways, Rome has the
 ## whole city (rome_map.gd), walked street by street, in one of four ages (content/rome/city.json):
 ## the Republic about 50 BC in the morning, the Empire about AD 150 at noon, the late Empire about
-## AD 330 in the golden afternoon, and the emptied city of AD 552 at nightfall. Its books stand in
+## AD 384 in the golden afternoon, and the emptied city of AD 552 at nightfall. Its books stand in
 ## its zones behind Roman gateways (the Rhetorica's in the Forum, under the Palatine). The navel
 ## of the city, by the Rostra, lets the years pass.
 ##
@@ -19,6 +19,7 @@ const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const Citizen := preload("res://scripts/hall/citizen.gd")
 const Life := preload("res://scripts/hall/urbs_life.gd")
 const Town := preload("res://scripts/hall/urbs_town.gd")
+const Activities := preload("res://scripts/hall/urbs_activities.gd")
 
 ## Where the city crowds together in each age: [map position, share of the people].
 const HOTSPOTS := {
@@ -68,6 +69,7 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	var clear: Array = [arrival, navel]
 	for work: String in c.get("gates", {}):
 		clear.append(RomeMap.on_ground(c["gates"][work]["at"]))
+	clear.append_array(Activities.clearings(id))  # your room, and where the rites and games are held
 	var fab := RomeMap.fabric(world, age, {"clear": clear})
 	var flicker: Array = fab["flicker"]
 
@@ -116,6 +118,9 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 		out.append({"kind": "statue", "pos": pos, "text": "Look at %s" % m["name"],
 			"note": "[b]%s[/b], %s\n\n%s" % [_title(str(m["name"])), age["when"], note]})
 
+	# your room, the rites, the games, the temples' offerings (urbs_activities.gd)
+	Activities.place(world, id, fab, out, spots, func(s: Dictionary) -> Vector3: return _front(s))
+
 	var people: Array = []
 	var squads: Array = []
 	var regions: Array = _regions(c, id)
@@ -159,7 +164,16 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	return {"name": "Rome, %s" % age["when"], "interactables": out, "spawn": arrival + Vector3(0, 0.05, 0),
 		"yaw": Places.look_yaw(arrival_to - arrival), "spots": spots, "flicker": flicker, "people": people, "squads": squads,
 		"restored": 0, "sway": fab.get("sway", []), "birds": birds, "back": [life.phase()], "arrivals": arrivals, "regions": regions,
-		"age": id, "line": str(age.get("line", "")), "life": life, "landmarks": landmarks, "zone": ZONE.get(id, "urbs")}
+		"age": id, "line": str(age.get("line", "")), "life": life, "landmarks": landmarks, "zone": ZONE.get(id, "urbs"),
+		"fronts": _fronts(fab)}
+
+
+## Where to stand before each standing monument, by its id (for the regulars' errands).
+static func _fronts(fab: Dictionary) -> Dictionary:
+	var out := {}
+	for s: Dictionary in fab["monuments"]:
+		out[str(s["m"]["id"])] = _front(s)
+	return out
 
 
 ## The regions of the city in an age, named as they were then (in the emptied city, the empty ones).

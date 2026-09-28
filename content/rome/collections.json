@@ -1,0 +1,448 @@
+{
+ "about": "What you gather in Rome, and what each set brings back to the Nexus (tools/rome_acts/collections.py).",
+ "sets": {
+  "exempla": {
+   "name": "The exempla",
+   "ids": [
+    "horatius",
+    "scaevola",
+    "cloelia",
+    "sabines",
+    "curtius",
+    "decius",
+    "appius",
+    "fabricius",
+    "curius",
+    "cincinnatus",
+    "camillus",
+    "torquatus",
+    "regulus",
+    "lucretia"
+   ],
+   "piece": "the statues",
+   "line": "The heroes of Rome stand again by Rome's door in the Nexus."
+  },
+  "inscriptions": {
+   "name": "The inscriptions",
+   "ids": [
+    "lapis_niger",
+    "tables",
+    "graffito",
+    "pantheon",
+    "titus",
+    "trajan_column",
+    "severus",
+    "constantine",
+    "damasus",
+    "saturn",
+    "phocas_hope",
+    "tomb_road"
+   ],
+   "piece": "the dedication",
+   "line": "Rome's dedication is cut on its stone in the Nexus."
+  },
+  "coins": {
+   "name": "The coins",
+   "ids": [
+    "heroic",
+    "early",
+    "republic",
+    "empire",
+    "late",
+    "collapse",
+    "fall"
+   ],
+   "piece": "the treasury",
+   "line": "Rome's treasury is back under its stone in the Nexus: seven coins, from bronze to nothing."
+  },
+  "masks": {
+   "name": "The masks",
+   "ids": [
+    "metellus",
+    "caecilii"
+   ],
+   "piece": "the niches",
+   "line": "The ancestors' masks hang in their niches in the Nexus."
+  },
+  "voices": {
+   "name": "The voices",
+   "ids": [
+    "baker_heroic",
+    "baker_early",
+    "baker_republic",
+    "baker_empire",
+    "baker_late",
+    "baker_collapse",
+    "baker_fall",
+    "gladiator_heroic",
+    "gladiator_early",
+    "gladiator_republic",
+    "gladiator_empire",
+    "gladiator_late",
+    "senator_heroic",
+    "senator_early",
+    "senator_republic",
+    "senator_empire",
+    "senator_late",
+    "senator_collapse",
+    "senator_fall",
+    "fishwife_heroic",
+    "fishwife_early",
+    "fishwife_republic",
+    "fishwife_empire",
+    "fishwife_late",
+    "fishwife_collapse",
+    "fishwife_fall",
+    "barber_heroic",
+    "barber_early",
+    "barber_republic",
+    "barber_empire",
+    "barber_late"
+   ],
+   "piece": "the choir",
+   "line": "The voices of Rome's families sing together in the Nexus."
+  }
+ },
+ "scenes": {
+  "inscription_lapis_niger": {
+   "title": "An inscription",
+   "where": "The Black Stone",
+   "steps": [
+    {
+     "say": "QUOI HON... SAKROS ES... RECEI... KALATOREM"
+    },
+    {
+     "say": "Under a black stone in the Comitium, the oldest writing in Rome, running up and down like a plough: whoever harms this place is cursed, it says, and it names a king. Nobody can quite read it any more."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "lapis_niger"
+   ]
+  },
+  "inscription_tables": {
+   "title": "An inscription",
+   "where": "The Twelve Tables",
+   "steps": [
+    {
+     "say": "SI IN IUS VOCAT, ITO. NI IT, ANTESTAMINO. IGITUR EM CAPITO."
+    },
+    {
+     "say": "The law of Rome on bronze by the Rostra: if a man is summoned to court, he shall go. If he does not go, let a witness be called; then let him be seized. Schoolboys learn it by heart."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "tables"
+   ]
+  },
+  "inscription_graffito": {
+   "title": "An inscription",
+   "where": "A wall in the Subura",
+   "steps": [
+    {
+     "say": "VOTE FOR GAIUS JULIUS POLYBIUS FOR AEDILE: HE BRINGS GOOD BREAD. / SUCCESSUS THE WEAVER LOVES THE INNKEEPER'S SLAVE GIRL. / I AM AMAZED, O WALL, THAT YOU HAVE NOT FALLEN DOWN UNDER SO MUCH WRITING."
+    },
+    {
+     "say": "Election notices painted in red, scratched over with jokes, insults, love and prices. These very lines turn up on the walls of Pompeii; the walls of Rome say the same. Everyone reads a little, and everyone writes on walls."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "graffito"
+   ]
+  },
+  "inscription_pantheon": {
+   "title": "An inscription",
+   "where": "The Pantheon's porch",
+   "steps": [
+    {
+     "say": "M·AGRIPPA·L·F·COS·TERTIVM·FECIT"
+    },
+    {
+     "say": "Marcus Agrippa, son of Lucius, consul for the third time, made this. Hadrian rebuilt the whole temple, and put Agrippa's name back on it, not his own."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "pantheon"
+   ]
+  },
+  "inscription_titus": {
+   "title": "An inscription",
+   "where": "The Arch of Titus",
+   "steps": [
+    {
+     "say": "SENATUS POPULUSQUE ROMANUS DIVO TITO DIVI VESPASIANI F. VESPASIANO AUGUSTO"
+    },
+    {
+     "say": "The Senate and People of Rome, to the deified Titus. Inside the arch, in relief, his soldiers carry the candlestick from the Temple of Jerusalem in triumph."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "titus"
+   ]
+  },
+  "inscription_trajan_column": {
+   "title": "An inscription",
+   "where": "The base of Trajan's Column",
+   "steps": [
+    {
+     "say": "...AD DECLARANDUM QUANTAE ALTITUDINIS MONS ET LOCUS TANTIS OPERIBUS SIT EGESTUS"
+    },
+    {
+     "say": "The column is as tall as the hill that was dug away to make the Forum, the inscription says. The most beautiful letters ever cut in Rome."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "trajan_column"
+   ]
+  },
+  "inscription_severus": {
+   "title": "An inscription",
+   "where": "The Arch of Septimius Severus",
+   "steps": [
+    {
+     "say": "...OB REM PUBLICAM RESTITUTAM IMPERIUMQUE POPULI ROMANI PROPAGATUM..."
+    },
+    {
+     "say": "For the Republic restored and the Empire extended. Look closely at the fourth line: the name of his son Geta has been chiselled out, after his brother had him killed, and new words cut over the holes."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "severus"
+   ]
+  },
+  "inscription_constantine": {
+   "title": "An inscription",
+   "where": "The Arch of Constantine",
+   "steps": [
+    {
+     "say": "INSTINCTU DIVINITATIS MENTIS MAGNITUDINE"
+    },
+    {
+     "say": "By the prompting of the divinity and the greatness of his mind: which divinity, it does not say. Half the sculptures on it were taken from older monuments, emperors' heads recut as Constantine."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "constantine"
+   ]
+  },
+  "inscription_damasus": {
+   "title": "An inscription",
+   "where": "A martyr's verses",
+   "steps": [
+    {
+     "say": "HIC CONGESTA IACET QUAERIS SI TURBA PIORUM"
+    },
+    {
+     "say": "Here lies, if you seek them, a crowd of the holy. Pope Damasus's verses for the martyrs, cut by his calligrapher Filocalus in letters no one had seen before, with little curls."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "damasus"
+   ]
+  },
+  "inscription_saturn": {
+   "title": "An inscription",
+   "where": "The Temple of Saturn's front",
+   "steps": [
+    {
+     "say": "SENATUS POPULUSQUE ROMANUS INCENDIO CONSUMPTUM RESTITUIT"
+    },
+    {
+     "say": "The Senate and People of Rome restored what fire had consumed. The columns they put back were odd ones, taken from other buildings."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "saturn"
+   ]
+  },
+  "inscription_phocas_hope": {
+   "title": "An inscription",
+   "where": "A tile in a ruin",
+   "steps": [
+    {
+     "say": "ROMA"
+    },
+    {
+     "say": "Someone has scratched the word on a broken tile and propped it up against a column. That is all."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "phocas_hope"
+   ]
+  },
+  "inscription_tomb_road": {
+   "title": "An inscription",
+   "where": "A tomb on the road",
+   "steps": [
+    {
+     "say": "STRANGER, WHAT I HAVE TO SAY IS SHORT: STAND AND READ IT. HERE IS THE UNLOVELY TOMB OF A LOVELY WOMAN. HER PARENTS NAMED HER CLAUDIA. SHE LOVED HER HUSBAND WITH HER HEART. SHE KEPT THE HOUSE. SHE WORKED THE WOOL. I HAVE SPOKEN. GO."
+    },
+    {
+     "say": "Tombs line the roads out of Rome, and they talk to you as you pass: stranger, stop, read. It is the only way the dead can go on being in company."
+    },
+    {
+     "end": "You say the words over to yourself, the way Romans read: aloud."
+    }
+   ],
+   "collect": [
+    "inscriptions",
+    "tomb_road"
+   ]
+  },
+  "purse_heroic": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A heavy bronze as, cast in a mould, not struck, with a head on each side. It weighs as much as a small stone. Rome has only just begun to make money at all; your grandfather paid in lumps of bronze by weight."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "heroic"
+   ]
+  },
+  "purse_early": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A silver denarius, new since the war with Hannibal: helmeted Roma on the front and the Twins, Castor and Pollux, riding with their spears on the back. Nearly pure silver."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "early"
+   ]
+  },
+  "purse_republic": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A denarius. The young moneyers put their own ancestors on it now, to advertise the family: a triumph, a temple, a famous great-grandfather. It is still good silver."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "republic"
+   ]
+  },
+  "purse_empire": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A brass sestertius of Antoninus: the Emperor's calm bearded head, and on the back a goddess with her attributes. The silver denarius beside it in your purse is about three parts silver in four, and falling."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "empire"
+   ]
+  },
+  "purse_late": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A little bronze coin with the Emperor's head and a wash of silver that rubs off in a week. The gold solidus, seventy-two to the pound, is the only money anyone trusts. You have never held one."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "late"
+   ]
+  },
+  "purse_collapse": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A tiny bronze nummus, smaller than your fingernail, the Emperor's name round it and no one can read it. You need hundreds for a loaf."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "collapse"
+   ]
+  },
+  "purse_fall": {
+   "title": "The coin in your purse",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "A big copper follis of the Emperor Justinian, marked M: forty nummi. Beside it, a copper of the Goth king Totila, struck in Rome, with his name: BADUILA. Two kings in one purse, and neither buys bread."
+    },
+    {
+     "end": "You put it back."
+    }
+   ],
+   "collect": [
+    "coins",
+    "fall"
+   ]
+  }
+ }
+}

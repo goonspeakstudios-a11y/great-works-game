@@ -1,0 +1,3452 @@
+{
+ "about": "The heroes' stories, played where they happened (tools/rome_acts/exempla.py).",
+ "exempla": {
+  "horatius": {
+   "name": "Horatius at the bridge",
+   "at": [
+    -540,
+    -490
+   ],
+   "played": true,
+   "story": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears.",
+   "ask": [
+    "What did he hold the bridge for?",
+    [
+     "Long enough for the bridge to be cut down behind him",
+     "To win a crown",
+     "To kill the king"
+    ],
+    0
+   ]
+  },
+  "scaevola": {
+   "name": "Mucius Scaevola",
+   "at": [
+    -500,
+    -460
+   ],
+   "played": true,
+   "story": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed.",
+   "ask": [
+    "What did Mucius tell the king?",
+    [
+     "That three hundred young Romans had sworn to do what he had tried",
+     "That he was sorry",
+     "That Rome would pay"
+    ],
+    0
+   ]
+  },
+  "cloelia": {
+   "name": "Cloelia",
+   "at": [
+    250,
+    -150
+   ],
+   "played": true,
+   "story": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way.",
+   "ask": [
+    "Whom did she choose to set free?",
+    [
+     "The youngest boys",
+     "Her friends",
+     "The strongest men"
+    ],
+    0
+   ]
+  },
+  "sabines": {
+   "name": "The Sabine women",
+   "at": [
+    -20,
+    -10
+   ],
+   "played": true,
+   "story": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one.",
+   "ask": [
+    "What did the women ask?",
+    [
+     "To turn their anger on them, not on each other",
+     "To be taken home",
+     "To be paid"
+    ],
+    0
+   ]
+  },
+  "curtius": {
+   "name": "Marcus Curtius",
+   "at": [
+    18,
+    8
+   ],
+   "played": true,
+   "story": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place.",
+   "ask": [
+    "What did he say Rome's strength was?",
+    [
+     "Arms and courage",
+     "Gold",
+     "The gods"
+    ],
+    0
+   ]
+  },
+  "decius": {
+   "name": "Decius Mus",
+   "at": [
+    -700,
+    380
+   ],
+   "played": true,
+   "story": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times.",
+   "ask": [
+    "Whom did Decius give to the gods below with himself?",
+    [
+     "The enemy's army",
+     "His son",
+     "His horse"
+    ],
+    0
+   ]
+  },
+  "appius": {
+   "name": "Appius Claudius the Blind",
+   "at": [
+    -45,
+    75
+   ],
+   "played": true,
+   "story": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home.",
+   "ask": [
+    "What did Appius say he now wished?",
+    [
+     "That he were deaf as well as blind",
+     "That he were young",
+     "That he had never built his road"
+    ],
+    0
+   ]
+  },
+  "fabricius": {
+   "name": "Fabricius and the King",
+   "at": [
+    60,
+    45
+   ],
+   "played": true,
+   "story": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\"",
+   "ask": [
+    "What did Fabricius do when the King's own doctor offered to poison him?",
+    [
+     "Sent the King a letter warning him",
+     "Paid the doctor",
+     "Nothing"
+    ],
+    0
+   ]
+  },
+  "curius": {
+   "name": "Curius and his turnips",
+   "at": [
+    520,
+    700
+   ],
+   "played": true,
+   "story": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it.",
+   "ask": [
+    "Where did the envoys find him?",
+    [
+     "At his hearth, cooking turnips",
+     "In the Senate House",
+     "At the baths"
+    ],
+    0
+   ]
+  },
+  "cincinnatus": {
+   "name": "Cincinnatus at the plough",
+   "at": [
+    -560,
+    -300
+   ],
+   "played": false,
+   "story": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough.",
+   "ask": [
+    "How long did he keep the power he was given?",
+    [
+     "Sixteen days",
+     "Sixteen years",
+     "For life"
+    ],
+    0
+   ]
+  },
+  "camillus": {
+   "name": "Camillus and the schoolmaster",
+   "at": [
+    -150,
+    140
+   ],
+   "played": false,
+   "story": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith.",
+   "ask": [
+    "What conquered Falerii?",
+    [
+     "Roman good faith",
+     "Hunger",
+     "A trick"
+    ],
+    0
+   ]
+  },
+  "torquatus": {
+   "name": "Manlius Torquatus",
+   "at": [
+    -560,
+    520
+   ],
+   "played": false,
+   "story": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline.",
+   "ask": [
+    "What did his son do wrong?",
+    [
+     "He fought against orders",
+     "He ran",
+     "He lost"
+    ],
+    0
+   ]
+  },
+  "regulus": {
+   "name": "Regulus",
+   "at": [
+    -30,
+    70
+   ],
+   "played": false,
+   "story": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did.",
+   "ask": [
+    "Why did he go back?",
+    [
+     "He had sworn to",
+     "He was afraid",
+     "He had family there"
+    ],
+    0
+   ]
+  },
+  "lucretia": {
+   "name": "Lucretia and Brutus",
+   "at": [
+    60,
+    -40
+   ],
+   "played": false,
+   "story": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since.",
+   "ask": [
+    "What did Brutus swear on the knife?",
+    [
+     "To drive the kings out of Rome",
+     "To kill the king's son",
+     "To become king"
+    ],
+    0
+   ]
+  }
+ },
+ "scenes": {
+  "tell_horatius_heroic": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_horatius_early": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_horatius_republic": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_horatius_empire": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_horatius_late": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_horatius_collapse": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_horatius_fall": {
+   "title": "Horatius at the bridge",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "Porsenna's Etruscans took the Janiculum and came down on the wooden bridge. Horatius Cocles held its far end, alone at the last, while the Romans cut it down behind him. When it fell he prayed to Father Tiber and swam home in his armour through their spears."
+    },
+    {
+     "pick": "What did he hold the bridge for?",
+     "options": [
+      "Long enough for the bridge to be cut down behind him",
+      "To win a crown",
+      "To kill the king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "tell_scaevola_heroic": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_scaevola_early": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_scaevola_republic": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_scaevola_empire": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_scaevola_late": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_scaevola_collapse": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_scaevola_fall": {
+   "title": "Mucius Scaevola",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "Gaius Mucius crossed to Porsenna's camp to kill the king, and killed his secretary by mistake. Before the king, threatened with fire, he thrust his right hand into the altar flames and held it there. The king let him go. They called him Scaevola, left-handed."
+    },
+    {
+     "pick": "What did Mucius tell the king?",
+     "options": [
+      "That three hundred young Romans had sworn to do what he had tried",
+      "That he was sorry",
+      "That Rome would pay"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "tell_cloelia_heroic": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_cloelia_early": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_cloelia_republic": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_cloelia_empire": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_cloelia_late": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_cloelia_collapse": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_cloelia_fall": {
+   "title": "Cloelia",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "Cloelia, a girl given as a hostage to Porsenna, slipped out of his camp and led the other girls across the Tiber, swimming, under his spears. He demanded her back, and then honoured her, and let her choose half the hostages to go free. She chose the young boys. Her statue on horseback stands at the top of the Sacred Way."
+    },
+    {
+     "pick": "Whom did she choose to set free?",
+     "options": [
+      "The youngest boys",
+      "Her friends",
+      "The strongest men"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "tell_sabines_heroic": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_sabines_early": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_sabines_republic": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_sabines_empire": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_sabines_late": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_sabines_collapse": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_sabines_fall": {
+   "title": "The Sabine women",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "The Romans had carried off the Sabines' daughters for wives. When the Sabines came to take them back and the armies met in the Forum, the women ran between the lines with their hair loose and their babies in their arms, and begged their fathers and their husbands not to kill each other. The two peoples became one."
+    },
+    {
+     "pick": "What did the women ask?",
+     "options": [
+      "To turn their anger on them, not on each other",
+      "To be taken home",
+      "To be paid"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "tell_curtius_heroic": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_curtius_early": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_curtius_republic": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_curtius_empire": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_curtius_late": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_curtius_collapse": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_curtius_fall": {
+   "title": "Marcus Curtius",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "A chasm opened in the Forum, and the seers said it must be given what Rome's strength was made of. Marcus Curtius, a young soldier, said Rome's strength was arms and courage, and rode into it in full armour. It closed over him. The pool of Curtius marks the place."
+    },
+    {
+     "pick": "What did he say Rome's strength was?",
+     "options": [
+      "Arms and courage",
+      "Gold",
+      "The gods"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "tell_decius_heroic": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_decius_early": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_decius_republic": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_decius_empire": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_decius_late": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_decius_collapse": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_decius_fall": {
+   "title": "Decius Mus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "When the line broke at Veseris, the consul Decius Mus vowed himself and the enemy's army to the gods below, with the pontiff's words, and rode alone into the Latins. His son did the same against the Gauls at Sentinum. The legions won both times."
+    },
+    {
+     "pick": "Whom did Decius give to the gods below with himself?",
+     "options": [
+      "The enemy's army",
+      "His son",
+      "His horse"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "tell_appius_heroic": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_appius_early": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_appius_republic": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_appius_empire": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_appius_late": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_appius_collapse": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_appius_fall": {
+   "title": "Appius Claudius the Blind",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "When King Pyrrhus offered peace after beating the legions, the Senate was ready to take it. Old Appius Claudius, blind, was carried into the Senate House by his sons, and said Rome would not talk peace while a foreign army stood in Italy. The Senate sent the king's ambassador home."
+    },
+    {
+     "pick": "What did Appius say he now wished?",
+     "options": [
+      "That he were deaf as well as blind",
+      "That he were young",
+      "That he had never built his road"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "tell_fabricius_heroic": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_fabricius_early": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_fabricius_republic": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_fabricius_empire": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_fabricius_late": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_fabricius_collapse": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_fabricius_fall": {
+   "title": "Fabricius and the King",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "King Pyrrhus offered Fabricius gold, and he would not take it. Next day the King hid his biggest elephant behind a curtain and had it drawn back, and the beast trumpeted over Fabricius's head. He did not move. \"Your gold did not move me yesterday,\" he said, \"nor does your beast today.\""
+    },
+    {
+     "pick": "What did Fabricius do when the King's own doctor offered to poison him?",
+     "options": [
+      "Sent the King a letter warning him",
+      "Paid the doctor",
+      "Nothing"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "tell_curius_heroic": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_curius_early": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_curius_republic": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_curius_empire": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_curius_late": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_curius_collapse": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_curius_fall": {
+   "title": "Curius and his turnips",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "The Samnites sent envoys with gold to Manius Curius, who had beaten them. They found him at his hearth, roasting turnips. He sent them away: it was no glory to have gold, he said, but to rule those who had it."
+    },
+    {
+     "pick": "Where did the envoys find him?",
+     "options": [
+      "At his hearth, cooking turnips",
+      "In the Senate House",
+      "At the baths"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  },
+  "tell_cincinnatus_heroic": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_cincinnatus_early": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_cincinnatus_republic": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_cincinnatus_empire": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_cincinnatus_late": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_cincinnatus_collapse": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_cincinnatus_fall": {
+   "title": "Cincinnatus at the plough",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "When an army was trapped by the Aequi, the Senate's envoys found Cincinnatus ploughing his four acres across the Tiber. His wife brought his toga; they named him dictator. He saved the army, triumphed, and gave up his power on the sixteenth day, and went back to his plough."
+    },
+    {
+     "pick": "How long did he keep the power he was given?",
+     "options": [
+      "Sixteen days",
+      "Sixteen years",
+      "For life"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cincinnatus"
+   ]
+  },
+  "tell_camillus_heroic": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_camillus_early": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_camillus_republic": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_camillus_empire": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_camillus_late": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_camillus_collapse": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_camillus_fall": {
+   "title": "Camillus and the schoolmaster",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "Besieging Falerii, Camillus was brought the town's noble boys by their schoolmaster, who had led them out to sell them. Camillus had the traitor stripped, his hands tied, and gave the boys rods to whip him home. Falerii surrendered, beaten by Roman good faith."
+    },
+    {
+     "pick": "What conquered Falerii?",
+     "options": [
+      "Roman good faith",
+      "Hunger",
+      "A trick"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "camillus"
+   ]
+  },
+  "tell_torquatus_heroic": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_torquatus_early": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_torquatus_republic": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_torquatus_empire": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_torquatus_late": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_torquatus_collapse": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_torquatus_fall": {
+   "title": "Manlius Torquatus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "The consul Manlius Torquatus forbade single combat. His son, challenged, fought and won. The father had his son beheaded before the army, for disobeying. From then on, Livy says, the orders of a Manlius were a byword for grim discipline."
+    },
+    {
+     "pick": "What did his son do wrong?",
+     "options": [
+      "He fought against orders",
+      "He ran",
+      "He lost"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "torquatus"
+   ]
+  },
+  "tell_regulus_heroic": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_regulus_early": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_regulus_republic": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_regulus_empire": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_regulus_late": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_regulus_collapse": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_regulus_fall": {
+   "title": "Regulus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "Taken by the Carthaginians, Regulus was sent to Rome on his oath to argue for an exchange of prisoners. He argued against it in the Senate, and then, keeping his oath, went back to Carthage, knowing they would kill him. They did."
+    },
+    {
+     "pick": "Why did he go back?",
+     "options": [
+      "He had sworn to",
+      "He was afraid",
+      "He had family there"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "regulus"
+   ]
+  },
+  "tell_lucretia_heroic": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old farmer tells it, as if it were his grandfather's story. Perhaps it was."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"That's who we are,\" he says. He means it as a plain fact."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "tell_lucretia_early": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A centurion tells it to recruits the way it has always been told, to make men of them."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The recruits are quiet afterwards. They believe it. They are about to find out whether they are it."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "tell_lucretia_republic": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A candidate tells it from the steps, in the middle of a speech about himself."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The crowd applauds the candidate. He has just said that he is that kind of man."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "tell_lucretia_empire": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A statue with an inscription; a guide tells it to visitors from Gaul, who are more impressed than the Romans."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The Emperor put the statue up. The heroes serve the Emperor now."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "tell_lucretia_late": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A schoolmaster sets it as an exercise: praise the hero in a hundred words. The boys yawn."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "One boy writes that the hero would be a saint now. The master gives him a good mark."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "tell_lucretia_collapse": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "A guide tells it for a coin, and gets the ending wrong, and nobody minds."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "The guide asks for another coin for the moral."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "tell_lucretia_fall": {
+   "title": "Lucretia and Brutus",
+   "where": "Where it happened",
+   "steps": [
+    {
+     "say": "An old man half remembers it. He isn't sure it happened in Rome."
+    },
+    {
+     "say": "Lucretia, raped by the king's son, told her husband and her father, made them swear vengeance, and killed herself. Brutus drew the knife from her body and swore on it to drive out the kings. Rome has had no king since."
+    },
+    {
+     "pick": "What did Brutus swear on the knife?",
+     "options": [
+      "To drive the kings out of Rome",
+      "To kill the king's son",
+      "To become king"
+     ],
+     "right": 0
+    },
+    {
+     "end": "\"Something like that,\" he says. \"It was a long time ago.\""
+    }
+   ],
+   "collect": [
+    "exempla",
+    "lucretia"
+   ]
+  },
+  "exemplum_horatius": {
+   "title": "Horatius at the bridge",
+   "where": "The Sublician bridge, as the old men tell it",
+   "steps": [
+    {
+     "say": "The Janiculum has fallen. The Etruscans are coming down to the bridge at a run. The guards drop their shields and run past you into the city."
+    },
+    {
+     "ask": "You are Horatius Cocles. Two men have stayed with you: Spurius Lartius and Titus Herminius.",
+     "options": [
+      {
+       "text": "\"Cut the bridge down behind us. We'll hold this end.\"",
+       "say": "Behind you, the axes start."
+      }
+     ]
+    },
+    {
+     "timing": "The first Etruscans come at you on the narrow bridge. Take their blows on your shield.",
+     "hits": 3,
+     "speed": 1.1,
+     "zone": 0.22,
+     "spare": 4,
+     "miss": "A spear scrapes your helmet.",
+     "good": [
+      "Held.",
+      "Held.",
+      "Held."
+     ]
+    },
+    {
+     "ask": "The bridge is nearly cut. Send your two companions back while there's still a plank to cross?",
+     "options": [
+      {
+       "text": "\"Go! Now!\"",
+       "say": "Lartius and Herminius run back over the last timbers. You are alone."
+      }
+     ]
+    },
+    {
+     "hold": "Hold the bridge alone. Glare at the Etruscan nobles one by one, and dare them.",
+     "secs": 5.0,
+     "done": "They hesitate. Nobody wants to be first. Then the spears come, and stick in your shield."
+    },
+    {
+     "say": "With a crash the bridge goes into the river behind you. A cheer goes up from the Roman bank."
+    },
+    {
+     "rite": "Pray, before you jump.",
+     "order": [
+      "Father Tiber",
+      "holy one",
+      "receive these arms",
+      "and this soldier",
+      "in your kindly stream"
+     ],
+     "wrong": [
+      "and this gold",
+      "angry river"
+     ],
+     "strict": true,
+     "restart": "The words matter. Begin again.",
+     "done": "You jump, armour and all."
+    },
+    {
+     "hold": "Swim for the Roman bank through the spears.",
+     "secs": 5.0,
+     "done": "You climb out on the Roman side, alive."
+    },
+    {
+     "end": "The city gives you as much land as you can plough round in a day, and puts your statue in the Comitium. Everyone gives you what food they can spare, though they are hungry."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "horatius"
+   ]
+  },
+  "exemplum_scaevola": {
+   "title": "Mucius Scaevola",
+   "where": "Porsenna's camp across the Tiber, as the old men tell it",
+   "steps": [
+    {
+     "say": "The city is besieged and starving. You are Gaius Mucius, a young noble. The Senate has let you go: across the river, into the enemy's camp, a knife under your tunic."
+    },
+    {
+     "still": "Wait in the crowd round the king's tribunal. Don't draw attention.",
+     "secs": 5.0,
+     "broke": "A soldier glances at you. You look away.",
+     "done": "It's pay day. Two men sit on the tribunal, dressed alike, handing out the soldiers' pay."
+    },
+    {
+     "say": "You don't dare ask which is the king. You strike the one who seems to give the orders."
+    },
+    {
+     "say": "It is the king's secretary. The guards seize you and drag you before Porsenna."
+    },
+    {
+     "ask": "\"Who are you?\" the king says.",
+     "options": [
+      {
+       "text": "\"I am a Roman citizen. My name is Gaius Mucius.\"",
+       "say": "\"I came to kill my enemy, and I am as ready to die as to kill. To act and to suffer bravely is the Roman way.\""
+      }
+     ]
+    },
+    {
+     "say": "The king, furious and frightened, orders fires lit round you, to make you tell him what plots there are."
+    },
+    {
+     "hold": "You thrust your right hand into the fire on the altar. Hold it there.",
+     "secs": 8.0,
+     "done": "You hold it there as if you felt nothing. The king jumps up from his seat."
+    },
+    {
+     "say": "\"Go,\" says Porsenna. \"You are braver against yourself than against me.\""
+    },
+    {
+     "ask": "As a return for his mercy, you tell him:",
+     "options": [
+      {
+       "text": "\"Three hundred of us have sworn to do what I tried, one after another.\"",
+       "say": "The king sends ambassadors to Rome to make peace."
+      }
+     ]
+    },
+    {
+     "end": "You have lost your right hand's use. Rome calls you Scaevola: left-handed. Your family will carry the name for centuries."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "scaevola"
+   ]
+  },
+  "exemplum_cloelia": {
+   "title": "Cloelia",
+   "where": "Porsenna's camp by the Tiber, as the old men tell it",
+   "steps": [
+    {
+     "say": "You are Cloelia, a girl of a good family, given to King Porsenna as a hostage for the peace. His camp is by the Tiber."
+    },
+    {
+     "still": "At night, lead the other girls past the guards. Slowly. Not a sound.",
+     "secs": 6.0,
+     "broke": "A guard stirs. Everyone freezes.",
+     "done": "You are at the bank."
+    },
+    {
+     "hold": "Swim, and bring them with you across the Tiber, under the spears.",
+     "secs": 6.0,
+     "done": "On the Roman bank, every girl alive."
+    },
+    {
+     "say": "The king is furious and demands you back. Rome sends you back, keeping faith. The king is so impressed he honours you, and lets you choose half the hostages to set free."
+    },
+    {
+     "ask": "Whom do you choose?",
+     "options": [
+      {
+       "text": "The youngest boys",
+       "say": "The ones most in danger. Everyone agrees you chose well.",
+       "fides": 1
+      },
+      {
+       "text": "Your friends",
+       "say": "That is not what the story says she did. But it's what you did."
+      }
+     ]
+    },
+    {
+     "end": "They put up a statue of you on horseback at the top of the Sacred Way: a thing never before given to a woman."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "cloelia"
+   ]
+  },
+  "exemplum_sabines": {
+   "title": "The Sabine women",
+   "where": "The Forum valley, as the old men tell it",
+   "steps": [
+    {
+     "say": "You are a Sabine woman, carried off by the Romans a year ago, and a Roman wife now, with a baby. Your father's army and your husband's army are killing each other in the marshy valley between the hills."
+    },
+    {
+     "hold": "Let your hair down, take the baby, and run out between the lines.",
+     "secs": 5.0,
+     "done": "The spears stop."
+    },
+    {
+     "ask": "Everyone is looking at you. Whom do you speak to?",
+     "options": [
+      {
+       "text": "Your father",
+       "say": "\"Don't make me a widow. Don't make my son an orphan.\""
+      },
+      {
+       "text": "Your husband",
+       "say": "\"Don't kill my father. Don't make me an orphan.\""
+      },
+      {
+       "text": "Both",
+       "say": "\"If you hate this marriage, turn your anger on us. We are the cause of the war. Better we die than live without one of you.\""
+      }
+     ]
+    },
+    {
+     "say": "The shouting dies. The generals come forward. They make peace, and more than peace: one people, two kings, one city."
+    },
+    {
+     "end": "The valley where they fought will be drained and paved. It will be the Forum."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "sabines"
+   ]
+  },
+  "exemplum_curtius": {
+   "title": "Marcus Curtius",
+   "where": "The Forum, as the old men tell it",
+   "steps": [
+    {
+     "say": "The ground of the Forum has opened: a chasm, and no one can fill it. The seers say it must be given whatever Rome's strength is made of, if the Republic is to last."
+    },
+    {
+     "pick": "You are Marcus Curtius, a young soldier. What is Rome's strength made of?",
+     "options": [
+      "Arms and courage",
+      "Gold and silver",
+      "Grain"
+     ],
+     "right": 0,
+     "yes": "Nothing is more Roman than arms and courage.",
+     "no": "You think again. Arms and courage."
+    },
+    {
+     "say": "You arm yourself fully, mount your horse, and face the temples and the Capitol. You raise your hands to the gods above and the gods below."
+    },
+    {
+     "hold": "Ride into the chasm.",
+     "secs": 4.0,
+     "done": "The crowd throws offerings and grain in after you. The earth closes."
+    },
+    {
+     "end": "The spot is called the pool of Curtius. People throw coins in it for luck, a thousand years later."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curtius"
+   ]
+  },
+  "exemplum_decius": {
+   "title": "The devotion of Decius Mus",
+   "where": "The battle at Veseris, as the veterans tell it",
+   "steps": [
+    {
+     "say": "You are the consul Publius Decius Mus. Your wing is breaking. You shout for the pontiff Marcus Valerius: \"We need the gods' help. Tell me the words to devote myself for the legions.\""
+    },
+    {
+     "rite": "He tells you what to do. Do it in its order.",
+     "order": [
+      "Put on your purple-bordered toga",
+      "Veil your head",
+      "Put your hand under the toga to your chin",
+      "Stand on a spear laid under your feet"
+     ],
+     "wrong": [
+      "Take off your helmet",
+      "Kneel"
+     ],
+     "strict": true,
+     "restart": "The pontiff: \"Again, and exactly.\"",
+     "done": "You are ready."
+    },
+    {
+     "rite": "Say the gods' names after him, in their order.",
+     "order": [
+      "Janus",
+      "Jupiter",
+      "Father Mars",
+      "Quirinus",
+      "Bellona",
+      "the Lares",
+      "the new gods",
+      "the gods of this land",
+      "the gods of the dead"
+     ],
+     "wrong": [
+      "Venus",
+      "Apollo"
+     ],
+     "strict": true,
+     "restart": "A slip. From the beginning.",
+     "done": "\"...I devote the legions and the auxiliaries of the enemy, with myself, to the gods of the dead and to Earth.\""
+    },
+    {
+     "hold": "Gird your toga the Gabine way, mount, and ride into the thick of the enemy.",
+     "secs": 5.0,
+     "done": "You are seen by both armies, more than a man, sent from heaven to turn the gods' anger onto the enemy."
+    },
+    {
+     "end": "You fall under a cloud of spears. Where you fell, the Latins break. Forty-five years later your son will do the same at Sentinum, and his son, they say, at Asculum."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "decius"
+   ]
+  },
+  "exemplum_appius": {
+   "title": "Appius Claudius the Blind",
+   "where": "The Senate House, 280 BC",
+   "steps": [
+    {
+     "say": "Pyrrhus has beaten the legions at Heraclea. His ambassador Cineas is in Rome, charming the senators, offering peace and gifts. The Senate is ready to accept."
+    },
+    {
+     "say": "Old Appius Claudius, who built the road to Capua and the first aqueduct, is blind and has not left his house in years. He sends for his litter."
+    },
+    {
+     "hold": "Help his sons carry him through the Forum to the Senate House.",
+     "secs": 4.0,
+     "done": "The Senate falls silent as he is carried in."
+    },
+    {
+     "say": "\"Until now I have been sorry I was blind. Now I wish I were deaf too. Where is that talk of Rome's glory? Let the King go home, and then we will talk of peace.\""
+    },
+    {
+     "ask": "The Senate votes. How do you vote?",
+     "options": [
+      {
+       "text": "No peace while the King is in Italy",
+       "say": "The Senate sends Cineas home with that answer.",
+       "ledger": "Voted with Appius: no peace while the enemy stood in Italy.",
+       "ledger_key": "appius"
+      },
+      {
+       "text": "Take the peace",
+       "say": "You are outvoted, almost alone. Cineas goes home and tells the King the Senate is an assembly of kings.",
+       "ledger": "Voted to take Pyrrhus's peace.",
+       "ledger_key": "appius"
+      }
+     ]
+    },
+    {
+     "end": "Cineas tells Pyrrhus that fighting the Romans is like fighting the Hydra: for every army cut down, another grows."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "appius"
+   ]
+  },
+  "exemplum_fabricius": {
+   "title": "Fabricius and the King",
+   "where": "King Pyrrhus's tent, as the old men tell it",
+   "steps": [
+    {
+     "say": "You are Gaius Fabricius, come to the King about the prisoners. You are poor, and he knows it."
+    },
+    {
+     "ask": "The King has gold set before you. \"A gift, between friends.\"",
+     "options": [
+      {
+       "text": "Refuse it",
+       "say": "\"If I am honest, why would you want to corrupt me? If I am not, why would you want me?\""
+      },
+      {
+       "text": "Take it",
+       "say": "That is not the story. But it is what you did. The King smiles: now he knows what Rome costs.",
+       "then": "took",
+       "fides": -5,
+       "ledger": "Took King Pyrrhus's gold.",
+       "ledger_key": "fabricius_gold"
+      }
+     ]
+    },
+    {
+     "say": "Next day the King receives you again. Behind a curtain, unseen, stands his largest elephant."
+    },
+    {
+     "still": "The curtain is drawn back. The elephant raises its trunk over your head and trumpets. Do not move.",
+     "secs": 6.0,
+     "broke": "You flinch. You gather yourself and stand still again.",
+     "done": "You turn to the King, smiling. \"Your gold did not move me yesterday, nor does your beast today.\""
+    },
+    {
+     "end": "Later the King's own doctor will offer to poison him. You will send the King a letter to warn him. He will release his Roman prisoners without ransom."
+    },
+    {
+     "label": "took"
+    },
+    {
+     "end": "The gold is heavy. You will be a rich man, and no one will ever tell your story."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "fabricius"
+   ]
+  },
+  "exemplum_curius": {
+   "title": "Curius and his turnips",
+   "where": "A farmhouse, as the old men tell it",
+   "steps": [
+    {
+     "say": "You are Manius Curius, who has beaten the Samnites and the Sabines and triumphed twice. You live on a small farm and do your own work."
+    },
+    {
+     "timing": "Roast turnips in the embers of your hearth.",
+     "hits": 2,
+     "speed": 0.8,
+     "zone": 0.25,
+     "spare": 2,
+     "miss": "Burnt at the edge. You eat it anyway.",
+     "good": [
+      "Soft.",
+      "Done."
+     ]
+    },
+    {
+     "say": "Samnite envoys arrive with a great weight of gold, to win you over."
+    },
+    {
+     "ask": "They set it down by your hearth.",
+     "options": [
+      {
+       "text": "Send them away",
+       "say": "\"I would rather rule men who have gold than have it myself. Take it home.\""
+      },
+      {
+       "text": "Offer them a turnip",
+       "say": "They take one, puzzled, and go home with the gold.",
+       "fides": 1
+      }
+     ]
+    },
+    {
+     "end": "Cato, a hundred years from now, will visit the little house and go home and dig his own garden."
+    }
+   ],
+   "collect": [
+    "exempla",
+    "curius"
+   ]
+  }
+ }
+}

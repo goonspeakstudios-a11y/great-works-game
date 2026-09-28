@@ -9,7 +9,7 @@ sources, and from the late-antique guild and church records.
 - **Ages:**
   - R: the Republic, about 50 BC.
   - E: the Empire, about AD 150.
-  - L: the late Empire, about AD 330.
+  - L: the late Empire, AD 384.
   - F: the emptied city of AD 552.
 - **Game:** the jobs marked ● walk the city as citizens you can talk to (`content/rome/people.json`).
   The rest are here for later.

@@ -1,0 +1,747 @@
+{
+ "about": "Rites done exactly (tools/rome_acts/sacred.py).",
+ "scenes": {
+  "lararium_heroic": {
+   "title": "The household gods",
+   "where": "Your room, 280 BC",
+   "steps": [
+    {
+     "say": "A niche by the hearth: the Lar of the family, dancing with his drinking horn; the Penates who keep the store cupboard; the snake of the house's Genius painted below."
+    },
+    {
+     "rite": "Every morning, before anything else, the small rite.",
+     "order": [
+      "Wash your hands",
+      "Lay a garland on the shrine",
+      "Drop salted meal into the lamp's flame",
+      "Pour a drop of wine",
+      "Say: be kind to this house"
+     ],
+     "wrong": [
+      "Spit on the hearth",
+      "Say: give me money",
+      "Turn your back on the shrine"
+     ],
+     "strict": true,
+     "restart": "You stop, and begin again. Your landlady's grandmother is watching from the door.",
+     "done": "The flame takes the meal with a small crackle. The house is kept."
+    },
+    {
+     "gain": {
+      "once": "lararium"
+     }
+    },
+    {
+     "end": "It is small and it is daily, and it ties this room to every Roman room since the kings."
+    }
+   ]
+  },
+  "lararium_early": {
+   "title": "The household gods",
+   "where": "Your room, 201 BC",
+   "steps": [
+    {
+     "say": "Every house in Rome prayed harder after Cannae. Your landlady has a son who didn't come back. She keeps his portrait by the shrine."
+    },
+    {
+     "rite": "The morning rite.",
+     "order": [
+      "Wash your hands",
+      "Lay a garland on the shrine",
+      "Drop salted meal into the lamp's flame",
+      "Pour a drop of wine",
+      "Say: be kind to this house"
+     ],
+     "wrong": [
+      "Spit on the hearth",
+      "Say: give me money",
+      "Turn your back on the shrine"
+     ],
+     "strict": true,
+     "restart": "You begin again. It must be right.",
+     "done": "The Lar dances in the lamplight. The house is kept."
+    },
+    {
+     "gain": {
+      "once": "lararium"
+     }
+    },
+    {
+     "end": "Duty to the gods, to the family, to Rome: it is one duty, begun here, at the hearth."
+    }
+   ]
+  },
+  "lararium_republic": {
+   "title": "The household gods",
+   "where": "Your room on the fifth floor, about 50 BC",
+   "steps": [
+    {
+     "say": "The shrine is a painted niche now, on a wall that sweats. Through it you can hear the neighbours fighting over rent."
+    },
+    {
+     "rite": "The morning rite.",
+     "order": [
+      "Wash your hands",
+      "Lay a garland on the shrine",
+      "Drop salted meal into the lamp's flame",
+      "Pour a drop of wine",
+      "Say: be kind to this house"
+     ],
+     "wrong": [
+      "Spit on the hearth",
+      "Say: give me money",
+      "Turn your back on the shrine"
+     ],
+     "strict": false,
+     "slack": "You slip, and go on anyway. Who's to know?",
+     "done": "The flame takes the meal. Next door someone throws a pot."
+    },
+    {
+     "gain": {
+      "once": "lararium"
+     }
+    },
+    {
+     "end": "Your landlord's agent says the building is sound. Everyone's landlord's agent says so."
+    }
+   ]
+  },
+  "lararium_empire": {
+   "title": "The household gods",
+   "where": "Your room in the block, about AD 150",
+   "steps": [
+    {
+     "say": "Beside the Lares there is a little clay bust of the Emperor. Everyone has one. It seems wise."
+    },
+    {
+     "rite": "The morning rite.",
+     "order": [
+      "Wash your hands",
+      "Lay a garland on the shrine",
+      "Drop salted meal into the lamp's flame",
+      "Pour a drop of wine",
+      "Say: be kind to this house"
+     ],
+     "wrong": [
+      "Spit on the hearth",
+      "Say: give me money",
+      "Turn your back on the shrine"
+     ],
+     "strict": false,
+     "slack": "You slip and go on.",
+     "done": "The flame takes the meal. The Emperor's bust looks on."
+    },
+    {
+     "gain": {
+      "once": "lararium"
+     }
+    },
+    {
+     "end": "The block has six storeys, the stairs are wooden, and fires start every week somewhere in Rome."
+    }
+   ]
+  },
+  "lararium_late": {
+   "title": "The household gods",
+   "where": "Your room, AD 384",
+   "steps": [
+    {
+     "say": "The Emperor's laws are against sacrifice. They don't yet name the little household gods; in a few years they will, down to a pinch of incense in a shrine."
+    },
+    {
+     "say": "Your neighbour is a Christian. She has seen your shrine."
+    },
+    {
+     "ask": "She says nothing. She looks at the Lar, and at you.",
+     "options": [
+      {
+       "text": "Keep it, and do the rite",
+       "then": "rite"
+      },
+      {
+       "text": "Put it away in the chest",
+       "say": "You wrap the Lar in a cloth and put him away. The niche is empty.",
+       "then": "end",
+       "ledger": "Put away the household gods.",
+       "ledger_key": "lararium_put_away"
+      }
+     ]
+    },
+    {
+     "label": "rite"
+    },
+    {
+     "rite": "The morning rite, quietly.",
+     "order": [
+      "Wash your hands",
+      "Lay a garland on the shrine",
+      "Drop salted meal into the lamp's flame",
+      "Pour a drop of wine",
+      "Say: be kind to this house"
+     ],
+     "wrong": [
+      "Spit on the hearth",
+      "Say: give me money",
+      "Turn your back on the shrine"
+     ],
+     "strict": true,
+     "restart": "You begin again, more quietly.",
+     "done": "The flame takes the meal. Your neighbour has shut her door."
+    },
+    {
+     "gain": {
+      "once": "lararium",
+      "ledger": "Kept the household gods when the neighbours turned away.",
+      "ledger_key": "lararium_kept"
+     }
+    },
+    {
+     "label": "end"
+    },
+    {
+     "end": "Everything is changing in Rome. Some things you choose to keep."
+    }
+   ]
+  },
+  "lararium_collapse": {
+   "title": "The household gods",
+   "where": "Your room, AD 455",
+   "steps": [
+    {
+     "say": "The Lar is behind a curtain. The Vandals didn't want him: bronze too little to bother with."
+    },
+    {
+     "rite": "The morning rite, behind the curtain.",
+     "order": [
+      "Wash your hands",
+      "Lay a garland on the shrine",
+      "Drop salted meal into the lamp's flame",
+      "Pour a drop of wine",
+      "Say: be kind to this house"
+     ],
+     "wrong": [
+      "Spit on the hearth",
+      "Say: give me money",
+      "Turn your back on the shrine"
+     ],
+     "strict": false,
+     "slack": "You slip, and go on. There's no one left to be exact for.",
+     "done": "The flame takes the meal."
+    },
+    {
+     "gain": {
+      "once": "lararium"
+     }
+    },
+    {
+     "end": "Your landlady is gone to her sister in Ravenna. You have not paid rent in a month. No one has come for it."
+    }
+   ]
+  },
+  "lararium_fall": {
+   "title": "The household gods",
+   "where": "What is left of your room, AD 552",
+   "steps": [
+    {
+     "say": "The roof fell in the second siege. The niche is still there, and the painted snake, and the Lar in his cloth at the bottom of the chest."
+    },
+    {
+     "hold": "Set him in the niche and pour the last of the water for him.",
+     "secs": 3.0,
+     "done": "He dances, as he always did, in the rubble."
+    },
+    {
+     "gain": {
+      "once": "lararium",
+      "ledger": "Kept the household gods in the ruined city.",
+      "ledger_key": "lararium_last"
+     }
+    },
+    {
+     "end": "A thousand years of mornings, and this one."
+    }
+   ]
+  },
+  "sleep_heroic": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep on a straw mattress. At first light the cocks crow all over the seven hills."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "sleep_early": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep. At first light the carts are already on the Sacred Way."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "sleep_republic": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep, as much as anyone sleeps in the Subura: the drunks, the dogs, a fight on the stairs."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "sleep_empire": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep, badly. Carts are only allowed in the city at night, and they are all under your window."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "sleep_late": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep. Before dawn you hear the psalms from the church at the end of the street."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "sleep_collapse": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep with a knife under the mattress, like everyone."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "sleep_fall": {
+   "title": "Sleep",
+   "where": "Your room",
+   "steps": [
+    {
+     "say": "You sleep in the corner where the roof still holds. Owls in the Forum."
+    },
+    {
+     "hour": 6.0
+    },
+    {
+     "end": "Morning."
+    }
+   ]
+  },
+  "augury_heroic": {
+   "title": "The augurs",
+   "where": "The Arx, 280 BC",
+   "steps": [
+    {
+     "say": "Nothing public is done in Rome without the auspices: no vote, no battle, no law. The augur marks out a square of sky with his curved staff."
+    },
+    {
+     "pick": "You stand in the augurs' place on the Arx, facing south. An eagle crosses from your left, from the east. For a Roman augur, is that a good sign?",
+     "options": [
+      "Yes: for Romans the left is the lucky side",
+      "No: the left is always unlucky",
+      "Birds mean nothing"
+     ],
+     "right": 0,
+     "yes": "Yes. The Greeks face north and call the right lucky; the Romans face south, and it's the left.",
+     "no": "A Roman augur faces south, and the left, the east, is the lucky side."
+    },
+    {
+     "pick": "A raven calls on your right, and a crow on your left. What is that?",
+     "options": [
+      "Favourable: raven right, crow left",
+      "Unfavourable",
+      "Nothing: only eagles count"
+     ],
+     "right": 0,
+     "yes": "Favourable. The augurs' books say so.",
+     "no": "The books say: a raven on the right and a crow on the left is favourable."
+    },
+    {
+     "if": {
+      "score": 2
+     },
+     "to": "right"
+    },
+    {
+     "end": "The augur tells the consul the gods allow it. He was watching you. You'll learn."
+    },
+    {
+     "label": "right"
+    },
+    {
+     "gain": {
+      "dignitas": 1
+     }
+    },
+    {
+     "end": "The augur nods at you. The consul may go ahead. The gods and Rome agree."
+    }
+   ]
+  },
+  "augury_early": {
+   "title": "The augurs",
+   "where": "The Arx, 201 BC",
+   "steps": [
+    {
+     "say": "The consul waits for the sign before he marches for Macedonia. In this war the gods are listened to."
+    },
+    {
+     "pick": "You stand in the augurs' place on the Arx, facing south. An eagle crosses from your left, from the east. For a Roman augur, is that a good sign?",
+     "options": [
+      "Yes: for Romans the left is the lucky side",
+      "No: the left is always unlucky",
+      "Birds mean nothing"
+     ],
+     "right": 0,
+     "yes": "Yes. The Greeks face north and call the right lucky; the Romans face south, and it's the left.",
+     "no": "A Roman augur faces south, and the left, the east, is the lucky side."
+    },
+    {
+     "pick": "A raven calls on your right, and a crow on your left. What is that?",
+     "options": [
+      "Favourable: raven right, crow left",
+      "Unfavourable",
+      "Nothing: only eagles count"
+     ],
+     "right": 0,
+     "yes": "Favourable. The augurs' books say so.",
+     "no": "The books say: a raven on the right and a crow on the left is favourable."
+    },
+    {
+     "if": {
+      "score": 2
+     },
+     "to": "right"
+    },
+    {
+     "end": "The augur takes the sign. The legions march."
+    },
+    {
+     "label": "right"
+    },
+    {
+     "gain": {
+      "dignitas": 1
+     }
+    },
+    {
+     "end": "The augur takes the sign, and nods at you. The legions march."
+    }
+   ]
+  },
+  "augury_republic": {
+   "title": "The augurs",
+   "where": "The Arx, about 50 BC",
+   "steps": [
+    {
+     "say": "A consul who wants to stop an assembly announces he is watching the sky for signs. Then no vote may be held. Bibulus stopped Caesar that way for a year, sitting at home."
+    },
+    {
+     "pick": "You stand in the augurs' place on the Arx, facing south. An eagle crosses from your left, from the east. For a Roman augur, is that a good sign?",
+     "options": [
+      "Yes: for Romans the left is the lucky side",
+      "No: the left is always unlucky",
+      "Birds mean nothing"
+     ],
+     "right": 0,
+     "yes": "Yes. The Greeks face north and call the right lucky; the Romans face south, and it's the left.",
+     "no": "A Roman augur faces south, and the left, the east, is the lucky side."
+    },
+    {
+     "pick": "A raven calls on your right, and a crow on your left. What is that?",
+     "options": [
+      "Favourable: raven right, crow left",
+      "Unfavourable",
+      "Nothing: only eagles count"
+     ],
+     "right": 0,
+     "yes": "Favourable. The augurs' books say so.",
+     "no": "The books say: a raven on the right and a crow on the left is favourable."
+    },
+    {
+     "ask": "A tribune's man asks you to report thunder on the left: it will stop tomorrow's vote.",
+     "options": [
+      {
+       "text": "Report it",
+       "say": "You report thunder. There was none. The vote is stopped.",
+       "coin": 4,
+       "fides": -2,
+       "ledger": "Reported a false omen to stop a vote.",
+       "ledger_key": "false_omen"
+      },
+      {
+       "text": "Refuse",
+       "say": "He finds someone else.",
+       "fides": 1
+      }
+     ]
+    },
+    {
+     "end": "The auspices still decide everything. That's why everyone lies about them."
+    }
+   ]
+  },
+  "augury_empire": {
+   "title": "The augurs",
+   "where": "The Arx, about AD 150",
+   "steps": [
+    {
+     "say": "The augurs are still appointed: noble young men, and the Emperor is one. It's an honour, like a seat at the games."
+    },
+    {
+     "pick": "You stand in the augurs' place on the Arx, facing south. An eagle crosses from your left, from the east. For a Roman augur, is that a good sign?",
+     "options": [
+      "Yes: for Romans the left is the lucky side",
+      "No: the left is always unlucky",
+      "Birds mean nothing"
+     ],
+     "right": 0,
+     "yes": "Yes. The Greeks face north and call the right lucky; the Romans face south, and it's the left.",
+     "no": "A Roman augur faces south, and the left, the east, is the lucky side."
+    },
+    {
+     "pick": "A raven calls on your right, and a crow on your left. What is that?",
+     "options": [
+      "Favourable: raven right, crow left",
+      "Unfavourable",
+      "Nothing: only eagles count"
+     ],
+     "right": 0,
+     "yes": "Favourable. The augurs' books say so.",
+     "no": "The books say: a raven on the right and a crow on the left is favourable."
+    },
+    {
+     "end": "The augur has a dinner to go to. He thanks you for your company."
+    }
+   ]
+  },
+  "haruspicy": {
+   "title": "The haruspex",
+   "where": "By the temple",
+   "steps": [
+    {
+     "say": "The haruspex is an Etruscan, as they always are. The Senate sends for his order when there are prodigies: a calf with two heads, a statue sweating blood."
+    },
+    {
+     "pick": "The haruspex holds up a sheep's liver. The bronze liver of Piacenza shows its regions, each a god's. The lobe called the head is missing. What does that mean?",
+     "options": [
+      "Disaster: a liver without its head",
+      "Good fortune",
+      "A long journey"
+     ],
+     "right": 0,
+     "yes": "Disaster. Before Marcellus died in ambush, his victim's liver had no head.",
+     "no": "A liver without its head means disaster: Marcellus's had none the day before he died."
+    },
+    {
+     "pick": "The gall bladder is swollen on the enemy's side. What does he tell the general?",
+     "options": [
+      "Good: harm to the enemy",
+      "Bad: harm to us",
+      "Nothing"
+     ],
+     "right": 0,
+     "yes": "Harm on the enemy's side is harm to the enemy.",
+     "no": "The enemy's side: harm to the enemy. Good."
+    },
+    {
+     "if": {
+      "score": 2
+     },
+     "to": "right"
+    },
+    {
+     "end": "\"Stick to your trade,\" the haruspex says. \"Leave the gods' livers to us.\""
+    },
+    {
+     "label": "right"
+    },
+    {
+     "end": "The haruspex looks at you with more respect. \"Your grandmother was from Tarquinii?\" he asks."
+    }
+   ]
+  },
+  "haruspicy_late": {
+   "title": "The haruspex",
+   "where": "By the temple, AD 384",
+   "steps": [
+    {
+     "say": "The haruspex is not allowed into private houses: Constantine's law. He may read livers only in public, at the temples, for the state. Few ask him now."
+    },
+    {
+     "pick": "The haruspex holds up a sheep's liver. The bronze liver of Piacenza shows its regions, each a god's. The lobe called the head is missing. What does that mean?",
+     "options": [
+      "Disaster: a liver without its head",
+      "Good fortune",
+      "A long journey"
+     ],
+     "right": 0,
+     "yes": "Disaster. Before Marcellus died in ambush, his victim's liver had no head.",
+     "no": "A liver without its head means disaster: Marcellus's had none the day before he died."
+    },
+    {
+     "pick": "The gall bladder is swollen on the enemy's side. What does he tell the general?",
+     "options": [
+      "Good: harm to the enemy",
+      "Bad: harm to us",
+      "Nothing"
+     ],
+     "right": 0,
+     "yes": "Harm on the enemy's side is harm to the enemy.",
+     "no": "The enemy's side: harm to the enemy. Good."
+    },
+    {
+     "end": "He wraps the liver in a cloth. \"My father had the Senate's ear,\" he says. \"I have this.\""
+    }
+   ]
+  },
+  "curse_tablet": {
+   "title": "The curse tablet",
+   "where": "At the fountain",
+   "steps": [
+    {
+     "say": "A woman stops you. A man cheated her of her savings and she can't write. She has a sheet of lead and a nail."
+    },
+    {
+     "ask": "\"Write it for me,\" she says. \"Name him to the gods below. Then we fold it and nail it, and drop it in the water.\"",
+     "options": [
+      {
+       "text": "Write it",
+       "then": "write"
+      },
+      {
+       "text": "Refuse",
+       "say": "\"Then I'll find someone who can,\" she says.",
+       "then": "end"
+      }
+     ]
+    },
+    {
+     "label": "write"
+    },
+    {
+     "type": "I bind Gaius Vettius, his hands, his tongue, his sleep, to the gods below.",
+     "secs": 45,
+     "good": "The letters are clear. The gods will read them.",
+     "fair": "Clear enough for the gods.",
+     "bad": "Scratchy. She says the gods can read a scratch, if it's meant."
+    },
+    {
+     "hold": "Fold the lead, and drive the nail through it.",
+     "secs": 2.5,
+     "done": "She drops it into the fountain. It sinks at once."
+    },
+    {
+     "gain": {
+      "ledger": "Wrote a curse tablet and dropped it in a fountain.",
+      "ledger_key": "curse"
+     }
+    },
+    {
+     "label": "end"
+    },
+    {
+     "end": "There are thousands of them in the wells and fountains of Rome. The gods below must be very busy."
+    }
+   ]
+  },
+  "offering": {
+   "title": "An offering",
+   "where": "{temple}",
+   "steps": [
+    {
+     "say": "The keeper of {temple} sells small offerings at the steps: incense, a cake, a clay figure of a body part to be healed."
+    },
+    {
+     "ask": "What do you offer to {god}?",
+     "options": [
+      {
+       "text": "A pinch of incense",
+       "say": "The smoke goes up past the columns.",
+       "then": "done",
+       "need": {
+        "price": 1
+       },
+       "pay": 1
+      },
+      {
+       "text": "A honey cake",
+       "say": "You lay it on the altar. A priest will eat it later.",
+       "then": "done",
+       "need": {
+        "price": 1
+       },
+       "pay": 1
+      },
+      {
+       "text": "A vow: something if your wish is granted",
+       "say": "You say it quietly. The keeper nods: a vow is a contract.",
+       "then": "done",
+       "ledger": "Made a vow at a temple.",
+       "ledger_key": "vow"
+      },
+      {
+       "text": "Nothing",
+       "then": "end"
+      }
+     ]
+    },
+    {
+     "label": "done"
+    },
+    {
+     "gain": {
+      "fides": 0,
+      "once": "offering"
+     }
+    },
+    {
+     "label": "end"
+    },
+    {
+     "end": "{god} has been here longer than anyone's grandfather's grandfather. The steps are worn by knees."
+    }
+   ]
+  }
+ }
+}

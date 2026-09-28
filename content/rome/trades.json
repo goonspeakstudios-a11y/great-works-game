@@ -1,0 +1,1814 @@
+{
+ "about": "Work, the market, dice and money (tools/rome_acts/trades.py).",
+ "jobs": {
+  "pistor": [
+   "Ask for a day's work",
+   "work_baker"
+  ],
+  "fullo": [
+   "Ask for a day's work",
+   "work_fuller"
+  ],
+  "baiulus": [
+   "Ask for a load to carry",
+   "work_porter"
+  ],
+  "saccarius": [
+   "Ask for a load to carry",
+   "work_porter"
+  ],
+  "aquarius": [
+   "Offer to carry water",
+   "work_water"
+  ],
+  "scriba": [
+   "Ask for copying work",
+   "work_scribe",
+   [
+    "republic",
+    "empire",
+    "late"
+   ]
+  ],
+  "librarius": [
+   "Buy a book",
+   "buy_librarius"
+  ],
+  "marmorarius": [
+   "Ask for work in the yard",
+   "work_cutter"
+  ],
+  "cetarius": [
+   "Offer to sell her fish",
+   "work_fish"
+  ],
+  "nauta": [
+   "Offer to pole the ferry",
+   "work_boat"
+  ],
+  "caupo": [
+   "Play at knucklebones",
+   "dice_tali"
+  ],
+  "popinarius": [
+   "Buy something",
+   "buy_popinarius"
+  ],
+  "veteranus": [
+   "Play the soldiers' game",
+   "board_latrunculi"
+  ],
+  "miles": [
+   "Play the soldiers' game",
+   "board_latrunculi"
+  ],
+  "proletarius": [
+   "Play three in a row",
+   "board_terni"
+  ],
+  "nummularius": [
+   "Offer to help test coins",
+   "changer"
+  ],
+  "faenerator": [
+   "Ask about a loan",
+   "lender"
+  ],
+  "mendicus": [
+   "Give something",
+   "alms"
+  ],
+  "haruspex": [
+   "Watch him read a liver",
+   "haruspicy"
+  ],
+  "victimarius": [
+   "Help with the sacrifice",
+   "sacrifice"
+  ],
+  "auriga": [
+   "Ask to drive a practice run",
+   "practice_race"
+  ],
+  "mercator": [
+   "Ask if there's a message to carry",
+   "errand_merchant"
+  ],
+  "senator": [
+   "Offer to carry a message",
+   "errand_senator"
+  ],
+  "matrona": [
+   "Offer to run an errand",
+   "errand_matrona"
+  ],
+  "cliens": [
+   "Ask what his patron needs",
+   "errand_client"
+  ],
+  "lanius": [
+   "Buy something",
+   "buy_lanius"
+  ],
+  "holitor": [
+   "Buy something",
+   "buy_holitor"
+  ],
+  "pomarius": [
+   "Buy something",
+   "buy_pomarius"
+  ],
+  "olearius": [
+   "Buy something",
+   "buy_olearius"
+  ],
+  "vinarius": [
+   "Buy something",
+   "buy_vinarius"
+  ],
+  "botularius": [
+   "Buy something",
+   "buy_botularius"
+  ],
+  "crustularius": [
+   "Buy something",
+   "buy_crustularius"
+  ],
+  "vestiarius": [
+   "Buy something",
+   "buy_vestiarius"
+  ],
+  "sutor": [
+   "Buy something",
+   "buy_sutor"
+  ],
+  "figulus": [
+   "Buy something",
+   "buy_figulus"
+  ],
+  "lucernarius": [
+   "Buy something",
+   "buy_lucernarius"
+  ],
+  "unguentarius": [
+   "Buy something",
+   "buy_unguentarius"
+  ],
+  "aurifex": [
+   "Buy something",
+   "buy_aurifex"
+  ],
+  "purpurarius": [
+   "Buy something",
+   "buy_purpurarius"
+  ],
+  "textrix": [
+   "Buy something",
+   "buy_textrix"
+  ]
+ },
+ "scenes": {
+  "work_baker_early": {
+   "title": "A day at the mill",
+   "where": "A house in the city, 201 BC",
+   "steps": [
+    {
+     "say": "There are no bakers' shops yet: the pistor pounds and grinds the grain for households. Your employer's slaves are at the war."
+    },
+    {
+     "timing": "Pound the grain in the mortar, on the beat.",
+     "hits": 4,
+     "speed": 1.0,
+     "zone": 0.2,
+     "spare": 2,
+     "miss": "The pestle skids.",
+     "good": [
+      "Good.",
+      "Good.",
+      "Nearly there.",
+      "Done."
+     ]
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you in coin, and a loaf."
+    },
+    {
+     "gain": {
+      "give": "a loaf"
+     }
+    },
+    {
+     "end": "Honest work for honest pay. He'll have you again."
+    }
+   ]
+  },
+  "work_baker": {
+   "title": "A day at the bakery",
+   "where": "The bakery",
+   "steps": [
+    {
+     "say": "A donkey turns the millstone in the back, blindfolded so it won't get dizzy. You knead, load the oven, and stamp each loaf with the baker's mark."
+    },
+    {
+     "timing": "Load the loaves and pull them out at the right moment.",
+     "hits": 4,
+     "speed": 1.1,
+     "zone": 0.18,
+     "spare": 2,
+     "miss": "Burnt at the edge.",
+     "good": [
+      "Golden.",
+      "Golden.",
+      "Good.",
+      "The last tray."
+     ]
+    },
+    {
+     "ask": "The baker says: cut the dough a little short on each loaf. \"Everyone does. The aedile's never here.\"",
+     "options": [
+      {
+       "text": "Cut them short",
+       "say": "Eight loaves in a hundred are dough you never used. The baker grins.",
+       "coin": 2,
+       "fides": -1,
+       "ledger": "Baked short-weight loaves.",
+       "ledger_key": "short_weight"
+      },
+      {
+       "text": "Honest weight",
+       "say": "The baker shrugs. \"Your loss.\""
+      }
+     ]
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you at the end of the day."
+    },
+    {
+     "end": "You smell of the oven for two days. Half the Subura will eat what you made."
+    }
+   ]
+  },
+  "work_baker_late": {
+   "title": "A day at the bakery",
+   "where": "The bakery, AD 384",
+   "steps": [
+    {
+     "say": "The baker was born a baker and will die one: the law binds his family to the ovens, to bake the state's bread. His son ran off to be a priest and was brought back."
+    },
+    {
+     "timing": "Load and pull the loaves.",
+     "hits": 4,
+     "speed": 1.1,
+     "zone": 0.18,
+     "spare": 2,
+     "miss": "Burnt.",
+     "good": [
+      "Good.",
+      "Good.",
+      "Good.",
+      "Done."
+     ]
+    },
+    {
+     "ask": "\"Don't come back,\" he says quietly. \"If you work here too long they'll put your name on the roll. Then you're a baker forever.\"",
+     "options": [
+      {
+       "text": "Take your pay and go",
+       "then": "pay"
+      },
+      {
+       "text": "Say you'll come back",
+       "say": "He looks at you as if you'd said you'd like to be buried alive.",
+       "then": "pay"
+      }
+     ]
+    },
+    {
+     "label": "pay"
+    },
+    {
+     "wage": 2,
+     "per": 1
+    },
+    {
+     "end": "The state's bread is free for the people, and it costs the bakers everything."
+    }
+   ]
+  },
+  "work_baker_fall": {
+   "title": "The bakery",
+   "where": "The bakery, AD 552",
+   "steps": [
+    {
+     "say": "There is no flour. The mills on the river were smashed in the siege and the grain doesn't come. The oven is cold."
+    },
+    {
+     "end": "The baker's family sits in the doorway. They have nothing to sell and nothing to do."
+    }
+   ]
+  },
+  "work_fuller": {
+   "title": "A day at the fuller's",
+   "where": "The fullery",
+   "steps": [
+    {
+     "say": "Cloth is cleaned in vats of water and stale urine: the fuller collects it in pots at street corners. You tread the cloth all day, standing in it."
+    },
+    {
+     "timing": "Tread the cloth in the vat, in rhythm with the man beside you.",
+     "hits": 4,
+     "speed": 1.0,
+     "zone": 0.2,
+     "spare": 2,
+     "miss": "You slip. He catches your arm.",
+     "good": [
+      "Stamp.",
+      "Stamp.",
+      "Stamp.",
+      "Done."
+     ]
+    },
+    {
+     "hold": "Hang it over the sulphur frame to whiten it. Hold your breath.",
+     "secs": 3.0,
+     "done": "Your eyes stream."
+    },
+    {
+     "if": {
+      "score": 3
+     },
+     "to": "good"
+    },
+    {
+     "say": "You've scorched the purple border of a senator's toga. The fuller goes white. He'll have to pay for it."
+    },
+    {
+     "gain": {
+      "fides": -1
+     },
+     "line": "He docks your pay."
+    },
+    {
+     "go": "end"
+    },
+    {
+     "label": "good"
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you, and tells you to wash."
+    },
+    {
+     "label": "end"
+    },
+    {
+     "end": "Nobody likes the smell of a fuller's. Everybody likes a clean toga."
+    }
+   ]
+  },
+  "work_fuller_empire": {
+   "title": "A day at the fuller's",
+   "where": "The fullery",
+   "steps": [
+    {
+     "say": "Cloth is cleaned in vats of water and stale urine: the fuller collects it in pots at street corners. You tread the cloth all day, standing in it."
+    },
+    {
+     "timing": "Tread the cloth in the vat, in rhythm with the man beside you.",
+     "hits": 4,
+     "speed": 1.0,
+     "zone": 0.2,
+     "spare": 2,
+     "miss": "You slip. He catches your arm.",
+     "good": [
+      "Stamp.",
+      "Stamp.",
+      "Stamp.",
+      "Done."
+     ]
+    },
+    {
+     "hold": "Hang it over the sulphur frame to whiten it. Hold your breath.",
+     "secs": 3.0,
+     "done": "Your eyes stream."
+    },
+    {
+     "if": {
+      "score": 3
+     },
+     "to": "good"
+    },
+    {
+     "say": "You've scorched the purple border of a senator's toga. The fuller goes white. He'll have to pay for it."
+    },
+    {
+     "gain": {
+      "fides": -1
+     },
+     "line": "He docks your pay."
+    },
+    {
+     "go": "end"
+    },
+    {
+     "label": "good"
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you, and tells you to wash."
+    },
+    {
+     "label": "end"
+    },
+    {
+     "end": "The Emperor Vespasian taxed the urine they collect. When his son complained, he held a coin under his nose: \"Does it smell?\""
+    }
+   ]
+  },
+  "work_fuller_heroic": {
+   "title": "A day at the fuller's",
+   "where": "The fullery, 280 BC",
+   "steps": [
+    {
+     "say": "The fuller cleans the soldiers' woollen cloaks before they march. Urine and water in the vat, and your feet."
+    },
+    {
+     "timing": "Tread the cloth, in rhythm.",
+     "hits": 3,
+     "speed": 0.9,
+     "zone": 0.22,
+     "spare": 2,
+     "miss": "You slip.",
+     "good": [
+      "Stamp.",
+      "Stamp.",
+      "Done."
+     ]
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you, and tells you the cloaks you trod will go to fight Pyrrhus."
+    },
+    {
+     "end": "Clean cloaks for the legion. Even the fuller serves the Republic."
+    }
+   ]
+  },
+  "work_porter": {
+   "title": "A load to carry",
+   "where": "The river port",
+   "steps": [
+    {
+     "say": "A merchant needs a sack of grain taken from the Emporium up to a shop in the Subura. No map: \"past the Circus, up the Vicus Tuscus, through the Forum, and up the Argiletum.\""
+    },
+    {
+     "pick": "Which way is the Forum from the Circus Maximus?",
+     "options": [
+      "North, up the Vicus Tuscus",
+      "South, along the river",
+      "West, over the bridge"
+     ],
+     "right": 0,
+     "yes": "Right: up the Vicus Tuscus between the Palatine and the Capitol.",
+     "no": "North: up the Vicus Tuscus. You find it, late."
+    },
+    {
+     "timing": "Up the steps of the Argiletum with the sack on your shoulder: keep your balance.",
+     "hits": 3,
+     "speed": 1.2,
+     "zone": 0.2,
+     "spare": 2,
+     "miss": "You stagger. The sack nearly goes.",
+     "good": [
+      "Steady.",
+      "Steady.",
+      "There."
+     ]
+    },
+    {
+     "wage": 1,
+     "per": 1,
+     "line": "The shopkeeper pays you at his door."
+    },
+    {
+     "end": "Rome is carried on men's backs, up and down its hills, all day."
+    }
+   ]
+  },
+  "work_water": {
+   "title": "Carrying water",
+   "where": "The street fountain",
+   "steps": [
+    {
+     "say": "The aqueducts run to the street fountains, not to the upper floors. A woman on the fifth floor needs two jars a day and can't carry them."
+    },
+    {
+     "timing": "Fill the jars at the fountain spout without overflowing.",
+     "hits": 2,
+     "speed": 1.0,
+     "zone": 0.22,
+     "spare": 2,
+     "miss": "It slops over.",
+     "good": [
+      "Full.",
+      "Full."
+     ]
+    },
+    {
+     "hold": "Up five flights of wooden stairs. Don't spill.",
+     "secs": 4.0,
+     "done": "Fifth floor."
+    },
+    {
+     "wage": 1,
+     "per": 1,
+     "line": "She pays you in coins she keeps in a jar."
+    },
+    {
+     "end": "The rich have water piped into their houses from the aqueducts. The poor have stairs."
+    }
+   ]
+  },
+  "work_water_fall": {
+   "title": "Carrying water",
+   "where": "The river, AD 552",
+   "steps": [
+    {
+     "say": "The aqueducts were cut in the first siege, eighteen years ago. The fountains are dry. Water comes up from the Tiber, brown."
+    },
+    {
+     "hold": "Carry the jar up from the river.",
+     "secs": 4.0,
+     "done": "You set it down. It has sand in it."
+    },
+    {
+     "wage": 1,
+     "per": 0,
+     "line": "A family in a ruin pays you with a piece of bread."
+    },
+    {
+     "end": "The fevers come with the river water. Everyone knows. There is no other water."
+    }
+   ]
+  },
+  "work_scribe_republic": {
+   "title": "Copying",
+   "where": "The bookseller's shop, about 50 BC",
+   "steps": [
+    {
+     "say": "The bookseller's slaves copy books by dictation, a dozen at a time. He needs another hand today."
+    },
+    {
+     "type": "How long, Catiline, will you abuse our patience?",
+     "secs": 25
+    },
+    {
+     "ask": "After hours, the bookseller brings out something else: Catullus's verses on Caesar and his friend Mamurra. Filthy, and very popular.",
+     "options": [
+      {
+       "text": "Copy them for extra",
+       "say": "Caesar knows about them. He invited Catullus to dinner anyway.",
+       "coin": 3,
+       "ledger": "Copied the lampoons against Caesar.",
+       "ledger_key": "lampoon"
+      },
+      {
+       "text": "Just the Cicero",
+       "say": "\"Suit yourself,\" says the bookseller."
+      }
+     ]
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you for the day."
+    },
+    {
+     "end": "Rome reads everything: speeches, poems, scandal, the Senate's minutes posted on a board. Words move faster than soldiers."
+    }
+   ]
+  },
+  "work_scribe_empire": {
+   "title": "Copying",
+   "where": "The bookseller's shop, about AD 150",
+   "steps": [
+    {
+     "say": "Near the Forum of Peace are the booksellers: the new Virgils, the new Martials, cheap copies for the provinces."
+    },
+    {
+     "type": "Remember, Roman, to rule the peoples with your power.",
+     "secs": 25
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "He pays you, and says the provinces buy Virgil by the crate."
+    },
+    {
+     "end": "Every schoolboy from Britain to Syria learns Virgil by heart. The poem of Rome is more Roman now than Rome."
+    }
+   ]
+  },
+  "work_scribe_late": {
+   "title": "Copying",
+   "where": "The clerk's office, AD 384",
+   "steps": [
+    {
+     "say": "The Prefect Symmachus's plea to the Emperor, for the Altar of Victory, is being copied to send to friends."
+    },
+    {
+     "type": "Not by one road alone can one reach so great a mystery.",
+     "secs": 25
+    },
+    {
+     "ask": "A clerk from the bishop's household offers you money to copy something for him too: the bishop of Milan's reply.",
+     "options": [
+      {
+       "text": "Copy both",
+       "say": "You copy both. Symmachus's is better written. Ambrose's wins.",
+       "coin": 2
+      },
+      {
+       "text": "Just Symmachus's",
+       "say": "The clerk goes to someone else."
+      }
+     ]
+    },
+    {
+     "wage": 2,
+     "per": 1
+    },
+    {
+     "end": "The Altar stays out. The argument will be copied for a thousand years."
+    }
+   ]
+  },
+  "work_cutter": {
+   "title": "Cutting an epitaph",
+   "where": "The mason's yard",
+   "steps": [
+    {
+     "say": "A family wants an epitaph cut for their son, in the usual abbreviations. The mason draws the letters in red; you cut."
+    },
+    {
+     "pick": "It begins with the letters D M. What do they stand for?",
+     "options": [
+      "To the spirits of the dead (Dis Manibus)",
+      "Dear mother",
+      "The day of death"
+     ],
+     "right": 0,
+     "yes": "D M: to the spirits of the dead.",
+     "no": "D M: Dis Manibus, to the spirits of the dead."
+    },
+    {
+     "pick": "After his name: V A XIX. What is that?",
+     "options": [
+      "He lived nineteen years (vixit annos)",
+      "Vale, nineteen times",
+      "He was a veteran of the 19th"
+     ],
+     "right": 0,
+     "yes": "Vixit annos: he lived nineteen years.",
+     "no": "Vixit annos XIX: he lived nineteen years."
+    },
+    {
+     "pick": "At the end: S T T L.",
+     "options": [
+      "May the earth lie light on you",
+      "Sacred to the Lares",
+      "Here lies the ashes"
+     ],
+     "right": 0,
+     "yes": "Sit tibi terra levis.",
+     "no": "Sit tibi terra levis: may the earth lie light on you."
+    },
+    {
+     "hold": "Cut the letters.",
+     "secs": 3.5,
+     "done": "The chips fly. The letters are clean."
+    },
+    {
+     "wage": 2,
+     "per": 1,
+     "line": "The mason pays you."
+    },
+    {
+     "end": "His name will be read by strangers for two thousand years. His parents paid for that."
+    }
+   ]
+  },
+  "work_cutter_republic": {
+   "title": "Cutting an epitaph",
+   "where": "The mason's yard, about 50 BC",
+   "steps": [
+    {
+     "say": "A freedman's family wants an epitaph, in the old plain style."
+    },
+    {
+     "pick": "It ends H S E. What is that?",
+     "options": [
+      "Here he lies (hic situs est)",
+      "His sons erected it",
+      "Hail, spirit, eternally"
+     ],
+     "right": 0,
+     "yes": "Hic situs est: here he lies.",
+     "no": "Hic situs est: here he lies."
+    },
+    {
+     "hold": "Cut the letters.",
+     "secs": 3.0,
+     "done": "Clean."
+    },
+    {
+     "wage": 2,
+     "per": 1
+    },
+    {
+     "end": "The freedman was a slave from Syria. On the stone he is a Roman citizen, forever."
+    }
+   ]
+  },
+  "work_cutter_late": {
+   "title": "Cutting an epitaph",
+   "where": "The mason's yard, AD 384",
+   "steps": [
+    {
+     "say": "A Christian family wants their daughter's stone for the catacomb: a dove, and a few words."
+    },
+    {
+     "pick": "How should it end?",
+     "options": [
+      "IN PACE: in peace",
+      "S T T L: may the earth lie light",
+      "D M: to the spirits of the dead"
+     ],
+     "right": 0,
+     "yes": "In peace. The dead are not spirits below now; they are sleeping, waiting.",
+     "no": "In pace. The old formulas are for the old gods."
+    },
+    {
+     "hold": "Cut the dove and the letters.",
+     "secs": 3.0,
+     "done": "The dove is a little crooked. They don't mind."
+    },
+    {
+     "wage": 2,
+     "per": 1
+    },
+    {
+     "end": "The letters are worse cut than they were. There is more hope in them."
+    }
+   ]
+  },
+  "work_cutter_fall": {
+   "title": "Cutting a stone",
+   "where": "The mason's yard, AD 552",
+   "steps": [
+    {
+     "say": "There is no new marble. The mason cuts old stones smaller: a pagan epitaph turned over, a temple's cornice sawn into slabs."
+    },
+    {
+     "hold": "Saw the old stone.",
+     "secs": 4.0,
+     "done": "On the underside: D M, and a name, and XIX. Someone's son."
+    },
+    {
+     "wage": 1,
+     "per": 0
+    },
+    {
+     "end": "Rome is being built out of Rome."
+    }
+   ]
+  },
+  "work_fish": {
+   "title": "Selling the catch",
+   "where": "The fish stall",
+   "steps": [
+    {
+     "say": "The fishwife has more fish than she can sell before the noon heat turns them. \"Take a basket to the steps and sell it.\""
+    },
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": false,
+      "item": "a basket of fish",
+      "value": 4
+     },
+     "win": "sold",
+     "lose": "spoiled"
+    },
+    {
+     "label": "sold"
+    },
+    {
+     "gain": {
+      "fides": 0
+     }
+    },
+    {
+     "end": "You bring her the money. She gives you a fish for yourself."
+    },
+    {
+     "label": "spoiled"
+    },
+    {
+     "end": "By noon they stink. She throws them to the dogs, and doesn't look at you."
+    }
+   ]
+  },
+  "work_boat": {
+   "title": "The ferry",
+   "where": "The river bank",
+   "steps": [
+    {
+     "say": "The boatman has hurt his hand. He needs someone to pole the ferry across with a family and their goat."
+    },
+    {
+     "timing": "Push against the current. Keep her straight.",
+     "hits": 3,
+     "speed": 1.0,
+     "zone": 0.2,
+     "spare": 2,
+     "miss": "The current swings the bow round.",
+     "good": [
+      "Steady.",
+      "Steady.",
+      "The far bank."
+     ]
+    },
+    {
+     "wage": 1,
+     "per": 1,
+     "line": "The boatman pays you from the fares."
+    },
+    {
+     "end": "The Tiber floods every few years, and every year takes someone."
+    }
+   ]
+  },
+  "buy_lanius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a cut of pork",
+      "value": 3
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_cetarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a fish",
+      "value": 2
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_holitor": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a bunch of leeks",
+      "value": 1
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_pomarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a basket of figs",
+      "value": 1
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_olearius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a jar of oil",
+      "value": 4
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_vinarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a jug of wine",
+      "value": 3
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_popinarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a bowl of stew",
+      "value": 1
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_botularius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a sausage",
+      "value": 1
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_crustularius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a honey cake",
+      "value": 1
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_vestiarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a cloak",
+      "value": 12
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_sutor": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a pair of sandals",
+      "value": 6
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_figulus": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a cooking pot",
+      "value": 2
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_lucernarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a clay lamp",
+      "value": 1
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_unguentarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a flask of perfume",
+      "value": 10
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_aurifex": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a gold ring",
+      "value": 40
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_purpurarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a length of purple cloth",
+      "value": 60
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_textrix": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a length of wool",
+      "value": 5
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "buy_librarius": {
+   "title": "Buying",
+   "where": "At the stall",
+   "steps": [
+    {
+     "play": "haggle",
+     "opts": {
+      "buying": true,
+      "item": "a book",
+      "value": 8
+     },
+     "win": "bought",
+     "lose": "none"
+    },
+    {
+     "label": "bought"
+    },
+    {
+     "end": "Bought."
+    },
+    {
+     "label": "none"
+    },
+    {
+     "end": "No deal."
+    }
+   ]
+  },
+  "dice_tali": {
+   "title": "Knucklebones",
+   "where": "The tavern",
+   "steps": [
+    {
+     "say": "A man with a cup of four knucklebones. Dice are illegal except at the Saturnalia. Everyone plays."
+    },
+    {
+     "play": "tali",
+     "opts": {
+      "stake": 2
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "He pays you, with a look."
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "You pay him. He buys a round with it."
+    }
+   ]
+  },
+  "dice_tali_heroic": {
+   "title": "Knucklebones",
+   "where": "The tavern, 280 BC",
+   "steps": [
+    {
+     "say": "Knucklebones for a cup of wine. No one's ever heard of a law against it; there's hardly anything to bet."
+    },
+    {
+     "play": "tali",
+     "opts": {
+      "stake": 1
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "He pours you the cup. \"The Venus likes you.\""
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "You pour him the cup. He drinks to Mars and the legions."
+    }
+   ]
+  },
+  "dice_tali_republic": {
+   "title": "Knucklebones",
+   "where": "The tavern, about 50 BC",
+   "steps": [
+    {
+     "say": "Dice are against the law. The aedile's men come round sometimes and fine the tavern keeper, who pays them to go away."
+    },
+    {
+     "play": "tali",
+     "opts": {
+      "stake": 3
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "You win. The man says you're lucky. He means something else."
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "You lose. Mark Antony, they say, gambled away a fortune and had a friend exiled for it pardoned."
+    }
+   ]
+  },
+  "dice_tali_empire": {
+   "title": "Knucklebones",
+   "where": "The tavern, about AD 150",
+   "steps": [
+    {
+     "say": "Everyone plays. The Emperor Claudius wrote a book on dice and had a board fixed in his carriage."
+    },
+    {
+     "play": "tali",
+     "opts": {
+      "stake": 3
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "You win."
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "You lose."
+    }
+   ]
+  },
+  "dice_duodecim": {
+   "title": "Twelve lines",
+   "where": "On the steps",
+   "steps": [
+    {
+     "say": "A board scratched into the stone: three rows of twelve. Five men each, three dice. A lone man hit goes back to the start."
+    },
+    {
+     "play": "duodecim",
+     "opts": {
+      "stake": 2
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "\"Again?\" he says. It's always again."
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "He sweeps up your coins and looks for the next man."
+    }
+   ]
+  },
+  "board_latrunculi": {
+   "title": "The soldiers' game",
+   "where": "With the soldiers",
+   "steps": [
+    {
+     "say": "A board of eight by eight, and glass counters: the soldiers' game. Shut an enemy in between two of yours and he's taken."
+    },
+    {
+     "play": "latrunculi",
+     "opts": {
+      "stake": 2
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "\"You've been a soldier,\" he says. \"Or a lawyer.\""
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "\"Too many legions, not enough general,\" he says, sweeping the board."
+    }
+   ]
+  },
+  "board_terni": {
+   "title": "Three in a row",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "Children play it on the pavement with pebbles, and so do bored guards: three stones each, three in a row."
+    },
+    {
+     "play": "terni",
+     "opts": {
+      "stake": 1
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "end": "You win. The child demands another game."
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "You lose to a child. Everyone watching enjoys it."
+    }
+   ]
+  },
+  "changer": {
+   "title": "The money changer's table",
+   "where": "The money changer",
+   "steps": [
+    {
+     "say": "The money changer tests coins for merchants: rings them, weighs them, cuts them. He needs a second pair of eyes today."
+    },
+    {
+     "play": "changer",
+     "opts": {},
+     "win": "good",
+     "lose": "bad"
+    },
+    {
+     "label": "good"
+    },
+    {
+     "end": "\"You'll do,\" he says. \"Keep one of the good ones. Know what you're holding.\""
+    },
+    {
+     "label": "bad"
+    },
+    {
+     "end": "\"Stick to spending it,\" he says."
+    }
+   ]
+  },
+  "lender": {
+   "title": "The moneylender",
+   "where": "The moneylender's table",
+   "steps": [
+    {
+     "if": {
+      "has": "a debt"
+     },
+     "to": "owed"
+    },
+    {
+     "say": "He lends at one in a hundred a month, which is the law, and more, which isn't. He knows where everyone lives."
+    },
+    {
+     "ask": "\"How much?\"",
+     "options": [
+      {
+       "text": "Borrow",
+       "say": "He counts it out, and writes your name and your street.",
+       "coin": 10,
+       "give": "a debt",
+       "ledger": "Borrowed from the moneylender.",
+       "ledger_key": "debt"
+      },
+      {
+       "text": "Nothing today",
+       "say": "\"Tomorrow, then. Everybody comes tomorrow.\""
+      }
+     ]
+    },
+    {
+     "end": "His slave walks you to the corner, and remembers your face."
+    },
+    {
+     "label": "owed"
+    },
+    {
+     "ask": "\"You owe me,\" he says. \"With the interest.\"",
+     "options": [
+      {
+       "text": "Repay it",
+       "say": "He crosses your name out.",
+       "need": {
+        "price": 12
+       },
+       "pay": 12,
+       "take": "a debt",
+       "fides": 1
+      },
+      {
+       "text": "Ask for more time",
+       "say": "\"Time costs,\" he says, and writes a bigger number.",
+       "fides": -1
+      }
+     ]
+    },
+    {
+     "end": "Debt is older than Rome. The Twelve Tables let creditors cut a debtor's body in pieces. No one ever did. Probably."
+    }
+   ]
+  },
+  "alms": {
+   "title": "A beggar",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "A man on the church steps with a bowl. One of his feet is gone."
+    },
+    {
+     "ask": "He says the name of Christ and holds out the bowl.",
+     "options": [
+      {
+       "text": "Give a coin",
+       "say": "He blesses you and your house.",
+       "need": {
+        "price": 1
+       },
+       "pay": 1,
+       "fides": 1
+      },
+      {
+       "text": "Give bread",
+       "say": "He eats it at once.",
+       "need": {
+        "has": "a loaf"
+       },
+       "take": "a loaf",
+       "fides": 2
+      },
+      {
+       "text": "Walk on",
+       "say": "He says the name of Christ to the next person."
+      }
+     ]
+    },
+    {
+     "end": "Alms are the Church's great teaching: the rich are saved by the poor. The poor stay poor."
+    }
+   ]
+  },
+  "practice_race": {
+   "title": "A practice run",
+   "where": "The Circus Maximus",
+   "steps": [
+    {
+     "say": "A charioteer of the Greens is short of a driver for a practice run in the morning: four horses, the full course."
+    },
+    {
+     "play": "race",
+     "opts": {
+      "drive": true,
+      "laps": 3
+     },
+     "win": "won",
+     "lose": "lost"
+    },
+    {
+     "label": "won"
+    },
+    {
+     "gain": {
+      "dignitas": 1
+     },
+     "line": "The Greens' trainer writes your name down."
+    },
+    {
+     "end": "Charioteers are slaves and freedmen, and some are richer than senators."
+    },
+    {
+     "label": "lost"
+    },
+    {
+     "end": "They pick you up out of the sand. \"Everyone goes over once,\" the charioteer says. \"The ones who live learn.\""
+    }
+   ]
+  },
+  "errand_merchant": {
+   "title": "An errand",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "The merchant has a sealed tablet for a customer and no slave free to take it."
+    },
+    {
+     "errand": {
+      "pay": 2,
+      "what": "the sealed tablet"
+     }
+    },
+    {
+     "end": "\"Don't read it,\" he says. \"And don't lose it. I know your face now.\""
+    }
+   ]
+  },
+  "errand_senator": {
+   "title": "A message",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "The senator looks you over and decides you'll do. \"A message, by word of mouth. You'll remember it? Good.\""
+    },
+    {
+     "errand": {
+      "pay": 2,
+      "what": "the senator's message"
+     }
+    },
+    {
+     "end": "Men have carried messages for the great all their lives, and been paid in the great men's goodwill."
+    }
+   ]
+  },
+  "errand_matrona": {
+   "title": "An errand",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "She has a basket for her sister and her slave is sick. Eggs, and a letter under the eggs."
+    },
+    {
+     "errand": {
+      "pay": 1,
+      "what": "the basket"
+     }
+    },
+    {
+     "end": "\"Mind the eggs,\" she says, \"and the letter more.\""
+    }
+   ]
+  },
+  "errand_client": {
+   "title": "An errand",
+   "where": "In the street",
+   "steps": [
+    {
+     "say": "His patron wants a book fetched from a friend's house. He has three other errands already."
+    },
+    {
+     "errand": {
+      "pay": 1,
+      "what": "the patron's note"
+     }
+    },
+    {
+     "end": "A client runs. A patron waits. That is the whole arrangement."
+    }
+   ]
+  },
+  "patron_help": {
+   "title": "A word with the senator",
+   "where": "The Forum",
+   "steps": [
+    {
+     "say": "You ask the senator if he needs a man."
+    },
+    {
+     "end": "He says: come to my house at dawn, with the others. That is how it's done."
+    }
+   ]
+  }
+ }
+}

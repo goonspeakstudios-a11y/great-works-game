@@ -2,12 +2,13 @@ extends Panel
 ## Talking with someone in the city: a box along the bottom of the screen with their name and
 ## trade, what they have said, a row of things to ask, and a line to type your own. Picking a topic
 ## or pressing Enter sends `said` (the topic's id, or "" and the text); the Hall answers with
-## show_reply(). Keys 1 to 6 pick the topics.
+## show_reply(). Keys 1 to 6 pick the topics. Someone whose trade gives you something to do (a day's
+## work, a purchase, a game) has a seventh button for it (key 7), which sends the topic "act".
 
 signal said(topic: String, text: String)
 
 const W := 616
-const H := 178
+const H := 200
 const TOPIC_W := 196
 
 var _name: Label
@@ -16,6 +17,7 @@ var _text: RichTextLabel
 var _line: LineEdit
 var _buttons: Array = []
 var _topics: Array = []
+var _action: Button
 var _log := ""
 
 
@@ -53,8 +55,20 @@ func build(style: Callable, label: Callable, topics: Array) -> void:
 		b.pressed.connect(func() -> void: said.emit(id, topics[k]["label"]))
 		add_child(b)
 		_buttons.append(b)
+	_action = Button.new()
+	_action.position = Vector2(12, 152)
+	_action.size = Vector2(W - 24, 20)
+	_action.clip_text = true
+	_action.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_action.add_theme_stylebox_override("normal", style.call(0.9, Color("7a6040")))
+	_action.add_theme_stylebox_override("hover", style.call(0.9, Color("e0b660")))
+	_action.add_theme_stylebox_override("focus", style.call(0.9, Color("e0b660")))
+	_action.add_theme_color_override("font_color", Color("f0d8b0"))
+	_action.pressed.connect(func() -> void: said.emit("act", _action.text.substr(3)))
+	_action.hide()
+	add_child(_action)
 	_line = LineEdit.new()
-	_line.position = Vector2(12, 154)
+	_line.position = Vector2(12, 176)
 	_line.size = Vector2(W - 120, 20)
 	_line.placeholder_text = "Say something, then Enter"
 	_line.add_theme_stylebox_override("normal", style.call(0.9, Color("5a5060")))
@@ -63,12 +77,14 @@ func build(style: Callable, label: Callable, topics: Array) -> void:
 	add_child(_line)
 	var hint: Label = label.call(Color("8a8074"))
 	hint.text = "Esc to go"
-	hint.position = Vector2(W - 96, 156)
+	hint.position = Vector2(W - 96, 178)
 	add_child(hint)
 
 
-## Opens on someone: their name, their trade, and their first words.
-func open(who: String, trade: String, first: String) -> void:
+## Opens on someone: their name, their trade, their first words, and what you can do with them.
+func open(who: String, trade: String, first: String, action: String = "") -> void:
+	_action.visible = action != ""
+	_action.text = "7  " + action
 	_name.text = who
 	_trade.text = trade
 	_log = "[color=#e0b660]%s:[/color] %s" % [who.split(" ")[0], first]
@@ -109,6 +125,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if k >= 0 and k < _topics.size():
 		get_viewport().set_input_as_handled()
 		said.emit(_topics[k]["id"], _topics[k]["label"])
+	elif k == 6 and _action.visible:
+		get_viewport().set_input_as_handled()
+		said.emit("act", _action.text.substr(3))
 	elif (event as InputEventKey).physical_keycode == KEY_ENTER or (event as InputEventKey).physical_keycode == KEY_T:
 		get_viewport().set_input_as_handled()
 		_line.grab_focus()

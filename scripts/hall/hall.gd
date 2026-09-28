@@ -26,6 +26,12 @@ const Kit := preload("res://scripts/hall/kit.gd")
 const Music := preload("res://scripts/pixel/music.gd")
 const Lettering := preload("res://scripts/hall/lettering.gd")
 const Beat := preload("res://scripts/hall/beat.gd")
+const UrbsPanel := preload("res://scripts/hall/urbs_panel.gd")
+const UrbsScene := preload("res://scripts/hall/urbs_scene.gd")
+const Activities := preload("res://scripts/hall/urbs_activities.gd")
+const Standing := preload("res://scripts/hall/urbs_standing.gd")
+const Quests := preload("res://scripts/hall/urbs_quests.gd")
+const Errands := preload("res://scripts/hall/urbs_errands.gd")
 
 const RES := Vector2i(320, 180)  # Greece's picture; other worlds set their own (Worlds)
 const UI := Vector2i(640, 360)  # the interface: words get twice the pixels the world does
@@ -111,6 +117,16 @@ var _read_panel: PanelContainer
 var _read_text: RichTextLabel
 var _ask_panel: Panel
 var _talk_panel: Talk  # talking with someone in the city
+var _activity: Panel  # a scene of the city being played: a rite, a day's work, a game (UrbsPanel)
+var _scene_rite := ""  # the recurring rite the scene being played belongs to
+var _scene_def := {}  # the scene being played, as written
+var _waiting := {}  # a scene you chose to wait for: {scene, subs, rite, days, hour}
+var _quest_scene := ""  # the regular's story whose scene is being played
+var _after_talk := Callable()  # what follows when the talk panel closes (a regular's scene)
+var _errand := {}  # an errand across the city (urbs_errands.gd): {name, pos, pay, limit, text}
+var _errand_since := 0.0
+var _fronts := {}  # where to stand before each standing monument of the city, by id
+var _walk_check := 0.0
 var _talking := {}  # the citizen you are talking with (their interactable)
 var _favour := {}  # a message you are carrying: {from, target} (citizens)
 var _favour_done := {}  # who you carried a message for -> to whom
@@ -281,6 +297,11 @@ func _stage_shot(view: String) -> void:
 				player.seated = true
 				var to := _vec(_args.get("look", "0,0,0")) - player.position
 				player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
+			if _args.has("scene"):  # --scene=<id> [--press=N]: play a scene of the city, N lines into it
+				_start_scene(_args["scene"])
+				for k in int(_args.get("press", "0")):
+					_activity.scene.press()
+				_activity.refresh()
 			if _args.has("beat"):  # --beat=<name> [--press=N]: start that beat and go N steps into it
 				var it: Array = interactables.filter(func(i): return i["kind"] == "beat" and i["beat"] == _args["beat"])
 				if not it.is_empty():
@@ -464,6 +485,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	areas = built.get("areas", [])
 	regions = built.get("regions", [])
 	landmarks = built.get("landmarks", [])
+	_fronts = built.get("fronts", {})
 	life = built.get("life")
 	_here_zone = str(built.get("zone", ""))
 	backs = built.get("backs", {})
@@ -984,6 +1006,10 @@ func _build_ui() -> void:
 	_talk_panel.build(_style, _label, Citizen.data().get("topics", []))
 	_talk_panel.said.connect(_on_said)
 	_root.add_child(_talk_panel)
+	_activity = UrbsPanel.new()
+	_activity.build(_style, _label)
+	_activity.closed.connect(_close_panels)
+	_root.add_child(_activity)
 	_build_map_panel()
 	_build_tree_panel()
 	_fade = ColorRect.new()
@@ -1308,7 +1334,17 @@ func _tablet_text() -> String:
 	if here == "urbs":
 		var rome: Array = Rooms.doors_of("rome")
 		var done: int = rome.filter(func(d): return progress.is_mastered(d["work"])).size()
-		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nRoman books mastered: %d of %d." % [here_name, area, done, rome.size()]
+		var lines: Array = ["[color=#e0b660]Your tablet: %s[/color]" % here_name, area, standing().summary()]
+		var on: Array = Activities.today(_age_id(), life.town.day if life and life.town else 0, life.hour if life else 8.0)
+		if not on.is_empty():
+			lines.append("[color=#e0b660]Today in Rome[/color]\n" + "\n".join(on))
+		var doing: Array = Quests.hints(standing(), _age_id())
+		if not _errand.is_empty():
+			doing.push_front(str(_errand["text"]))
+		if not doing.is_empty():
+			lines.append("[color=#e0b660]Things you said you'd do[/color]\n" + "\n".join(doing))
+		lines.append("Roman books mastered: %d of %d." % [done, rome.size()])
+		return "\n\n".join(lines)
 	if here == "nexus":
 		var now := Nexus.now(progress, doors)
 		return "[color=#e0b660]Your tablet: %s[/color]\n\n%s\n\nIdeas understood: %d\nBooks mastered: %d of %d" % [
@@ -1387,14 +1423,21 @@ func _show_panel(p: Control) -> void:
 
 
 func _any_panel() -> bool:
-	return _talk_panel.visible or _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible or _choice.visible
+	return _talk_panel.visible or _read_panel.visible or _ask_panel.visible or _map_panel.visible or _tree_panel.visible or _menu.visible \
+		or _choice.visible or _activity.visible
 
 
 ## Closing a panel puts the mouse back the way it was, so looking around just continues.
 func _close_panels() -> void:
 	if _menu.visible:
 		_menu.save_settings()
-	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _talk_panel]:
+	var after := Callable()
+	if _activity.visible:
+		after = _scene_closed()
+	elif _talk_panel.visible and _after_talk.is_valid():
+		after = _after_talk
+	_after_talk = Callable()
+	for p in [_read_panel, _ask_panel, _map_panel, _tree_panel, _menu, _talk_panel, _activity]:
 		p.hide()
 	_where.show()
 	_question_box.release_focus()
@@ -1407,6 +1450,8 @@ func _close_panels() -> void:
 	_restore_pending = ""
 	if due:
 		_restore()
+	if after.is_valid():
+		after.call()
 
 
 # ---------- moment to moment ----------
@@ -1428,6 +1473,11 @@ func _process(delta: float) -> void:
 		var turned: String = life.step(delta, player.global_position)
 		if turned != "" and music:
 			music.play(_zone(here), life.music_back())  # the day's music, or the night's
+		_walk_check -= delta
+		if _walk_check <= 0.0 and not _any_panel() and not travelling:
+			_walk_check = 0.4
+			_check_errand()
+			_check_quest_places()
 	_animate_people(delta)
 	_animate_life(delta)
 	_catch_fall()
@@ -1723,6 +1773,10 @@ func activate(it: Dictionary) -> void:
 			_open_talk(it)
 		"rome_age":
 			_set_rome_age(int(it["to"]))
+		"activity":
+			_open_activity(it)
+		"chest":
+			_show_read(_chest_text(it))
 
 
 ## Something to look at, and the lesson stones among them. For a Theoros (Zen) a stone's point
@@ -1864,6 +1918,234 @@ func _set_city_stage(to: int) -> void:
 			_load_place.call_deferred(here, true)  # after the beat that asked for it has finished its frame
 
 
+# ---------- the city's activities: rites, work, games ----------
+
+## The age the city of Rome stands in, by its id ("heroic" ... "fall").
+func _age_id() -> String:
+	var ages: Array = load("res://scripts/hall/rome_map.gd").ages()
+	return str(ages[clampi(rome_age(), 0, ages.size() - 1)]["id"]) if not ages.is_empty() else "heroic"
+
+
+## You, as the city of Rome knows you (urbs_standing.gd).
+func standing() -> RefCounted:
+	return Standing.open(progress, _age_id())
+
+
+## Something to do: a rite, if it is held now (or offered to wait for), or any other scene.
+func _open_activity(it: Dictionary) -> void:
+	if it.has("when") and life and life.town:
+		var when: Dictionary = it["when"]
+		var fest: Dictionary = life.town.festival()
+		if not Activities.on_now(when, life.town.day, life.hour, str(fest.get("name", ""))):
+			_offer_wait(it)
+			return
+	_start_scene(str(it["scene"]), it.get("subs", {}), str(it.get("rite", "")))
+
+
+## It isn't on now: say when it is, and offer to wait for it.
+func _offer_wait(it: Dictionary) -> void:
+	var when: Dictionary = it["when"]
+	var year := int(load("res://scripts/hall/urbs_town.gd").data().get("year_days", 24))
+	var fday := Activities.festival_day(str(when.get("festival", ""))) if when.has("festival") else -1
+	var next: Array = Activities.next_on(when, life.town.day, life.hour, year, fday)
+	var h := float(next[1])
+	var hh := int(h)
+	var at := "%d:%02d" % [hh, int((h - hh) * 60.0)]
+	var days := int(next[0])
+	var said := "today, from %s" % at if days == 0 else ("tomorrow, from %s" % at if days == 1 else "in %d days, from %s" % [days, at])
+	var name := str(it.get("name", str(it["text"]).split(":")[0]))
+	_waiting = {"scene": str(it["scene"]), "subs": it.get("subs", {}), "rite": str(it.get("rite", "")), "days": days, "hour": h}
+	var def := {"title": name, "where": here_name, "steps": [
+		{"say": "Not now. It is next %s." % said},
+		{"ask": "Wait until then?", "options": [{"text": "Wait", "then": "wait"}, {"text": "Come back another time", "then": "later"}]},
+		{"label": "wait"}, {"hour": h}, {"end": "You wait. The city goes about its business round you."},
+		{"label": "later"}, {"end": "Another time."}]}
+	_play_scene(UrbsScene.new(def, "wait", standing()), "", def)
+
+
+## Plays a scene of the city (as written for this age), in the activity panel.
+func _start_scene(id: String, subs: Dictionary = {}, rite: String = "") -> void:
+	var def := Activities.filled(Activities.scene_def(id, _age_id()), subs)
+	if def.is_empty():
+		push_error("No scene %s" % id)
+		return
+	_waiting = {}
+	_play_scene(UrbsScene.new(def, id, standing()), rite, def)
+
+
+func _play_scene(scene: RefCounted, rite: String, def: Dictionary) -> void:
+	scene.resolve_errand = _resolve_errand
+	_scene_rite = rite
+	_scene_def = def
+	_activity.open(scene, scene.standing)
+	_show_panel(_activity)
+
+
+## The scene is closed: a finished rite is remembered for the frieze, a set gains its piece, the
+## day moves on if the scene took time (sleep, waiting); a wait ends in the scene waited for.
+## Returns what to do once the panel has gone.
+func _scene_closed() -> Callable:
+	var scene: RefCounted = _activity.scene
+	if scene == null or not scene.done:
+		_quest_scene = ""  # left part way: talk to them again to take it up
+		return Callable()
+	var you := standing()
+	if _scene_rite != "":
+		you.played(_scene_rite)
+	if _scene_def.has("collect"):
+		var pair: Array = _scene_def["collect"]
+		you.collect(str(pair[0]), str(pair[1]))
+	var then := Callable()
+	if _quest_scene != "":
+		var qid := _quest_scene
+		_quest_scene = ""
+		var said: String = Quests.advance(you, qid)
+		if said != "":
+			_quest_done(qid, said)
+		elif Quests.kind(Quests.current(you, qid)) == "scene":
+			then = _start_quest_scene.bind(qid)
+	if scene.id == "wait" and scene.hour >= 0.0 and not _waiting.is_empty():
+		var w := _waiting
+		_pass_time(int(w["days"]), float(w["hour"]))
+		then = _start_scene.bind(str(w["scene"]), w["subs"], str(w["rite"]))
+	elif scene.hour >= 0.0:
+		_pass_time(0, scene.hour)
+	_waiting = {}
+	progress.save()
+	return then
+
+
+## The city's clock moves on `days` days, to hour `h` (past midnight if `h` is earlier than now).
+func _pass_time(days: int, h: float) -> void:
+	if life == null:
+		return
+	var town: RefCounted = life.town
+	if days == 0 and h < life.hour and town:
+		days = 1
+	for k in days:
+		if town:
+			town.next_day()
+	life.hour = h
+	life._shown = ""  # who is out is worked out again
+	progress.data["rome_hour"] = h
+	if town:
+		progress.data["rome_day"] = town.day
+
+
+## Your chest: what you carry, what you have gathered.
+func _chest_text(it: Dictionary) -> String:
+	var lines: Array = ["[b]Your chest[/b]", str(it.get("note", "")), standing().summary()]
+	var sets: Dictionary = standing().data()["collected"]
+	for k: String in sets:
+		lines.append("%s: %d" % [k.capitalize(), (sets[k] as Array).size()])
+	return "\n\n".join(lines)
+
+
+## A regular's words when their story for this age has something for you: its beginning, its next
+## talk, or the thing you were to bring; otherwise "" (they talk as usual).
+func _quest_words(c: Dictionary) -> String:
+	var qid := Quests.for_regular(str(c["regular"]), _age_id())
+	if qid == "":
+		return ""
+	var you := standing()
+	if Quests.done(you, qid):
+		return ""
+	var step: Dictionary = Quests.steps(qid)[0] if Quests.at(you, qid) < 0 else Quests.current(you, qid)
+	var said := ""
+	match Quests.kind(step):
+		"talk":
+			var line := str(step["talk"])
+			said = Quests.advance(you, qid)
+			if said != "":
+				_quest_done(qid, said)
+			elif Quests.kind(Quests.current(you, qid)) == "scene":
+				_after_talk = _start_quest_scene.bind(qid)
+			return line
+		"bring":
+			if you.has({"has": str(step["bring"])}):
+				var line := str(step["line"])
+				said = Quests.advance(you, qid)
+				if said != "":
+					_quest_done(qid, said)
+				return line
+			return "Have you got %s yet? %s" % [step["bring"], step.get("hint", "")]
+		"scene":
+			_after_talk = _start_quest_scene.bind(qid)
+			return "Well? Go on, then."
+		"go":
+			return "Well? %s" % step.get("hint", "")
+	return ""
+
+
+func _start_quest_scene(qid: String) -> void:
+	var step: Dictionary = Quests.current(standing(), qid)
+	if Quests.kind(step) != "scene":
+		return
+	var def: Dictionary = step["scene"]
+	_quest_scene = qid
+	_play_scene(UrbsScene.new(def, "quest", standing()), "", def)
+
+
+## A regular's story for this age is done: what it gave, and its voice remembered.
+func _quest_done(qid: String, said: String) -> void:
+	var q: Dictionary = Quests.all()[qid]
+	_quip = "%s: done.%s\n%s" % [q["title"], " (%s)" % said if said != "done" else "", q.get("voice", "")]
+	_quip_until = _t + 6.0
+	progress.save()
+
+
+## Walking to where a regular's story sends you: there, the story goes on.
+func _check_quest_places() -> void:
+	if here != "urbs":
+		return
+	var you := standing()
+	for qid: String in Quests.all():
+		if str(Quests.all()[qid]["age"]) != _age_id():
+			continue
+		var step: Dictionary = Quests.current(you, qid)
+		if Quests.kind(step) != "go" or Quests.at(you, qid) < 0:
+			continue
+		var to: Variant = Quests.target(step, spots.get("room", Vector3.ZERO), _fronts)
+		if to == null or Vector2(player.global_position.x - (to as Vector3).x, player.global_position.z - (to as Vector3).z).length() > Quests.REACH:
+			continue
+		_quip = str(step.get("line", ""))
+		_quip_until = _t + 6.0
+		var said: String = Quests.advance(you, qid)
+		if said != "":
+			_quest_done(qid, said)
+		elif Quests.kind(Quests.current(you, qid)) == "scene":
+			_start_quest_scene(qid)
+		progress.save()
+		return
+
+
+## An errand given in a scene: somewhere across the city, with directions.
+func _resolve_errand(spec: Dictionary) -> Dictionary:
+	if here != "urbs" or landmarks.is_empty():
+		return {}
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(_t * 1000.0) + landmarks.size()
+	var to: Dictionary = Errands.pick(landmarks, player.global_position, rng)
+	if to.is_empty():
+		return {}
+	_errand = Errands.make(to, landmarks, player.global_position, _age_id(), int(spec.get("pay", 1)), str(spec.get("what", "it")))
+	_errand_since = _t
+	return _errand
+
+
+func _check_errand() -> void:
+	if _errand.is_empty() or here != "urbs":
+		return
+	var r: Dictionary = Errands.arrive(_errand, player.global_position, _t - _errand_since)
+	if r.is_empty():
+		return
+	var said: String = standing().apply(r["fx"])
+	_quip = "%s (%s)" % [r["line"], said]
+	_quip_until = _t + 5.0
+	_errand = {}
+	progress.save()
+
+
 # ---------- talking with the people of a city ----------
 
 ## Stop someone in the street and talk: their name, their trade, their first words.
@@ -1873,7 +2155,8 @@ func _open_talk(it: Dictionary) -> void:
 	var trade := "%s (%s)" % [c["title"], c["latin"]]
 	if c["origin"] != "Roman":
 		trade += ", %s" % c["origin"]
-	_talk_panel.open(c["name"], trade, _esc(_first_words(c)))
+	var act: Dictionary = Activities.job_action(str(c["job"]), _age_id()) if here == "urbs" else {}
+	_talk_panel.open(c["name"], trade, _esc(_first_words(c)), str(act.get("label", "")))
 	_show_panel(_talk_panel)
 
 
@@ -1895,10 +2178,13 @@ func _first_words(c: Dictionary) -> String:
 		var target: String = _favour_done[c["id"]]
 		_favour_done.erase(c["id"])
 		return str(fav["after"][times % fav["after"].size()]).replace("{target}", target)
+	var story := _quest_words(c) if c.has("regular") and here == "urbs" else ""
 	var words := Citizen.greeting(c)
 	var lines: Array = c.get("regular_lines", [])
 	if not lines.is_empty():
 		words = str(lines[mini(times, lines.size() - 1)])
+		if story != "":
+			return words + "\n" + story  # their own news, then what they'd ask of you
 	elif times > 0:
 		words = "You again! %s" % c["mood_line"]
 	if _favour.is_empty() and life and randf() < 0.15:  # a message to take to someone nearby
@@ -1927,6 +2213,12 @@ func _on_said(topic: String, text: String) -> void:
 	if _talking.is_empty():
 		return
 	var c: Dictionary = _talking["citizen"]
+	if topic == "act":  # what you can do with them: a day's work, a purchase, a game
+		var act: Dictionary = Activities.job_action(str(c["job"]), _age_id())
+		if not act.is_empty():
+			_close_panels()
+			_start_scene(str(act["scene"]))
+		return
 	_talk_panel.show_you(_esc(text))
 	if topic == "" and AuthorAI.api_key() != "" and not author.chat_busy:
 		author.chat(c["id"], Citizen.persona(c, here_name, near_names()), text)
@@ -2066,6 +2358,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and not player.frozen and not offline:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		return
+	if _activity.visible:
+		return  # the scene takes its own keys
 	if event.is_action_pressed("tablet") and not _ask_panel.visible and not _talk_panel.visible:
 		get_viewport().set_input_as_handled()
 		if _read_panel.visible:

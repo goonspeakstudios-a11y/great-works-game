@@ -56,7 +56,7 @@ Decided with BB1 (2026-09-28):
 |---|---|---|---|
 | The Republic | about 50 BC | 190 | Temples of Jupiter, Saturn, Castor, Vesta, Concord, Juno Moneta, Magna Mater, Ceres, Diana, Mars in the Circus, Venus Victrix on Pompey's new theatre; the Tabularium; Basilicas Aemilia and Sempronia; the Servian wall whole; low houses of plaster in creams and whites; the Campus Martius still open |
 | The Empire | about AD 150 | 240 | The imperial fora with Venus Genetrix and Mars Ultor, Trajan's forum, column and markets; the Colosseum, the Colossus and the Meta Sudans; the Pantheon; Venus and Rome; baths; the palace on the Palatine; the Claudian aqueduct; flats of up to six storeys, ochre, rose and red |
-| The Late Empire | about AD 330 | 190 | Baths of Caracalla and Diocletian; the Arches of Septimius Severus and Constantine; the Basilica of Maxentius; Aurelian's wall; the Lateran and St Peter's; greyer light, the tune in a minor key |
+| The Late Empire | AD 384 | 190 | Baths of Caracalla and Diocletian; the Arches of Septimius Severus and Constantine; the Basilica of Maxentius; Aurelian's wall; the Lateran and St Peter's; greyer light, the tune in a minor key |
 | The Fall | AD 552 | 36 | After the Gothic War: monuments in ruin, the aqueducts dry, most houses broken walls overgrown with bushes and trees, rubble underfoot, the few people in the bend of the Tiber |
 
 - **The first act is the Republic.** The city is young and loud until the Roman books move the
@@ -158,7 +158,7 @@ greyer and emptier, and the music darkens with it.
 | The Republic | 201 BC, after Zama | virtus, pietas, fides, gravitas, frugality, service and sacrifice | Scipio's triumph, the levy on the Capitol, a hero's funeral with his ancestors' masks, the Cannae men home at last | the bright town theme |
 | The Late Republic | about 50 BC | the virtues spoken of and betrayed: ambition, faction, money, gangs | bought votes, evictions, fires with speculators, the slave auction, the Subura by night, a grain riot | the tune in minor, out of true |
 | The Empire | AD 150 | peace, plenty, spectacle; servility, informers, idleness | the arena, informers, executions at the gate, families sold apart | the tune in minor |
-| The Late Empire | AD 330 | fear, cruelty, corruption, trades bound by law, the old gods forbidden | torture for tax arrears, bread riots, church offices bought | only the echo |
+| The Late Empire | AD 384 | fear, cruelty, corruption, trades bound by law, the old gods forbidden | torture for tax arrears, bread riots, church offices bought | only the echo |
 | The Collapse | AD 455 | absurd decadence: emperors murdered in weeks, the Senate arguing seating while Africa's grain is gone, relic sellers, betting on the next emperor's death | the Vandals just gone, relic stalls, bets at the Circus, riots, the Subura by night | only the echo |
 | The Fall | AD 552 | ruin, famine, numbness | the starving, the dead, the empty city | only the echo and the wind |
 
