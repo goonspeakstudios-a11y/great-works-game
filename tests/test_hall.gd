@@ -104,10 +104,11 @@ func test_plural_filler_words_are_ignored() -> void:
 
 ## The books whose places are built so far; every other gateway on the Shore is sealed.
 const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium", "euclid-elements",
-	"homer-the-iliad", "plato-republic",
+	"homer-the-iliad", "hesiod-theogony", "sappho-fragments", "plato-republic",
 	"aristotle-nicomachean-ethics"]
-## The places built in sprints 4 and 5 (places_greek.gd), each tested like the villa and the Lyceum.
-const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad", "plato-republic"]
+## The places built in sprints 4 to 6 (places_greek.gd), each tested like the villa and the Lyceum.
+const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad", "hesiod-theogony", "sappho-fragments",
+	"plato-republic"]
 
 
 func test_rooms_follow_the_reading_list() -> void:

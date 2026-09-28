@@ -92,6 +92,7 @@ const ZONES := {
 		{"file": "lesbos_barbitos", "db": -9.0, "music": true, "needs": "teacher"},
 		{"file": "lesbos_voice", "db": -10.0, "music": true, "needs": "household"},
 		{"file": "waves", "db": -21.0},
+		{"file": "stream", "db": -25.0, "needs": "water"},  # the cold water through the apple boughs (fr. 2)
 		{"file": "birds", "db": -24.0, "needs": "leaves"},
 		{"file": "wind", "db": -24.0, "loud_db": -16.0, "loud_until": "sun"}]},
 	# Alexandria (Euclid): the tetraktys on a kithara, the monochord, gulls over the harbour.

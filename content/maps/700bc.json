@@ -1,0 +1,180 @@
+{
+ "title": "The world about 700 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Assyria",
+   "sub": "King Sennacherib, the greatest empire yet",
+   "color": [
+    110,
+    70,
+    110
+   ],
+   "label": [
+    167,
+    88
+   ]
+  },
+  {
+   "name": "Egypt",
+   "sub": "ruled by the kings of Kush",
+   "color": [
+    170,
+    128,
+    64
+   ],
+   "label": [
+    130,
+    122
+   ]
+  },
+  {
+   "name": "Phrygia",
+   "sub": "King Midas's kingdom, falling to the Cimmerians",
+   "color": [
+    140,
+    104,
+    64
+   ],
+   "label": [
+    133,
+    70
+   ]
+  },
+  {
+   "name": "Lydia",
+   "sub": "King Gyges, the shepherd of Plato's tale",
+   "color": [
+    176,
+    128,
+    64
+   ],
+   "label": [
+    123,
+    76
+   ]
+  },
+  {
+   "name": "Greeks",
+   "sub": "small cities, and colonies across the sea",
+   "color": [
+    70,
+    104,
+    138
+   ],
+   "label": [
+    101,
+    70
+   ]
+  },
+  {
+   "name": "Carthage",
+   "sub": "a Phoenician colony, a century old",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    59,
+    90
+   ]
+  },
+  {
+   "name": "Phoenicia",
+   "sub": "Tyre and Sidon, paying tribute to Assyria",
+   "color": [
+    124,
+    58,
+    96
+   ],
+   "label": [
+    151,
+    92
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Etruscans",
+   "label": [
+    71,
+    56
+   ]
+  },
+  {
+   "name": "Thracians",
+   "label": [
+    114,
+    58
+   ]
+  },
+  {
+   "name": "Urartu",
+   "label": [
+    171,
+    70
+   ]
+  },
+  {
+   "name": "Scythians",
+   "label": [
+    147,
+    42
+   ]
+  },
+  {
+   "name": "Libyans",
+   "label": [
+    103,
+    114
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Ascra",
+   "note": "Hesiod's village under Mount Helicon",
+   "at": [
+    107,
+    75
+   ],
+   "main": true,
+   "side": "above"
+  },
+  {
+   "name": "Chalcis",
+   "note": "where he won a tripod for a song",
+   "at": [
+    108,
+    74
+   ],
+   "main": false,
+   "side": "right"
+  },
+  {
+   "name": "Delphi",
+   "note": "Apollo's oracle",
+   "at": [
+    105,
+    74
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Nineveh",
+   "note": "Sennacherib's capital",
+   "at": [
+    170,
+    83
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

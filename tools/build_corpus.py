@@ -101,6 +101,31 @@ BOOKS = {
              "chapter_label": "Book"},
         ],
     },
+    "hesiod-theogony": {  # the Theogony and the Works and Days, as the reading takes both
+        "title": "Hesiod",
+        "translation": "tr. Hugh G. Evelyn-White (1914), public domain",
+        "parts": [
+            {"title": "Theogony", "urls": [["https://www.gutenberg.org/cache/epub/348/pg348.txt", ""]],
+             "segments": [{"start": r"^THE THEOGONY\s*\n\s*\n\(ll\. 1-25\)", "end": r"(?=^THE CATALOGUES OF WOMEN)", "heading": "",
+                           "once": True}],
+             "drop": [r"(?<=[A-Za-z,;:’?])\s1\d{3}\b"],  # the footnote marks
+             "start": r"\(ll\. 1-25\)", "end": r"\Zx", "chapter": r"^\(ll\. (\d+)-?\d*\)", "chapter_label": "line"},
+            {"title": "Works and Days", "urls": [["https://www.gutenberg.org/cache/epub/348/pg348.txt", ""]],
+             "segments": [{"start": r"^HESIOD’S WORKS AND DAYS\s*\n\s*\n\(ll\. 1-10\)", "end": r"(?=^THE THEOGONY\s*$)",
+                           "heading": "", "once": True}],
+             "drop": [r"(?<=[A-Za-z,;:’?])\s1\d{3}\b"],  # the footnote marks
+             "start": r"\(ll\. 1-10\)", "end": r"\Zx", "chapter": r"^\(ll\. (\d+)-?\d*\)", "chapter_label": "line"},
+        ],
+    },
+    "sappho-fragments": {  # Wharton's literal prose of each fragment, without the Greek or the verse renderings
+        "title": "Sappho",
+        "translation": "tr. Henry Thornton Wharton (1885), literal prose, public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/57390/pg57390.txt", ""]],
+        "segments": [{"start": r"^(\d+)(?:, ?\d+)*[ \t]*$", "end": r"^_\S.*?_[ \t.]{0,5}$", "max": 6000, "heading": "Fragment {n}",
+                      "keep_last": True}],
+        "drop": [r"^.*\[Greek:.*$", r"_"],
+        "start": r"(?m)^Fragment 1\s*$", "end": r"\Zx", "chapter": r"^Fragment (\d+)\s*$", "chapter_label": "Fragment",
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",
@@ -201,7 +226,8 @@ def segments(text: str, part: dict) -> str:
     """Only the parts of a scanned book that are the author's own text (not the editor's notes):
     each {"start", "end", "heading"} keeps every span from a start match to the end of its end
     match (or, failing that, "max" characters on, at a paragraph break), under a heading line ({n}
-    numbers them in order), at most "limit" of them; "drop" removes scanner debris lines."""
+    numbers them in order), at most "limit" of them ("keep_last" keeps only the end match under the
+    heading); "drop" removes scanner debris lines."""
     kept: list[str] = []
     for seg in part["segments"]:
         n = 0
@@ -230,6 +256,8 @@ def segments(text: str, part: dict) -> str:
                     break  # the next book begins again at 1
                 last = number
             body = text[start + (m.end() - m.start()) if seg.get("skip_start") else start: stop]
+            if seg.get("keep_last"):  # only what the end matched: e.g. the translation after the original
+                body = e.group(0) if e else ""
             kept.append(seg["heading"].format(n=number) + "\n\n" + body)
             pos = stop
             if seg.get("once") or n >= seg.get("limit", 10**9):

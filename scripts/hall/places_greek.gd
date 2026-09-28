@@ -11,6 +11,8 @@ extends RefCounted
 ##   academy() #7 Plato's Republic: the grove, the council table over the city in speech, and round it
 ##             the Republic's scenes (Cephalus's house, Gyges' chasm, the line, the cave, Er's meadow)
 ##             with Socrates' trial, Agathon's dinner and the prison
+##   ascra()   #7 Hesiod: the farm at Ascra and Mount Helicon above it, the Muses, Chaos, Kronos
+##   lesbos()  #8 Sappho: her garden above the sea on Lesbos, and the torn poems
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -848,4 +850,190 @@ static func _academy_lessons(world: Node3D, work: String, room: Dictionary, out:
 	var last: Dictionary = beat.call("", "the_cup", jail["spots"]["teacher"], "Spend the last day, as Socrates",
 		{"socrates": jail["people"][0]["root"], "cup": jail["cup"]}, {"walk": [cell["window"], cell["door"]], "bed": cell["bed"]})
 	last["after"] = "Phaedo told it afterwards to Echecrates. Plato, he said, was ill, and was not there."
+	return flicker
+
+
+# ---------- #7 Hesiod, the Theogony and the Works and Days ----------
+
+## Ascra under Mount Helicon, about 700 BC: Hesiod by the way in, his farm (the plough team in
+## the field, the threshing floor, the hives, the great jar, the frieze of the five ages, and far
+## off Prometheus on his crag), and above it the high meadow of Helicon where the Muses dance round
+## the Horse's Spring, with the gap of Chaos at its edge and Kronos in stone with his sickle. The
+## peak of Helicon stands behind. Lost, the field is dust, the spring dry, the Muses shades.
+static func ascra(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 50.0)
+	Kit.plateau(world, 90.0, "earth", false)
+	Kit.mountain(world, Vector3(-20, -12, -230), 130.0, 110.0, false)  # Helicon's peak
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 10), 5, 18.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 80.0, 60.0, "path")
+
+	# Hesiod by the way in, on a stone, with his laurel staff
+	Kit.box(world, Vector3(0, 0.25, 55.4), Vector3(0.9, 0.5, 0.7), "stone")
+	var hesiod := _teacher(world, room, b, stage, Vector3(0, 0, 55.6), 0.0, Vector3(0, 0, 58.4), out, spots)
+	Kit.cylinder(world, Vector3(0.6, 0, 56.0), 0.03, 1.9, "wood", false, 6)  # the staff
+	sway.append(Kit.olive(world, Vector3(-3.0, 0, 53.5), 1.2, b.has("leaves")))  # the laurel over him
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 57.0), 0.0, Vector3(-4.2, 0, 58.6)]],
+		Vector3(-7.0, 1.6, 54.0), 0.3, Vector3(-6.4, 0, 55.8), Vector3(6.5, 0, 54.4), Vector3(6.5, 0, 55.6))
+	out.append(Places.seat(world, Vector3(9.0, 0, 58.0), Vector3(0, 0, -1), "Sit and look up at Helicon"))
+
+	var farm := Areas.farm(world, Vector3(0, 0, 22), 0.0, b)
+	take.call(farm)
+	var mount := Areas.helicon(world, Vector3(0, 0, -45), 0.0, b)
+	take.call(mount)
+	_way(world, [Vector3(0, 0, 52), Vector3(0, 0, -15)])
+	flicker.append_array(_ascra_lessons(world, work, room, out, spots, farm, mount, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 77.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [hesiod] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## Hesiod's six points: the Muses at their spring, Chaos at its gap, the stone given to Kronos (a
+## beat, as Rhea), Pandora's jar (a beat), the five ages on the farmyard wall, and the farmer's
+## year (a beat: plough when the crane cries, thresh, put up the harvest).
+static func _ascra_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, farm: Dictionary,
+		mount: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+
+	var spring := Areas._at(mount["root"], Vector3.ZERO)
+	stele_stone.call("muses", spring + Vector3(0, 0, 7.5), spring, "Watch the Muses dance")
+	var gap := Areas._at(mount["root"], Vector3(0, 0, -19.0))
+	stele_stone.call("chaos", gap + Vector3(6.5, 0, 3.0), gap, "Look into the gap of Chaos")
+	var ages: Array = farm["ages"]
+	var mid := Areas._at(farm["root"], ages[2])
+	stele_stone.call("ages", mid + Vector3(0, 0, 1.2), mid + Vector3(0, 0, -2.0), "Read the frieze of the five ages")
+
+	# the stone in swaddling clothes, given to Kronos in place of Zeus
+	var kronos := Areas._at(mount["root"], Vector3(-9.0, 0, -15.0))
+	var stone := Kit.group(world, kronos + Vector3(4.0, 0, 5.0))
+	Kit.blob(stone, Vector3(0, 0.4, 0), 0.4, "rock", Vector3(0.8, 1.2, 0.8), 6)
+	Kit.box(stone, Vector3(0, 0.4, 0), Vector3(0.7, 0.2, 0.5), "#d8d0b8", false)
+	Kit.unsolid(stone)
+	out.append({"kind": "beat", "pos": kronos + Vector3(6.0, 0, 7.5), "work": work, "id": "succession", "beat": "the_stone",
+		"text": "Deceive Kronos, as Rhea", "note": note.call("succession"), "cast": {"stone": stone},
+		"marks": {"stone": kronos + Vector3(4.8, 0, 5.8), "kronos": kronos + Vector3(2.0, 0, 2.6), "face": kronos + Vector3(0, 3.5, 0)}})
+	spots["succession"] = kronos + Vector3(6.0, 0, 7.5)
+
+	# Pandora's jar, standing open in the farmyard
+	var jar := Areas._at(farm["root"], Vector3(4.0, 0, 4.0))
+	out.append({"kind": "beat", "pos": jar + Vector3(0, 0, 2.6), "work": work, "id": "prometheus", "beat": "the_jar",
+		"text": "Stand before Pandora's jar", "note": note.call("prometheus"), "cast": {},
+		"marks": {"jar": jar + Vector3(0, 0, 1.2), "crag": Areas._at(farm["root"], Vector3(-30.0, 5.0, -40.0))}})
+	spots["prometheus"] = jar + Vector3(0, 0, 2.6)
+
+	# the farmer's year
+	var yard: Vector3 = farm["spots"]["teacher"]
+	out.append({"kind": "beat", "pos": yard, "work": work, "id": "work", "beat": "the_year", "text": "Work the farmer's year",
+		"note": note.call("work"), "cast": {},
+		"marks": {"plough": Areas._at(farm["root"], Vector3(-14.0, 0, -5.0)), "threshing": Areas._at(farm["root"], Vector3(12.0, 0, -4.0)),
+			"hives": Areas._at(farm["root"], Vector3(16.0, 0, 6.0))}})
+	spots["work"] = yard
+	return flicker
+
+
+# ---------- #8 Sappho ----------
+
+## Sappho's garden above the sea on Lesbos, about 600 BC: the apple orchard round Aphrodite's
+## shrine, the cold stream, the sparrow chariot in the sky, the two seats facing each other, the
+## barbitos on its bench; Sappho herself at the garden's gate; the fleet far out on the sea; and,
+## blown about the orchard, the torn strips of papyrus that are nearly all that is left of her.
+## Lost, the orchard is bare, the stream dry, her women shades.
+static func lesbos(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 40.0)
+	Kit.plateau(world, 60.0, "grass" if b.has("leaves") else "earth", false)
+	Kit.sea(world, -9.0)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 0), 5, 14.0, 12.0) if b.has("leaves") else []
+	_arrival(world, room, out, spots, flicker, 52.0, 28.0, "path")
+	var garden := Areas.garden(world, Vector3(0, 0, -5), 0.0, b)
+	flicker.append_array(garden["flicker"])
+	sway.append_array(garden["sway"])
+	people.append_array(garden["people"])
+
+	# Sappho at the garden's gate, her barbitos beside her
+	Kit.bench(world, Vector3(0, 0, 20.2), 0.0)
+	var sappho := _teacher(world, room, b, stage, Vector3(0, 0, 20.0), 0.0, Vector3(0, 0, 22.8), out, spots)
+	Greek.barbitos(world, Vector3(1.2, 0.5, 20.2), 0.2, b.has("teacher"))
+	_study(world, room, out, spots, [[Vector3(-4.5, 0, 21.0), 0.0, Vector3(-4.5, 0, 22.6)]],
+		Vector3(-7.5, 1.6, 18.5), 0.3, Vector3(-6.9, 0, 20.3), Vector3(6.5, 0, 19.0), Vector3(6.5, 0, 20.2))
+	for k in 4:  # the women of her circle
+		var at := Vector3(-14.0 + k * 9.0, 0, 10.0 + (k % 2) * 3.0)
+		people.append(People.figure(world, at, Kit.face_yaw(at, Vector3(0, 0, 2)), "muse", not b.has("household"), "",
+			["e8d0c0", "8a5a7a", "d8cfa8", "5a6a8a"][k]))
+	out.append(Places.seat(world, Vector3(12.0, 0, 24.0), Vector3(0, 0, 1), "Sit and look out at the ships"))
+	flicker.append_array(_lesbos_lessons(world, work, room, out, spots, garden, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 49.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [sappho] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## Sappho's six points: the Hymn (a beat at Aphrodite's altar), whatever one loves (looking out at
+## the fleet), what love does (a beat at the two facing seats), the garden (at the cold stream),
+## the pieces (a beat: gather the torn papyrus), and the singer's I (at her barbitos).
+static func _lesbos_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, garden: Dictionary,
+		b: Array) -> Array:
+	var flicker: Array = []
+	var gr: Node3D = garden["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("what_one_loves", Vector3(-12.0, 0, 26.0), Vector3(-12.0, 0, 60.0), "Look out at the fleet")
+	stele_stone.call("garden", Areas._at(gr, Vector3(-8.0, 0, 4.0)), Areas._at(gr, Vector3(-11.0, 0, 4.0)), "Listen to the cold stream")
+	stele_stone.call("lyric", Areas._at(gr, Vector3(8.0, 0, 10.0)), Areas._at(gr, Vector3(8.0, 0, 8.0)), "Look at the barbitos")
+
+	# the Hymn, at Aphrodite's altar, with the sparrow chariot coming down the sky
+	var altar := Areas._at(gr, Vector3(0, 0, -4.5))
+	out.append({"kind": "beat", "pos": altar + Vector3(0, 0, 2.2), "work": work, "id": "hymn", "beat": "the_hymn",
+		"text": "Pray at Aphrodite's altar", "note": note.call("hymn"), "cast": {},
+		"marks": {"altar": altar + Vector3(0, 0, 1.3), "chariot": Areas._at(gr, Vector3(3.0, 7.0, -6.0))}})
+	spots["hymn"] = altar + Vector3(0, 0, 2.2)
+
+	# the two seats facing each other: he sits opposite her, and she laughs
+	var seat_a := Areas._at(gr, Vector3(-1.5, 0, 6.0))
+	var seat_b := Areas._at(gr, Vector3(1.5, 0, 6.0))
+	var man := People.figure(world, seat_b + Vector3(0.3, 0, 0), Kit.face_yaw(seat_b, seat_a), "suitor", not b.has("household"), "sit")
+	var girl := People.figure(world, seat_b + Vector3(0.3, 0, 1.0), Kit.face_yaw(seat_b, seat_a), "muse", not b.has("household"), "sit",
+		"e8d0c0")
+	out.append({"kind": "beat", "pos": seat_a + Vector3(-1.2, 0, 1.4), "work": work, "id": "symptoms", "beat": "the_seats",
+		"text": "Sit opposite them", "note": note.call("symptoms"), "cast": {"man": man["root"], "girl": girl["root"]},
+		"marks": {"seat": seat_a + Vector3(-0.4, 0, 0), "girl": seat_b + Vector3(0.3, 1.2, 1.0)}})
+	spots["symptoms"] = seat_a + Vector3(-1.2, 0, 1.4)
+
+	# the pieces: torn strips of papyrus blown about the orchard, to gather
+	var cast := {}
+	var marks := {}
+	var strips := [Vector3(-12, 0, -10), Vector3(11, 0, -14), Vector3(-6, 0, 9), Vector3(14, 0, 3), Vector3(-15, 0, 1)]
+	for k in strips.size():
+		var at := Areas._at(gr, strips[k])
+		var strip := Kit.group(world, at, k * 1.3)
+		Kit.box(strip, Vector3(0, 0.03, 0), Vector3(0.34, 0.01, 0.16), "papyrus" if b.has("walkway") else "ashbed", false)
+		Kit.box(strip, Vector3(0.05, 0.036, 0), Vector3(0.2, 0.004, 0.02), "#2a2218", false)  # a line of writing
+		Kit.unsolid(strip)
+		cast["strip%d" % k] = strip
+		marks["strip%d" % k] = at
+	var gate := Areas._at(gr, Vector3(0, 0, 17.0))
+	out.append({"kind": "beat", "pos": gate, "work": work, "id": "fragments", "beat": "the_pieces", "text": "Gather the torn papyrus",
+		"note": note.call("fragments"), "cast": cast, "marks": marks})
+	spots["fragments"] = gate
 	return flicker

@@ -897,5 +897,218 @@
         "line": "The city's guardians stand at their posts."
       }
     ]
+  },
+  "hesiod-theogony": {
+    "open": true,
+    "place": "ascra",
+    "zone": "helicon",
+    "where": "Ascra, under Mount Helicon",
+    "when": "about 700 BC",
+    "map": "700bc",
+    "map_note": "About 700 BC the Greeks live in small, poor, quarrelling cities, and have begun to send colonies across the sea to Sicily and Italy. The great power is Assyria, whose king Sennacherib rules from Nineveh to the borders of Egypt. The Greeks have only lately learned to write again, taking their letters from the Phoenicians.",
+    "statues": [
+      {
+        "name": "Homer",
+        "beard": "long",
+        "note": "Homer, the other poet the Greeks learned first. A later story set the two against each other in a contest of song; the judge gave the prize to Hesiod, because he sang of peace and work, not of war and slaughter."
+      }
+    ],
+    "greeting": "Come in out of the wind, stranger. I am a farmer, but the Muses found me with my sheep on Helicon and gave me a voice. I sing how the gods were born, and how a man should work.",
+    "greeting_lost": "A shade on a cold farm. The Muses have gone from the mountain and the field is dust. I can still tell you how things began, and how they went wrong.",
+    "gift": "Hesiod cuts you a shoot of laurel, as the Muses once cut one for him. \"Take it. They told me they know how to tell lies that sound true. Learn to tell the difference.\"",
+    "author": "Hesiod",
+    "life": "sang about 700 BC",
+    "book": "Theogony and Works and Days",
+    "portrait": {
+      "skin": "b08868",
+      "hair": "short",
+      "hair_color": "5a4a3a",
+      "beard": "long",
+      "beard_color": "5a4a3a",
+      "robe": "6a5a44",
+      "trim": "4a3a2a",
+      "old": false
+    },
+    "persona": "You are Hesiod, a farmer and poet of Ascra, a poor village under Mount Helicon in Boeotia, about 700 BC. The Muses met you while you kept your sheep on Helicon, gave you a laurel staff and breathed a divine voice into you. You sang the Theogony: first Chaos, then Earth, Tartarus and Eros; Heaven and Earth; Kronos who cut down his father with a jagged sickle and swallowed his children; Rhea's trick with the stone in swaddling clothes; Zeus who overthrew him and rules by justice; Prometheus who stole fire in a fennel stalk, and Pandora made as its price. You sang the Works and Days to your brother Perses, who cheated you of your share of your father's farm by bribing the judges: the two Strifes, Pandora's jar and Hope left under its rim, the five races of men from gold to iron, justice, and the farmer's year by the stars and the crane. You are blunt, practical, pessimistic, fond of proverbs, and you quote your poems in Hugh Evelyn-White's translation.",
+    "summary": "Two poems. The Theogony tells how the world and the gods were born: first Chaos, then Earth and Eros; how sons overthrew fathers, Kronos cutting down Heaven and Zeus overthrowing Kronos, until Zeus rules the world by strength and justice; and how Prometheus stole fire for men and Zeus answered with the first woman, Pandora. The Works and Days, addressed to Hesiod's cheating brother Perses, teaches that there are two kinds of strife, tells the five ages of men from gold down to our own age of iron, praises justice and hard work, and gives the farmer's calendar: when to plough, sow, harvest and sail.",
+    "facts": [
+      "Hesiod farmed at Ascra under Mount Helicon, about 700 BC. He called it bad in winter, hard in summer, and good at no time.",
+      "He is the first Greek poet to put his own name and life into his poem.",
+      "His father had sailed from Cyme in Asia Minor, fleeing poverty, and settled at Ascra.",
+      "He sailed only once, a short crossing to Chalcis, and won a tripod there for a song.",
+      "The Greeks paired him with Homer: Homer for war and heroes, Hesiod for the gods and for work."
+    ],
+    "questions": [
+      "How did the world begin?",
+      "Why did Kronos swallow his children?",
+      "What was left in Pandora's jar?",
+      "Why must a man work?"
+    ],
+    "home": "farm",
+    "props": "the farm at Ascra with its plough team, threshing floor, hives and the great jar; the frieze of the five ages; Mount Helicon with the Muses dancing round the Horse's Spring; the gap of Chaos; Kronos in stone with his sickle; Prometheus chained on his crag",
+    "lesson": [
+      {
+        "id": "muses",
+        "label": "The Muses",
+        "point": "The Muses gave Hesiod a laurel staff and a voice. They told him they know how to tell many lies that sound true, and the truth when they want. His song, he says, is not his own invention."
+      },
+      {
+        "id": "chaos",
+        "label": "First came Chaos",
+        "point": "First came Chaos, a gaping void; then Earth, Tartarus and Eros. The world does not begin with a maker but with a gap, and everything after it is born, one generation from the last."
+      },
+      {
+        "id": "succession",
+        "label": "Sons overthrow fathers",
+        "point": "Kronos cut down his father Heaven and swallowed his own children, but Rhea gave him a stone in swaddling clothes, and Zeus overthrew him. Sons overthrow fathers, until Zeus rules by wit and justice."
+      },
+      {
+        "id": "prometheus",
+        "label": "Prometheus and Pandora",
+        "point": "Prometheus stole fire for men in a fennel stalk. As its price Zeus made Pandora; she opened the jar and let out every trouble on the world. Only Hope stayed inside, under the rim."
+      },
+      {
+        "id": "ages",
+        "label": "The five ages",
+        "point": "Five races of men: gold, silver, bronze, the heroes, and now iron, who never rest from labour and sorrow. Each age but the heroes' is worse than the one before, and we live in the last."
+      },
+      {
+        "id": "work",
+        "label": "Work and justice",
+        "point": "There are two Strifes: one breeds war, the other makes a man envy his neighbour's harvest and work harder. Work is no disgrace; idleness is. The farmer's year runs by the stars and the crane, and it has no shortcuts."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The Horse's Spring runs on Helicon again."
+      },
+      {
+        "what": "leaves",
+        "line": "The laurel and the olives are green, and the barley stands in the field."
+      },
+      {
+        "what": "lamps",
+        "line": "The fire is lit in the farmhouse."
+      },
+      {
+        "what": "household",
+        "line": "The Muses dance again, and the farm has its people."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over Helicon, and Prometheus's crag is lit."
+      },
+      {
+        "what": "teacher",
+        "line": "Hesiod is himself, and his song with him."
+      }
+    ]
+  },
+  "sappho-fragments": {
+    "open": true,
+    "place": "lesbos",
+    "zone": "lesbos",
+    "where": "Sappho's garden on Lesbos",
+    "when": "about 600 BC",
+    "map": "600bc",
+    "map_note": "About 600 BC Lesbos lies just off the coast of Lydia, whose kings at Sardis grow rich on gold and trade with the Greeks. Babylon under Nebuchadnezzar and the Medes have just destroyed Assyria. In Athens Solon is about to write new laws; Greek traders sail to Egypt, where Sappho's brother sells Lesbian wine at Naucratis.",
+    "statues": [
+      {
+        "name": "Alcaeus",
+        "beard": "short",
+        "note": "Alcaeus of Mytilene, Sappho's fellow poet on Lesbos, who wrote drinking songs and songs against the island's tyrants, and was exiled for it. One verse of his seems to speak to her: violet-haired, holy, sweetly smiling Sappho."
+      }
+    ],
+    "greeting": "Sit with me under the apple trees, where the water runs cold. I will sing you what I love, if the wind and the years have left any of it.",
+    "greeting_lost": "A voice in a dead orchard. Most of my songs are gone: nine books, and one whole poem left. Sit anyway. I will sing you the pieces.",
+    "gift": "Sappho gives you a strip of papyrus with half a line on it, the rest torn away. \"Keep it. That is how everyone will read me: in pieces, and filling in the rest with their own hearts.\"",
+    "author": "Sappho",
+    "life": "about 630 - 570 BC",
+    "book": "Poems",
+    "portrait": {
+      "skin": "d0a888",
+      "hair": "long",
+      "hair_color": "2a1a12",
+      "beard": "none",
+      "robe": "7a4a6a",
+      "trim": "d8b060",
+      "old": false
+    },
+    "persona": "You are Sappho of Mytilene on Lesbos, about 600 BC, a poet who sings her own songs to the barbitos, a deep lyre. You sing of love and desire, of the girls and women of your circle, of Aphrodite, of weddings, of the moon and the stars, of your brother Charaxus who wasted money on a courtesan in Egypt, and of your daughter Cleis. Your one whole surviving poem calls Aphrodite down in her chariot drawn by sparrows to be your ally in love. In another you watch a girl laughing with a man and your body fails you: tongue broken, fire under the skin, eyes dark, ears ringing. In another (found on papyrus in 1914) you say the loveliest thing on earth is not horsemen or soldiers or ships but whatever one loves, as Helen left everything for love. You know most of your nine books are lost, and speak of it with calm. You speak simply and warmly, and you quote your fragments in Henry Wharton's literal prose translation (1885), whose numbers differ from modern ones; the horsemen poem was found after him, so you give it in your own plain words.",
+    "summary": "The poems of Sappho, the greatest lyric poet of Greece, survive only in pieces: one complete poem, the Hymn to Aphrodite, a few longer fragments, and many single lines quoted by later writers or found on torn papyrus. She sings in her own voice of love and longing: calling Aphrodite to be her ally, describing what love does to the body as she watches the girl she loves, saying the loveliest thing on earth is whatever one loves, and fixing small moments exactly: cold water through apple boughs, the moon among the stars, the last apple on the highest branch.",
+    "facts": [
+      "Sappho lived in Mytilene on Lesbos, about 630-570 BC. She was famous across Greece in her own lifetime.",
+      "Scholars at Alexandria gathered her poems into nine books. Only one whole poem survives.",
+      "Most of what we have was quoted by later writers, or found on torn papyrus in Egyptian rubbish heaps.",
+      "Her poem about the loveliest thing on earth was found on a papyrus and first printed in 1914.",
+      "Her stanza, three long lines and a short one, is still called the Sapphic stanza."
+    ],
+    "questions": [
+      "Why do you call on Aphrodite?",
+      "What is the loveliest thing on earth?",
+      "What does love do to you?",
+      "Where have your poems gone?"
+    ],
+    "home": "garden",
+    "props": "the apple orchard round Aphrodite's shrine, the altar with its incense, the cold stream through the apple boughs, the sparrow chariot in the sky, the two seats facing each other, the barbitos on the bench, the fleet far out on the sea, and the torn strips of papyrus",
+    "lesson": [
+      {
+        "id": "hymn",
+        "label": "The Hymn to Aphrodite",
+        "point": "In her one whole poem Sappho calls Aphrodite down in her sparrow-drawn chariot. The goddess smiles and asks who wrongs her: she who flees will soon pursue. Love is a war, and the goddess an ally."
+      },
+      {
+        "id": "what_one_loves",
+        "label": "Whatever one loves",
+        "point": "Some say the loveliest thing on the black earth is an army of horsemen, or of foot soldiers, or a fleet of ships. Sappho says it is whatever one loves: Helen left husband, child and parents for love."
+      },
+      {
+        "id": "symptoms",
+        "label": "What love does",
+        "point": "Watching the girl she loves laugh with a man, Sappho loses her voice: her tongue breaks, a thin fire runs under her skin, her eyes go dark, her ears ring. She tells love from inside the body."
+      },
+      {
+        "id": "garden",
+        "label": "The exact moment",
+        "point": "Sappho's world is small and exact: cold water through apple boughs, sleep streaming from quivering leaves, the moon putting out the stars, the last apple on the highest bough. Her poems keep single moments sharp."
+      },
+      {
+        "id": "fragments",
+        "label": "Pieces",
+        "point": "Nine books of her songs were gathered; one whole poem survives, with lines quoted by later writers or found on torn papyrus. We read Sappho mostly in pieces, and the gaps are part of the poem."
+      },
+      {
+        "id": "lyric",
+        "label": "The singer's I",
+        "point": "Sappho sang her songs herself, to the barbitos, in the first person: I love, I burn, I am alone. Epic sang of heroes; lyric sings of what one person feels, and makes it everyone's."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The cold water murmurs through the apple boughs again."
+      },
+      {
+        "what": "leaves",
+        "line": "The apple trees are in leaf, with one apple on the topmost bough."
+      },
+      {
+        "what": "lamps",
+        "line": "Frankincense smokes on Aphrodite's altar."
+      },
+      {
+        "what": "household",
+        "line": "The women of her circle are back in the garden."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over the sea, and the sparrows draw the goddess down."
+      },
+      {
+        "what": "teacher",
+        "line": "Sappho is herself, and sings."
+      }
+    ]
   }
 }
