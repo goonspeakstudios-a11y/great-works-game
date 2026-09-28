@@ -224,6 +224,18 @@ static func material(kind: String) -> Material:
 			world_tex.call(_papyrus(), 2.0)
 		"sand":
 			world_tex.call(_noise(Color("d8c49a"), Color("c4ae82"), Color("e8d8b4"), 67), 0.35)
+		"dune":  # the open desert, a warmer, deeper sand than the beach
+			world_tex.call(_noise(Color("d6b47a"), Color("c09a62"), Color("e6c890"), 97), 0.18)
+		"limestone":  # Egyptian dressed limestone in coursed blocks
+			world_tex.call(_blocks(Color("dcc8a0"), Color("b09a70"), 8, 4), 0.5)
+		"casing":  # the smooth white Tura limestone of a pyramid's casing
+			world_tex.call(_noise(Color("ece0c0"), Color("ddd0aa"), Color("f8f0dc"), 91), 0.3)
+		"hieroglyphs":  # a wall or shaft cut with columns of painted hieroglyphs
+			world_tex.call(_hieroglyphs(), 0.6)
+		"egypt_band":  # painted bands of blue, gold, red and green, for cornices, capitals and collars
+			world_tex.call(_egypt_band(), 1.2)
+		"nemes":  # the pharaoh's striped headcloth, gold and blue
+			world_tex.call(_nemes(), 4.0)
 		"grass":  # greener ground than the dry earth of Attica: Troy's plain, the Boeotian fields
 			world_tex.call(_noise(Color("6e8a48"), Color("58743a"), Color("86a05a"), 73), 0.35)
 		"furrows":  # a ploughed field, the ridges running along X
@@ -640,6 +652,61 @@ static func _rosettes() -> ImageTexture:
 			elif (x + y) % 16 == 0 or (x - y + 16) % 16 == 0:
 				c = Color("223c58")
 			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## Columns of hieroglyphs on pale stone: registers divided by thin lines, each full of small
+## signs painted blue, red, green, ochre and black.
+static func _hieroglyphs() -> ImageTexture:
+	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 311
+	var paint := [Color("2a5a8a"), Color("a03020"), Color("3a7a5a"), Color("c08a30"), Color("2a2218")]
+	img.fill(Color("d8c49a"))
+	for y in 32:
+		for x in 32:
+			if rng.randf() < 0.1:
+				img.set_pixel(x, y, Color("cbb68a"))
+	for col in 4:
+		var x0 := col * 8
+		for y in 32:
+			img.set_pixel(x0, y, Color("8a7450"))  # the line between registers
+		var y0 := 1
+		while y0 < 30:
+			var h := rng.randi_range(2, 4)
+			var w := rng.randi_range(2, 5)
+			var c: Color = paint[rng.randi() % paint.size()]
+			var shape := rng.randi() % 3
+			for yy in h:
+				for xx in w:
+					var keep := shape == 0 or (shape == 1 and (xx + yy) % 2 == 0) or (shape == 2 and (yy == 0 or xx == 0 or xx == w - 1))
+					if keep and y0 + yy < 32:
+						img.set_pixel(x0 + 2 + xx, y0 + yy, c)
+			y0 += h + 2
+	return ImageTexture.create_from_image(img)
+
+
+## Egyptian painted bands, horizontal: blue, gold, red, green, each edged in black.
+static func _egypt_band() -> ImageTexture:
+	var img := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	var bands := [Color("2a5a9a"), Color("d8a840"), Color("a8342a"), Color("3a8a6a")]
+	for y in 16:
+		for x in 16:
+			var c: Color = bands[(y / 4) % 4]
+			if y % 4 == 3:
+				c = Color("1a1410")
+			elif y % 4 == 1 and x % 4 == 0:
+				c = c.lightened(0.3)  # a row of small painted marks
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
+
+
+## The nemes headcloth: stripes of gold and deep blue.
+static func _nemes() -> ImageTexture:
+	var img := Image.create(8, 8, false, Image.FORMAT_RGBA8)
+	for y in 8:
+		for x in 8:
+			img.set_pixel(x, y, Color("d8b048") if (y / 2) % 2 == 0 else Color("24407a"))
 	return ImageTexture.create_from_image(img)
 
 

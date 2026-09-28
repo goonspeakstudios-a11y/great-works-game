@@ -6,7 +6,8 @@ extends RefCounted
 ## (beat.gd, content/greece/beats.json): an interactable {"kind": "beat"} that also carries its
 ## lesson point, so it counts like a stone.
 ##   domus()   #4 the Rhetorica ad Herennium: a house in Rome, its memory house, the court in the Forum
-##   museum()  #5 Euclid: the Museum at Alexandria, Proposition 1 on the sand, Proposition 47 in tiles
+##   museum()  #5 Euclid: the Museum at Alexandria in Egypt (pyramids, sphinxes, a pylon), Proposition 1 on
+##             the sand, Proposition 47 in tiles
 ##   troy()    #6 Homer: the camp by the ships, the walls of Troy, and the voyage home to Ithaca
 ##   academy() #7 Plato's Republic: the grove, the council table over the city in speech, and round it
 ##             the Republic's scenes (Cephalus's house, Gyges' chasm, the line, the cave, Er's meadow)
@@ -30,6 +31,7 @@ const People := preload("res://scripts/hall/kit_greek_people.gd")
 const Props := preload("res://scripts/hall/kit_greek_props.gd")
 const Thinkers := preload("res://scripts/hall/kit_greek_thinkers.gd")
 const City := preload("res://scripts/hall/city.gd")
+const Egypt := preload("res://scripts/hall/kit_egypt.gd")
 
 
 ## A place's name as the corner shows it.
@@ -285,18 +287,20 @@ static func _in_world(node: Node3D, world: Node3D) -> Vector3:
 ## Proposition 47 in tiles. Lost, the palms are dead, the colonnades broken, sand drifts over the
 ## figures, and the scholars are shades.
 static func museum(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
-	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 8), 34.0)  # the low sun, so the figures on the sand show
-	Kit.plateau(world, 70.0, "earth", false)
-	Kit.sea(world, -2.0)
+	var b := Places._sky(world, room, stage, "desert", Vector3(0, 0, 8), 34.0)  # the sun not too high, so the figures on the sand show
+	Kit.plateau(world, 70.0, "dune", false)
+	Kit.sea(world, -2.0)  # the harbour and the open sea, to the north under the Pharos
+	Kit.box(world, Vector3(0, -1.3, 330.0), Vector3(1600.0, 0.2, 960.0), "dune", false)  # the desert, everywhere else
 	var flicker: Array = []
 	var out: Array = []
 	var spots := {}
 	var sway: Array = []
 	var people: Array = []
 	var birds: Array = Kit.flock(world, Vector3(0, 0, 6), 5, 16.0, 12.0) if b.has("leaves") else []
-	_arrival(world, room, out, spots, flicker, 44.0, 25.0, "paving")
+	_arrival(world, room, out, spots, flicker, 58.0, 30.0, "limestone")
+	_egypt(world, b, flicker, sway, people)
 
-	var court := Areas.museum_court(world, Vector3(0, 0, 8), 0.0, b)
+	var court := Areas.museum_court(world, Vector3(0, 0, 8), 0.0, b)  # the Museum: Egyptian porticos round a Greek garden
 	flicker.append_array(court["flicker"])
 	sway.append_array(court["sway"])
 	people.append_array(court["people"])
@@ -309,16 +313,49 @@ static func museum(world: Node3D, work: String, room: Dictionary, stage: int = 0
 	var one := Areas.prop_one(world, Vector3(-38, 0, 6), 0.0, b)
 	flicker.append_array(one["flicker"])
 	sway.append_array(one["sway"])
-	Kit.box(world, Vector3(-19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "paving" if b.has("walkway") else "sand", false)
+	Kit.box(world, Vector3(-19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "limestone" if b.has("walkway") else "sand", false)
 	var tiles := Areas.prop_forty_seven(world, Vector3(38, 0, 6), 0.0, b)
 	flicker.append_array(tiles["flicker"])
 	sway.append_array(tiles["sway"])
-	Kit.box(world, Vector3(19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "paving" if b.has("walkway") else "sand", false)
+	Kit.box(world, Vector3(19.5, 0.012, 22.0), Vector3(33.0, 0.02, 2.6), "limestone" if b.has("walkway") else "sand", false)
 
 	flicker.append_array(_museum_lessons(world, work, room, out, spots, one, tiles, b))
-	out.append(Places.seat(world, Vector3(0, 0, 30.0), Vector3(0, 0, 1), "Sit and look out to sea"))
-	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 41.0), "yaw": 0.0, "spots": spots,
+	out.append(Places.seat(world, Vector3(-12.0, 0, 44.0), Vector3(-1, 0, 0.2), "Sit and look out at the pyramids"))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 55.0), "yaw": 0.0, "spots": spots,
 		"flicker": flicker, "people": people, "restored": 0, "sway": sway, "birds": birds, "back": b}
+
+
+## Egypt round the Museum: the desert with its dunes and, far off to the west, the pyramids; the
+## way in as an avenue of sphinxes to a temple pylon, with obelisks and two colossal Ptolemies in
+## front of it (such statues stood by the harbour of Alexandria); a lotus pool with papyrus; and the
+## palms. The Ptolemies ruled Egypt as pharaohs, and their Greek city looked it.
+static func _egypt(world: Node3D, b: Array, flicker: Array, sway: Array, people: Array) -> void:
+	var whole := b.has("walkway")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 305
+	for i in 40:  # the dunes of the desert round the plateau
+		var a := rng.randf_range(-0.15 * PI, 1.15 * PI)
+		var r := rng.randf_range(95.0, 420.0)
+		var at := Vector3(cos(a) * r, -1.2, sin(a) * r)
+		if at.z < -120.0:
+			continue
+		Egypt.dune(world, at, rng.randf_range(18.0, 55.0), rng.randf() * PI)
+	for p: Array in [[Vector3(-300, -1.2, 40), 150.0, 96.0], [Vector3(-410, -1.2, 150), 118.0, 76.0], [Vector3(-230, -1.2, 230), 64.0, 42.0]]:
+		Egypt.pyramid(world, p[0], p[1], p[2], 0.2, whole)
+	Egypt.sphinx(world, Vector3(-205, -1.2, 70), PI / 2.0 + 0.3, 5.0, whole)  # the great one, by the pyramids
+	for k in 5:  # the avenue of sphinxes along the way in
+		var z := 36.0 + k * 4.5
+		for side: float in [-1.0, 1.0]:
+			Egypt.sphinx(world, Vector3(side * 5.2, 0, z), -side * PI / 2.0, 0.8, whole)
+	Egypt.pylon(world, Vector3(0, 0, 26.5), 0.0, 26.0, 12.0, whole)
+	for side: float in [-1.0, 1.0]:
+		Egypt.obelisk(world, Vector3(side * 16.0, 0, 30.0), 17.0, whole)
+		Egypt.colossus(world, Vector3(side * 4.4, 0, 31.2), 0.0, 8.0, whole)
+		sway.append(Greek.date_palm(world, Vector3(side * 11.0, 0, 50.0), 8.5, b.has("leaves")))
+		sway.append(Greek.date_palm(world, Vector3(side * 22.0, 0, 38.0), 9.5, b.has("leaves")))
+	Egypt.lotus_pool(world, Vector3(13.0, 0, 44.0), 3.2, b.has("water"), b.has("leaves"))
+	for p: Vector3 in [Vector3(-36, 0, 30), Vector3(36, 0, 32), Vector3(-30, 0, -16), Vector3(30, 0, -18)]:
+		Egypt.papyrus(world, p, b.has("leaves"), 11)
 
 
 ## Euclid's six stones: the definitions, the postulates and the common notions in the court, the
