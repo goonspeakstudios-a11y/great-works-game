@@ -104,9 +104,10 @@ func test_plural_filler_words_are_ignored() -> void:
 
 ## The books whose places are built so far; every other gateway on the Shore is sealed.
 const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-rest-of-the-organon", "rhetorica-ad-herennium", "euclid-elements",
+	"homer-the-iliad",
 	"aristotle-nicomachean-ethics"]
 ## The places built in sprint 4 (places_greek.gd), each tested like the villa and the Lyceum.
-const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements"]
+const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad"]
 
 
 func test_rooms_follow_the_reading_list() -> void:
@@ -934,4 +935,33 @@ func test_every_beat_of_the_new_places_plays_to_its_end() -> void:
 			hall._close_panels()
 			if it.has("id"):
 				check(hall.progress.understood(work).has(it["id"]), "%s/%s counts '%s'" % [work, it["beat"], it["id"]])
+	hall.free()
+
+
+## The Odyssey's voyage: from every landing the black ship sails to every other, and you step
+## ashore on each island; at the edge of Ocean the dead come for the blood while you are near.
+func test_the_black_ship_sails_home_by_every_island() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.travel("homer-the-iliad")
+	var sea: Dictionary = load("res://scripts/hall/places_greek.gd").SEA
+	var ferries: Array = hall.interactables.filter(func(i): return i["kind"] == "ferry")
+	check_eq(ferries.size(), sea.size() * (sea.size() - 1), "from each landing, a way to each of the others")
+	for leg in [["troy", "cyclops"], ["cyclops", "sirens"], ["sirens", "ocean"], ["ocean", "ithaca"], ["ithaca", "troy"]]:
+		var take: Dictionary = ferries.filter(func(i): return i["from"] == leg[0] and i["to"] == leg[1])[0]
+		hall.activate(take)
+		for k in 200:
+			hall._animate_boats(0.5)
+		var there: Vector3 = sea[leg[1]]["at"]
+		check(take["boat"]["root"].position.distance_to(there) < 0.1, "it sails from %s to %s" % leg)
+		hall.stand_up()
+		check(not hall.player.seated, "you step ashore at %s" % leg[1])
+	var c: Dictionary = hall.creep[0]
+	var before: float = c["node"].global_position.distance_to(c["trench"])
+	hall.player.position = c["trench"] + Vector3(0, 0.05, 8.0)
+	for k in 20:
+		hall._animate_creep(0.5)
+	check(c["node"].global_position.distance_to(c["trench"]) < before, "the dead come toward the blood while you are near")
 	hall.free()

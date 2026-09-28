@@ -89,6 +89,18 @@ BOOKS = {
         "chapter_label": "Prop.",
         "chapter_names": {"PRINCIPLES": "Definitions, Postulates, Common Notions"},
     },
+    "homer-the-iliad": {  # both poems, as the reading takes both
+        "title": "Homer",
+        "translation": "tr. Samuel Butler (Iliad 1898, Odyssey 1900), public domain",
+        "parts": [
+            {"title": "The Iliad", "urls": [["https://www.gutenberg.org/cache/epub/2199/pg2199.txt", ""]],
+             "start": r"(?m)^\s*BOOK I\.\s*$(?![\s\S]{0,200}BOOK II\.)", "end": r"\*\*\* ?END OF", "chapter": r"^\s*BOOK ([IVXL]+)\.\s*$",
+             "chapter_label": "Book"},
+            {"title": "The Odyssey", "urls": [["https://www.gutenberg.org/cache/epub/1727/pg1727.txt", ""]],
+             "start": r"(?m)^\s*BOOK I\s*$(?![\s\S]{0,200}BOOK II\s*$)", "end": r"\*\*\* ?END OF", "chapter": r"^\s*BOOK ([IVXL]+)\.?\s*$",
+             "chapter_label": "Book"},
+        ],
+    },
     "aristotle-nicomachean-ethics": {
         "file": "Aristotle - Nicomachean Ethics (tr. Chase).txt",
         "title": "Nicomachean Ethics",

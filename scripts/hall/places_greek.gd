@@ -7,6 +7,7 @@ extends RefCounted
 ## lesson point, so it counts like a stone.
 ##   domus()   #4 the Rhetorica ad Herennium: a house in Rome, its memory house, the court in the Forum
 ##   museum()  #5 Euclid: the Museum at Alexandria, Proposition 1 on the sand, Proposition 47 in tiles
+##   troy()    #6 Homer: the camp by the ships, the walls of Troy, and the voyage home to Ithaca
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -387,3 +388,200 @@ static func _around(centre: Vector3, r: float, count: int = 12) -> Array:
 		var a := TAU * k / count
 		pts.append(centre + Vector3(cos(a), 0, sin(a)) * r)
 	return pts
+
+
+# ---------- #6 Homer, the Iliad and the Odyssey ----------
+
+## An island in the sea: a rock rising out of the water, flat on top, with an unseen fence round
+## its edge (as the plateau has) so no one walks off into the sea.
+static func _island(world: Node3D, centre: Vector3, radius: float, top: String) -> void:
+	Kit.cylinder(world, centre + Vector3(0, -30, 0), radius, 30.0, "rock", true, 14)
+	Kit.cylinder(world, centre + Vector3(0, -0.1, 0), radius - 0.3, 0.1, top, false, 14)  # flush with the ground, so floors built on it show
+	Kit.cylinder(world, centre + Vector3(0, -34, 0), radius + 5.0, 30.0, "rock", false, 11)
+	var n := 24
+	for i in n:
+		var a := TAU * i / n
+		var at := centre + Vector3(cos(a), 0, sin(a)) * (radius - 0.8)
+		var fence := BoxShape3D.new()
+		fence.size = Vector3(2.0 * PI * (radius - 0.8) / n + 0.2, 8.0, 0.5)
+		Kit.solid(world, fence, at + Vector3(0, 4.0, 0), Vector3(0, -a + PI / 2.0, 0))
+
+
+## The sea voyage of the Odyssey: the landings the black ship sails between, always by way of the
+## open sea at SEA_JUNCTION. "off" is the step ashore; each landing lists where its ferry stones
+## stand (one for each other landing).
+const SEA_JUNCTION := Vector3(0, -0.4, -150)
+const SEA := {
+	"troy": {"name": "the beach of Troy", "at": Vector3(0, -0.4, -104), "off": Vector3(0, 0, 6.5)},
+	"cyclops": {"name": "the island of the Cyclops", "at": Vector3(-86, -0.4, -200), "off": Vector3(-6.5, 0, 0)},
+	"sirens": {"name": "the Sirens' strait", "at": Vector3(-18, -0.4, -168), "off": Vector3(0, 0, -5.0)},
+	"ocean": {"name": "the edge of Ocean", "at": Vector3(0, -0.4, -262), "off": Vector3(0, 0, -6.5)},
+	"ithaca": {"name": "Ithaca", "at": Vector3(86, -0.4, -200), "off": Vector3(6.5, 0, 0)},
+}
+
+
+## The plain of Troy and the way home, as Homer sings it: Homer by a fire in the camp; the black
+## ships drawn up on the beach, the place of assembly, Achilles' hut, Hephaestus's forge with the
+## great shield laid out to walk; the walls of Troy with the Scaean gate and the springs; and from
+## the beach a black ship sailing to the Cyclops' island, past the Sirens, to the edge of Ocean
+## where the dead come to the blood, and home to Ithaca. Each point is a beat, played as the
+## scene's hero (Achilles, Hector, Priam, Odysseus). Lost: the ships rotten, the walls down, the
+## Achaeans and the Cyclops dead, the fires cold, the sea grey.
+static func troy(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, -20), 60.0)
+	Kit.plateau(world, 100.0, "sand", false)
+	Kit.sea(world, -0.4)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, -40), 6, 20.0, 14.0) if b.has("leaves") else []
+	_arrival(world, room, out, spots, flicker, 26.0, -16.0, "path")
+
+	# Homer by his fire, between the camp and the city
+	var fire := Kit.hearth(world, Vector3(0, 0, -21.0), b.has("lamps"))
+	if fire:
+		flicker.append(fire)
+	var homer := _teacher(world, room, b, stage, Vector3(0, 0, -23.0), 0.0, Vector3(0, 0, -19.4), out, spots, "Sit with")
+	Kit.lyre(world, Vector3(0.7, 0.9, -22.8), 0.0)
+	_study(world, room, out, spots, [], Vector3(-4.2, 1.6, -24.0), 0.3, Vector3(-3.6, 0, -21.8), Vector3(3.6, 0, -22.0), Vector3(3.6, 0, -20.8))
+
+	# the camp by the ships (Iliad 1), Achilles' hut (9, 24), the forge (18), the walls (6, 22)
+	var camp := Areas.ships(world, Vector3(0, 0, -70), 0.0, b)
+	var hut := Areas.achilles_hut(world, Vector3(50, 0, -45), 0.0, b)
+	var smithy := Areas.forge(world, Vector3(-52, 0, -42), 0.0, b)
+	var city := Areas.walls(world, Vector3(0, 0, 60), PI, b)
+	for a: Dictionary in [camp, hut, smithy, city]:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+	# Andromache and the nurse with the boy, and the old oak, before the Scaean gate
+	var gate := Vector3(0, 0, 62.0)
+	var andromache := People.figure(world, gate + Vector3(-1.6, 0, 1.0), PI, "andromache", not b.has("household"))
+	people.append(andromache)
+	sway.append(Kit.plane_tree(world, gate + Vector3(9.0, 0, -4.0), 1.2, b.has("leaves")))
+
+	# the voyage home
+	var islands := {"cyclops": [Vector3(-120, 0, -200), 32.0, "rock"],
+		"sirens": [Vector3(-18, 0, -176), 6.0, "rock"], "ocean": [Vector3(0, 0, -300), 36.0, "ashbed"],
+		"ithaca": [Vector3(120, 0, -200), 32.0, "grass" if b.has("leaves") else "ashbed"]}
+	for k in islands:
+		_island(world, islands[k][0], islands[k][1], islands[k][2])
+	var cave := Areas.cyclops_cave(world, Vector3(-122, 0, -200), PI / 2.0, b)
+	var dead := Areas.underworld(world, Vector3(0, 0, -305), 0.0, b)
+	var home := Areas.ithaca_hall(world, Vector3(124, 0, -200), -PI / 2.0, b)
+	var strait := Areas.sirens(world, Vector3(-40, 0, -150), PI, b)
+	for a: Dictionary in [cave, dead, home, strait]:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+	var boats: Array = []
+	var ship := Greek.ship(world, SEA["troy"]["at"] + Vector3(0, -1.2, 0), PI, "pentekonter", b.has("walkway"), false, b.has("walkway"))
+	ship["speed"] = 10.0
+	ship["junction"] = SEA_JUNCTION
+	ship["landings"] = SEA
+	ship["landing"] = "troy"
+	ship["route"] = []
+	ship["root"].position.y = SEA["troy"]["at"].y
+	boats.append(ship)
+	for from in SEA:
+		var at: Vector3 = SEA[from]["at"]
+		var ashore: Vector3 = Vector3(at.x, 0, at.z) + SEA[from]["off"]
+		var side := Vector3(SEA[from]["off"].z, 0, -SEA[from]["off"].x).normalized()
+		var k := 0
+		for to in SEA:
+			if to == from:
+				continue
+			out.append({"kind": "ferry", "pos": ashore + side * (-3.0 + k * 2.0), "boat": ship, "from": from, "to": to,
+				"text": "Sail to %s" % SEA[to]["name"]})
+			k += 1
+	if not b.has("water"):
+		out.append({"kind": "look", "pos": Vector3(4.0, 0, -97.0), "text": "Look at the sea",
+			"note": "The sea is grey and still, as if it had forgotten how to move. The black ship waits at the water's edge all the same."})
+
+	flicker.append_array(_troy_beats(world, work, room, out, spots, camp, hut, smithy, city, cave, dead, home, strait, b))
+	out.append(Places.seat(world, Vector3(10.0, 0, -95.0), Vector3(0, 0, -1), "Sit and look out to sea"))
+	var creep: Array = []
+	for s in dead["shades"]:
+		creep.append({"node": s["node"], "home": s["home"], "trench": Areas._at(dead["root"], dead["trench"]) if dead["trench"] is Vector3 else s["trench"]})
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 23.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [homer] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads,
+		"boats": boats, "creep": creep, "back": b}
+
+
+## Homer's eight points, each a beat seen through its hero's eyes, and the two moments that are not
+## points (the Sirens, the dead at the trench).
+static func _troy_beats(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, camp: Dictionary,
+		hut: Dictionary, smithy: Dictionary, city: Dictionary, cave: Dictionary, dead: Dictionary, home: Dictionary,
+		strait: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var beat := func(area: Dictionary, name: String, id: String, script: String, text: String, cast: Dictionary = {},
+			marks: Dictionary = {}, after: String = "") -> Dictionary:
+		var at: Vector3 = area["beats"][name]["at"]
+		var it := {"kind": "beat", "pos": at, "start": at, "work": work, "beat": script, "text": text, "cast": cast, "marks": marks}
+		if id != "":
+			it["id"] = id
+			it["note"] = Places._lesson(room, id).get("point", "")
+		else:
+			it["after"] = after
+		out.append(it)
+		spots[script] = at
+		return it
+
+	# Iliad 1: Athena, who comes behind you and seizes your hair
+	var quarrel: Vector3 = camp["beats"]["athena_seizes_hair"]["at"]
+	var athena := People.figure(world, quarrel + Vector3(0, 0, 1.4), PI, "athena", not b.has("teacher"))
+	athena["root"].visible = false
+	beat.call(camp, "athena_seizes_hair", "menis", "menis", "Stand in the assembly as Achilles", {"athena": athena["root"]})
+
+	# Iliad 6: the helmet laid on the ground
+	var gate_at := Vector3(0, 0, 62.0)
+	var helmet := Kit.group(world, gate_at + Vector3(0.8, 0, 0.6))
+	Kit.blob(helmet, Vector3(0, 0.12, 0), 0.16, "bronze" if b.has("walkway") else "verdigris", Vector3(1.0, 1.1, 1.1), 7)
+	Kit.box(helmet, Vector3(0, 0.3, 0), Vector3(0.04, 0.12, 0.32), "#2a2a2a", false)
+	helmet.visible = false
+	out.append({"kind": "beat", "pos": gate_at, "start": gate_at, "work": work, "id": "kleos", "beat": "kleos",
+		"text": "Meet Andromache at the gate, as Hector", "cast": {"helmet": helmet}, "marks": {},
+		"note": Places._lesson(room, "kleos").get("point", "")})
+	spots["kleos"] = gate_at
+
+	# Iliad 9 and 24, at Achilles' hut
+	beat.call(hut, "embassy", "time", "time", "Receive the embassy, as Achilles")
+	beat.call(hut, "through_the_camp", "pity", "pity", "Go to Achilles by night, as Priam", {}, {"hut": hut["beats"]["kneel"]["at"]})
+
+	# Iliad 18: the shield, laid out to walk ring by ring
+	var shield: Vector3 = smithy["beats"]["the_armour"]["at"]
+	var rings := {}
+	for k in 4:
+		var r: float = [2.5, 5.0, 8.0, 10.5][k]
+		var a := 0.6 + k * 1.3
+		rings["ring%d" % k] = shield + Vector3(cos(a), 0, sin(a)) * r
+	beat.call(smithy, "the_armour", "shield", "shield", "Walk the shield, as Achilles", {}, rings)
+
+	# Iliad 22: along the wall after Hector, past the springs
+	var chase := [Vector3(34, 0, 60), Vector3(-34, 0, 60), Vector3(-22, 0, 56.5)]
+	beat.call(city, "three_times_round", "fate", "fate", "Chase Hector round the walls, as Achilles", {},
+		{"chase": chase.slice(0, 2), "springs": chase[2]})
+
+	# Odyssey 9: the stone, the great ram, the way out
+	var rams: Array = cave["rams"]
+	var mouth := (cave["root"] as Node3D).transform * Vector3(0, 0, 22.0)
+	beat.call(cave, "nobody", "metis", "metis", "Face the Cyclops, as Odysseus", {"stone": cave["stone"]},
+		{"ram": _in_world(rams[0]["root"], world), "mouth": mouth})
+
+	# Odyssey 21-23: the bow, and the bed
+	beat.call(home, "string_the_bow", "nostos", "nostos", "Take up the bow, as Odysseus", {}, {"bed": home["beats"]["the_bed"]["at"]})
+
+	# not points: the Sirens, and the dead at the trench (the place's horror)
+	var mast := Vector3(-18, 0, -178)
+	Kit.cylinder(world, mast, 0.14, 7.0, "wood" if b.has("walkway") else "deadwood", true, 6)  # a mast set up on the rock
+	Kit.box(world, mast + Vector3(0, 2.2, 0), Vector3(1.6, 0.1, 0.1), "wood" if b.has("walkway") else "deadwood", false)
+	out.append({"kind": "beat", "pos": mast + Vector3(0, 0, 1.0), "start": mast + Vector3(0, 0, 0.6), "face": Vector3(-60, 0, -140),
+		"work": work, "beat": "sirens", "text": "Hear the Sirens, bound to the mast", "cast": {}, "marks": {},
+		"after": "The song is gone astern. Circe told you: whoever hears the Sirens without being bound never sees home again."})
+	beat.call(dead, "hold_the_sword", "", "trench", "Hold the dead back from the blood, as Odysseus", {}, {},
+		"The dead go back into the dark. Teiresias has told you the way home, and what it will cost.")
+	return flicker

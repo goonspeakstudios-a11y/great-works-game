@@ -70,7 +70,10 @@ const ZONES := {
 		{"file": "troy_voice", "db": -10.0, "music": true, "needs": "household"},
 		{"file": "troy_phorminx", "db": -10.0, "music": true, "needs": "teacher"},
 		{"file": "troy_drum", "db": -10.0, "music": true, "needs": "soldiers"},
-		{"file": "waves", "db": -20.0},
+		{"file": "waves", "db": -20.0, "needs": "water"},  # the sea moves again
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "fire", "db": -26.0, "needs": "lamps"},  # the fires along the ships
+		{"file": "hooves", "db": -27.0, "needs": "walkway"},  # chariots on the plain
 		{"file": "wind", "db": -24.0, "loud_db": -15.0, "loud_until": "sun"}]},
 	# The theatre (the tragedians): the aulos over its drone pipe, the chorus, the heart drum.
 	"theatre": {"bells": false, "layers": [

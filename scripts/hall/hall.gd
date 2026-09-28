@@ -77,6 +77,7 @@ var sway: Array = []  # tree crowns the breeze stirs
 var blink: Array = []  # the far toad's eyes, which close once every BLINK_EVERY seconds
 var drift: Array = []  # things hanging in the void that bob and turn (Kit.drifting)
 var ground: Array = []  # where you can stand, if the place says (the Nexus): discs and rects in x/z
+var creep: Array = []  # the dead of the underworld: {node, home, trench}; they come for the blood while you are near
 var _arrival: Array = [Vector3.ZERO, 0.0]  # where you came in, and facing which way
 var _falling_since := -1.0  # when you went over the edge (-1: on solid ground)
 var _fall_fx: Node3D  # the stars rushing past while you fall
@@ -425,6 +426,7 @@ func _load_place(to: String, keep: bool = false) -> void:
 	blink = built.get("blink", [])
 	drift = built.get("drift", [])
 	ground = built.get("ground", [])
+	creep = built.get("creep", [])
 	flicker.clear()
 	for l in built["flicker"]:
 		if l:
@@ -1362,6 +1364,7 @@ F: Yes" if _ready_to_land() else ""
 
 ## Swallows wheel overhead, the trees stir, and the toad hops along after you.
 func _animate_life(delta: float) -> void:
+	_animate_creep(delta)
 	for b in birds:
 		b["angle"] += b["speed"] * delta
 		var a: float = b["angle"]
@@ -1394,6 +1397,29 @@ func _animate_life(delta: float) -> void:
 
 
 ## Soldiers march their circuit in step, the whole block turning at each corner.
+## The dead at the edge of Ocean (Odyssey 11): while you are near, they drift in from the dark toward
+## the blood in the trench, and stop at its edge; while you hold the sword over it (a beat), they
+## shrink back to where they stood. Far off, they wait.
+func _animate_creep(delta: float) -> void:
+	for c in creep:
+		var node: Node3D = c["node"]
+		if not is_instance_valid(node):
+			continue
+		var trench: Vector3 = c["trench"]
+		var near := Vector2(player.global_position.x - trench.x, player.global_position.z - trench.z).length() < 30.0
+		var home: Vector3 = c["home"]
+		var want := home
+		if near and beat == null:
+			want = trench + (home - trench).normalized() * 2.2
+		var to := want - node.global_position
+		to.y = 0.0
+		if to.length() < 0.05:
+			continue
+		var speed := 1.6 if beat != null else 0.45
+		node.global_position += to.normalized() * minf(to.length(), speed * delta)
+		node.rotation.y = lerp_angle(node.rotation.y, atan2(to.x, to.z), minf(1.0, delta * 2.0))
+
+
 func _animate_squads(delta: float) -> void:
 	for sq in squads:
 		var root: Node3D = sq["root"]

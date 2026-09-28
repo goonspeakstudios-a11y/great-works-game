@@ -187,5 +187,401 @@
     }
    ]
   }
+ },
+ "homer-the-iliad": {
+  "menis": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 1",
+   "point": "menis",
+   "steps": [
+    {
+     "line": "Sing, O goddess, the anger of Achilles son of Peleus, that brought countless ills upon the Achaeans."
+    },
+    {
+     "line": "Agamemnon takes your prize, the girl Briseis, before the whole army. You are in two minds: kill him, or check your anger."
+    },
+    {
+     "swap": "right",
+     "what": "sword"
+    },
+    {
+     "act": "Draw your sword",
+     "hold": 1.2
+    },
+    {
+     "show": "athena"
+    },
+    {
+     "look": "athena"
+    },
+    {
+     "line": "Minerva came down from heaven and seized the son of Peleus by his yellow hair, visible to him alone."
+    },
+    {
+     "line": "“Why are you here, daughter of aegis-bearing Jove? To see the pride of Agamemnon, son of Atreus?”"
+    },
+    {
+     "act": "Put the sword back in its sheath"
+    },
+    {
+     "swap": "right",
+     "what": "spear"
+    },
+    {
+     "hide": "athena"
+    },
+    {
+     "line": "You obey the goddess. But you will not fight for him again, and the Achaeans will die for your anger."
+    }
+   ]
+  },
+  "kleos": {
+   "hero": "hector",
+   "title": "Hector, Iliad 6",
+   "point": "kleos",
+   "steps": [
+    {
+     "line": "At the Scaean gate Andromache runs to meet you, and the nurse behind her with your little son."
+    },
+    {
+     "line": "The boy is scared at the sight of his father's armour, and at the horse-hair plume that nodded fiercely from his helmet."
+    },
+    {
+     "act": "Take off your helmet"
+    },
+    {
+     "swap": "left",
+     "what": ""
+    },
+    {
+     "show": "helmet"
+    },
+    {
+     "line": "Hector took the helmet from his head and laid it all gleaming upon the ground."
+    },
+    {
+     "act": "Take your son in your arms",
+     "hold": 1.2
+    },
+    {
+     "line": "Then he took his darling child, kissed him, and dandled him in his arms."
+    },
+    {
+     "line": "You know Troy will fall. You will go back to the fight anyway, for the city, and for the glory men will remember."
+    }
+   ]
+  },
+  "time": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 9",
+   "point": "time",
+   "steps": [
+    {
+     "line": "Odysseus, old Phoenix and Ajax come to your hut. Agamemnon offers gold, horses, women, his daughter, seven cities."
+    },
+    {
+     "line": "“Though you hate both him and his gifts with all your heart, yet pity the rest of the Achaeans.”"
+    },
+    {
+     "act": "Refuse Odysseus"
+    },
+    {
+     "line": "“Him do I hate even as the gates of hell who says one thing while he hides another in his heart.”"
+    },
+    {
+     "line": "Old Phoenix, who raised you, weeps and begs you not to wait until it is too late."
+    },
+    {
+     "act": "Refuse Phoenix"
+    },
+    {
+     "line": "Ajax says it plainly: you are hard, and you care nothing for the friends who honoured you."
+    },
+    {
+     "act": "Refuse Ajax too"
+    },
+    {
+     "line": "Three times asked, three times refused. Your honour is not for sale. Your friends go on dying."
+    }
+   ]
+  },
+  "shield": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 18",
+   "point": "shield",
+   "steps": [
+    {
+     "line": "Your mother brings the arms the fire god made you in one night. On the shield is the whole world."
+    },
+    {
+     "line": "He wrought the earth, the heavens, and the sea; the moon also at her full and the untiring sun."
+    },
+    {
+     "go": "ring0",
+     "text": "Walk the city at peace: a wedding, a quarrel judged by the elders"
+    },
+    {
+     "go": "ring1",
+     "text": "Walk the city at war, and the ambush by the river"
+    },
+    {
+     "go": "ring2",
+     "text": "Walk the ploughland, the harvest and the vintage"
+    },
+    {
+     "go": "ring3",
+     "text": "Walk the dance, and the river Ocean round the rim"
+    },
+    {
+     "act": "Take up the shield"
+    },
+    {
+     "line": "War is one ring of it. Everything else goes on round it: weddings, trials, harvests, dances."
+    }
+   ]
+  },
+  "fate": {
+   "hero": "achilles",
+   "title": "Achilles, Iliad 22",
+   "point": "fate",
+   "steps": [
+    {
+     "line": "Hector waits alone before the Scaean gate. When he sees you coming, he turns and runs."
+    },
+    {
+     "go": "chase",
+     "text": "Run after him along the wall (Shift to run)"
+    },
+    {
+     "line": "So did these two run full speed three times round the city of Priam. All the gods watched them."
+    },
+    {
+     "line": "Jove holds up his golden scales. Hector's fate sinks down toward the house of Hades."
+    },
+    {
+     "go": "springs",
+     "text": "On past the springs where the women washed in peacetime"
+    },
+    {
+     "line": "Hector stands at last. He knows he will die, and he will not die without a fight."
+    },
+    {
+     "act": "Face Hector",
+     "hold": 1.5
+    },
+    {
+     "line": "Hector falls. Killing him does not bring back Patroclus."
+    }
+   ]
+  },
+  "pity": {
+   "hero": "priam",
+   "title": "Priam, Iliad 24",
+   "point": "pity",
+   "steps": [
+    {
+     "line": "You are Priam, old king of Troy. Hermes has led you through the Greek camp by night, with a wagon of ransom."
+    },
+    {
+     "go": "hut",
+     "text": "Go into the hut of the man who killed your son"
+    },
+    {
+     "eye": -0.8
+    },
+    {
+     "act": "Kneel and clasp his knees"
+    },
+    {
+     "act": "Kiss his hands",
+     "hold": 1.5
+    },
+    {
+     "line": "He clasped his knees and kissed the dread murderous hands that had slain so many of his sons."
+    },
+    {
+     "line": "“Fear, O Achilles, the wrath of heaven; think on your own father and have compassion upon me.”"
+    },
+    {
+     "line": "He weeps for his father; you weep for your son. Then he gives you Hector's body to take home."
+    },
+    {
+     "eye": 0.8
+    }
+   ]
+  },
+  "metis": {
+   "hero": "odysseus",
+   "title": "Odysseus, Odyssey 9",
+   "point": "metis",
+   "steps": [
+    {
+     "line": "The Cyclops has shut you in his cave with a stone no team could shift, and has eaten six of your men."
+    },
+    {
+     "line": "He is drunk on your wine, and asks your name."
+    },
+    {
+     "act": "Tell him your name"
+    },
+    {
+     "line": "“Cyclops, you ask my name and I will tell it you ... my name is Noman.”"
+    },
+    {
+     "swap": "left",
+     "what": ""
+    },
+    {
+     "swap": "right",
+     "what": "stake"
+    },
+    {
+     "act": "Drive the stake into his eye",
+     "hold": 1.5
+    },
+    {
+     "line": "He roars that Noman is killing him. The other Cyclopes decide he is mad, and go home."
+    },
+    {
+     "swap": "right",
+     "what": ""
+    },
+    {
+     "go": "ram",
+     "text": "Get under the great ram"
+    },
+    {
+     "eye": -1.0
+    },
+    {
+     "act": "Cling to its fleece",
+     "hold": 2.0
+    },
+    {
+     "line": "Their master felt the backs of all the sheep, without being sharp enough to find the men under their bellies."
+    },
+    {
+     "move": "stone",
+     "by": [
+      4.0,
+      0,
+      0
+     ],
+     "secs": 1.5
+    },
+    {
+     "eye": 1.0
+    },
+    {
+     "go": "mouth",
+     "text": "Out into the daylight"
+    },
+    {
+     "line": "Cunning got you out. Shouting your real name back from the ship will bring the sea god's anger after you."
+    }
+   ]
+  },
+  "nostos": {
+   "hero": "odysseus",
+   "title": "Odysseus, Odyssey 21-23",
+   "point": "nostos",
+   "steps": [
+    {
+     "line": "Twenty years gone. You come home as a beggar, and the suitors are eating your house."
+    },
+    {
+     "line": "Penelope sets them a contest: string the old bow and shoot through twelve axes. None of them can bend it."
+    },
+    {
+     "act": "String the bow",
+     "hold": 2.0
+    },
+    {
+     "line": "He strung it as easily as a skilled bard strings a new peg of his lyre."
+    },
+    {
+     "line": "It sang sweetly under his touch like the twittering of a swallow."
+    },
+    {
+     "act": "Shoot through the twelve axes"
+    },
+    {
+     "line": "The house is yours again. But Penelope will not believe it is you until you prove it."
+    },
+    {
+     "go": "bed",
+     "text": "Go to the bed you built"
+    },
+    {
+     "line": "“There was a young olive growing within the precincts of the house ... I built my room round this.”"
+    },
+    {
+     "act": "Tell her the secret of the bed"
+    },
+    {
+     "line": "Only you could know it. She runs to you. You are home."
+    }
+   ]
+  },
+  "sirens": {
+   "hero": "odysseus_bound",
+   "title": "Odysseus, Odyssey 12",
+   "point": "",
+   "steps": [
+    {
+     "line": "Circe warned you: whoever hears the Sirens and goes near them never sees home again."
+    },
+    {
+     "line": "“Bind me as I stand upright, with a bond so fast that I cannot possibly break away.”"
+    },
+    {
+     "act": "Let your men bind you to the mast"
+    },
+    {
+     "line": "They row on with wax in their ears. The Sirens sing that they know everything that happened at Troy."
+    },
+    {
+     "act": "Strain against the ropes",
+     "hold": 3.0
+    },
+    {
+     "line": "The more you beg, the tighter they bind you. The song fades astern."
+    }
+   ]
+  },
+  "trench": {
+   "hero": "odysseus",
+   "title": "Odysseus, Odyssey 11",
+   "point": "",
+   "steps": [
+    {
+     "line": "At the edge of Ocean, where the sun never shines, you dig the trench and pour the blood."
+    },
+    {
+     "line": "The dead come up out of Erebus in crowds, with a strange cry, wanting the blood."
+    },
+    {
+     "swap": "right",
+     "what": "sword"
+    },
+    {
+     "act": "Hold your sword out over the blood",
+     "hold": 3.0
+    },
+    {
+     "line": "Your mother's shade comes. You reach for her three times, and three times she slips through your arms."
+    },
+    {
+     "act": "Let Teiresias drink"
+    },
+    {
+     "line": "The seer drinks, and tells you the way home, and what it will cost."
+    },
+    {
+     "swap": "right",
+     "what": "arrow"
+    }
+   ]
+  }
  }
 }

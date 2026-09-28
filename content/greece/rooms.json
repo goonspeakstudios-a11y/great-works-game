@@ -648,5 +648,124 @@
         "line": "The scholars are back at their sand trays."
       }
     ]
+  },
+  "homer-the-iliad": {
+    "open": true,
+    "place": "troy",
+    "zone": "troy",
+    "where": "The plain of Troy, and the way home",
+    "when": "about 1200 BC",
+    "map": "1200bc",
+    "map_note": "About 1200 BC the great palaces of Mycenaean Greece send their ships against Troy, a rich city guarding the way into the Black Sea. The Hittites rule Anatolia and Egypt the Nile; within a generation almost all of this world will fall. Homer sang of it some five hundred years later.",
+    "statues": [],
+    "greeting": "Sit by the fire, stranger. I will sing you the anger of Achilles, and the long way home of Odysseus. You will not only hear it: you will stand where they stood.",
+    "greeting_lost": "A stranger, by a cold fire. I am the singer, or what is left of him. The ships are rotten and the heroes are shades. I can still sing, if you want the song.",
+    "gift": "Homer puts his lyre in your hands, the strings still warm. \"It was never mine. It is yours now, to pass on.\"",
+    "author": "Homer",
+    "life": "sang about 700 BC",
+    "book": "Iliad and Odyssey",
+    "portrait": {
+      "skin": "c09070",
+      "hair": "long",
+      "hair_color": "e8e4dc",
+      "beard": "long",
+      "beard_color": "e8e4dc",
+      "robe": "6a5a4a",
+      "trim": "b8863a",
+      "old": true
+    },
+    "persona": "You are Homer, the blind singer, about 700 BC, sitting by a fire in the camp of the Achaeans on the plain of Troy as you imagine it. You sang the Iliad (the anger of Achilles in the tenth year of the war: the quarrel with Agamemnon, Hector and Andromache at the Scaean gate, the embassy, the shield, the death of Hector, and Priam kneeling to Achilles) and the Odyssey (Odysseus's ten years coming home: the Cyclops, the dead at the edge of Ocean, the Sirens, and his return to Ithaca, the bow and the bed). Nobody knows who you really were, and you do not mind. You speak simply and gravely, like a storyteller, and you quote your songs in Samuel Butler's prose translation, where the gods have their Roman names (Jove, Minerva, Juno, Ulysses).",
+    "summary": "Two epic poems, the first works of Greek literature. The Iliad tells a few weeks in the tenth year of the Trojan War: Achilles, shamed by Agamemnon, withdraws in anger; the Greeks suffer; his friend Patroclus is killed by Hector; Achilles returns, kills Hector, and finally gives the body back to Hector's father Priam, who kneels to him. The Odyssey tells how Odysseus, by cunning and endurance, comes home over ten years (the Cyclops, the land of the dead, the Sirens) and wins back his house, his wife and his son.",
+    "facts": [
+      "Nobody knows who Homer was. The Greeks believed he was a blind singer from Ionia, the coast of Asia Minor.",
+      "The poems were sung aloud long before they were written down, probably in the 700s BC.",
+      "The Iliad covers only a few weeks of a ten-year war, and ends before Troy falls.",
+      "Troy was a real city, at Hisarlik in Turkey. It was destroyed and rebuilt many times; one burned about 1180 BC.",
+      "For a thousand years every Greek child learned to read from Homer."
+    ],
+    "questions": [
+      "Why is Achilles so angry?",
+      "Why does Hector keep fighting?",
+      "Why does Achilles give back Hector's body?",
+      "How does Odysseus trick the Cyclops?"
+    ],
+    "home": "camp",
+    "props": "the black ships drawn up on the beach, Achilles' hut, the forge of Hephaestus and the great shield, the walls of Troy and the Scaean gate, the black ship that sails to the Cyclops' island, the Sirens, the edge of Ocean where the dead come, and Ithaca",
+    "lesson": [
+      {
+        "id": "menis",
+        "label": "Anger",
+        "point": "The Iliad begins with one man's anger. Agamemnon takes Achilles' prize, Briseis; Achilles, shamed, withdraws from the war, and many Greeks die for it. Anger that will not let go is the poem's first subject."
+      },
+      {
+        "id": "kleos",
+        "label": "Glory, and the ones you love",
+        "point": "Hector fights for glory that will outlive him and for the city and family he loves, though he knows Troy will fall. His helmet frightens his own son; he takes it off to hold him."
+      },
+      {
+        "id": "time",
+        "label": "Honour that is not for sale",
+        "point": "Agamemnon offers great gifts if Achilles will fight again. Achilles refuses his three friends: honour is not a price, and he hates a man who says one thing and hides another. Meanwhile his comrades die."
+      },
+      {
+        "id": "shield",
+        "label": "The shield",
+        "point": "The shield the god makes for Achilles shows the whole world: earth, sky and sea, a city at peace with a wedding and a trial, a city at war, ploughing, harvest, vintage, a dance. War is only one ring of it."
+      },
+      {
+        "id": "fate",
+        "label": "Fate and death",
+        "point": "Achilles chases Hector three times round the walls. The gods weigh their fates and Hector's sinks. Knowing he will die, Hector stands and fights, so as not to die without glory."
+      },
+      {
+        "id": "pity",
+        "label": "Pity",
+        "point": "Old Priam comes by night to the man who killed his son, kneels and kisses his hands. Achilles weeps with him for fathers and sons and gives back Hector's body. The poem ends in shared grief, not victory."
+      },
+      {
+        "id": "metis",
+        "label": "Cunning",
+        "point": "Odysseus lives by his wits: he tells the Cyclops his name is Nobody, blinds him, and escapes under the rams. But his pride in shouting his real name from the ship brings the sea god's anger on him."
+      },
+      {
+        "id": "nostos",
+        "label": "Homecoming",
+        "point": "The Odyssey is the long way home. Odysseus comes back in disguise, strings the bow no suitor could bend, and proves himself to Penelope with the secret of the bed he built round a living olive tree."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The sea is moving again, and the springs under the walls run."
+      },
+      {
+        "what": "leaves",
+        "line": "The oak by the gate and the olive in Ithaca are green."
+      },
+      {
+        "what": "lamps",
+        "line": "The fires burn in the huts along the ships."
+      },
+      {
+        "what": "walkway",
+        "line": "The walls of Troy stand, and the black ships are sound."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over the plain of Troy."
+      },
+      {
+        "what": "teacher",
+        "line": "Homer is himself, and his song with him."
+      },
+      {
+        "what": "household",
+        "line": "Penelope, the old nurse and the people of the stories are back."
+      },
+      {
+        "what": "soldiers",
+        "line": "The Achaeans are men again, and the Cyclops is alive in his cave."
+      }
+    ]
   }
 }
