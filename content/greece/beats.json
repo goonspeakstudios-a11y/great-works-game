@@ -1775,5 +1775,140 @@
     }
    ]
   }
+ },
+ "herodotus-the-histories": {
+  "the_question": {
+   "hero": "croesus",
+   "title": "Croesus, Histories I.30-32",
+   "point": "happiness",
+   "steps": [
+    {
+     "hide": "croesus"
+    },
+    {
+     "line": "You are Croesus, king of Lydia, the richest man alive. The wise Athenian Solon has come to Sardis."
+    },
+    {
+     "look": "gold"
+    },
+    {
+     "act": "Show him your treasuries",
+     "hold": 1.5
+    },
+    {
+     "look": "solon"
+    },
+    {
+     "act": "Ask him who is the happiest of men"
+    },
+    {
+     "line": "“Yes, O king, Tellos the Athenian.” A citizen who saw his grandchildren grow, and died well fighting for his city."
+    },
+    {
+     "line": "And second? “Cleobis and Biton”: two brothers who pulled their mother's cart to the temple, and died in their sleep."
+    },
+    {
+     "act": "Ask him, in anger, what of you"
+    },
+    {
+     "line": "“Man is altogether a creature of accident.”"
+    },
+    {
+     "line": "“Before he comes to his end it is well to hold back and not to call him yet happy but only fortunate.”"
+    }
+   ]
+  },
+  "the_pyre": {
+   "hero": "croesus",
+   "title": "Croesus, Histories I.86-87",
+   "point": "pyre",
+   "steps": [
+    {
+     "hide": "croesus"
+    },
+    {
+     "line": "Delphi said you would destroy a great empire. You have: your own. Cyrus has taken Sardis in fourteen days."
+    },
+    {
+     "eye": 1.6
+    },
+    {
+     "line": "He “caused Croesus to go up upon it bound in fetters, and along with him twice seven sons of Lydians.” They light it."
+    },
+    {
+     "line": "You remember what Solon said. No one is happy before his end. This is your end."
+    },
+    {
+     "act": "Call out the name of Solon, three times",
+     "hold": 2.0
+    },
+    {
+     "look": "cyrus"
+    },
+    {
+     "line": "Cyrus asks who Solon is. You tell him. He hears his own fortune in yours, and orders the fire put out. It will not go out."
+    },
+    {
+     "act": "Pray to Apollo",
+     "hold": 1.5
+    },
+    {
+     "look": "sky"
+    },
+    {
+     "line": "“Suddenly, they say, after clear sky and calm weather clouds gathered and a storm burst, and it rained.”"
+    },
+    {
+     "eye": -1.6
+    }
+   ]
+  },
+  "the_pass": {
+   "hero": "spartan",
+   "title": "A Spartan, Histories VII.208-228",
+   "point": "thermopylae",
+   "steps": [
+    {
+     "line": "You are one of the three hundred Spartans with King Leonidas, holding the narrow pass between the mountain and the sea."
+    },
+    {
+     "go": "wall",
+     "text": "Go out in front of the wall"
+    },
+    {
+     "line": "A Persian horseman rides up to count you. He sees “some of the men practising athletic exercises and some combing their long hair.”"
+    },
+    {
+     "act": "Comb your long hair",
+     "hold": 2.0
+    },
+    {
+     "look": "persians"
+    },
+    {
+     "line": "They say the Persian arrows will hide the sun. Dienekes answers: good, then “the battle against them would be in the shade.”"
+    },
+    {
+     "look": "mountain"
+    },
+    {
+     "line": "On the seventh day a Greek, Ephialtes, shows the Persians the path over the mountain. Leonidas sends the allies home."
+    },
+    {
+     "go": "hillock",
+     "text": "Fall back to the hillock"
+    },
+    {
+     "act": "Hold the hillock",
+     "hold": 3.0
+    },
+    {
+     "line": "“Defending themselves with daggers, that is those who still had them left, and also with hands and with teeth.”"
+    },
+    {
+     "line": "“Stranger, report this word, we pray, to the Spartans, that lying Here in this spot we remain, faithfully keeping their laws.”"
+    }
+   ]
+  }
  }
 }

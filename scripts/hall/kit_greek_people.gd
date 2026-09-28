@@ -22,6 +22,8 @@ const HEROES := {
 	"oedipus": {"skin": "#c09070", "sleeve": "#5a2a4a", "left": "", "right": "staff"},
 	"antigone": {"skin": "#d8b090", "sleeve": "#2a2a2a", "left": "", "right": ""},
 	"pentheus": {"skin": "#c8a078", "sleeve": "#4a3a5a", "left": "", "right": ""},
+	"croesus": {"skin": "#c8a078", "sleeve": "#6a2a5a", "left": "", "right": ""},
+	"spartan": {"skin": "#b8906a", "sleeve": "#8a2a1a", "left": "shield", "right": "spear"},
 	"socrates": {"skin": "#c09070", "sleeve": "#8a8274", "left": "", "right": ""},
 }
 

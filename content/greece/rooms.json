@@ -1538,5 +1538,112 @@
         "line": "Aristophanes is himself again, and laughing."
       }
     ]
+  },
+  "herodotus-the-histories": {
+    "open": true,
+    "place": "sardis",
+    "zone": "sardis",
+    "where": "Sardis, Delphi and Thermopylae",
+    "when": "written about 430 BC",
+    "map": "480bc",
+    "map_note": "In 480 BC the Persian Empire of Xerxes reaches from India to the Aegean, the largest the world has seen, and his army crosses the Hellespont into Greece. Sixty years earlier Cyrus had taken Sardis and ended Croesus's Lydian kingdom. Herodotus, born a Persian subject at Halicarnassus, wrote the story of how it all came to war.",
+    "statues": [
+      {
+        "name": "Sophocles",
+        "beard": "short",
+        "note": "Sophocles, Herodotus's friend in Athens, who wrote a poem for him. Herodotus read parts of his work aloud in Athens, and was said to have been paid for it; Antigone borrows an argument from one of his stories."
+      }
+    ],
+    "greeting": "Welcome, traveller. I have been to Egypt, to Babylon, to the Black Sea, asking everyone what they saw and what they were told. Sit and I will tell you some of it: how a rich king learned what happiness is, and how three hundred men kept a pass.",
+    "greeting_lost": "A shade among ruins. Sardis is burned, the oracle is silent, the pass is only stones. I wrote so that such deeds would not be forgotten. Sit, and do not let them be.",
+    "gift": "Herodotus gives you a traveller's wax tablet, half full of notes in a hurried hand. \"Write down what you are told, and who told you, and whether you believe it. That is all history is.\"",
+    "author": "Herodotus",
+    "life": "about 484 - 425 BC",
+    "book": "The Histories",
+    "portrait": {
+      "skin": "c09070",
+      "hair": "short",
+      "hair_color": "4a3a2a",
+      "beard": "long",
+      "beard_color": "4a3a2a",
+      "robe": "6a4a3a",
+      "trim": "c8a060",
+      "old": false
+    },
+    "persona": "You are Herodotus of Halicarnassus, about 430 BC, the first historian, a great traveller and teller of tales. You wrote the Histories, an inquiry into the great deeds of Greeks and barbarians and the causes of the Persian Wars. You tell of Croesus, king of Lydia, who showed Solon his treasures and asked who was the happiest of men, and was told to call no one happy until he had ended his life well; who tested the oracles and was told that if he attacked Persia he would destroy a great empire, and destroyed his own; who, on Cyrus's pyre, called out Solon's name three times, and was saved by rain from a clear sky. And you tell of Thermopylae, where Leonidas and his Spartans held the pass against Xerxes' army, combing their hair before the battle, and died after Ephialtes showed the Persians the path over the mountain. You love a good story, you give several versions when you have them, and you say which you believe. You quote your work in G. C. Macaulay's translation.",
+    "summary": "The first great work of history: an inquiry into how the Greeks and the Persian Empire came to war, written so that great deeds would not be forgotten. It begins with Croesus of Lydia, the richest king alive, who asks the Athenian Solon who is happiest and is told to wait for a man's end; who misreads Delphi's oracle and destroys his own kingdom; and who, on the pyre, calls on Solon's name and is saved. It travels through the peoples of the world and ends with the invasion of Greece by Xerxes, where three hundred Spartans under Leonidas hold the pass of Thermopylae to the death.",
+    "facts": [
+      "Cicero called Herodotus the father of history. Others called him the father of lies.",
+      "He was born at Halicarnassus, a Greek city in Asia Minor, under Persian rule.",
+      "He travelled to Egypt, Babylon, the Black Sea and Italy, asking questions everywhere.",
+      "His word historia means an inquiry: finding out by asking and looking.",
+      "The Histories were later divided into nine books, each named after one of the nine Muses."
+    ],
+    "questions": [
+      "Why would Solon not call Croesus happy?",
+      "Which empire did the oracle mean?",
+      "Why did the Spartans stay at Thermopylae?",
+      "How do you know which stories are true?"
+    ],
+    "home": "Histories",
+    "props": "Croesus's court at Sardis with his gold, Solon before him, and the pyre in the square ringed by Persian soldiers; Delphi under its shining cliffs, the tripod, the navel stone, the Pythia and Croesus's golden gifts; the pass of Thermopylae with the Phocian wall, the Spartans, and the Immortals coming up the road",
+    "lesson": [
+      {
+        "id": "inquiry",
+        "label": "The inquiry",
+        "point": "Herodotus writes so that great deeds, of Greeks and of barbarians, are not forgotten, and to find why they went to war. He calls his work an inquiry: he gives what he was told, often more than one version, and says which he believes."
+      },
+      {
+        "id": "happiness",
+        "label": "Call no one happy",
+        "point": "Croesus, the richest king alive, asks Solon who is the happiest of men. Solon names ordinary Athenians who died well. Man is a creature of chance: call no one happy until his life has ended well."
+      },
+      {
+        "id": "oracle",
+        "label": "A great empire",
+        "point": "Delphi tells Croesus that if he marches against the Persians he will destroy a great empire. He does: his own. The oracle was true; he never asked which empire it meant."
+      },
+      {
+        "id": "pyre",
+        "label": "Solon's name",
+        "point": "Captured by Cyrus and set on a pyre, Croesus calls Solon's name three times. Cyrus, hearing why, sees his own fortune in his enemy's and orders the fire put out; rain falls from a clear sky."
+      },
+      {
+        "id": "thermopylae",
+        "label": "Thermopylae",
+        "point": "Leonidas and his three hundred Spartans hold the narrow pass against Xerxes' huge army, combing their hair before the battle. Betrayed by a path over the mountain, they fight to the last with daggers, hands and teeth."
+      },
+      {
+        "id": "law",
+        "label": "Keeping the law",
+        "point": "The Spartans' epitaph asks a passing stranger to tell Sparta they lie here obeying its laws. Free men who obey the law, Herodotus shows, can stand against a king's subjects driven on by the whip."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The fire burns in Sardis, and the tripod smokes at Delphi."
+      },
+      {
+        "what": "household",
+        "line": "Croesus's court and the Pythia's pilgrims are back."
+      },
+      {
+        "what": "leaves",
+        "line": "The laurel at Delphi is green, and birds sing in the pass."
+      },
+      {
+        "what": "soldiers",
+        "line": "The Spartans stand in the pass, and the Persians march."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over Sardis and the shining cliffs."
+      },
+      {
+        "what": "teacher",
+        "line": "Herodotus is himself, and has a story for you."
+      }
+    ]
   }
 }

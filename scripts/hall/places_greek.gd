@@ -17,6 +17,7 @@ extends RefCounted
 ##   thebes()  #10 Sophocles: Thebes in the plague, where three roads meet, Antigone's tomb, the theatre
 ##   cithaeron() #11 Euripides: Pentheus's palace, Mount Cithaeron and its maenads, the theatre
 ##   thinkery() #12 Aristophanes: Strepsiades' house, Socrates' Thinkery across the street, the theatre
+##   sardis()  #13 Herodotus: Croesus's Sardis, Delphi, and the pass of Thermopylae
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1388,4 +1389,88 @@ static func _thinkery_lessons(world: Node3D, work: String, room: Dictionary, out
 		"text": "Take the ladder and the torch", "note": note.call("laughter"), "cast": {},
 		"marks": {"ladder": door + Vector3(4.0, 0, 1.5), "roof": door + Vector3(0, 5.0, -3.0)}})
 	spots["laughter"] = door + Vector3(3.0, 0, 5.0)
+	return flicker
+
+
+# ---------- #13 Herodotus, the Histories ----------
+
+## Herodotus's inquiry as three places: Sardis, Croesus's court with his gold and, in the square,
+## the pyre ringed by Persian soldiers; Delphi under its shining cliffs, the Pythia at her tripod;
+## and the pass of Thermopylae between the mountain and the sea, the Spartans behind the Phocian
+## wall and the Immortals coming up the road. Herodotus sits by the way in, with his notes. Lost,
+## Sardis is burned, the oracle silent, the armies dead.
+static func sardis(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 55.0)
+	Kit.plateau(world, 110.0, "earth", false)
+	Kit.sea(world, -6.0)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 0), 6, 18.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 96.0, 66.0, "path")
+	var writer := _teacher(world, room, b, stage, Vector3(0, 0, 58.0), 0.0, Vector3(0, 0, 60.8), out, spots)
+	flicker.append(Kit.desk(world, Vector3(0, 0, 56.8), PI, false, b.has("lamps")))
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 59.5), 0.0, Vector3(-4.2, 0, 61.1)]],
+		Vector3(-7.0, 1.6, 56.5), 0.3, Vector3(-6.4, 0, 58.3), Vector3(6.5, 0, 57.0), Vector3(6.5, 0, 58.2))
+	for p: Vector3 in [Vector3(-44, 0, -14), Vector3(-30, 0, -20), Vector3(-66, 0, -12)]:
+		sway.append(Kit.olive(world, p, 1.3, b.has("leaves")))  # the laurels at Delphi
+	var court := Areas.sardis(world, Vector3(0, 0, 14), 0.0, b)
+	take.call(court)
+	var oracle := Areas.delphi(world, Vector3(-55, 0, -38), 0.3, b)
+	take.call(oracle)
+	var strait := Areas.thermopylae(world, Vector3(58, 0, -40), 0.0, b)
+	take.call(strait)
+	_way(world, [Vector3(0, 0, 54), Vector3(0, 0, 32)])
+	_way(world, [Vector3(-14, 0, 6), Vector3(-44, 0, -20)])
+	_way(world, [Vector3(14, 0, 6), Vector3(58, 0, -2)])
+	out.append(Places.seat(world, Vector3(18.0, 0, 58.0), Vector3(0, 0, -1), "Sit and listen to the traveller"))
+	flicker.append_array(_sardis_lessons(world, work, room, out, spots, court, oracle, strait, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 93.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [writer] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## Herodotus's six points: the inquiry (by his desk), Croesus and Solon (a beat, as Croesus), the
+## oracle at Delphi, Solon's name on the pyre (a beat, as Croesus), Thermopylae (a beat, as one of
+## the three hundred), and the epitaph in the pass.
+static func _sardis_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, court: Dictionary,
+		oracle: Dictionary, strait: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var cr: Node3D = court["root"]
+	var orr: Node3D = oracle["root"]
+	var pr: Node3D = strait["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("inquiry", Vector3(4.0, 0, 54.0), Vector3(0, 0, 57.0), "Read the first line of the Histories")
+	stele_stone.call("oracle", Areas._at(orr, Vector3(-4.0, 0, 8.0)), Areas._at(orr, Vector3(-4.0, 0, 5.2)), "Hear the Pythia's answer")
+	stele_stone.call("law", Areas._at(pr, Vector3(-3.0, 0, -18.0)), Areas._at(pr, Vector3(0, 0, -16.0)), "Read the Spartans' epitaph")
+
+	var solon: Node3D = court["people"][1]["root"]
+	out.append({"kind": "beat", "pos": Areas._at(cr, Vector3(-3.0, 0, -1.5)), "start": Areas._at(cr, Vector3(-1.2, 0, -4.2)),
+		"face": Areas._at(cr, Vector3(0, 0, -1.0)), "work": work, "id": "happiness", "beat": "the_question",
+		"text": "Show Solon your treasures, as Croesus", "note": note.call("happiness"), "cast": {"croesus": court["people"][0]["root"]},
+		"marks": {"gold": Areas._at(cr, Vector3(-6.0, 0, -2.6)), "solon": Areas._at(cr, Vector3(0, 1.7, -1.0))}})
+	spots["happiness"] = Areas._at(cr, Vector3(-3.0, 0, -1.5))
+	var captive: Node3D = court["on_the_pyre"]["root"]
+	out.append({"kind": "beat", "pos": Areas._at(cr, Vector3(10.0, 0, 16.0)), "start": Areas._at(cr, Vector3(10.0, 0, 12.6)),
+		"face": Areas._at(cr, Vector3(0, 0, 4.0)), "work": work, "id": "pyre", "beat": "the_pyre",
+		"text": "Stand bound on the pyre, as Croesus", "note": note.call("pyre"), "cast": {"croesus": captive},
+		"marks": {"cyrus": Areas._at(cr, Vector3(2.0, 1.7, 6.0)), "sky": Areas._at(cr, Vector3(10.0, 30.0, -20.0))}})
+	spots["pyre"] = Areas._at(cr, Vector3(10.0, 0, 16.0))
+	out.append({"kind": "beat", "pos": Areas._at(pr, Vector3(2.0, 0, -12.0)), "work": work, "id": "thermopylae", "beat": "the_pass",
+		"text": "Stand in the pass, as a Spartan", "note": note.call("thermopylae"), "cast": {},
+		"marks": {"wall": Areas._at(pr, Vector3(1.0, 0, -1.5)), "persians": Areas._at(pr, Vector3(0, 1.6, 26.0)),
+			"mountain": Areas._at(pr, Vector3(-9.0, 16.0, 10.0)), "hillock": Areas._at(pr, Vector3(-2.0, 0, -8.0))}})
+	spots["thermopylae"] = Areas._at(pr, Vector3(2.0, 0, -12.0))
 	return flicker

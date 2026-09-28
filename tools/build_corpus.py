@@ -163,6 +163,20 @@ BOOKS = {
              "start": r"(?m)^\s*Scene: The interior of a sleeping-apartment", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
         ],
     },
+    "herodotus-the-histories": {  # Book I (Croesus and Solon, and on) and Thermopylae (VII.201-239)
+        "title": "Herodotus",
+        "translation": "tr. G. C. Macaulay (1890), public domain",
+        "parts": [
+            {"title": "Histories, Book I", "urls": [["https://www.gutenberg.org/cache/epub/2707/pg2707.txt", ""]],
+             "segments": [{"start": r"^BOOK I\. THE FIRST BOOK", "end": r"(?=^BOOK II\. THE SECOND)", "heading": "", "once": True}],
+             "drop": [r"(?<=[a-z,;:.\"”]) \d{1,3}(?= [A-Za-z])"],  # the note marks
+             "start": r"BOOK I\. THE FIRST BOOK", "end": r"\Zx", "chapter": r"^(\d+)\. ", "chapter_label": "chapter"},
+            {"title": "Histories, Book VII", "urls": [["https://www.gutenberg.org/cache/epub/2456/pg2456.txt", ""]],
+             "segments": [{"start": r"^201\. King Xerxes", "end": r"(?=^BOOK VIII\. THE EIGHTH)", "heading": "", "once": True}],
+             "drop": [r"(?<=[a-z,;:.\"”]) \d{1,3}(?= [A-Za-z])"],  # the note marks
+             "start": r"201\. King Xerxes", "end": r"\Zx", "chapter": r"^(\d+)\. ", "chapter_label": "chapter"},
+        ],
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",

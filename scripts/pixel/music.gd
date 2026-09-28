@@ -137,6 +137,7 @@ const ZONES := {
 		{"file": "sardis_drone", "db": -10.0, "music": true, "needs": "sun"},
 		{"file": "sardis_kithara", "db": -10.0, "music": true, "needs": "teacher"},
 		{"file": "sardis_march", "db": -11.0, "music": true, "needs": "soldiers"},
+		{"file": "birds", "db": -25.0, "needs": "leaves"},
 		{"file": "crowd", "db": -25.0, "needs": "household"},
 		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
 	# Athens at war (Thucydides): the funeral in the Kerameikos, the lament, the pyres.
