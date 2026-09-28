@@ -136,6 +136,16 @@ BOOKS = {
              "start": r"(?m)^_The Temple at Delphi_\s*$", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx", "drop": [r"_"]},
         ],
     },
+    "sophocles-the-theban-plays": {  # Oedipus the King and Antigone, as the reading takes them
+        "title": "Sophocles",
+        "translation": "tr. Francis Storr (1912), public domain",
+        "parts": [
+            {"title": "Oedipus the King", "urls": [["https://www.gutenberg.org/cache/epub/31/pg31.txt", ""]],
+             "start": r"(?m)^Suppliants of all ages are seated round the altar", "end": r"(?m)^OEDIPUS AT COLONUS\s*$", "chapter": r"^\Zx"},
+            {"title": "Antigone", "urls": [["https://www.gutenberg.org/cache/epub/31/pg31.txt", ""]],
+             "start": r"(?m)^\s*ANTIGONE and ISMENE before the Palace gates", "end": r"\*\*\* ?END OF", "chapter": r"^\Zx"},
+        ],
+    },
     "plato-republic": {  # the Republic, with the Apology, the Symposium and the Phaedo the reading adds
         "title": "Plato",
         "translation": "tr. Benjamin Jowett (1871-1892), public domain",

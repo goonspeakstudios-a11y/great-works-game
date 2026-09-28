@@ -295,6 +295,8 @@ static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0,
 			return load("res://scripts/hall/places_greek.gd").lesbos(world, work, room, stage)
 		"argos":
 			return load("res://scripts/hall/places_greek.gd").argos(world, work, room, stage)
+		"thebes":
+			return load("res://scripts/hall/places_greek.gd").thebes(world, work, room, stage)
 		"academy":
 			return load("res://scripts/hall/places_greek.gd").academy(world, work, room, stage, stages.get("city", 0))
 	push_error("No place built for %s" % work)

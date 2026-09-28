@@ -1408,5 +1408,142 @@
     }
    ]
   }
+ },
+ "sophocles-the-theban-plays": {
+  "the_crossroads": {
+   "hero": "oedipus",
+   "title": "Oedipus, years before",
+   "point": "crossroads",
+   "steps": [
+    {
+     "line": "You are Oedipus, prince of Corinth. At Delphi the god told you: you will kill your father and marry your mother."
+    },
+    {
+     "line": "So you will never go home to Corinth, to the king and queen you love. You take the road the other way."
+    },
+    {
+     "go": "meeting",
+     "text": "Walk on to where three roads meet"
+    },
+    {
+     "look": "cart"
+    },
+    {
+     "line": "“A herald met me and a man who sat In a car drawn by colts ... Threatened to thrust me rudely from the path.”"
+    },
+    {
+     "line": "“The old man ... from his car brought down Full on my head the double-pointed goad.”"
+    },
+    {
+     "act": "Strike back with your staff"
+    },
+    {
+     "line": "“One stroke Of my good staff sufficed to fling him clean Out of the chariot seat ... And so I slew them every one.”"
+    },
+    {
+     "line": "You never asked his name. He was Laius, King of Thebes. You walk on to Thebes, and the Sphinx, and the queen."
+    }
+   ]
+  },
+  "the_truth": {
+   "hero": "oedipus",
+   "title": "Oedipus the King",
+   "point": "recognition",
+   "steps": [
+    {
+     "line": "The plague is still killing Thebes. A messenger from Corinth says: the king you called your father was not your father."
+    },
+    {
+     "line": "“Know that he took thee from my hands, a gift.” He had you as a baby from a Theban shepherd, your ankles pinned."
+    },
+    {
+     "look": "jocasta"
+    },
+    {
+     "line": "Jocasta begs you to stop asking. She has understood. She goes into the house."
+    },
+    {
+     "go": "altar",
+     "text": "Stand before the altar, where the old shepherd waits"
+    },
+    {
+     "act": "Make him tell you, and do not stop",
+     "hold": 2.0
+    },
+    {
+     "line": "The child he was given to kill was Laius's, and Jocasta's. He could not do it. He gave it away. It was you."
+    },
+    {
+     "line": "“Ah me! ah me! all brought to pass, all true! O light, may I behold thee nevermore!”"
+    },
+    {
+     "go": "door",
+     "text": "Go into the house"
+    },
+    {
+     "line": "He found her hanged. “He tore the golden brooches that upheld Her queenly robes, upraised them high and smote.”"
+    },
+    {
+     "eye": -0.6
+    },
+    {
+     "line": "“Therefore wait to see life’s ending ere thou count one mortal blest.”"
+    },
+    {
+     "eye": 0.6
+    }
+   ]
+  },
+  "the_dust": {
+   "hero": "antigone",
+   "title": "Antigone",
+   "point": "unwritten",
+   "steps": [
+    {
+     "hide": "antigone"
+    },
+    {
+     "line": "You are Antigone, daughter of Oedipus. Your brothers killed each other at the gates, one defending Thebes, one attacking it."
+    },
+    {
+     "line": "King Creon has ordered: Polynices, the traitor, lies unburied for the dogs and birds. Whoever buries him dies."
+    },
+    {
+     "go": "body",
+     "text": "Go out to your brother's body"
+    },
+    {
+     "swap": "right",
+     "what": "dust"
+    },
+    {
+     "act": "Sprinkle dust over him, and pour the offerings",
+     "hold": 2.0
+    },
+    {
+     "swap": "right",
+     "what": ""
+    },
+    {
+     "line": "“The corpse is buried; someone E’en now besprinkled it with thirsty dust.” The guards take you to the king."
+    },
+    {
+     "look": "creon"
+    },
+    {
+     "line": "“The immutable unwritten laws of Heaven. They were not born today nor yesterday; They die not.”"
+    },
+    {
+     "line": "“My nature is for mutual love, not hate.” “Die then, and love the dead if thou must.”"
+    },
+    {
+     "go": "tomb",
+     "text": "Walk into the tomb"
+    },
+    {
+     "line": "He walls you up alive. Teiresias warns him; he gives way at last, and comes to open the tomb. Too late."
+    }
+   ]
+  }
  }
 }

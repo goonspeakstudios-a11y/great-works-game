@@ -1217,5 +1217,112 @@
         "line": "Aeschylus is himself again."
       }
     ]
+  },
+  "sophocles-the-theban-plays": {
+    "open": true,
+    "place": "thebes",
+    "zone": "theatre",
+    "where": "Thebes, and where three roads meet",
+    "when": "about 430 BC",
+    "map": "431bc",
+    "map_note": "Sophocles' Athens is at the height of its power in 431 BC, head of an empire of islands and coastal cities, and about to go to war with Sparta. Within two years a plague will kill a third of the city, Pericles among them; Oedipus the King opens on a city dying of plague. Thebes itself, Athens' neighbour, fights on Sparta's side.",
+    "statues": [
+      {
+        "name": "Pericles",
+        "beard": "short",
+        "note": "Pericles, the leading man of Athens, who served beside Sophocles when both were generals in the war against Samos in 440 BC. He died of the plague in 429."
+      }
+    ],
+    "greeting": "Come in, friend. Sit where you can see the palace doors. Two stories today: a king who solves every riddle but his own, and a girl who will not let her brother lie unburied.",
+    "greeting_lost": "A shade in a theatre of broken stone. Thebes is a ruin and the plague has won. Still, the stories are told; they were always about ruin.",
+    "gift": "Sophocles gives you a traveller's staff of olive wood. \"Oedipus had one like it at the crossroads. Walk carefully, and ask the name of the man in your way.\"",
+    "author": "Sophocles",
+    "life": "about 497 - 406 BC",
+    "book": "Oedipus the King and Antigone",
+    "portrait": {
+      "skin": "c8a080",
+      "hair": "short",
+      "hair_color": "c8c4bc",
+      "beard": "short",
+      "beard_color": "c8c4bc",
+      "robe": "e0d6c0",
+      "trim": "5a3a6a",
+      "old": true
+    },
+    "persona": "You are Sophocles of Colonus, about 430 BC, the second of the three great tragic poets of Athens, a friend of Pericles and a general beside him in 440 BC. You wrote Oedipus the King: Thebes in plague; Oedipus, who answered the Sphinx's riddle, swears to find the killer of the old king Laius; the blind seer Teiresias tells him he is the man; Jocasta tells of the place where three roads meet; the messenger from Corinth and the old shepherd reveal that Oedipus is Laius's son and Jocasta's; she hangs herself and he blinds himself with her brooches. And Antigone: Creon forbids the burial of Polynices; Antigone buries him, appealing to the unwritten laws of the gods; Creon walls her up alive, relents too late, and loses his son and wife. You speak with calm and irony, and quote your plays in Francis Storr's translation.",
+    "summary": "Two tragedies of Thebes. In Oedipus the King a city is dying of plague, and the oracle says the killer of the old king Laius must be found. Oedipus, the clever king who once answered the Sphinx, hunts the killer and, witness by witness, finds himself: he killed his father at a crossroads and married his mother, as was foretold. He blinds himself. In Antigone, his daughter defies King Creon's order that her traitor brother lie unburied, obeying the unwritten laws of the gods; Creon has her walled up alive, and when he gives way it is too late: she, his son and his wife are dead.",
+    "facts": [
+      "Sophocles lived about ninety years, and wrote over a hundred and twenty plays. Seven survive.",
+      "He never lost a contest, it was said, placing first or second every time.",
+      "He served Athens as a general, beside Pericles, in the war against Samos in 440 BC.",
+      "Oedipus the King was staged soon after the plague of 430 BC struck Athens.",
+      "Aristotle took Oedipus the King as the model tragedy: the discovery and the reversal come together."
+    ],
+    "questions": [
+      "Could Oedipus have escaped his fate?",
+      "Why does Teiresias not want to speak?",
+      "Why does Antigone bury her brother?",
+      "Who is right, Antigone or Creon?"
+    ],
+    "home": "theatre",
+    "props": "the palace of Thebes with the suppliants' branches on the altar and the plague's dead in the street, the Sphinx on her column, the place where three roads meet with the old man's overturned carriage, Polynices' body under its dust and the rock tomb where Antigone is walled up, and the theatre where the plays were given",
+    "lesson": [
+      {
+        "id": "search",
+        "label": "The search",
+        "point": "Thebes is dying of plague, and Apollo says the killer of old King Laius is in the city. Oedipus, who answered the Sphinx's riddle, swears to find him and make dark things clear. He is hunting himself."
+      },
+      {
+        "id": "seer",
+        "label": "The blind seer",
+        "point": "The blind prophet Teiresias will not speak, then tells Oedipus: you are the man. Oedipus, who can see, cannot see the truth; the blind man sees it, and is called a liar for it."
+      },
+      {
+        "id": "crossroads",
+        "label": "Where three roads meet",
+        "point": "Fleeing the oracle that he would kill his father and marry his mother, Oedipus killed an old man who struck him at a crossroads, then won Thebes and its queen. Each step away from his fate took him to it."
+      },
+      {
+        "id": "recognition",
+        "label": "Recognition",
+        "point": "Witness by witness the truth comes out. Oedipus is Laius's son and Jocasta's. She hangs herself; he blinds himself with her brooches. Wait to see a life's end before you call anyone happy."
+      },
+      {
+        "id": "unwritten",
+        "label": "The unwritten laws",
+        "point": "Creon forbids anyone to bury Polynices, a traitor. His sister Antigone buries him anyway, obeying the gods' unwritten laws, which were not made today or yesterday, above the king's decree."
+      },
+      {
+        "id": "too_late",
+        "label": "Too late",
+        "point": "Creon and Antigone each hold to one right and will not bend. He walls her up alive; when he relents she is dead, and his son and his wife kill themselves. Man is the most wonderful and most terrible of things."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The altar fire burns, and the pyres of the plague are lit."
+      },
+      {
+        "what": "walkway",
+        "line": "The palace of Thebes stands, and the theatre with it."
+      },
+      {
+        "what": "household",
+        "line": "The suppliants and the chorus of old men are back."
+      },
+      {
+        "what": "leaves",
+        "line": "The olive branches on the altar are green again."
+      },
+      {
+        "what": "sun",
+        "line": "The sun is up over Thebes."
+      },
+      {
+        "what": "teacher",
+        "line": "Sophocles is himself again."
+      }
+    ]
   }
 }

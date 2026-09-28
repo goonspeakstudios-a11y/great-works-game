@@ -14,6 +14,7 @@ extends RefCounted
 ##   ascra()   #7 Hesiod: the farm at Ascra and Mount Helicon above it, the Muses, Chaos, Kronos
 ##   lesbos()  #8 Sappho: her garden above the sea on Lesbos, and the torn poems
 ##   argos()   #9 Aeschylus: the house of Atreus, the hill of Ares, and the theatre it was played in
+##   thebes()  #10 Sophocles: Thebes in the plague, where three roads meet, Antigone's tomb, the theatre
 
 const Kit := preload("res://scripts/hall/kit.gd")
 const Places := preload("res://scripts/hall/places.gd")
@@ -1129,4 +1130,99 @@ static func _argos_lessons(world: Node3D, work: String, room: Dictionary, out: A
 		"text": "Sit as a judge on the hill of Ares", "note": note.call("court"), "cast": {},
 		"marks": {"urns": urns + Vector3(0, 0, 1.2), "athena": Areas._at(ar, Vector3(0, 2.0, -6.0)), "orestes": Areas._at(ar, Vector3(0, 1.6, 4.4))}})
 	spots["court"] = Areas._at(ar, Vector3(-4.0, 0, 1.0))
+	return flicker
+
+
+# ---------- #10 Sophocles, the Theban plays ----------
+
+## Thebes, about 430 BC: the palace gate in the plague (the altar heaped with suppliants' branches,
+## the dead in the street and burning on pyres, the Sphinx on her column, Oedipus and Jocasta on
+## the step, Teiresias before them); to the east the place where three roads meet in the
+## mountains, the old man's carriage overturned; to the west the unburied body of Polynices and
+## the rock tomb where Antigone is walled up; behind, the theatre where the plays were given, and
+## Sophocles by the way in. Lost, the city is a ruin, the chorus shades.
+static func thebes(world: Node3D, work: String, room: Dictionary, stage: int = 0) -> Dictionary:
+	var b := Places._sky(world, room, stage, "golden", Vector3(0, 0, 0), 50.0)
+	Kit.plateau(world, 100.0, "earth", false)
+	var flicker: Array = []
+	var out: Array = []
+	var spots := {}
+	var sway: Array = []
+	var people: Array = []
+	var squads: Array = []
+	var birds: Array = Kit.flock(world, Vector3(0, 0, 10), 5, 16.0, 14.0) if b.has("leaves") else []
+	var take := func(a: Dictionary) -> void:
+		flicker.append_array(a["flicker"])
+		sway.append_array(a["sway"])
+		people.append_array(a["people"])
+		squads.append_array(a["squads"])
+		birds.append_array(a["birds"])
+	_arrival(world, room, out, spots, flicker, 88.0, 58.0, "path")
+	var poet := _teacher(world, room, b, stage, Vector3(0, 0, 50.0), 0.0, Vector3(0, 0, 52.8), out, spots)
+	_study(world, room, out, spots, [[Vector3(-4.2, 0, 51.5), 0.0, Vector3(-4.2, 0, 53.1)]],
+		Vector3(-7.0, 1.6, 48.5), 0.3, Vector3(-6.4, 0, 50.3), Vector3(6.5, 0, 49.0), Vector3(6.5, 0, 50.2))
+	for p: Vector3 in [Vector3(-14, 0, 44), Vector3(15, 0, 40), Vector3(-20, 0, 22), Vector3(22, 0, 24)]:
+		sway.append(Kit.olive(world, p, 1.2, b.has("leaves")))
+
+	var gate := Areas.thebes_gate(world, Vector3(0, 0, 5), 0.0, b)
+	take.call(gate)
+	var roads := Areas.crossroads(world, Vector3(52, 0, -38), 0.0, b)
+	take.call(roads)
+	var tomb := Areas.antigone_tomb(world, Vector3(-48, 0, -30), 0.3, b)
+	take.call(tomb)
+	var play := Greek.theatre(world, Vector3(0, 0, -62), 0.0, 12, b.has("walkway"))
+	for k in 6:  # the chorus of Theban elders in the orchestra
+		var at: Vector3 = (play["root"] as Node3D).transform * Vector3(-3.0 + (k % 3) * 3.0, 0, 1.0 + (k / 3) * 2.5)
+		people.append(People.figure(world, at, 0.0, "phoenix", not b.has("household"), "", "3a3a5a"))
+	_way(world, [Vector3(0, 0, 46), Vector3(0, 0, 26)])
+	_way(world, [Vector3(14, 0, 18), Vector3(40, 0, -14)])
+	_way(world, [Vector3(-14, 0, 18), Vector3(-42, 0, -12)])
+	_way(world, [Vector3(0, 0, -12), Vector3(0, 0, -38)])
+	out.append(Places.seat(world, Vector3(18.0, 0, 50.0), Vector3(0, 0, -1), "Sit and look at the palace"))
+	flicker.append_array(_thebes_lessons(world, work, room, out, spots, gate, roads, tomb, play, b))
+	return {"name": _name(room), "interactables": out, "spawn": Vector3(0, 0.05, 85.0), "yaw": 0.0, "spots": spots,
+		"flicker": flicker, "people": [poet] + people, "restored": 0, "sway": sway, "birds": birds, "squads": squads, "back": b}
+
+
+## Sophocles' six points: the search at the altar, the blind seer, the crossroads (a beat, as
+## Oedipus), the recognition at the palace door (a beat), the unwritten laws (a beat, as Antigone
+## with the dust), and too late, where the chorus sings in the theatre.
+static func _thebes_lessons(world: Node3D, work: String, room: Dictionary, out: Array, spots: Dictionary, gate: Dictionary,
+		roads: Dictionary, tomb: Dictionary, play: Dictionary, b: Array) -> Array:
+	var flicker: Array = []
+	var gr: Node3D = gate["root"]
+	var note := func(id: String) -> String: return Places._lesson(room, id).get("point", "")
+	var stele_stone := func(id: String, at: Vector3, face: Vector3, text: String) -> void:
+		Kit.stele(world, at + (at - face).normalized() * 0.9, Kit.face_yaw(at + (at - face).normalized() * 0.9, at))
+		_stone(out, work, room, id, at, text)
+		spots[id] = at
+	stele_stone.call("search", Areas._at(gr, Vector3(-2.6, 0, 7.4)), Areas._at(gr, Vector3(0, 0, 4.0)), "Kneel with the suppliants")
+	stele_stone.call("seer", Areas._at(gr, Vector3(6.2, 0, 9.4)), Areas._at(gr, Vector3(4.0, 0, 8.0)), "Listen to Teiresias")
+	var orch: Vector3 = (play["root"] as Node3D).transform * Vector3(0, 0, 6.0)
+	stele_stone.call("too_late", orch + Vector3(3.5, 0, 3.0), orch, "Hear the chorus sing of man")
+
+	# where three roads meet
+	var rr: Node3D = roads["root"]
+	var meet := Areas._at(rr, Vector3.ZERO)
+	out.append({"kind": "beat", "pos": Areas._at(rr, Vector3(0, 0, 18.0)), "work": work, "id": "crossroads", "beat": "the_crossroads",
+		"text": "Take the road from Delphi, as Oedipus", "note": note.call("crossroads"), "cast": {},
+		"marks": {"meeting": meet + Vector3(0, 0, 2.0), "cart": Areas._at(rr, Vector3(3.0, 1.0, 3.0))}})
+	spots["crossroads"] = Areas._at(rr, Vector3(0, 0, 18.0))
+
+	# the recognition, at the palace door
+	var door := Areas._at(gr, Vector3(0, 0, -2.0))
+	var queen: Node3D = gate["people"][1]["root"]
+	out.append({"kind": "beat", "pos": Areas._at(gr, Vector3(-3.5, 0, 6.0)), "work": work, "id": "recognition", "beat": "the_truth",
+		"text": "Question the last witness, as Oedipus", "note": note.call("recognition"), "cast": {"jocasta": queen},
+		"marks": {"altar": Areas._at(gr, Vector3(0, 0, 6.2)), "door": door, "jocasta": Areas._at(gr, Vector3(-1.5, 2.2, -3.2))}})
+	spots["recognition"] = Areas._at(gr, Vector3(-3.5, 0, 6.0))
+
+	# the dust on Polynices, and the tomb
+	var tr: Node3D = tomb["root"]
+	var sister: Node3D = tomb["people"][2]["root"]
+	out.append({"kind": "beat", "pos": Areas._at(tr, Vector3(2.0, 0, 12.0)), "work": work, "id": "unwritten", "beat": "the_dust",
+		"text": "Bury your brother, as Antigone", "note": note.call("unwritten"), "cast": {"antigone": sister},
+		"marks": {"body": Areas._at(tr, Vector3(5.0, 0, 7.6)), "creon": Areas._at(tr, Vector3(-6.0, 2.0, 4.0)),
+			"tomb": Areas._at(tr, Vector3(0, 0, -5.8))}})
+	spots["unwritten"] = Areas._at(tr, Vector3(2.0, 0, 12.0))
 	return flicker
