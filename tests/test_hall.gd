@@ -1016,12 +1016,12 @@ func test_rome_is_a_city_that_lives_through_its_ages() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	hall.progress.data = {"works": {}, "rome_reached": 4}
+	hall.progress.data = {"works": {}, "rome_reached": 6}
 	hall.travel("urbs")
 	check_eq(hall.here, "urbs", "the city is a place of its own")
 	check_eq(hall._world_of("urbs"), "rome", "in the Rome world")
 	check_eq(hall.rome_age(), 0, "it begins in the Republic")
-	check(hall.here_name.contains("201 BC"), "the first act is the Republic after Zama: %s" % hall.here_name)
+	check(hall.here_name.contains("280 BC"), "the first act is the age of heroes: %s" % hall.here_name)
 	var gate: Array = hall.interactables.filter(func(i): return i["kind"] == "gate" and i["to"] == "rhetorica-ad-herennium")
 	check(gate.size() == 1 and gate[0]["open"], "the Rhetorica's gateway is open")
 	check(RomeMap.inside(RomeMap.outline("palatine_forum"), gate[0]["pos"]), "and it stands in the Rhetorica's zone")
@@ -1033,7 +1033,7 @@ func test_rome_is_a_city_that_lives_through_its_ages() -> void:
 	var trades := {}
 	for i in citizens:
 		trades[i["citizen"]["job"]] = true
-	check(trades.size() >= 30, "at many trades (%d)" % trades.size())
+	check(trades.size() >= 20, "at many trades, few as they are in the simple city of heroes (%d)" % trades.size())
 	check(hall.interactables.filter(func(i): return i["kind"] == "statue").size() >= 15, "the monuments of the old city tell their stories")
 	var ground: Array = hall.world.find_children("Ground", "MeshInstance3D", true, false)
 	check(ground.size() == 1 and ground[0].material_override == RomeMap.tinted("r_ground"), "the ground is the city's trodden street")
@@ -1041,13 +1041,14 @@ func test_rome_is_a_city_that_lives_through_its_ages() -> void:
 	check(not hall.regions.is_empty(), "the city has its regions")
 	check(hall.life != null, "the city has its day")
 	var names: Array = [hall.here_name]
-	for k in 4:
+	var ages: Array = RomeMap.ages()
+	for k in ages.size() - 1:
 		hall.activate(hall.interactables.filter(func(i): return i["kind"] == "rome_age")[0])
 		names.append(hall.here_name)
 		check_eq(hall.here, "urbs", "still in the city after the years pass")
-	check_eq(hall.rome_age(), 4, "through the late Republic, the Empire and the late Empire to the fall")
-	check(names[1].contains("50 BC") and names[2].contains("150") and names[3].contains("330") and names[4].contains("552"),
-		"each age says its year: %s" % str(names))
+	check_eq(hall.rome_age(), ages.size() - 1, "down through every age to the fall")
+	for k in ages.size():
+		check(names[k].contains(ages[k]["when"]), "age %d says its year: %s" % [k, names[k]])
 	check(hall.people.size() < people_then / 3, "the emptied city has few people left (%d)" % hall.people.size())
 	var fallen: Array = hall.world.find_children("Ground", "MeshInstance3D", true, false)
 	check(fallen.size() == 1 and fallen[0].material_override == RomeMap.tinted("rubble"), "its ground is rubble")
@@ -1080,8 +1081,10 @@ func test_citizens_talk_like_people() -> void:
 	var Citizen: GDScript = load("res://scripts/hall/citizen.gd")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 3
-	for age in ["early", "republic", "empire", "late", "fall"]:
+	for age in ["heroic", "early", "republic", "empire", "late", "collapse", "fall"]:
 		check(Citizen.jobs_for(age).size() >= 12, "%s has its trades" % age)
+	var hero: Dictionary = Citizen.make(rng, "veteranus", "heroic", ["Subura"])
+	check(Citizen.reply(hero, "who").contains("Decius"), "the heroes' generation speaks of Decius Mus")
 	var soldier: Dictionary = Citizen.make(rng, "veteranus", "early", ["Subura"])
 	check(Citizen.reply(soldier, "work").contains("Hannibal") or Citizen.reply(soldier, "work").contains("Cannae"), "the Republic's veterans speak of Zama and Cannae")
 	for j in Citizen.data()["jobs"]:
@@ -1144,7 +1147,7 @@ func test_the_city_has_its_days_and_remembers_you() -> void:
 	var hall: Node = Hall.new()
 	hall.offline = true
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
-	hall.progress.data = {"works": {}, "rome_hour": 8.9, "rome_day": 3, "rome_reached": 1, "rome_age": 1}
+	hall.progress.data = {"works": {}, "rome_hour": 8.9, "rome_day": 3, "rome_reached": 2, "rome_age": 2}
 	hall.travel("urbs")
 	var town: RefCounted = hall.life.town
 	check(town != null, "the city keeps a calendar")

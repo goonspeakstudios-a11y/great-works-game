@@ -9,12 +9,25 @@ extends RefCounted
 ## time. react() is the short thing they say out loud as you pass or bump into them.
 
 const FILE := "res://content/rome/people.json"
+## A job as it is spoken of in an age: the heroes of 280 BC and the Republic of 201 BC have their
+## own words for their work ("hero", "rise"); the later ages share the plainer ones.
+static func _in_age(j: Dictionary, age: String) -> Dictionary:
+	var key: String = {"heroic": "hero", "early": "rise"}.get(age, "")
+	if key == "" or not j.has(key):
+		return j
+	var out := j.duplicate()
+	out.merge(j[key], true)
+	return out
+
+
 ## What each age believes of itself, for Claude playing its people: from the old virtues to their ruin.
 const SPIRIT := {
+	"heroic": "the age of heroes, Rome of 280 BC: a small, poor, cheerful city of farmer-soldiers. You are simple, good-humoured and utterly sure of Rome and its gods. You tell the old stories (Horatius at the bridge, Scaevola's hand in the fire, the Sabine women, Decius Mus riding to his death at Sentinum, Curius and his turnips, Fabricius and Pyrrhus's gold) as family memory. You admire the Greeks' cleverness and are not impressed by it. You speak warmly and plainly, with a farmer's humour.",
 	"early": "the Republic of 201 BC, just after the victory over Hannibal. You sincerely hold the old Roman virtues: virtus (courage), pietas (duty to gods, family and Republic), fides (the word kept), gravitas, frugality, and service and sacrifice for the res publica. You are proud, pious and plain; grief and hardship are borne for Rome and not complained of. Luxury and Greek softness are suspect.",
 	"republic": "the last generation of the Republic. The old virtues are praised in speeches and betrayed in practice: ambition, faction, money, gangs and generals' armies rule. You are shrewd, cynical or angry, and you know exactly who is buying whom.",
 	"empire": "Rome at the height of the Empire. Peace, plenty and spectacle; the old virtues are statues in the Forum. Luxury, idleness, servility to the Emperor, informers and the arena. You are comfortable, careful and a little hollow.",
 	"late": "the late Empire. A hard, taxed, regimented and frightened city; cruelty and corruption in office, the old gods forbidden, the new faith in power, trades bound by law. You are bitter, afraid or devout.",
+	"collapse": "Rome in AD 455, just after the Vandals' sack. Absurd decadence and collapse: emperors murdered in months, barbarian generals choosing them, the Senate arguing precedence at the games while the grain from Africa is gone, relic sellers, charlatans, the rich in silk and the poor starving, betting on the next emperor's death. You are frantic, cynical, fatalistic or numb, and you laugh at the wrong things.",
 	"fall": "the ruined city after twenty years of war, siege, famine and plague. Most of Rome is empty. You are numb, desperate, hungry, and you cling to the Church or to nothing.",
 }
 
@@ -33,6 +46,8 @@ static func data() -> Dictionary:
 
 ## The jobs people are at in an age.
 static func jobs_for(age: String) -> Array:
+	if age == "collapse":
+		age = "late"  # the same trades as the late Empire, gone to seed
 	return (data().get("jobs", []) as Array).filter(func(j: Dictionary) -> bool: return (j["ages"] as Array).has(age))
 
 
@@ -58,7 +73,7 @@ static func make(rng: RandomNumberGenerator, job_id: String, age: String, homes:
 	var origin := "Roman"
 	var name := ""
 	var call := ""  # what they'd have you call them
-	var late := age in ["late", "fall"]
+	var late := age in ["late", "collapse", "fall"]
 	if cls == "foreign" or (cls == "slave" and rng.randf() < 0.3):
 		var peoples: Array = (n["foreign"] as Dictionary).keys().filter(func(k: String) -> bool: return k != "Goth" or late)
 		origin = str(_pick(rng, peoples))
@@ -120,9 +135,7 @@ static func greeting(p: Dictionary) -> String:
 ## Their answer to one of the talk panel's topics. `near`: the names of what stands close by.
 static func reply(p: Dictionary, topic: String, near: Array = []) -> String:
 	var j := job(p["job"])
-	if p["age"] == "early" and j.has("rise"):  # the Republic of 201 BC speaks from inside the old virtues
-		j = j.duplicate()
-		j.merge(j["rise"], true)
+	j = _in_age(j, p["age"])
 	var d := data()
 	match topic:
 		"who":
@@ -134,7 +147,7 @@ static func reply(p: Dictionary, topic: String, near: Array = []) -> String:
 		"work":
 			return fill(p, _next(p, "work", (j.get("work", []) as Array) + (j.get("worry", []) as Array)))
 		"life":
-			var lives: Dictionary = d["life_early"] if p["age"] == "early" else d["life"]
+			var lives: Dictionary = d.get("life_" + p["age"], d["life"]) if p["age"] in ["heroic", "early"] else d["life"]
 			return fill(p, _next(p, "life", lives.get(p["class"], lives["pleb"])))
 		"news":
 			return _next(p, "news", d["news"].get(p["age"], []))
@@ -179,9 +192,7 @@ static func heard(text: String) -> String:
 ## Who Claude is to be for this citizen: the person, their time, and how to talk.
 static func persona(p: Dictionary, when: String, near: Array) -> String:
 	var j := job(p["job"])
-	if p["age"] == "early" and j.has("rise"):
-		j = j.duplicate()
-		j.merge(j["rise"], true)
+	j = _in_age(j, p["age"])
 	var family := "You live in the %s" % p["home"]
 	if p["partner"] != "":
 		family += " with your %s" % p["partner"]

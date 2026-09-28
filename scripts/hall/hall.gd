@@ -1806,7 +1806,7 @@ const CITY_LAST := 9
 ## the pride of its virtues, the late Republic, the Empire at its height, the late Empire, and the
 ## emptied city after the Gothic War. The navel of the city lets the years pass as far as you have
 ## come, and brings you back to the beginning at the end.
-const ROME_AGES := 5
+const ROME_AGES := 7
 
 
 func rome_age() -> int:

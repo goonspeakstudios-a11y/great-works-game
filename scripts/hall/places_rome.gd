@@ -22,6 +22,8 @@ const Town := preload("res://scripts/hall/urbs_town.gd")
 
 ## Where the city crowds together in each age: [map position, share of the people].
 const HOTSPOTS := {
+	"heroic": [[[0, 10], 0.4], [[-290, -367], 0.15], [[522, 367], 0.1], [[41, -600], 0.1], [[-190, 90], 0.25]],
+	"collapse": [[[0, 10], 0.25], [[41, -600], 0.2], [[560, -222], 0.15], [[-688, 710], 0.2], [[-290, -367], 0.2]],
 	"early": [[[0, 10], 0.35], [[-290, -367], 0.15], [[522, 367], 0.1], [[41, -600], 0.1], [[-760, 200], 0.15], [[-190, 90], 0.15]],
 	"republic": [[[0, 10], 0.3], [[-290, -367], 0.15], [[522, 367], 0.15], [[41, -600], 0.08], [[-760, 200], 0.1],
 		[[-560, -700], 0.1], [[260, -200], 0.12]],
@@ -32,17 +34,18 @@ const HOTSPOTS := {
 	"fall": [[[-800, 450], 0.5], [[-688, 710], 0.2], [[0, 10], 0.3]],
 }
 ## Who keeps the streets in each age (a job in people.json), walking in step.
-const PATROLS := {"early": "lictor", "republic": "lictor", "empire": "vigil", "late": "miles", "fall": "miles"}
+const PATROLS := {"heroic": "lictor", "collapse": "miles", "early": "lictor", "republic": "lictor", "empire": "vigil", "late": "miles", "fall": "miles"}
 ## The jobs most of the city is at, met more often than the rest.
 const COMMON := ["proletarius", "servus", "ancilla", "peregrinus", "baiulus", "matrona", "aquarius", "mendicus"]
 ## When each kind of person is out: the carters by night, the watch and the innkeepers always.
 const SHIFTS := {"mulio": "night", "caupo": "always", "lictor": "day", "vigil": "always", "miles": "always", "meretrix": "night",
 	"vespillo": "night"}
 ## How far each age has fallen: greyer, darker, thicker air (urbs_life.gd).
-const GLOOM := {"early": 0.0, "republic": 0.06, "empire": 0.12, "late": 0.35, "fall": 0.7}
+const GLOOM := {"heroic": 0.0, "early": 0.02, "republic": 0.15, "empire": 0.25, "late": 0.45, "collapse": 0.6, "fall": 0.78}
 ## The music zone of each age (music.gd): the town by day and night, then the same tune gone
 ## wrong, then only its echo.
-const ZONE := {"early": "urbs", "republic": "urbs", "empire": "urbs", "late": "urbs_late", "fall": "urbs_fall"}
+const ZONE := {"heroic": "urbs", "early": "urbs", "republic": "urbs_late", "empire": "urbs_late", "late": "urbs_fall",
+	"collapse": "urbs_fall", "fall": "urbs_fall"}
 
 
 ## The city in the age `age_index`. `reached`: the last age the Roman books have brought you to;
@@ -164,7 +167,7 @@ static func _regions(c: Dictionary, id: String) -> Array:
 	var out: Array = []
 	var ab: Dictionary = c.get("abitato", {})
 	for r: Dictionary in c.get("regions", []):
-		var name: String = r.get(id if r.has(id) else ("republic" if id in ["early", "republic"] else "empire"), "")
+		var name: String = r.get(id if r.has(id) else ("republic" if id in ["heroic", "early", "republic"] else "empire"), "")
 		var centre := RomeMap.at(r["at"])
 		if id == "fall" and centre.distance_to(RomeMap.at(ab.get("at", [0, 0]))) > RomeMap.span(float(ab.get("radius", 500))):
 			name += ", empty"

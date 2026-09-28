@@ -7,9 +7,11 @@
       "name": "the Saturnalia",
       "day": 22,
       "ages": [
+        "heroic",
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         0,
@@ -28,6 +30,7 @@
       "name": "the Lupercalia",
       "day": 4,
       "ages": [
+        "heroic",
         "early",
         "republic",
         "empire",
@@ -49,6 +52,7 @@
       "name": "the Parilia, Rome's birthday",
       "day": 10,
       "ages": [
+        "heroic",
         "early",
         "republic",
         "empire",
@@ -70,6 +74,7 @@
       "name": "the Roman Games",
       "day": 16,
       "ages": [
+        "heroic",
         "early",
         "republic",
         "empire",
@@ -92,6 +97,7 @@
       "day": 6,
       "ages": [
         "late",
+        "collapse",
         "fall"
       ],
       "at": [
@@ -117,7 +123,8 @@
         "republic",
         "empire",
         "late",
-        "fall"
+        "fall",
+        "collapse"
       ],
       "road": 0,
       "crew": [
@@ -173,6 +180,7 @@
       "hour": 11.0,
       "every": 2,
       "ages": [
+        "heroic",
         "early",
         "republic",
         "empire",
@@ -201,10 +209,12 @@
       "from": 10.0,
       "to": 12.5,
       "ages": [
+        "heroic",
         "early",
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         -58,
@@ -233,6 +243,16 @@
           "Citizens! Carthage is beaten. Now beware the softness that comes with victory!",
           "The Republic keeps faith: land for every man who served!",
           "Remember Cannae. Remember who did not ask for peace!"
+        ],
+        "heroic": [
+          "Citizens! Pyrrhus asks for peace. Appius says: no peace while a king stands in Italy!",
+          "The Samnites are our allies now. Honour them as Romans!",
+          "Every man to his century when the trumpet sounds!"
+        ],
+        "collapse": [
+          "Citizens! The new Emperor, chosen for us by the Goths of Toulouse, greets you!",
+          "Games! There will be games for his accession!",
+          "(a voice) How long will this one last?"
         ]
       }
     },
@@ -244,7 +264,8 @@
       "ages": [
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         20,
@@ -264,6 +285,10 @@
         "late": [
           "By order of the Prefect: bread at the steps at the ninth hour!",
           "Races at the Circus! Greens against Blues!"
+        ],
+        "collapse": [
+          "Races on the Ides! Greens against Blues!",
+          "Auction of the goods of the late Emperor's friends!"
         ]
       }
     },
@@ -274,10 +299,12 @@
       "to": 14.0,
       "market": true,
       "ages": [
+        "heroic",
         "early",
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         -290,
@@ -301,6 +328,14 @@
         "early": [
           "Market day! The farms are back, and the men with them!",
           "Grain from Sicily, cheap at last!"
+        ],
+        "heroic": [
+          "Market day! Beans, barley, a good ox!",
+          "Salt from Ostia! Salt!"
+        ],
+        "collapse": [
+          "Market day. What's left.",
+          "No grain. Beans, dear."
         ]
       }
     },
@@ -311,7 +346,8 @@
       "to": 12.0,
       "ages": [
         "late",
-        "fall"
+        "fall",
+        "collapse"
       ],
       "at": [
         -688,
@@ -327,6 +363,10 @@
         "fall": [
           "Bread from the Pope's farms! One loaf each!",
           "Wait your turn!"
+        ],
+        "collapse": [
+          "Bread for the poor, one each!",
+          "God bless the bishop!"
         ]
       }
     },
@@ -373,7 +413,8 @@
       "ages": [
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "road": 3,
       "crew": [
@@ -400,7 +441,8 @@
       "ages": [
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         560,
@@ -423,6 +465,11 @@
           "Out, all of you!",
           "The Church will take us, or nobody will.",
           "Sell the loom, it's all we have."
+        ],
+        "collapse": [
+          "Out, all of you!",
+          "The Church will take us, or nobody will.",
+          "Sell the loom, it's all we have."
         ]
       }
     },
@@ -435,7 +482,8 @@
       "ages": [
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         480,
@@ -458,6 +506,11 @@
           "Fire in the Subura!",
           "Get the old man out!",
           "It's all gone. Everything."
+        ],
+        "collapse": [
+          "Fire in the Subura!",
+          "Get the old man out!",
+          "It's all gone. Everything."
         ]
       }
     },
@@ -469,7 +522,8 @@
       "ages": [
         "republic",
         "empire",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         520,
@@ -492,6 +546,11 @@
           "Two asses.",
           "Come in, come in.",
           "The priests walk past quicker every year."
+        ],
+        "collapse": [
+          "Two asses.",
+          "Come in, come in.",
+          "The priests walk past quicker every year."
         ]
       }
     },
@@ -503,7 +562,8 @@
       "every": 7,
       "ages": [
         "republic",
-        "late"
+        "late",
+        "collapse"
       ],
       "at": [
         20,
@@ -518,6 +578,11 @@
           "Stone them! Stone the aedile!"
         ],
         "late": [
+          "Bread! The Prefect hoards it!",
+          "Burn the Prefect's house!",
+          "The soldiers are coming!"
+        ],
+        "collapse": [
           "Bread! The Prefect hoards it!",
           "Burn the Prefect's house!",
           "The soldiers are coming!"
@@ -609,6 +674,104 @@
         "I'm seventeen. Take me.",
         "My father served. His father served. Write my name."
       ]
+    },
+    {
+      "id": "tales",
+      "kind": "gathering",
+      "from": 16.0,
+      "to": 19.0,
+      "ages": [
+        "heroic"
+      ],
+      "at": [
+        -30,
+        20
+      ],
+      "speaker": "veteranus",
+      "crowd": 9,
+      "cries": {
+        "heroic": [
+          "And Horatius said: two of you, stand with me, and we'll hold them while the bridge falls!",
+          "Mucius put his right hand in the fire and didn't flinch. The king let him go. Left-hand, they called him after.",
+          "Decius veiled his head, stood on a spear, spoke the words, and rode into the Gauls. And the gods took him.",
+          "Curius, turnips, the Samnite gold! Ha! Tell it again!"
+        ]
+      }
+    },
+    {
+      "id": "march_out",
+      "kind": "procession",
+      "hour": 8.0,
+      "every": 2,
+      "ages": [
+        "heroic"
+      ],
+      "road": 0,
+      "crew": [
+        "lictor",
+        "lictor",
+        "senator",
+        "tibicen",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus",
+        "veteranus"
+      ],
+      "cries": [
+        "South, to Pyrrhus!",
+        "Come back with your shield or on it!",
+        "Mars go with you, my son!",
+        "Elephants! We'll see about elephants!"
+      ],
+      "torches": false
+    },
+    {
+      "id": "relics",
+      "kind": "gathering",
+      "from": 9.0,
+      "to": 15.0,
+      "ages": [
+        "collapse"
+      ],
+      "at": [
+        -688,
+        690
+      ],
+      "speaker": "mercator",
+      "crowd": 7,
+      "cries": {
+        "collapse": [
+          "A thread from the tunic of the Apostle! Genuine!",
+          "A bone of Saint Laurence, blessed, cures fever!",
+          "Charms against Vandals! Two for one!"
+        ]
+      }
+    },
+    {
+      "id": "bets",
+      "kind": "gathering",
+      "from": 12.0,
+      "to": 17.0,
+      "ages": [
+        "collapse"
+      ],
+      "at": [
+        41,
+        -560
+      ],
+      "speaker": "proletarius",
+      "crowd": 10,
+      "cries": {
+        "collapse": [
+          "Three to one the new one's dead by the spring!",
+          "Greens! Greens! The Blues' horses are cursed!",
+          "Who cares who's emperor, who's driving for the Greens?"
+        ]
+      }
     }
   ],
   "rain": {
@@ -738,6 +901,50 @@
         "My mother died in the night.",
         "Mine in the siege. Bury her by the church, they'll say a prayer."
       ]
+    ],
+    "heroic": [
+      [
+        "Salve, {b}! The beans are good this year.",
+        "And the barley, {a}! The gods are pleased with us."
+      ],
+      [
+        "Heard about Pyrrhus's elephants?",
+        "Big grey oxen with noses for tails. We'll manage."
+      ],
+      [
+        "Your boy's off to the legions?",
+        "With his father's shield and his grandfather's spear, {a}."
+      ],
+      [
+        "The Greek at the inn says we're barbarians.",
+        "The Greek at the inn owes me for his dinner."
+      ],
+      [
+        "Is it true Fabricius sent the king's doctor back in chains?",
+        "He did! The doctor offered to poison Pyrrhus. Fabricius wouldn't win like that."
+      ]
+    ],
+    "collapse": [
+      [
+        "Did you see him? The new Emperor?",
+        "Which one? There's been three since Easter."
+      ],
+      [
+        "The Vandals took the roof of Jupiter.",
+        "It was gilded. What did Jupiter ever do for us?"
+      ],
+      [
+        "My wife sold our daughter's dowry for grain.",
+        "Mine sold our daughter."
+      ],
+      [
+        "The Senate met today.",
+        "About what? The order of seating at the games."
+      ],
+      [
+        "Bet on the Greens?",
+        "On the Greens, the Emperor, the end of the world. Why not."
+      ]
     ]
   },
   "gossip": {
@@ -763,6 +970,16 @@
     "fall": [
       "{other} the {title}? Still alive, then. That's news.",
       "{other} the {title} ate things in the siege nobody should eat. Don't ask."
+    ],
+    "heroic": [
+      "{other} the {title}? Fought at Sentinum, three wounds, all in front. A good man.",
+      "{other}, the {title}. Their grandmother was a Sabine. Makes the best bread in the street.",
+      "{other} the {title}? Talks too much about the Greeks. Harmless, mind."
+    ],
+    "collapse": [
+      "{other} the {title}? Sold the lead off their own roof to the Vandals' agents. Rain comes in now.",
+      "{other} the {title} bought a bishop's favour and a senator's daughter in the same week.",
+      "{other} the {title}? They'll be dead or rich by summer. Nobody in between any more."
     ]
   },
   "favours": {
@@ -808,10 +1025,13 @@
         "empire": "Titus Numisius Felix",
         "late": "Numisia Prima",
         "fall": "Iohannes, a beggar",
-        "early": "Numisius Felix"
+        "early": "Numisius Felix",
+        "heroic": "Numisius, a farmer",
+        "collapse": "Numisia, the baker's widow"
       },
       "jobs": {
-        "fall": "mendicus"
+        "fall": "mendicus",
+        "heroic": "holitor"
       },
       "lines": {
         "republic": [
@@ -838,6 +1058,16 @@
           "Numisius, baker, as my father was. My elder son fell at Cannae. The younger is home from Zama with a land grant. I bake for both of them now.",
           "My girl's betrothed to a veteran of Scipio's. A good man. He has a scar across his face and he's not ashamed of it, nor is she.",
           "The Felix name will be on this oven when Rome is a thousand years old. I believe that."
+        ],
+        "heroic": [
+          "Numisius. Four iugera outside the Colline Gate, a wife, three boys, a plough. What more does a Roman want?",
+          "My eldest was at Sentinum when Decius rode out. He came home with a scar and a story, and he tells it every night.",
+          "One day there'll be a Numisius in the Senate, you'll see. Or at least a Numisius with more than four iugera."
+        ],
+        "collapse": [
+          "Numisia. The Vandals took the flour and the donkeys. The oven's cold. The name's still over the door.",
+          "My son joined a barbarian general's household guard. Better paid than the Emperor's.",
+          "They sell relics where the mill was. Bones and cloth. Nobody wants bread they can't afford."
         ]
       }
     },
@@ -852,7 +1082,8 @@
         "republic": "Hilarus the Thracian",
         "empire": "Callistus the retiarius",
         "late": "Nicias, once a gladiator",
-        "early": "Gaius Varenus, centurion"
+        "early": "Gaius Varenus, centurion",
+        "heroic": "Marcus Pomponius, soldier"
       },
       "lines": {
         "republic": [
@@ -874,10 +1105,16 @@
           "Varenus. First spear of my legion at Zama. Sixteen years under arms. I was at Cannae too, and I lived, and they sent us to Sicily in disgrace.",
           "Scipio took the Cannae men to Africa and let us wash it out in Hannibal's blood. We did.",
           "Land in Apulia, and an oak crown from a man whose life I saved. I'd go again tomorrow."
+        ],
+        "heroic": [
+          "Pomponius. Hastatus in the front line. I've fought Samnites, Etruscans, Umbrians and Gauls, and married a Samnite. Life's funny.",
+          "At Sentinum I saw Decius veil his head. I've never been so frightened or so proud.",
+          "Now it's Pyrrhus. Elephants, phalanx, all very Greek. We'll see how they like a Roman line."
         ]
       },
       "jobs": {
-        "early": "veteranus"
+        "early": "veteranus",
+        "heroic": "veteranus"
       }
     },
     {
@@ -892,7 +1129,9 @@
         "empire": "Caecilius Rufus Antoninus",
         "late": "Caecilius Rufus Symmachianus",
         "fall": "Caecilius Rufus, of the Senate",
-        "early": "Quintus Caecilius"
+        "early": "Quintus Caecilius",
+        "heroic": "Caecilius, of the Senate",
+        "collapse": "Caecilius Rufus, vir illustris"
       },
       "lines": {
         "republic": [
@@ -919,6 +1158,16 @@
           "Caecilius. My family has given Rome three consuls and a great many dead. Three of my brothers lie at Cannae.",
           "The Senate refused to ransom the prisoners of Cannae. My nephew was among them. I voted with the rest. Rome does not buy back men who surrender.",
           "Now there's Greek silver in the houses, perfume on the young men, and talk of repealing the law that kept our women plain. Victory is more dangerous than Hannibal ever was."
+        ],
+        "heroic": [
+          "Caecilius. I have a farm, a seat in the Senate, one silver salt cellar from my grandmother, and it embarrasses me.",
+          "I was in the Senate when blind Appius was carried in and told us: no peace with a king in Italy. The old men wept. Then we voted.",
+          "Fabricius is my friend. He sent Pyrrhus's traitor doctor back to him in chains, with a note. That's how we fight."
+        ],
+        "collapse": [
+          "Caecilius Rufus, of illustrious rank, three titles and no army. The Senate is debating the seating at the games. I have a very good seat.",
+          "I paid the Vandals not to burn my house. I paid the new Emperor's general for the right to have paid the Vandals.",
+          "Rome is eternal. I say it every morning. My steward has started laughing."
         ]
       }
     },
@@ -935,7 +1184,9 @@
         "empire": "Fabia Procula",
         "late": "Fabia Maria",
         "fall": "Maria of the river",
-        "early": "Fabia"
+        "early": "Fabia",
+        "heroic": "Fabia",
+        "collapse": "Fabia, of the river"
       },
       "lines": {
         "republic": [
@@ -962,6 +1213,16 @@
           "Fabia. Fish. My husband rowed in the fleet off Africa. He came home, the gods be thanked, and mends nets now.",
           "Half the women on this bank were widows at Cannae. We kept the stalls. We kept the city fed.",
           "My son wants the fleet too. I'll let him. What else would a Roman boy do?"
+        ],
+        "heroic": [
+          "Fabia. Fish from the river, and salt from Ostia. My man's with the army. He'll be back for the harvest, he says. They always say.",
+          "My mother says the river god likes a good fishwife. I leave him the first fish every morning.",
+          "The Greek traders laugh at our little river boats. We'll have ships one day. Big ones."
+        ],
+        "collapse": [
+          "Fabia. The Vandal ships came right up the river. I watched them load the gold. It took four days.",
+          "Fish is dear now. So is everything. So is nothing, if you've nothing.",
+          "My daughter works in the Subura at night. Don't look at me like that."
         ]
       }
     },
@@ -976,7 +1237,8 @@
         "republic": "Stephanus the barber",
         "empire": "Stephanus the younger",
         "late": "Stephanus, barber of the Subura",
-        "early": "Menas the barber"
+        "early": "Menas the barber",
+        "heroic": "Mena's son, the barber"
       },
       "lines": {
         "republic": [
@@ -998,6 +1260,11 @@
           "Menas, barber, from Sicily, like the first barbers in Rome. The Romans only started shaving in my grandfather's time.",
           "The talk in this chair is all Zama and land grants. They're a proud people and they've earned it.",
           "I've lived among Greeks and Carthaginians. These are the ones who keep their word. I'm staying."
+        ],
+        "heroic": [
+          "My father was the first barber in Rome, came from Sicily. Before him, the Romans were hairy as bears.",
+          "The old senators still won't let me near them. Their beards are the Republic, they say.",
+          "Everyone in this chair talks of Pyrrhus. Me, I talk of the price of razors."
         ]
       }
     }

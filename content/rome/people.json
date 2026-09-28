@@ -373,6 +373,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -405,6 +406,16 @@
     "worry": [
      "Prices went mad in the war. We held them down on this street. You don't grow fat on a city at war."
     ]
+   },
+   "hero": {
+    "intro": "{name}, butcher.",
+    "work": [
+     "Meat for the feasts and the gods. Porridge the rest of the week. We're a porridge people, and proud of it.",
+     "The Greeks call us pultiphagi, porridge-eaters. Let them. The porridge-eaters are winning."
+    ],
+    "worry": [
+     "Honest weights. The aediles check, but they needn't."
+    ]
    }
   },
   {
@@ -414,6 +425,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -447,6 +459,16 @@
     "worry": [
      "The fleet's been burned at Carthage now. Five hundred ships, they say. The sea's ours."
     ]
+   },
+   "hero": {
+    "intro": "{name}. Fish.",
+    "work": [
+     "From the river and from Ostia when the salt boats bring it. Rome's no sea city. Not yet.",
+     "My husband fought at Sentinum and came home. I sold fish every day he was gone, and prayed every night."
+    ],
+    "worry": [
+     "The river gives. The gods give. We give back."
+    ]
    }
   },
   {
@@ -456,6 +478,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -486,6 +509,16 @@
     ],
     "worry": [
      "My sons will serve when they're called. As I did. As their grandfather did."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. I farm four iugera outside the gate, like everyone who matters. Curius Dentatus farms seven, and he beat the Samnites.",
+    "work": [
+     "The Samnite envoys found Curius at his hearth boiling turnips, and offered him gold. He said he'd rather rule men who had gold than have it. Then he went back to his turnips.",
+     "Plough in spring, march in summer, harvest when you're home. A Roman's year."
+    ],
+    "worry": [
+     "They say King Pyrrhus has elephants. Well. We've oxen, and more sense."
     ]
    }
   },
@@ -577,6 +610,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -608,6 +642,16 @@
     ],
     "worry": [
      "Too many veterans with nowhere to go yet. The Senate's promised land. It'll come."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. An inn by the Capene Gate. Soldiers, drovers, Sabines coming to market.",
+    "work": [
+     "The Sabines were our enemies in my grandfather's day. Now they're Romans, near enough, and drink my wine and complain about it. Family, you see.",
+     "The Samnites? Tough men, good fighters, terrible singers. We've fought them for fifty years and made peace at last."
+    ],
+    "worry": [
+     "No trouble in my inn. One look from my wife and the fiercest Umbrian goes quiet."
     ]
    }
   },
@@ -741,6 +785,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -770,6 +815,16 @@
     "worry": [
      "Our guild honours Minerva at her festival. We'll pour for her this spring."
     ]
+   },
+   "hero": {
+    "intro": "{name}, fuller.",
+    "work": [
+     "The candidates want their togas white as snow for the Campus. Candidatus: that's where the word comes from, from us.",
+     "It's a smelly trade and an honest one. Nobody ever lied about a clean toga."
+    ],
+    "worry": [
+     "My guild keeps Minerva's feast. We sing badly and drink well."
+    ]
    }
   },
   {
@@ -779,6 +834,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -807,6 +863,16 @@
     ],
     "worry": [
      "My son's in the levy this year. I made his boots myself."
+    ]
+   },
+   "hero": {
+    "intro": "{name}, cobbler.",
+    "work": [
+     "The Appian Way goes all the way to Capua now. Blind old Appius built it, and the army walks it in my boots.",
+     "A good boot and a good conscience: you can walk a long way on both."
+    ],
+    "worry": [
+     "Leather's cheap and the customers are honest. What more could a cobbler want?"
     ]
    }
   },
@@ -842,6 +908,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -869,6 +936,16 @@
     ],
     "worry": [
      "Four sons. Two are with the legions. I weave their cloaks myself."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. I weave, like Lucretia did, at her loom in the night when the other wives were feasting.",
+    "work": [
+     "The old women tell us about the Sabine wives who ran between the armies, their babies in their arms, and made the two peoples one. My grandmother was a Sabine.",
+     "A good woman keeps the hearth and the wool. And her tongue, if she's wise. I'm not always wise."
+    ],
+    "worry": [
+     "My husband's with the army in the south. I've woven him two cloaks. He'll lose one, men always do."
     ]
    }
   },
@@ -904,6 +981,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -932,6 +1010,16 @@
     ],
     "worry": [
      "Iron's scarce. Everything went to the legions. We'll rebuild."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. Smith. Ploughshares in spring, spear points in summer.",
+    "work": [
+     "The Samnites taught us the javelin and the long shield. We took the best of them and beat them with it. That's the Roman way.",
+     "My hammer rings from dawn. Rome's growing, and everything it grows needs iron."
+    ],
+    "worry": [
+     "Some say the Greeks make finer blades. Then why do they hire Romans to fight?"
     ]
    }
   },
@@ -967,6 +1055,7 @@
    "class": "pleb",
    "place": "stall",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -997,6 +1086,16 @@
     ],
     "worry": [
      "Two apprentices went to the war. One came back. I'll teach his son the wheel."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. I make pots, and good ones, if I say so.",
+    "work": [
+     "The Greeks of Tarentum paint theirs all over with gods and heroes. Ours hold water. I know which I'd rather drink from.",
+     "A pot is like a Roman: plain on the outside, sound all through, and hard to break."
+    ],
+    "worry": [
+     "My boy wants to be a soldier like his uncles. He can throw a spear before he can write his name."
     ]
    }
   },
@@ -1189,6 +1288,7 @@
    "class": "pleb",
    "place": "door",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1216,6 +1316,16 @@
     ],
     "worry": [
      "My brother is with the army still, in Africa, till the treaty's signed."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. One of the first barbers in Rome. My father came from Sicily with the trade.",
+    "work": [
+     "Before us, Romans wore their beards and hair long, like the old kings on the statues. Now the young men want their chins bare. My fortune!",
+     "The old men still won't shave. They say a beard is honest. I say it's a place for soup."
+    ],
+    "worry": [
+     "Everyone talks in the chair: the Samnites, Pyrrhus, the harvest. Mostly the harvest."
     ]
    }
   },
@@ -1366,6 +1476,7 @@
    "class": "pleb",
    "place": "stand",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1396,6 +1507,16 @@
     "worry": [
      "I cried the news of Cannae in this Forum. I cried the news of Zama. I'll never forget either."
     ]
+   },
+   "hero": {
+    "intro": "{name}! Crier!",
+    "work": [
+     "Hear ye: the Senate has refused the peace of King Pyrrhus! Old Appius Claudius, blind as he is, had himself carried in and said Rome makes no peace with a king in Italy!",
+     "Hear ye: Fabricius the consul went to Pyrrhus's camp, and the king offered him gold, and he laughed, and the king set an elephant roaring behind him, and he didn't even turn round!"
+    ],
+    "worry": [
+     "Some days I have nothing to cry but the price of beans. Those days I cry it proudly."
+    ]
    }
   },
   {
@@ -1405,6 +1526,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1433,6 +1555,16 @@
     ],
     "worry": [
      "Timber comes from the Sabine hills. The ships took most of it in the war."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. Carpenter. Houses, barns, the bridge.",
+    "work": [
+     "The Sublician bridge has no iron in it at all, not a nail. The gods of the river wouldn't like it. Horatius held it once against a whole army while they cut it down behind him.",
+     "Then he swam the Tiber in his armour. Or so my father told it. Every father tells it a little better."
+    ],
+    "worry": [
+     "Timber, pegs, and a straight eye. The city's growing faster than we can build it."
     ]
    }
   },
@@ -1656,6 +1788,7 @@
    "class": "pleb",
    "place": "river",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1683,6 +1816,16 @@
     ],
     "worry": [
      "The river's ours now, and the sea."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. Boatman.",
+    "work": [
+     "Up the river with salt, down the river with grain. Old Ostia's small still, but the river's generous.",
+     "We don't much trust the sea. The Tarentines do, and look where it got them."
+    ],
+    "worry": [
+     "The Tiber took my grandfather. My father pulled him out. Both got better."
     ]
    }
   },
@@ -1718,6 +1861,7 @@
    "class": "foreign",
    "place": "stand",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1745,6 +1889,16 @@
     ],
     "worry": [
      "Men speak of the Greek philosophers who doubt the gods. Let them doubt somewhere else."
+    ]
+   },
+   "hero": {
+    "intro": "{name}, from Etruria. We taught the Romans to read the signs, when they were still farmers on seven hills.",
+    "work": [
+     "They are a strange people. They take the gods more seriously than the gods do.",
+     "When the signs are bad they stop everything: the vote, the battle, the march. And then they win anyway."
+    ],
+    "worry": [
+     "My grandfather said Rome would be great. The liver said it. The Romans said: we know."
     ]
    }
   },
@@ -1791,6 +1945,7 @@
    "class": "pleb",
    "place": "temple",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1817,6 +1972,16 @@
     ],
     "worry": [
      "The victory was the gods' before it was Scipio's. We must not forget it."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. I lead the beast to the altar.",
+    "work": [
+     "The rite must be done exactly, word for word. A single word wrong and the priest begins again.",
+     "The gods are near here. You can feel them on the Capitol, in the groves, at the springs. They like us, I think. We keep faith."
+    ],
+    "worry": [
+     "Our gods are plain gods, like us. The Greeks' gods squabble like a bad family."
     ]
    }
   },
@@ -1890,6 +2055,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -1916,6 +2082,16 @@
     ],
     "worry": [
      "Music for the gods and for the dead. That's a piper's life, and it's a good one."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. Piper.",
+    "work": [
+     "Weddings, sacrifices, funerals, harvests. I play and the city dances, or weeps, or eats.",
+     "The pipers once walked out to Tibur in a sulk. The Senate got them drunk and carted them home asleep. We still celebrate it every June, in masks."
+    ],
+    "worry": [
+     "The Greeks have finer music. We have better reasons to play."
     ]
    }
   },
@@ -2051,6 +2227,7 @@
    "class": "state",
    "place": "patrol",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2078,6 +2255,16 @@
     ],
     "worry": [
      "I walked before the consul who marched to Africa. I've never seen men so glad to serve."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. Lictor.",
+    "work": [
+     "The rods and the axe. I carry them before the consul. He carries the Republic.",
+     "Mucius, the young man who sneaked into the Etruscan king's camp to kill him? Caught, he held his right hand in the fire until it burned, to show what Romans are. The king let him go. They called him Scaevola, left-hand. Every lictor knows that story."
+    ],
+    "worry": [
+     "The consul goes back to his plough when his year is done. So do I, to mine."
     ]
    }
   },
@@ -2139,6 +2326,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2167,6 +2355,16 @@
     "worry": [
      "Land in Apulia, they say. I'll farm it and send my sons when Rome calls."
     ]
+   },
+   "hero": {
+    "intro": "{name}. I was at Sentinum. The day of the Gauls and the Samnites together, and Decius.",
+    "work": [
+     "I saw him ride out. He'd spoken the words with the priest, head veiled, standing on a spear. Then he rode into the Gauls and the gods took him and the line held.",
+     "The Caudine Forks, my father remembered: an army sent under the yoke by the Samnites, bent double under the spears. We paid it back. Rome always pays it back."
+    ],
+    "worry": [
+     "The Greeks with their elephants and their phalanx. Let them come to the Campus and see."
+    ]
    }
   },
   {
@@ -2176,6 +2374,7 @@
    "class": "rich",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2206,6 +2405,16 @@
     "worry": [
      "Luxury is creeping in from the Greek cities. Silver plate, perfumes, dancing. It softens men. We must hold the line."
     ]
+   },
+   "hero": {
+    "intro": "I am {name}. I have a farm, a house, a vote in the Senate, and three sons in the legions. A rich man, by our reckoning.",
+    "work": [
+     "Decius Mus, at Sentinum, fifteen years ago: the Gauls were breaking our line, so he vowed himself and the enemy to the gods below, and rode into them alone. His father had done the same against the Latins. We won both days.",
+     "The Tarentines laughed at our envoy's Greek and dirtied his toga. He told them it would be washed in their blood. Now Pyrrhus is here with his elephants. Let him come."
+    ],
+    "worry": [
+     "We have no silver plate and want none. Curius had one earthenware cup. Fabricius, as censor, threw a man out of the Senate for owning ten pounds of silver plate. That's the Senate I sit in."
+    ]
    }
   },
   {
@@ -2215,6 +2424,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2242,6 +2452,16 @@
     "worry": [
      "My father was his father's client. My son will be his son's. That's how Rome holds together."
     ]
+   },
+   "hero": {
+    "intro": "{name}. Client of the house of {patron}.",
+    "work": [
+     "My patron stood by me in court and I stand by him in battle. Faith for faith. That's the oldest law in Rome, older than the Tables.",
+     "He eats turnips, I eat turnips. We're the same Romans, he just has more land to grow them on."
+    ],
+    "worry": [
+     "His son and mine are learning the spear together on the Campus."
+    ]
    }
   },
   {
@@ -2251,6 +2471,7 @@
    "class": "rich",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2280,6 +2501,16 @@
     ],
     "worry": [
      "I buried my husband's brother after Cannae, without a body. Half the city did. We grieved thirty days, as the Senate ordered, and then we went on."
+    ]
+   },
+   "hero": {
+    "intro": "I'm {name}.",
+    "work": [
+     "Veturia, Coriolanus's mother, turned back a whole army by scolding her son. Roman mothers are not to be trifled with.",
+     "My sons are with the legions. I sent them off with bread, a blessing, and a clip on the ear to come home proud."
+    ],
+    "worry": [
+     "Wool, the hearth, the children, the household gods. And the neighbours' business, if I'm honest."
     ]
    }
   },
@@ -2328,6 +2559,7 @@
    "class": "slave",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2356,6 +2588,16 @@
     "worry": [
      "Serve well, and you'll be freed, and your children will be citizens. That's the Roman way."
     ]
+   },
+   "hero": {
+    "intro": "{name}. I belong to the house of {patron}. There are only four of us.",
+    "work": [
+     "I eat at the master's table, from the same pot. We plough the same field. He shouts at the ox more than at me.",
+     "At the Saturnalia he serves us. He's a terrible cook."
+    ],
+    "worry": [
+     "He says he'll free me when his son comes home from the war. I believe him. He's never broken his word to anyone."
+    ]
    }
   },
   {
@@ -2365,6 +2607,7 @@
    "class": "foreign",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2393,6 +2636,16 @@
     ],
     "worry": [
      "Their fides is famous. A treaty with Rome is worth more than a Punic oath."
+    ]
+   },
+   "hero": {
+    "intro": "{name}, trading salt and cloth from Campania.",
+    "work": [
+     "Romans pay what they promise and ask what's fair. It's slow business. It's good business.",
+     "Tarentum's rich and proud and hired a king to fight for it. Rome's poor and proud and fights for itself."
+    ],
+    "worry": [
+     "The Appian Way's cut my journey in half. Blind Appius knew what he was doing."
     ]
    }
   },
@@ -2549,6 +2802,7 @@
    "class": "foreign",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2577,6 +2831,16 @@
     "worry": [
      "One day they'll rule all the Greeks too. They don't know it yet. I do."
     ]
+   },
+   "hero": {
+    "intro": "{name}. A Greek, from Neapolis, here to trade.",
+    "work": [
+     "They're rustic, these Romans. No theatre to speak of, no philosophy, statues like tree stumps. And they're about to beat Pyrrhus. I don't understand it.",
+     "One of their senators told me: we don't need to be clever, we need to be right. I laughed. I'm not laughing now."
+    ],
+    "worry": [
+     "They keep oaths. Not like us. It's almost a weakness. Almost."
+    ]
    }
   },
   {
@@ -2586,6 +2850,7 @@
    "class": "pleb",
    "place": "walk",
    "ages": [
+    "heroic",
     "early",
     "republic",
     "empire",
@@ -2613,6 +2878,16 @@
     ],
     "worry": [
      "I'm poor, and I'm Roman, and I'd do it again."
+    ]
+   },
+   "hero": {
+    "intro": "{name}. Citizen. No land yet. The colonies will give me some, in the Samnite country.",
+    "work": [
+     "Rome sends out colonies to every hill it wins: Latin towns, Roman towns. Soon there'll be Romans from the Po to the straits.",
+     "Poor? I'm a Roman. There's no such thing as a poor Roman, only one who hasn't been given his farm yet."
+    ],
+    "worry": [
+     "The Samnites are our friends now, more or less. The Umbrians too. It took fifty years of beating each other."
     ]
    }
   }
@@ -2689,6 +2964,20 @@
    "Philip of Macedon helped Hannibal. The Senate won't forget. There'll be war in the east before long.",
    "The poet Ennius, Cato brought him from Sardinia, is writing the whole history of Rome in verse. They say it's magnificent.",
    "Sixteen years since Cannae. The Senate never once asked for peace. Now look at us."
+  ],
+  "heroic": [
+   "Pyrrhus of Epirus has landed at Tarentum with a phalanx and twenty elephants. The consul Laevinus has marched south to meet him.",
+   "The Tarentines laughed at our envoy and fouled his toga. He said it'd be washed in their blood. Now they've hired a king. We'll see.",
+   "Blind old Appius Claudius had himself carried into the Senate: no peace while a foreign king stands in Italy. They cheered him to the roof.",
+   "Curius Dentatus finished the Samnites and the Sabines, and went home to his turnips. They're citizens now, the Sabines. Kin.",
+   "Fabricius refused Pyrrhus's gold. The king said it would be easier to turn the sun from its course than Fabricius from honour."
+  ],
+  "collapse": [
+   "The Vandals were here fourteen days. They took everything: the gilded tiles off Jupiter's roof, the Temple treasure from Jerusalem, the Empress herself. Pope Leo talked them out of burning it. That's what we're grateful for now.",
+   "The Emperor Petronius Maximus ran when the Vandals came. The crowd stoned him in the street and threw him in the Tiber. He'd reigned eleven weeks.",
+   "Valentinian killed Aetius with his own hand, the one general we had. Then Aetius's men killed Valentinian on the Campus. And the crowd went to the races.",
+   "Africa's gone to the Vandals, and the grain with it. The Senate's still arguing about the seating at the games.",
+   "There'll be another emperor by winter. The barbarian generals choose them now. Bets are open on how long he lasts."
   ]
  },
  "gods": {
@@ -2711,6 +3000,14 @@
   "early": [
    "Jupiter Best and Greatest keeps the city. Vesta's fire keeps it alive. We keep the rites exactly, and the gods keep us.",
    "After Cannae we did everything the Sibylline books said. We brought the Great Mother from Phrygia. And the gods turned back to Rome."
+  ],
+  "heroic": [
+   "Jupiter on the Capitol, Mars on the Campus, Janus at the gate, Vesta at the hearth, and the Lares in every house. We give them what's theirs, and they give us Rome.",
+   "Decius gave himself to the gods below for the legions, and the gods took him and gave us the day. That's how it works, between Romans and gods: faith for faith."
+  ],
+  "collapse": [
+   "We're all Christians now, officially. The relic sellers do a better trade than the bakers. A finger of Saint Laurence, very cheap.",
+   "Some say the old gods abandoned Rome for the Christian one. Some say the Christian one abandoned Rome for Constantinople. Either way, nobody's minding it."
   ]
  },
  "reacts": {
@@ -2921,6 +3218,50 @@
     "afraid",
     "Are you with the Goths?"
    ]
+  ],
+  "heroic": [
+   [
+    "cheerful",
+    "Good day to you, stranger!"
+   ],
+   [
+    "proud",
+    "Sentinum! My father was there. Did you know?"
+   ],
+   [
+    "busy",
+    "The harvest won't bring itself in."
+   ],
+   [
+    "curious",
+    "You're not from here. Where's home?"
+   ],
+   [
+    "merry",
+    "It's a feast day tomorrow, or the day after, or both."
+   ]
+  ],
+  "collapse": [
+   [
+    "frantic",
+    "Have you heard? Another one's dead, the emperor, I mean."
+   ],
+   [
+    "drunk",
+    "Drink with me. Why not? Why not."
+   ],
+   [
+    "cynical",
+    "What do you want? Everyone wants something."
+   ],
+   [
+    "fatalist",
+    "It's all ending. Might as well enjoy the races."
+   ],
+   [
+    "hungry",
+    "No grain from Africa. None."
+   ]
   ]
  },
  "life_early": {
@@ -2950,6 +3291,31 @@
   ],
   "church": [
    "Our gods have kept Rome through the worst of it."
+  ]
+ },
+ "life_heroic": {
+  "pleb": [
+   "A little house on the {home}, a plot outside the gate, my {partner}, {kids}. When Rome calls, I go; when I come back, I plough.",
+   "We eat porridge and beans and sleep well. There's nothing to envy in Tarentum."
+  ],
+  "slave": [
+   "I serve a small house. We work the same fields and eat the same bread.",
+   "I was taken in the Samnite wars. My master's a fair man. Most Samnites are Romans by now anyway."
+  ],
+  "freed": [
+   "I was a slave, now I'm free, and a client of my old master's house. We keep faith with each other.",
+   "My son will be a citizen and serve in the legions like any Roman."
+  ],
+  "rich": [
+   "We have a farm in the Sabine hills and this house on the {home}. My grandfather ploughed it himself. So do I.",
+   "Duty to the gods, to the Republic, to the family. And to the farm, or there's nothing to eat."
+  ],
+  "foreign": [
+   "I'm a stranger here, and they're kind to strangers who keep their word.",
+   "They're simple, these people. Simple the way an oak is simple."
+  ],
+  "state": [
+   "I serve the magistrate for his year. Next year, a different one, the same Republic."
   ]
  },
  "patrons": [

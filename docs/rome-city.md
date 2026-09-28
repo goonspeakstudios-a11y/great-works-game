@@ -148,32 +148,37 @@ Decided with BB1 (2026-09-28):
 - Screenshots: `--talk` stops the nearest citizen and asks about their work.
 
 ## Tone: the fall from virtue
-Rome is written for adults, as a moral arc, and the fall is meant to be felt (decided with BB1,
-2026-09-28). The first act is the Republic at the height of its old virtues, so the decline can be
-seen against it:
+Rome is a moral arc, and the descent is meant to be palpable, harsh and depressing (decided with BB1,
+2026-09-28). The first act is the age of heroes, simple and whimsical; each age after it is harder,
+greyer and emptier, and the music darkens with it.
 
-| Age | Year | Spirit | What the streets show |
-|---|---|---|---|
-| The Republic | 201 BC, after Zama | virtus, pietas, fides, gravitas, frugality, service and sacrifice | Scipio's triumph, the levy on the Capitol, a hero's funeral with his ancestors' masks, veterans of Cannae and Zama, words kept, grief borne for Rome |
-| The Late Republic | about 50 BC | the virtues spoken of and betrayed: ambition, faction, money, gangs | bought votes, evictions, fires with speculators, the slave auction, the Subura by night, a grain riot |
-| The Empire | AD 150 | peace, plenty, spectacle; servility, informers, idleness | the arena, informers, executions at the gate, families sold apart |
-| The Late Empire | AD 330 | fear, cruelty, corruption, trades bound by law, the old gods forbidden | torture for tax arrears, bread riots, church offices bought |
-| The Fall | AD 552 | ruin, famine, numbness | the starving, the dead, the empty city |
+| Age | Year | Spirit | What the streets show | Music |
+|---|---|---|---|---|
+| The Age of Heroes | 280 BC | simple, cheerful, sure of Rome and its gods; farmer-soldiers; Horatius, Scaevola, the Sabine women, Decius Mus at Sentinum, Curius and his turnips, Fabricius and Pyrrhus's gold; Samnites, Sabines and Umbrians fought and made kin; Greek arrogance met with calm | the army marching south to Pyrrhus, a veteran telling the old tales at dusk, sacrifices, market day | the bright town theme |
+| The Republic | 201 BC, after Zama | virtus, pietas, fides, gravitas, frugality, service and sacrifice | Scipio's triumph, the levy on the Capitol, a hero's funeral with his ancestors' masks, the Cannae men home at last | the bright town theme |
+| The Late Republic | about 50 BC | the virtues spoken of and betrayed: ambition, faction, money, gangs | bought votes, evictions, fires with speculators, the slave auction, the Subura by night, a grain riot | the tune in minor, out of true |
+| The Empire | AD 150 | peace, plenty, spectacle; servility, informers, idleness | the arena, informers, executions at the gate, families sold apart | the tune in minor |
+| The Late Empire | AD 330 | fear, cruelty, corruption, trades bound by law, the old gods forbidden | torture for tax arrears, bread riots, church offices bought | only the echo |
+| The Collapse | AD 455 | absurd decadence: emperors murdered in weeks, the Senate arguing seating while Africa's grain is gone, relic sellers, betting on the next emperor's death | the Vandals just gone, relic stalls, bets at the Circus, riots, the Subura by night | only the echo |
+| The Fall | AD 552 | ruin, famine, numbness | the starving, the dead, the empty city | only the echo and the wind |
 
-- **People:** every citizen, the chatter, the gossip, the news, the gods and the regulars' stories
-  follow the age. The Republic's people speak from inside the old virtues (each job's `rise` lines,
-  `life_early`, `moods_by_age`). The later ages speak plainly of slavery, debt, disease, violence
-  and bought power, never explicitly.
-- **The regulars:**
-  - The baker Numisius loses one son at Cannae and has another home from Zama. His descendants are
-    ruined by the late Empire's laws, and the last starve in the siege.
-  - A centurion of Zama becomes, in later ages, a gladiator killing his friends for the crowd.
-  - The austere senator who refused to ransom his own nephew has descendants who buy praetorships,
-    open their veins for an informer's lie, and die on both sides of the Gothic War.
+- **People:** every citizen, the chatter, the gossip, the news, the gods, the moods and the
+  regulars' stories follow the age.
+  - The heroes' generation and the Republic of 201 BC have their own lines for each trade (`hero`
+    and `rise` in `people.json`, and `life_heroic` and `life_early`).
+  - The later ages speak plainly of slavery, debt, disease, violence and bought power, never
+    explicitly.
+- **The regulars' families:**
+  - Numisius the farmer, whose son saw Decius ride out, becomes the baker whose son died at
+    Cannae. His descendants are chained to the oven by law, his widow is left with a cold oven
+    after the Vandals, and the last of them starve in the siege.
+  - The senator Caecilius, embarrassed by one silver salt cellar, becomes, generations on, the
+    illustrious nobody who paid both the Vandals and the general.
 - **Claude:** when Claude plays a citizen, it is told the spirit of their age (`Citizen.SPIRIT`).
-- **The Rhetorica:** the age of 201 BC lasts until you master the Rhetorica. Its book belongs to
-  the late Republic, and mastering it brings the city's years on. Each later Roman book brings on
-  its own age in turn.
+- **The years pass as Roman books are mastered.** Until the Rhetorica (a late-Republic book) is
+  mastered, Rome stays in the age of heroes. Mastering it lets the navel of the city pass the years
+  as far as the late Republic.
+- `--age=N` (0 to 6) shows any age for screenshots.
 
 ## The city's days and memory
 These live in `scripts/hall/urbs_town.gd`, with the content in `content/rome/town.json`. Add to that
