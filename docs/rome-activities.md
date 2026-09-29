@@ -23,9 +23,12 @@ Run the tests:
 | `urbs_panel.gd` | The activity panel. It shows a scene's words, up to four choices (keys 1 to 4), the timing and hold bar, a line for copying out, or a game at the table. |
 | `urbs_games.gd` | Rules for tali (knucklebones, with loaded bones), terni lapilli, latrunculi, duodecim scripta, haggling, the money changer's test and the chariot race. |
 | `urbs_games_view.gd` | Draws those games and takes moves by mouse or keys. Settles stakes and prices through the Standing. |
-| `urbs_activities.gd` | Places everything in the city for an age: your room, the ten recurring rites (with their days and hours, and waiting), the spots, offerings at every standing temple, and the talk panel's seventh button for each trade. |
+| `urbs_activities.gd` | Places everything in the city for an age: your house, the ten recurring rites (with their days and hours, and waiting), the spots, offerings at every standing temple, and the talk panel's seventh button for each trade. |
 | `urbs_quests.gd` | The regulars' stories: one short quest per family per age. |
-| `urbs_errands.gd` | Errands across the city, with directions by landmarks. Paid on arrival, less if late. |
+| `urbs_errands.gd` | Errands across the city, with directions by landmarks and streets. Paid on arrival, less if late. |
+| `urbs_house.gd` | Your house: one floor plan (rooms, walls, doorways) that builds it in each age and draws its plan; your wife and household. |
+| `urbs_plan.gd` | The streets as a network, routes, and directions in words. |
+| `urbs_plan_panel.gd` | The Plan panel: the city (whole or close) and your house. |
 | `nexus.gd` `_rome_pieces` | What Rome brings back to the Nexus: each completed set's piece, the frieze of the rites and the Ledger. |
 
 ## Scene steps
@@ -48,18 +51,86 @@ Run the tests:
 
 ## What there is to do
 
-### Your room
-Your room is in the Subura, off the Argiletum, in every age:
-- a tufa house with a tiled roof in 280 BC;
-- five and six storeys of flats above it later;
-- a roofless ruin by 552.
+### Your house and your family
+Your house is an atrium house on the north side of the Argiletum, where it climbs into the Subura. It is 440 paces north-east of the Forum, and the same house in every age (`urbs_house.gd`, `tools/rome_acts/home.py`).
 
-In the room:
-- **The household gods (lararium):** the morning rite. In AD 384 you choose whether to keep them; in 552 you keep them alone.
-- **The bed:** sleep until morning.
-- **The chest:** what you carry and what you have gathered.
-- **Your purse:** look at the age's coin; this collects it.
-- **The quern and hearth** (280 BC): the bread rite.
+**One floor plan** builds the house in the world and draws its plan:
+- two shops and the entrance on the street;
+- the atrium with its pool under the opening in the roof;
+- the children's room and the store;
+- the wing with the household gods, and the kitchen;
+- the dining room, the tablinum (master's room) and your bedroom;
+- the garden.
+
+**The house through the ages:**
+- tufa, the hearth and the loom in the atrium, beans and a fig tree (280 BC);
+- the ancestor's mask in the wing (201 BC);
+- painted walls, mosaic floors and a strongbox, all on your wife's money (50 BC);
+- marble, a bronze satyr, a fountain and slaves (AD 150);
+- the garden door and your bedroom door bricked up (AD 384);
+- looted, the dining room's and bedroom's roofs fallen in, one broken couch (AD 455);
+- roofless, walls fallen, brambles, and the fig tree grown wild (AD 552).
+
+**A wife in every age, each worse than the last, then none:**
+
+| Age | Your wife | Your household |
+|---|---|---|
+| 280 BC | Postumia: spins and weaves in the atrium, drinks no wine, sends you to the levy with a clear face | three children round the hearth |
+| 201 BC | Sulpicia: mourned her brothers from Cannae for the thirty days the Senate allowed and not an hour more; keeps her plain wool against the repeal of the Oppian law | a son home from Zama, a daughter betrothed |
+| 50 BC | Valeria: married without her property passing to you, dines out, and threatens divorce with her dowry | one boy raised by a Greek nurse |
+| AD 150 | Flavia: has her maid flogged for a curl, takes drugs against children, goes to the games for Callistus the net-fighter, asks the astrologer when you'll die | a lapdog |
+| AD 384 | Rufina: gives your silver to the bishop, sues you for the Campanian farm, marries your twelve-year-old to a man of sixty-one for his estates, bricks up her doors | the daughter, and a eunuch |
+| AD 455 | Galla: lives with a Gothic guardsman, drinks, and comes back to sell the candlesticks and the household gods | your son is a captive in Carthage |
+| AD 552 | none | none |
+
+Talking to your wife works like talking to anyone:
+- her news comes visit by visit;
+- the six topics are answered in her own words;
+- the seventh button is **supper**, a scene in each age, and several of them go into the Ledger:
+  - Tertia asleep on your knee;
+  - Gaius's Zama at table;
+  - Valeria's "friend", and the old divorce formula "take your things and go";
+  - Flavia's slave whipped between courses;
+  - Aemilia asking whether she must marry him;
+  - Galla taking the Lar;
+  - in AD 552, saying their names in the empty dining room.
+- If Galla sold the household gods, the niche stays empty in AD 552.
+
+**Also in the house:**
+- the household gods in the wing;
+- your bed;
+- the strongbox;
+- the coin in your purse;
+- the quern and hearth in 280 BC;
+- every room, readable for what it is like in the age;
+- the **plan of the house** on the tablinum wall.
+
+### The ground
+The ground of the city is a height map (`content/rome/height.json`, made by `tools/make_rome_height.py`), from the real shapes and heights of the hills: the valleys and the Campus at about 12 m above the sea, the plateau rising to the east; the Quirinal, Viminal, Cispius and Oppius as long tongues off it with the valleys of the Vicus Longus, the Vicus Patricius and the Subura between; the Capitol's two summits, the Palatine, the Velia, the Caelian, the two Aventines, the Pincian, the Janiculum and the Vatican across the river. Every street is graded into it (its line evened out over forty metres, the ground either side cut and filled to meet it), and the ground under every monument is levelled, and under your house. The relief (`assets/maps/rome_relief.png`) is drawn under the plan. Regenerate after moving a street or a monument:
+
+    python3 tools/make_rome_height.py
+
+### The plan of the city, and directions that agree with it
+**The live map** (M anywhere in the city) sits in the corner and follows you as you walk, close in on where you are, with the ground in relief, the streets, the monuments, your house and the regulars; M or Esc puts it away, Z shows the whole city.
+
+**The Plan** (the house's plan on the tablinum wall, and in AD 384 the Severan Marble Plan on the Temple of Peace's wall) is the same map large and still. Both draw Rome from the same data the world is built from, north at the top:
+- the Tiber and the island;
+- the Servian wall, and Aurelian's from AD 271;
+- every street with its name;
+- every monument standing in the age, with ruins in grey;
+- the regions;
+- your house, the regulars' places, where your quests have sent you, and the errand's place;
+- you, as an arrow the way you face;
+- a north arrow and a bar of five hundred paces.
+
+Z zooms in on where you stand, and the mouse names what is under it. Key 1 shows the city and key 2 the plan of the house, where the mouse names each room and what it is like in the age. Bricked-up doors are drawn in red and fallen walls dashed.
+
+**Directions** (`urbs_plan.gd`) are worked out on the same streets:
+- the streets are a network, walked in points 18 m apart and joined where they cross or meet;
+- a route finds the way along it, and the directions name each street, the way it runs, the paces (1 pace = 1.48 m), the monument where you turn (a ruin in AD 552), and which side of you the place is when you arrive;
+- errands, the quests' "go" steps (on the tablet, recomputed from where you stand) and anyone you ask the way ("Where is the Temple of Castor?", "How do I get home?") all give these directions;
+- the "around" topic says which street you're on and which way the Forum lies;
+- the tablet says where you are.
 
 ### The recurring rites
 Ten rites, each held in all seven ages at its place and hours. When one is not on, you can wait for it.

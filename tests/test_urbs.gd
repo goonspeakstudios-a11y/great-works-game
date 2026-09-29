@@ -290,11 +290,11 @@ func test_your_room_and_the_rites_are_in_the_city() -> void:
 	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
 	hall.progress.data = {"works": {}, "rome_hour": 7.0, "rome_day": 2}
 	hall.travel("urbs")
-	check(hall.world.find_child("YourRoom", true, false) != null, "your room is built in the Subura")
+	check(hall.world.find_child("YourHouse", true, false) != null, "your house is built in the Subura")
 	var acts: Array = hall.interactables.filter(func(i): return i["kind"] == "activity")
 	check(acts.size() >= 20, "things to do all over the city (%d)" % acts.size())
 	var lar: Array = acts.filter(func(i): return str(i["scene"]).begins_with("lararium"))
-	check(lar.size() == 1, "the household gods in your room")
+	check(lar.size() == 1, "the household gods in your house")
 	hall.activate(lar[0])
 	check(hall._activity.visible, "the rite opens in the activity panel")
 	check(autoplay(hall._activity.scene) >= 0, "and is done")
@@ -416,7 +416,7 @@ func test_the_regulars_have_their_stories_in_every_age() -> void:
 
 	hall._start_scene("errand_merchant")
 	check(autoplay(hall._activity.scene) >= 0, "an errand is given")
-	check(not hall._errand.is_empty() and str(hall._errand["text"]).contains("past"), "with directions by the landmarks: %s" % hall._errand.get("text", ""))
+	check(not hall._errand.is_empty() and str(hall._errand["text"]).contains("paces"), "with directions by the streets: %s" % hall._errand.get("text", ""))
 	hall._close_panels()
 	var before: int = hall.standing().coin()
 	hall.player.position = hall._errand["pos"]
@@ -487,3 +487,105 @@ func test_what_rome_gathers_comes_back_to_the_nexus() -> void:
 		"the Ledger stands, being written")
 	check(texts.has("Look at the frieze of the rites"), "and the frieze of the rites begins")
 	world.free()
+
+
+
+func test_the_plan_and_the_directions_agree() -> void:
+	var Plan: GDScript = load("res://scripts/hall/urbs_plan.gd")
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	check_eq(Plan.compass(Vector2(0, 1)), "north", "north is up the map")
+	check_eq(Plan.compass(Vector2(1, 0)), "east", "east")
+	check_eq(Plan.compass(Vector2(-1, -1)), "south-west", "south-west")
+	var g: Dictionary = Plan.graph()
+	check((g["pts"] as Array).size() > 200, "the streets are walked in points")
+	var names := {}
+	for r: String in g["road"]:
+		names[r] = true
+	# every street can be reached from the Forum
+	var from: int = Plan.nearest_point(Vector2.ZERO)
+	for r: String in names:
+		var i: int = (g["road"] as Array).find(r)
+		var path: Array = Plan.route(g["pts"][from], g["pts"][i])
+		var joined := true
+		for k in path.size() - 1:
+			joined = joined and (g["edges"][path[k]] as Array).any(func(e: Array) -> bool: return e[0] == path[k + 1])
+		check(joined and (g["pts"][path[-1]] as Vector2).distance_to(g["pts"][i]) < 1.0, "%s can be reached from the Forum" % r)
+	var house: Vector3 = RomeMap.on_ground([507, 409])
+	var forum: Vector3 = RomeMap.on_ground([0, 10])
+	var said: String = Plan.directions(forum, house, "your house", [])
+	check(said.contains("Argiletum") and said.contains("north-east") and said.contains("paces"), "from the Forum home: up the Argiletum, north-east: %s" % said)
+	var back: String = Plan.directions(house, forum, "the Forum", [])
+	check(back.contains("south-west"), "and back down again, south-west: %s" % back)
+	check(Plan.whereabouts(house).contains("Forum is") and Plan.whereabouts(house).contains("south-west"), "where you are, and the Forum's way: %s" % Plan.whereabouts(house))
+	var castor := {"name": "the Temple of Castor and Pollux", "pos": RomeMap.on_ground([41, -45])}
+	check_eq(Plan.asked_for("Where is the temple of Castor?", [castor], house).get("name", ""), castor["name"], "asking the way to a temple finds it")
+	check_eq(Plan.asked_for("How do I get home?", [castor], house).get("name", ""), "your house", "and home")
+
+
+func test_your_house_and_your_wife_in_every_age() -> void:
+	var House: GDScript = load("res://scripts/hall/urbs_house.gd")
+	var wives: Array = []
+	for age: String in AGES:
+		var w: Dictionary = House.wife(age)
+		if age == "fall":
+			check(w.is_empty(), "in AD 552 there is no wife")
+			check(House.household(age).is_empty(), "and no family")
+			continue
+		check(not w.is_empty() and str(w["name"]) != "", "a wife in %s" % age)
+		check(not wives.has(w["name"]), "a different woman in each age")
+		wives.append(w["name"])
+		for topic: String in ["who", "work", "life", "news", "gods", "around"]:
+			check(str(w["topics"].get(topic, "")).length() > 10, "%s answers '%s'" % [w["name"], topic])
+		check((w["lines"] as Array).size() >= 4, "%s has her news, visit by visit" % w["name"])
+		check(not Activities.scene_def("cena", age).is_empty(), "supper in %s" % age)
+	check(House.household("heroic").size() > House.household("republic").filter(func(h: Array) -> bool: return h[0] == "child").size(), "fewer children as the ages go")
+	check(House.household("empire").filter(func(h: Array) -> bool: return h[0] == "child").is_empty(), "none at all under the Empire")
+	check(House.walls_for("late").size() > House.WALLS.size(), "doors bricked up in AD 384")
+	for id: String in House.ROOMS:
+		var r: Array = House.ROOMS[id]
+		check(r[0] < r[2] and r[1] < r[3], "%s is a room" % id)
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	for age_i in [0, 2, 5, 6]:
+		hall.progress.data = {"works": {}, "rome_reached": 6, "rome_age": age_i, "rome_hour": 18.0}
+		hall.travel("urbs")
+		var age: String = AGES[age_i]
+		var home: Node3D = hall.world.find_child("YourHouse", true, false)
+		check(home != null, "your house stands in %s" % age)
+		var wife: Array = hall.interactables.filter(func(i): return i["kind"] == "wife")
+		if age == "fall":
+			check(wife.is_empty(), "no wife in the broken house")
+			check(home.find_children("*", "OmniLight3D", true, false).is_empty(), "and no lamp lit")
+		else:
+			check(wife.size() == 1, "your wife is at home in %s" % age)
+			hall.activate(wife[0])
+			check(hall._talk_panel.visible and hall._talk_panel._log.contains(str(House.wife(age)["lines"][0]).left(20)), "she tells you her news")
+			hall._on_said("life", "How's life?")
+			check(hall._talk_panel._log.contains(str(House.wife(age)["topics"]["life"]).left(15)), "and answers as herself")
+			hall._on_said("act", "")
+			check(hall._activity.visible and str(hall._activity.scene.id).begins_with("cena"), "supper with the family")
+			check(autoplay(hall._activity.scene) >= 0, "which plays through")
+			hall._close_panels()
+		var plan: Array = hall.interactables.filter(func(i): return i["kind"] == "plan" and i.get("view", "") == "house")
+		check(plan.size() == 1, "the plan of the house hangs in the tablinum")
+		hall.activate(plan[0])
+		check(hall._plan.visible and hall._plan.view == "house", "and shows the house")
+		hall._close_panels()
+		hall._open_plan("city")
+		check(hall._plan.visible and hall._plan.marks.any(func(m): return m["kind"] == "house"), "the plan of the city marks your house")
+		hall._close_panels()
+	hall.free()
+
+
+func test_a_sold_household_god_stays_sold() -> void:
+	var s := fresh("collapse")
+	var sc: RefCounted = Scene.new(Activities.scene_def("cena", "collapse"), "cena_collapse", s, 1)
+	sc.start()
+	autoplay(sc, 0)
+	check(s.has({"done": "lar_sold"}), "Galla sells the Lar")
+	var fall: RefCounted = Standing.open(s.progress, "fall")
+	var lar: RefCounted = Scene.new(Activities.scene_def("lararium", "fall"), "lararium_fall", fall, 1)
+	lar.start()
+	autoplay(lar)
+	check(lar.lines.any(func(l: String) -> bool: return l.contains("sold him")), "and in AD 552 the niche is empty")

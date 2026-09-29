@@ -334,7 +334,7 @@
   },
   "purse_heroic": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A heavy bronze as, cast in a mould, not struck, with a head on each side. It weighs as much as a small stone. Rome has only just begun to make money at all; your grandfather paid in lumps of bronze by weight."
@@ -350,7 +350,7 @@
   },
   "purse_early": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A silver denarius, new since the war with Hannibal: helmeted Roma on the front and the Twins, Castor and Pollux, riding with their spears on the back. Nearly pure silver."
@@ -366,7 +366,7 @@
   },
   "purse_republic": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A denarius. The young moneyers put their own ancestors on it now, to advertise the family: a triumph, a temple, a famous great-grandfather. It is still good silver."
@@ -382,7 +382,7 @@
   },
   "purse_empire": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A brass sestertius of Antoninus: the Emperor's calm bearded head, and on the back a goddess with her attributes. The silver denarius beside it in your purse is about three parts silver in four, and falling."
@@ -398,7 +398,7 @@
   },
   "purse_late": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A little bronze coin with the Emperor's head and a wash of silver that rubs off in a week. The gold solidus, seventy-two to the pound, is the only money anyone trusts. You have never held one."
@@ -414,7 +414,7 @@
   },
   "purse_collapse": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A tiny bronze nummus, smaller than your fingernail, the Emperor's name round it and no one can read it. You need hundreds for a loaf."
@@ -430,7 +430,7 @@
   },
   "purse_fall": {
    "title": "The coin in your purse",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "A big copper follis of the Emperor Justinian, marked M: forty nummi. Beside it, a copper of the Goth king Totila, struck in Rome, with his name: BADUILA. Two kings in one purse, and neither buys bread."

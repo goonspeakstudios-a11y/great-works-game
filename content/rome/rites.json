@@ -2048,7 +2048,7 @@
   },
   "bread_heroic": {
    "title": "Your bread",
-   "where": "Your room in the Subura, 280 BC",
+   "where": "Your house in the Subura, 280 BC",
    "steps": [
     {
      "say": "There are no bakers in Rome yet. Every house grinds its own grain and bakes its own bread. The Roman farmer lives on porridge and bread."

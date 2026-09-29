@@ -67,7 +67,7 @@ var _t := 0.0
 ## Every scene written for Rome: {id: def} from all its files.
 static func all() -> Dictionary:
 	var out := {}
-	for f: String in ["rites", "sacred", "trades", "scenes", "exempla", "collections"]:
+	for f: String in ["rites", "sacred", "trades", "scenes", "exempla", "collections", "home"]:
 		var path := "res://content/rome/%s.json" % f
 		if not FileAccess.file_exists(path):
 			continue

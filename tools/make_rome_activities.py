@@ -19,22 +19,14 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from rome_acts import rites, sacred, trades, scenes, exempla, quests, collections  # noqa: E402
+from rome_acts import rites, sacred, trades, scenes, exempla, quests, collections, home  # noqa: E402
 from rome_acts.common import AGES  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "content", "rome")
 
-# Your room: a rented room on the ground floor of a block in the Subura, off the Argiletum.
-ROOM = {"at": [402, 345], "toward": [410, 322],
-        "notes": {
-            "heroic": "Your room: one room of a tufa house in the Subura, with a hearth, a bed and a chest. Your landlady's family lives above.",
-            "early": "Your room in the Subura. The landlady's son died at Cannae. She keeps his portrait by the household shrine.",
-            "republic": "Your room on the ground floor of a block of flats in the Subura. Five storeys above you, and all of them noisy.",
-            "empire": "Your room in a block of six storeys. The landlord lives on the Esquiline and has never seen it.",
-            "late": "Your room. Half the block is empty; the rent has gone up anyway.",
-            "collapse": "Your room. The door was broken in by the Vandals and mended with a plank.",
-            "fall": "What is left of your room. The roof came down in the second siege. The niche of the household gods is still in the wall.",
-        }}
+# Your house: an atrium house on the north side of the Argiletum where it climbs into the Subura
+# (tools/rome_acts/home.py has the family in it, age by age).
+ROOM = {"at": [507, 409], "toward": [523, 368], "notes": home.HOUSE_NOTE}
 
 # Other places to do things: {scene, text, at or monument, ages}.
 SPOTS = [
@@ -97,7 +89,7 @@ def write(name, data):
 
 def main():
     every = {}
-    for mod in (rites, sacred, trades, scenes, exempla, collections):
+    for mod in (rites, sacred, trades, scenes, exempla, collections, home):
         for sid, s in mod.SCENES.items():
             assert sid not in every, sid
             check_scene(sid, s)
@@ -120,6 +112,9 @@ def main():
     write("scenes.json", {"about": "The city's other scenes (tools/rome_acts/scenes.py).", "scenes": scenes.SCENES})
     write("exempla.json", {"about": "The heroes' stories, played where they happened (tools/rome_acts/exempla.py).",
                            "exempla": exempla.EXEMPLA, "scenes": exempla.SCENES})
+    write("home.json", {"about": "Your house and your family in it, in every age (tools/rome_acts/home.py).",
+                        "wives": home.WIVES, "household": home.HOUSEHOLD, "rooms": home.ROOMS, "house": home.HOUSE_NOTE,
+                        "scenes": home.SCENES})
     write("quests.json", {"about": "The regulars' stories across the ages (tools/rome_acts/quests.py).", "quests": quests.QUESTS})
     write("collections.json", {"about": "What you gather in Rome, and what each set brings back to the Nexus (tools/rome_acts/collections.py).",
                                "sets": collections.SETS, "scenes": collections.SCENES})

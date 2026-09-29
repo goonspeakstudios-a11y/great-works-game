@@ -4,6 +4,7 @@ extends RefCounted
 ## the Temple of Vesta, toward the Regia"), never a mark on a map. In the emptied city the landmarks
 ## are ruins, and the directions say what used to be there. Paid on arrival, less if you are slow.
 
+const Plan := preload("res://scripts/hall/urbs_plan.gd")
 const MIN_AWAY := 50.0  # an errand goes somewhere at least this far off
 const MAX_AWAY := 320.0
 const WALK := 2.4  # metres a second, for the time allowed
@@ -29,19 +30,20 @@ static func describe(to: Dictionary, landmarks: Array, age: String) -> String:
 	var name := str(to["name"])
 	var place := ("what's left of %s" % name) if gone else name
 	if others.size() < 2:
-		return "%s." % place.capitalize()
+		return "%s." % place
 	var a := str(others[0]["name"])
 	var b := str(others[1]["name"])
 	if gone:
-		return "%s. Past where %s was, toward the ruins of %s." % [place.capitalize(), a, b]
-	return "%s: past %s, toward %s. Ask anyone." % [place.capitalize(), a, b]
+		return "%s, past where %s was, toward the ruins of %s." % [place, a, b]
+	return "%s, past %s, toward %s." % [place, a, b]
 
 
-## A new errand: {name, pos, text, pay (as in 280 BC), limit (seconds), fides}.
+## A new errand: {name, pos, what, text, pay (as in 280 BC), limit (seconds), fides}. The text is
+## what you are told: where it goes, as people say it, and the way there by the streets (urbs_plan.gd).
 static func make(to: Dictionary, landmarks: Array, from: Vector3, age: String, pay: int, what: String) -> Dictionary:
 	var d := Vector2(to["pos"].x - from.x, to["pos"].z - from.z).length()
-	return {"name": str(to["name"]), "pos": to["pos"], "pay": pay, "limit": d / WALK + SPARE, "fides": 1,
-		"text": "Take %s to %s" % [what, describe(to, landmarks, age)]}
+	return {"name": str(to["name"]), "pos": to["pos"], "pay": pay, "limit": d / WALK + SPARE, "fides": 1, "what": what,
+		"text": "Take %s to %s %s" % [what, describe(to, landmarks, age), Plan.directions(from, to["pos"], str(to["name"]), landmarks, age)]}
 
 
 ## Arrived? Returns what it pays ({earn, fides}) and a line, or {} if not there yet.

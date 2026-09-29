@@ -1,7 +1,7 @@
 extends RefCounted
 ## What there is to do in the city of Rome, and where (content/rome/activities.json and the scene
 ## files, written by tools/make_rome_activities.py; docs/rome-activities-plan.md):
-##   your room in the Subura: the household gods each morning, the bed, the chest of what you gather
+##   your house on the Argiletum, and your family in it (urbs_house.gd)
 ##   the recurring rites (rites.json): the vote, the games, the funeral, the levy, the court, the
 ##     bread, the sacrifice, the triumph, the Saturnalia, the morning call, each at its place and
 ##     hour in each age, the same rite decaying from age to age
@@ -15,6 +15,7 @@ const Kit := preload("res://scripts/hall/kit.gd")
 const Rome := preload("res://scripts/hall/kit_rome.gd")
 const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const Scene := preload("res://scripts/hall/urbs_scene.gd")
+const House := preload("res://scripts/hall/urbs_house.gd")
 const FILE := "res://content/rome/activities.json"
 const MONUMENT_CLEAR := 4.0  # a spot inside a monument's footprint is moved out to this far past its edge
 
@@ -167,9 +168,14 @@ static func _when(r: Dictionary) -> Dictionary:
 
 # ---------- placing it in the city ----------
 
-## Where your room is, and the spots of this age, for the houses to keep clear of.
+## Where your house is (its centre and corners), and the spots of this age, for the city's houses to
+## keep clear of.
 static func clearings(age: String) -> Array:
-	var out: Array = [RomeMap.at(data()["room"]["at"])]
+	var at := RomeMap.at(data()["room"]["at"])
+	var yaw := Kit.face_yaw(at, RomeMap.at(data()["room"]["toward"]))
+	var out: Array = [at]
+	for c: Vector2 in [Vector2(-8, -12), Vector2(8, -12), Vector2(-8, 12), Vector2(8, 12), Vector2(-8, 0), Vector2(8, 0)]:
+		out.append(at + Basis(Vector3.UP, yaw) * Vector3(c.x, 0, c.y))
 	for id: String in rites():
 		var a: Dictionary = rites()[id]["ages"].get(age, {})
 		if a.has("at"):
@@ -180,7 +186,7 @@ static func clearings(age: String) -> Array:
 	return out
 
 
-## Builds your room and puts every activity of the age in the city: interactables of kind
+## Builds your house and puts every activity of the age in the city: interactables of kind
 ## "activity" ({scene, subs?, rite?, when?}), "chest", added to `out`. `front`: where to stand before
 ## a standing monument (places_rome's _front).
 static func place(world: Node3D, age: String, fab: Dictionary, out: Array, spots: Dictionary, front: Callable) -> void:
@@ -190,7 +196,12 @@ static func place(world: Node3D, age: String, fab: Dictionary, out: Array, spots
 	var r: Dictionary = data()["room"]
 	var room_at := RomeMap.on_ground(r["at"])
 	var room_yaw := Kit.face_yaw(room_at, RomeMap.on_ground(r["toward"]))
-	out.append_array(room(world, age, room_at, room_yaw, str(r.get("notes", {}).get(age, ""))))
+	for it: Dictionary in House.build(world, age, room_at, room_yaw):
+		if it.get("age_scene", false):
+			it["scene"] = scene_id(str(it["scene"]), age)
+		if it.has("rite") and rites().has(str(it["rite"])):
+			it["when"] = _when(rites()[str(it["rite"])])
+		out.append(it)
 	spots["room"] = room_at
 	for id: String in rites():
 		var rite: Dictionary = rites()[id]
@@ -198,10 +209,7 @@ static func place(world: Node3D, age: String, fab: Dictionary, out: Array, spots
 		if a.is_empty():
 			continue
 		if a.get("room", false):
-			var hearth := room_at + Basis(Vector3.UP, room_yaw) * Vector3(1.4, 0, 0.6)
-			out.append({"kind": "activity", "pos": hearth, "scene": scene_id(id, age), "rite": id, "when": _when(rite),
-				"text": "%s: %s" % [rite["name"], a["text"]]})
-			continue
+			continue  # in your house (urbs_house.gd)
 		var at := _spot(a, standing, front, fab)
 		out.append({"kind": "activity", "pos": at, "scene": scene_id(id, age), "rite": id, "when": _when(rite),
 			"text": "%s: %s" % [rite["name"], a["text"]]})
@@ -217,6 +225,10 @@ static func place(world: Node3D, age: String, fab: Dictionary, out: Array, spots
 			it["name"] = str(sp["text"])
 		out.append(it)
 		spots[str(sp.get("id", sp["scene"]))] = at
+	var peace: Dictionary = standing.get("peace", {})
+	if age == "late" and not peace.is_empty() and peace["state"] == "whole":  # the Severan Marble Plan, on the Temple of Peace's wall
+		out.append({"kind": "plan", "view": "city", "pos": front.call(peace),
+			"text": "Look at the Marble Plan of Rome, cut on the wall of the Temple of Peace under Septimius Severus"})
 	if age in data().get("offering_ages", []):
 		var gods: Dictionary = data().get("temples", {})
 		for id: String in gods:
@@ -249,58 +261,3 @@ static func _spot(a: Dictionary, standing: Dictionary, front: Callable, fab: Dic
 			p = Vector3(q.x, 0, q.y)
 			p.y = RomeMap.ground(p)
 	return p
-
-
-## Your room: one room on the ground floor, its door toward the street (+Z), the household shrine
-## on the back wall, a bed, a chest, a lamp and (while there is a roof) the block above. It changes
-## with the age: a tufa house with a tiled roof, then five and six storeys of flats, then a ruin.
-static func room(world: Node3D, age: String, at: Vector3, yaw: float, note: String) -> Array:
-	var g := Kit.group(world, at, yaw)
-	g.name = "YourRoom"
-	var basis := Basis(Vector3.UP, yaw)
-	var ruined := age == "fall"
-	var old := age in ["heroic", "early"]
-	var wall := "tufa" if old else "r_brick"
-	Kit.box(g, Vector3(0, 0.04, 0), Vector3(5.0, 0.08, 5.0), "wood" if not ruined else "rubble", false)
-	Kit.box(g, Vector3(0, 1.6, -2.5), Vector3(5.2, 3.2, 0.3), wall)
-	for x: float in [-2.5, 2.5]:
-		Kit.box(g, Vector3(x, 1.6, 0), Vector3(0.3, 3.2, 5.2), wall)
-	for x: float in [-1.65, 1.65]:
-		Kit.box(g, Vector3(x, 1.6, 2.5), Vector3(1.9, 3.2, 0.3), wall)
-	Kit.box(g, Vector3(0, 2.85, 2.5), Vector3(1.4, 0.7, 0.3), "wood", false)  # the lintel
-	if ruined:
-		for k in 6:
-			Kit.blob(g, Vector3(-1.8 + k * 0.7, 0.2, 1.2 - (k % 3) * 0.9), 0.35, "rubble", Vector3(1.2, 0.6, 1.0), 5)
-	elif old:
-		Kit.box(g, Vector3(0, 3.3, 0), Vector3(5.6, 0.2, 5.6), "wood", false)
-		Kit.box(g, Vector3(0, 3.8, 0), Vector3(5.8, 0.9, 5.8), "r_roof", false, Vector3(0.18, 0, 0))
-	else:
-		var floors := 5 if age == "republic" else 6
-		Kit.box(g, Vector3(0, 3.3 + floors * 1.6, 0), Vector3(5.6, floors * 3.2, 5.6), "r_wall", false)
-		for f in floors:
-			for x: float in [-1.4, 1.4]:
-				Kit.box(g, Vector3(x, 4.9 + f * 3.2, 2.82), Vector3(0.8, 1.1, 0.05), "#1e1a18", false)
-	Rome.lararium(g, Vector3(0, 0, -2.05), 0.0, true)
-	Kit.box(g, Vector3(-1.6, 0.25, -1.2), Vector3(1.0, 0.5, 2.0), "wood")
-	Kit.box(g, Vector3(-1.6, 0.56, -1.2), Vector3(0.9, 0.12, 1.9), "#b8a888", false)
-	Kit.box(g, Vector3(1.75, 0.3, -1.9), Vector3(1.0, 0.6, 0.6), "wood")
-	if old:
-		Kit.cylinder(g, Vector3(1.6, 0, 0.8), 0.35, 0.45, "stone", true, 8)  # the quern
-		Kit.cylinder(g, Vector3(1.6, 0.45, 0.8), 0.33, 0.15, "stone", false, 8)
-	var lamp := OmniLight3D.new()
-	lamp.position = Vector3(0, 2.4, -0.5)
-	lamp.light_color = Color("ffb070")
-	lamp.light_energy = 0.9 if not ruined else 0.0
-	lamp.omni_range = 6.0
-	g.add_child(lamp)
-	var here := func(local: Vector3) -> Vector3:
-		var p := at + basis * local
-		p.y = at.y
-		return p
-	var out: Array = [
-		{"kind": "activity", "pos": here.call(Vector3(0, 0, -1.3)), "scene": scene_id("lararium", age), "text": "Keep the household gods"},
-		{"kind": "activity", "pos": here.call(Vector3(-1.0, 0, -0.6)), "scene": scene_id("sleep", age), "text": "Sleep until morning"},
-		{"kind": "chest", "pos": here.call(Vector3(1.3, 0, -1.3)), "text": "Open your chest", "note": note},
-		{"kind": "activity", "pos": here.call(Vector3(0.9, 0, 0.9)), "scene": scene_id("purse", age), "text": "Look at the coin in your purse"},
-	]
-	return out

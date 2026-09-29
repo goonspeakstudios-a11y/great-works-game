@@ -257,3 +257,7 @@ A new Rome book gets:
 - an entry in `content/rome/works.json`, with its `age` and `rome_zone`;
 - a room in `content/rome/rooms.json`, with `"world": "rome"`;
 - a gateway position under `gates` in `city.json`.
+
+## The ground
+
+Since the city's fourth build the ground is a height map made from the real topography (`tools/make_rome_height.py`, see `docs/rome-activities.md`, "The ground"): the streets keep to the valleys and the ridges they always ran along, and are graded into the hills rather than draped over them.

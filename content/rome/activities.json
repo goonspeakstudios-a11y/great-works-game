@@ -2,21 +2,21 @@
  "about": "Where and when to do things in the city of Rome (tools/make_rome_activities.py).",
  "room": {
   "at": [
-   402,
-   345
+   507,
+   409
   ],
   "toward": [
-   410,
-   322
+   523,
+   368
   ],
   "notes": {
-   "heroic": "Your room: one room of a tufa house in the Subura, with a hearth, a bed and a chest. Your landlady's family lives above.",
-   "early": "Your room in the Subura. The landlady's son died at Cannae. She keeps his portrait by the household shrine.",
-   "republic": "Your room on the ground floor of a block of flats in the Subura. Five storeys above you, and all of them noisy.",
-   "empire": "Your room in a block of six storeys. The landlord lives on the Esquiline and has never seen it.",
-   "late": "Your room. Half the block is empty; the rent has gone up anyway.",
-   "collapse": "Your room. The door was broken in by the Vandals and mended with a plank.",
-   "fall": "What is left of your room. The roof came down in the second siege. The niche of the household gods is still in the wall."
+   "heroic": "Your house, 280 BC: tufa and timber, one hearth, one table, a wife, three children, and the household gods.",
+   "early": "Your house, 201 BC: the same house, older and prouder. A son home from the war.",
+   "republic": "Your house, about 50 BC: painted and mortgaged. Your wife's money, your wife's rules.",
+   "empire": "Your house, about AD 150: marble and slaves and no children, and nobody in it who loves anyone.",
+   "late": "Your house, AD 384: half the doors bricked up, a lawsuit about the rest.",
+   "collapse": "Your house, AD 455: looted, the door off its hinge, your wife living with a Goth.",
+   "fall": "Your house, AD 552: no roof, no wife, no children. The Lar in his niche, if you kept him."
   }
  },
  "spots": [
@@ -143,8 +143,8 @@
    "scene": "fire",
    "text": "Help with the fire",
    "at": [
-    520,
-    420
+    640,
+    300
    ],
    "ages": [
     "heroic",
