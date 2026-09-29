@@ -80,8 +80,12 @@ Decided with BB1 (2026-09-28):
 - **River:** the Tiber runs between its banks, with the island, and bridges standing by date.
 - **Houses: a kit per age** (`rome_map._house`, `_old_house`, `_plot`, `_ruin`; the notes of
   `docs/rome-city-notes.md` 2.1, built 2026-09-29):
-  - A bent, twisting grid of blocks, each split into two or three houses of their own height,
-    kind and colour.
+  - A bent, twisting grid of cells, each split into two or three houses of their own height,
+    kind and colour. Between the cells run lanes of packed earth along the bent grid, every third
+    row and every third column (`_lanes`, `LANE`), broken at the named streets, the squares, the
+    monuments, the river and the wall; so the city is blocks of houses between streets. A house
+    near a street (named or lane) is lined up along it, its front a step from the kerb, one after
+    another on each side (`_nearest_road`, `lined`); no house is built into another (`placed`).
   - 280 and 201 BC: low houses of tufa blocks, or plaster over a timber frame with the timbers
     showing, one or two storeys under wide eaves of tiles or thatch, a blank wall to the street with
     a door in it, no shops. Two-thirds of the outer hills inside the wall (the Esquiline, the
@@ -148,7 +152,9 @@ Decided with BB1 (2026-09-28):
   plane in the valleys, bare rock outcrops on the Capitol's face (`_hill_tree`), round-headed trees
   in the squares, along the river and in the gardens, and bushes in the ruins.
 - **Walls and aqueducts:**
-  - The Servian wall stands.
+  - The Servian wall stands in every age, three metres thick with a tower at each gate, the agger
+    (the earth rampart) behind it on the east; lower under the emperors, when the city has spilled
+    over it. No house or lane is built across it, and the way along it is kept open.
   - Aurelian's wall stands far off from AD 275.
   - The Marcia, the Claudia and Nero's arches carry water until they are cut.
 

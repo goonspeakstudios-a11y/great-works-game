@@ -24,6 +24,7 @@ const BANK := 5.0  # the slope from the street down to the water
 const ISLE_ARM := 13.0  # each arm of the river round the island
 const CELL := 4.0  # the ground's grid
 const PITCH := 15.0  # one block of houses and its share of the streets round it
+const LANE := 3.6  # the width of a lane between the blocks
 
 ## How far round each kind of monument the houses keep back (world metres, at size 1).
 const FOOTPRINT := {"temple": 16.0, "double_temple": 42.0, "round_temple": 8.0, "hall": 10.0, "curia": 14.0,
@@ -821,9 +822,8 @@ static func _servian_wall(world: Node3D, year: int, lost: bool) -> void:
 	var d := data()
 	var gates: Array = d["wall"]["gates"]
 	var wall_h := span(d["wall"]["height"]) * 1.4
+	var centre := at([0, 0])
 	for i in gates.size():
-		if year > 0 and i % 3 != 0:
-			continue
 		var a := on_ground(gates[i]["at"])
 		var b := on_ground(gates[(i + 1) % gates.size()]["at"])
 		var gap := 7.0
@@ -833,14 +833,20 @@ static func _servian_wall(world: Node3D, year: int, lost: bool) -> void:
 		if length <= 0.0:
 			continue
 		var n := maxi(1, int(length / 10.0))
+		var inward := Vector3(dir.z, 0, -dir.x).normalized()
+		if inward.dot(centre - a) < 0.0:
+			inward = -inward
 		for k in n:  # in lengths that step with the ground
 			var p := a + dir.normalized() * (gap / 2.0 + length * (k + 0.5) / n)
-			var h := wall_h if year < 0 else wall_h * 0.6
-			Kit.box(world, Vector3(p.x, ground(p) + h / 2.0 - 1.0, p.z), Vector3(1.6, h + 2.0, length / n + 0.3), "tufa" if not lost else "rubble", true,
+			var h := wall_h if year < 0 else wall_h * 0.75  # under the emperors, lower, and built against
+			Kit.box(world, Vector3(p.x, ground(p) + h / 2.0 - 1.0, p.z), Vector3(3.0, h + 2.0, length / n + 0.3), "tufa" if not lost else "rubble", true,
 				Vector3(0, atan2(dir.x, dir.z), 0))
+			if i < 4:  # the agger on the east: the great earth rampart behind the wall, with its ditch outside
+				var q := p + inward * 7.0
+				Kit.box(world, Vector3(q.x, ground(q) + 1.2, q.z), Vector3(11.0, 4.4, length / n + 0.3), "earth", true, Vector3(0, atan2(dir.x, dir.z), 0))
 		for side: float in [1.0]:
 			var t := a + dir.normalized() * (gap / 2.0 + 1.3) * side
-			Kit.box(world, Vector3(t.x, ground(t) + wall_h * 0.7 - 1.0, t.z), Vector3(3.0, wall_h * 1.4 + 2.0, 3.0), "tufa")
+			Kit.box(world, Vector3(t.x, ground(t) + wall_h * 0.7 - 1.0, t.z), Vector3(4.0, wall_h * 1.4 + 2.0, 4.0), "tufa")
 
 
 ## The edge of the city: where you can walk, a line of boundary stones (the pomerium's cippi) and
@@ -978,6 +984,9 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				roads.append([end, target, float(r["width"]) / 2.0 + 2.0, true])  # a corridor, not a street to line
 	var landmarks: Array = standing.filter(func(s: Dictionary) -> bool: return (s["m"] as Dictionary).get("landmark", false)).map(
 		func(s: Dictionary) -> Vector3: return s["at"])
+	var wall_line: Array = []  # the Servian wall's stretches, which no house or lane crosses
+	for gi in servian.size():
+		wall_line.append([servian[gi], servian[(gi + 1) % servian.size()]])
 	var ab: Dictionary = c.get("abitato", {})
 	var abitato := at(ab.get("at", [-800, 450]))
 	var abitato_r := span(float(ab.get("radius", 500)))
@@ -989,6 +998,15 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		hi = Vector2(maxf(hi.x, p.x), maxf(hi.y, p.z))
 	var parts := {}  # "mesh|material" -> [[transform, colour], ...]
 	_burnt = []
+	var placed: Array = []  # [centre, reach] of every house built, so none is built into another
+	# the lanes between the blocks: unpaved streets along the bent grid every third row and column,
+	# broken at the named streets, the squares, the monuments, the river and the wall, which the
+	# houses front onto like the named streets (so the city is blocks of houses between streets)
+	for lane: Array in _lanes(lo, hi, outer, roads, keep_off, opens, wall_line):
+		var pts: Array = lane.map(func(q: Vector3) -> Vector3: return Vector3(q.x, ground(q), q.z))
+		ribbon(world, pts, LANE, "path" if not fallen else "rubble", 0.1)
+		for i in pts.size() - 1:
+			roads.append([lane[i], lane[i + 1], LANE / 2.0 + 3.0])
 	var add := func(kind: String, mat: String, xf: Transform3D, col: Color = Color.WHITE) -> void:
 		var key := kind + "|" + mat
 		if not parts.has(key):
@@ -997,7 +1015,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	var trees: Array = []  # [where, kind, size]
 	var doors: Array = out.get("doors", [])
 	var taken := {}
-	var lined := {}  # road index -> [[metres along it, house width], ...]: the houses lined up on each street
+	var lined := {}  # road index and side -> [[metres along it, house width], ...]: the houses lined up on each street
 	for j in int((hi.y - lo.y) / PITCH) + 1:
 		for i in int((hi.x - lo.x) / PITCH) + 1:
 			if taken.has(Vector2i(i, j)):
@@ -1017,6 +1035,8 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				continue
 			if not skip.is_empty() and (inside(skip, p) or skip.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 12.0)):
 				continue
+			if wall_line.any(func(seg: Array) -> bool: return _to_segment(p, seg[0], seg[1]) < 11.0):
+				continue  # the wall, and the way along it
 			if river_edge(p) < 9.0:
 				if river_edge(p) > 4.0 and roll < 0.25:
 					trees.append([p, "round" if roll2 < 0.5 else "pine", rng.randf_range(0.8, 1.2)])  # trees along the bank
@@ -1042,8 +1062,11 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				var half: float = street["half"]
 				var t: float = street["t"]
 				var room: bool = (roads[k] as Array).size() < 4 and float(street["d"]) >= half + 1.5
-				if room:  # not on top of a house already lined up on this stretch
-					for other: Array in lined.get(k, []):
+				var dir0: Vector3 = street["dir"]
+				var n0: Vector3 = street["n"]
+				var side_key := "%d%s" % [k, "+" if dir0.x * n0.z - dir0.z * n0.x > 0.0 else "-"]  # this side of this stretch
+				if room:  # not on top of a house already lined up on this side of this stretch
+					for other: Array in lined.get(side_key, []):
 						if absf(float(other[0]) - t) < (float(other[1]) + w) / 2.0 + 0.8:
 							room = false
 							break
@@ -1052,10 +1075,11 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						var stall: Vector3 = street["q"] + (street["n"] as Vector3) * (half + 1.2)
 						out["stalls"].append(stall)
 					continue
-				if not lined.has(k):
-					lined[k] = []
-				lined[k].append([t, w])
+				if not lined.has(side_key):
+					lined[side_key] = []
+				lined[side_key].append([t, w])
 				var dir: Vector3 = street["dir"]
+				d = minf(d, 10.0)  # shallow enough that the row behind keeps its yard
 				yaw = atan2(-(street["n"] as Vector3).x, -(street["n"] as Vector3).z)  # the house's front (+Z) toward the street
 				p = (street["q"] as Vector3) + (street["n"] as Vector3) * (half + 1.6 + d / 2.0)
 				snapped = true
@@ -1100,6 +1124,10 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				taken[Vector2i(i + 1, j)] = true
 				w += PITCH
 				p += basis * Vector3(PITCH / 2.0, 0, 0)
+			var reach := maxf(w, d) / 2.0 * 0.8
+			if placed.any(func(o: Array) -> bool: return Vector2(o[0].x - p.x, o[0].z - p.z).length() < float(o[1]) + reach):
+				continue  # into a house already built
+			placed.append([p, reach])
 			var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
 			if not far:
 				var shape := BoxShape3D.new()
@@ -1610,6 +1638,59 @@ static func _hill_tree(p: Vector3, y: float, roll: float) -> String:
 	if y > 4.0:
 		return "pine" if roll < 0.45 else "round"
 	return "round"
+
+
+## The lanes between the blocks: along the bent grid, every third row and every third column, as
+## polylines of world points (no height), each broken where it would cross a named street's band,
+## a square, a monument's ground, the river or the Servian wall. `roads` are the named streets'
+## segments [a, b, half + 3].
+static func _lanes(lo: Vector2, hi: Vector2, outer: Array, roads: Array, keep_off: Array, opens: Array, wall_line: Array) -> Array:
+	var out: Array = []
+	var ok := func(p: Vector3) -> bool:
+		if not inside(outer, p) or river_edge(p) < 10.0:
+			return false
+		if roads.any(func(r: Array) -> bool: return _to_segment(p, r[0], r[1]) < float(r[2]) - 1.0):
+			return false
+		if keep_off.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < float(o[1]) - 2.0):
+			return false
+		if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < float(o[1])):
+			return false
+		if wall_line.any(func(seg: Array) -> bool: return _to_segment(p, seg[0], seg[1]) < 7.0):
+			return false
+		return true
+	var rows := int((hi.y - lo.y) / PITCH) + 1
+	var cols := int((hi.x - lo.x) / PITCH) + 1
+	for j in range(0, rows, 3):  # along the rows
+		var z0 := lo.y + j * PITCH - PITCH / 2.0
+		var run: Array = []
+		for i in cols + 1:
+			var x := lo.x + i * PITCH - PITCH / 2.0
+			var bend := _warp(x, z0)
+			var p := Vector3(x + bend.x, 0, z0 + bend.y)
+			if ok.call(p):
+				run.append(p)
+			else:
+				if run.size() > 1:
+					out.append(run)
+				run = []
+		if run.size() > 1:
+			out.append(run)
+	for i in range(0, cols, 3):  # and the columns
+		var x0 := lo.x + i * PITCH - PITCH / 2.0
+		var run: Array = []
+		for j in rows + 1:
+			var z := lo.y + j * PITCH - PITCH / 2.0
+			var bend := _warp(x0, z)
+			var p := Vector3(x0 + bend.x, 0, z + bend.y)
+			if ok.call(p):
+				run.append(p)
+			else:
+				if run.size() > 1:
+					out.append(run)
+				run = []
+		if run.size() > 1:
+			out.append(run)
+	return out
 
 
 ## The street nearest a point: {k: its index in `roads`, d: how far, q: the nearest point on it,
