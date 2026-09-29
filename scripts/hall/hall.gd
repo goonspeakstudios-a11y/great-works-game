@@ -161,6 +161,7 @@ var _choice: PanelContainer  # a world asks who you are there (Choice)
 var _t := 0.0
 var _args := {}
 var _frames := 0
+var _shot_view := false  # --res: save the world's own picture (the SubViewport), not the window
 var _ok := false
 var _talk := {}  # work -> what has been said there, as shown in the panel
 var _quit_armed := -100.0
@@ -307,6 +308,32 @@ func _stage_shot(view: String) -> void:
 				player.seated = true
 				var to := _vec(_args.get("look", "0,0,0")) - player.position
 				player.camera.rotation.x = atan2(to.y, Vector2(to.x, to.z).length())
+			if _args.has("ortho"):  # --ortho=<metres> [--res=N]: the city straight down, orthographic, that many metres across
+				var span := float(_args["ortho"])
+				var c := _vec(_args.get("at", "0,0,0"))
+				player.seated = true
+				player.position = Vector3(c.x, 0.0, c.z)
+				player.rotation.y = 0.0
+				var high := float(_args.get("cam_y", "600"))
+				if _args.has("persp"):  # a perspective camera straight down, high enough to take the span in
+					player.camera.fov = 70.0
+					high = span / 2.0 / tan(deg_to_rad(35.0))
+				else:
+					player.camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+					player.camera.size = span
+				player.camera.far = high * 2.0
+				player.position.y = high  # the player is lifted, not the camera: seated, the camera sits at eye height
+				player.camera.rotation.x = -PI / 2.0
+				toad_hold = true
+				toad["root"].position = Vector3(c.x, -50.0, c.z)  # out of the picture
+				for we: Node in world.find_children("*", "WorldEnvironment", true, false):  # no haze at 600 m: the true colours
+					(we as WorldEnvironment).environment.fog_enabled = false
+				for l: Node in world.find_children("*", "DirectionalLight3D", true, false):
+					(l as DirectionalLight3D).shadow_enabled = false  # shadows only hide what is under them
+				var res := int(_args.get("res", "0"))
+				if res > 0:
+					_view.size = Vector2i(res, res)
+					_shot_view = true
 			if _args.has("plan"):  # --plan=city|zoom|house|live: the plan of the city (closer in), of your house, or the live map
 				_open_plan("house" if _args["plan"] == "house" else "city", _args["plan"] == "live")
 				_plan.zoomed = _args["plan"] in ["zoom", "live"]
@@ -1482,7 +1509,7 @@ func _process(delta: float) -> void:
 	if _args.has("shot"):
 		_frames += 1
 		if _frames == 90:
-			get_viewport().get_texture().get_image().save_png(_args["shot"])
+			(_view if _shot_view else get_viewport()).get_texture().get_image().save_png(_args["shot"])
 			get_tree().quit()
 	for f in flicker:
 		if is_instance_valid(f["light"]):

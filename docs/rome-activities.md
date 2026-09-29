@@ -110,6 +110,12 @@ The ground of the city is a height map (`content/rome/height.json`, made by `too
 
     python3 tools/make_rome_height.py
 
+### Dev maps
+Three tools for building the city up, all under `docs/`:
+- `python3 tools/plot_rome.py` → `docs/rome-plot.png` and `.csv`: every structure numbered on the relief with a 250 m grid; the index gives each one's map position, ground height and years. This is the plan as written.
+- `python3 tools/dev_maps.py [ages]` → `docs/dev/ortho_<age>.png`, `ortho_forum_<age>.png` and `ortho_ages.png`: the city as the game builds it, captured straight down with an orthographic camera (`--ortho=<metres> --res=N` in the hall's shot mode, fog and shadows off), with the same grid and numbers laid over it. This is the plan as built; lay it beside the plot to see what stands where it should.
+- `python3 tools/dev_maps.py materials` → `docs/dev/materials.png`: every material of the city as a labelled swatch (`tools/material_sheet.gd` dumps them).
+
 ### The plan of the city, and directions that agree with it
 **The live map** (M anywhere in the city) sits in the corner and follows you as you walk, close in on where you are, with the ground in relief, the streets, the monuments, your house and the regulars; M or Esc puts it away, Z shows the whole city.
 
