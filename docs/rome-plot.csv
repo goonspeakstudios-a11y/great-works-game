@@ -1,0 +1,87 @@
+n,id,name,kind,east_m,north_m,height_m_asl,from,ruin,gone,has_note
+1,jupiter,the Temple of Jupiter Best and Greatest,temple,-190,90,42.9,-509,455,,yes
+2,juno_moneta,the Temple of Juno Moneta,temple,-157,200,43.6,-344,400,,yes
+3,tabularium,the Tabularium,tabularium,-116,108,14.4,-78,500,,yes
+4,saturn,the Temple of Saturn,temple,-76,50,12.0,-497,450,,yes
+5,concord,the Temple of Concord,temple,-75,92,13.8,-121,450,,yes
+6,vespasian,the Temple of Vespasian and Titus,temple,-94,72,12.8,87,450,,
+7,castor,the Temple of Castor and Pollux,temple,41,-45,11.2,-484,450,,yes
+8,vesta,the Temple of Vesta,round_temple,78,-59,11.3,-700,394,,yes
+9,regia,the Regia,hall,91,-45,11.3,-600,400,,yes
+10,rostra,the Rostra,rostra,-58,22,11.1,-338,,,yes
+11,curia_hostilia,the Senate House,curia,-41,67,11.2,-600,,-44,yes
+12,curia_julia,the Senate House (Curia Julia),curia,8,80,11.3,-29,630,,yes
+13,basilica_aemilia,the Basilica Aemilia,basilica,41,56,11.3,-179,410,,yes
+14,basilica_sempronia,the Basilica Sempronia,basilica,-33,-45,11.0,-170,,-46,
+15,basilica_julia,the Basilica Julia,basilica,-33,-45,11.0,-46,410,,yes
+16,divus_julius,the Temple of the Deified Julius,temple,83,0,11.3,-29,450,,yes
+17,antoninus,the Temple of Antoninus and Faustina,temple,133,33,11.4,141,,,yes
+18,janus,the Shrine of Janus,shrine,0,70,11.2,-700,450,,yes
+19,sep_severus,the Arch of Septimius Severus,arch,-41,89,11.2,203,,,yes
+20,titus,the Arch of Titus,arch,273,-167,30.7,82,,,yes
+21,constantine,the Arch of Constantine,arch,447,-266,12.0,315,,,yes
+22,venus_roma,the Temple of Venus and Rome,double_temple,373,-133,32.5,135,600,,yes
+23,maxentius,the Basilica of Maxentius,vaulted_hall,248,-55,16.1,312,500,,yes
+24,peace,the Temple of Peace,forum,149,67,11.5,75,450,,yes
+25,caesar_forum,the Forum of Caesar,forum,-25,150,11.2,-46,500,,yes
+26,venus_genetrix,the Temple of Venus the Mother,temple,-58,190,11.1,-46,500,,yes
+27,augustus_forum,the Forum of Augustus,forum,140,190,11.6,-2,500,,yes
+28,mars_ultor,the Temple of Mars the Avenger,temple,174,240,11.5,-2,500,,yes
+29,nerva_forum,the Forum of Nerva,forum,90,130,11.5,97,500,,
+30,minerva,the Temple of Minerva,temple,120,170,11.6,97,500,,
+31,trajan_forum,the Forum of Trajan,forum,-20,290,35.5,112,550,,yes
+32,basilica_ulpia,the Basilica Ulpia,basilica,-50,350,39.8,112,550,,
+33,trajan_column,Trajan's Column,column,-75,400,39.8,113,,,yes
+34,trajan_markets,Trajan's Markets,markets,75,389,47.5,110,550,,yes
+35,colosseum,the Flavian Amphitheatre,amphitheatre,580,-222,13.9,80,450,,yes
+36,colossus,the Colossus,colossus,470,-170,15.2,75,,500,yes
+37,meta_sudans,the Meta Sudans,fountain_cone,500,-240,13.5,90,537,,yes
+38,ludus,the Great Gladiator School,ludus,690,-150,26.0,90,450,,
+39,titus_baths,the Baths of Titus,baths,700,-50,48.5,80,500,,
+40,trajan_baths,the Baths of Trajan,baths,880,150,51.8,109,537,,yes
+41,caracalla_baths,the Baths of Caracalla,baths,596,-1454,12.2,216,537,,yes
+42,diocletian_baths,the Baths of Diocletian,baths,1036,1210,54.6,306,537,,yes
+43,palace,the Palace of the Caesars,palace,149,-410,53.0,92,600,,yes
+44,palatine_houses,the houses of the great on the Palatine,houses,130,-400,53.0,-700,,64,yes
+45,magna_mater,the Temple of the Great Mother,temple,-58,-322,50.1,-191,400,,yes
+46,apollo_palatinus,the Temple of Apollo on the Palatine,temple,33,-433,52.8,-28,363,,yes
+47,circus,the Circus Maximus,circus,41,-701,12.4,-600,550,,yes
+48,circus_obelisk,the obelisk of the Circus,obelisk,41,-701,12.4,-10,550,,yes
+49,ceres,"the Temple of Ceres, Liber and Libera",temple,-310,-600,11.9,-493,400,,yes
+50,diana,the Temple of Diana on the Aventine,temple,-431,-955,45.8,-540,410,,
+51,juno_regina,the Temple of Juno the Queen,temple,-348,-855,46.3,-392,410,,yes
+52,hercules,the Temple of Hercules the Victor,round_temple,-315,-377,11.6,-120,,,yes
+53,portunus,the Temple of Portunus,temple,-381,-322,11.6,-100,,,yes
+54,sant_omobono,the Temples of Fortune and Mother Dawn,temple,-307,-133,10.7,-500,400,,
+55,aesculapius,the Temple of Aesculapius,temple,-625,-175,12.0,-291,400,,yes
+56,marcellus,the Theatre of Marcellus,theatre,-439,-44,11.0,-13,,,yes
+57,bellona,the Temple of Bellona,temple,-514,33,11.1,-296,400,,yes
+58,apollo_sosianus,the Temple of Apollo the Healer,temple,-470,0,11.0,-431,400,,
+59,flaminian_circus,the Flaminian Circus,open_circus,-760,200,11.8,-221,,300,yes
+60,mars_in_circo,the Temple of Mars in the Circus,temple,-886,144,11.8,-132,400,,yes
+61,pompey,the Theatre of Pompey,theatre,-1003,345,15.2,-55,537,,yes
+62,venus_victrix,the Temple of Venus the Victor,temple,-1045,345,15.2,-55,537,,yes
+63,pompey_portico,the Portico of Pompey,forum,-890,345,11.8,-55,537,,yes
+64,saepta,the Voting Pens (Saepta),forum,-580,560,11.8,-26,450,,yes
+65,villa_publica,the Villa Publica,hall,-560,330,11.2,-435,,80,yes
+66,pantheon,the Pantheon,pantheon,-688,710,12.2,125,,,yes
+67,agrippa_pantheon,Agrippa's Pantheon,temple,-688,710,12.2,-27,,80,
+68,iseum,the Temple of Isis,forum,-555,678,11.9,80,400,,yes
+69,iseum_obelisk,an obelisk of Isis,obelisk,-555,740,12.0,80,537,,
+70,agrippa_baths,the Baths of Agrippa,baths,-760,660,12.1,-25,537,,
+71,domitian_stadium,the Stadium of Domitian,stadium,-1002,777,12.4,86,537,,yes
+72,hadrian_temple,the Temple of the Deified Hadrian,temple,-480,855,12.8,145,450,,
+73,sol,the Temple of the Sun,forum,-348,844,12.7,274,450,,yes
+74,ara_pacis,the Altar of Augustan Peace,altar,-804,1554,11.0,-9,400,,yes
+75,augustus_tomb,the Mausoleum of Augustus,mausoleum,-729,1532,11.2,-28,410,,yes
+76,hadrian_tomb,the Mausoleum of Hadrian,mausoleum,-1560,1210,12.9,139,,,yes
+77,marcus_column,the Column of Marcus Aurelius,column,-500,950,12.9,193,,,
+78,quirinus,the Temple of Quirinus,temple,481,977,50.5,-293,400,,yes
+79,serapis,the Temple of Serapis,temple,-41,733,25.0,211,450,,
+80,divus_claudius,the Temple of the Deified Claudius,forum,646,-577,50.0,70,450,,
+81,jupiter_stator,the Temple of Jupiter the Stayer,temple,235,-135,29.9,-294,400,,yes
+82,lateran,the Lateran Basilica,church,1698,-700,55.2,324,,,yes
+83,st_peter,the Basilica of St Peter,church,-2594,1110,37.5,330,,,yes
+84,santa_maria_antiqua,the church of Holy Mary the Old,church,60,-95,11.3,540,,,yes
+85,cosma_damiano,the church of Saints Cosmas and Damian,church,205,40,11.3,527,,,
+86,sessorian,the church of the Holy Cross,church,2250,-380,55.3,330,,,yes

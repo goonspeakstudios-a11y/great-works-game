@@ -589,3 +589,28 @@ func test_a_sold_household_god_stays_sold() -> void:
 	lar.start()
 	autoplay(lar)
 	check(lar.lines.any(func(l: String) -> bool: return l.contains("sold him")), "and in AD 552 the niche is empty")
+
+
+
+func test_the_toad_speaks_and_knows_the_way_back() -> void:
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	hall.progress.data = {"works": {}}
+	hall.progress.set_mode("rome", "student")
+	hall.travel("urbs")
+	hall.speak_to_toad()
+	check(hall._menu.visible, "speaking to the toad opens the menu")
+	check(hall._menu._title.text != "PAUSED" and hall._menu._title.text.contains("toad"), "with the toad's words at the top")
+	check(not hall._menu._nexus_button.visible, "a Mathetes is not offered the way back")
+	hall._close_panels()
+	hall.progress.set_mode("rome", "zen")
+	hall.speak_to_toad()
+	check(hall._menu._nexus_button.visible, "a Theoros is offered the way back to the Nexus")
+	hall._toad_takes_you_back()
+	check_eq(hall.here, "nexus", "and the toad takes you there")
+	check(not hall._menu.visible, "the menu closed behind you")
+	hall.speak_to_toad()
+	check(not hall._menu._nexus_button.visible, "in the Nexus there is no way back to offer")
+	hall._close_panels()
+	hall.free()

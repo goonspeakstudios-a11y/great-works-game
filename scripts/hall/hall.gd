@@ -108,6 +108,10 @@ var _quip_until := 0.0
 const TOAD_QUIPS := ["The toad puffs up proudly.", "The toad blinks at you, very slowly.",
 	"The toad lets out a deep, satisfied croak.", "The toad shuffles closer to your foot.",
 	"The toad looks out at the sea with you."]
+## What the toad says when you speak to it (the menu's title then), and its offer to a Theoros.
+const TOAD_WORDS := ["The toad looks up at you. \"Croak,\" it says, meaningfully.", "The toad settles on your foot. It seems to want something.",
+	"The toad regards you. Whatever you need, it seems to say, ask.", "\"Croak.\" The toad is listening."]
+const TOAD_NEXUS := "The toad knows the way back to the Nexus. Go?"
 
 var _view: SubViewport
 var _screen: TextureRect
@@ -223,6 +227,7 @@ func _ready() -> void:
 	_root.add_child(_menu)
 	_menu.load_settings()
 	_menu.switch_mode = _switch_mode
+	_menu.go_nexus = _toad_takes_you_back
 	_choice = Choice.new()
 	_choice.chosen.connect(_on_chosen)
 	_root.add_child(_choice)
@@ -1699,6 +1704,25 @@ func pat_toad() -> void:
 		music.croak()
 
 
+## Speak to the toad: it puffs, croaks, and opens the menu with its words at the top; for a
+## Theoros (Zen) it also offers the way back to the Nexus, from anywhere but the Nexus itself.
+func speak_to_toad() -> void:
+	pat_toad()
+	_menu.speak(TOAD_WORDS[randi() % TOAD_WORDS.size()])
+	_menu.show_mode(_mode_line())
+	var w := _world_of(here)
+	_menu.show_nexus(TOAD_NEXUS if w != "" and progress.mode(w) == "zen" else "")
+	_show_panel(_menu)
+
+
+## The toad's offer taken: the menu closes and you are in the Nexus.
+func _toad_takes_you_back() -> void:
+	_close_panels()
+	_menu.speak("")
+	_menu.show_nexus("")
+	travel("nexus")
+
+
 ## Everyone present breathes, writes when left alone, and looks up and turns toward you
 ## when you come near.
 func _animate_people(delta: float) -> void:
@@ -1746,7 +1770,7 @@ func _nearest() -> Dictionary:
 		var to_toad: Vector3 = toad["root"].position - at
 		to_toad.y = 0.0
 		if to_toad.length() < minf(best_d, 1.6) and (to_toad.length() < 0.5 or player.facing().dot(to_toad.normalized()) > 0.2):
-			best = {"kind": "toad", "pos": toad["root"].position, "text": "Pat the toad"}
+			best = {"kind": "toad", "pos": toad["root"].position, "text": "Speak to the toad"}
 	return best
 
 
@@ -1780,7 +1804,7 @@ func activate(it: Dictionary) -> void:
 		"ferry":
 			take_boat(it)
 		"toad":
-			pat_toad()
+			speak_to_toad()
 		"beat":
 			_start_beat(it)
 		"city_again":
@@ -2462,6 +2486,8 @@ func _input(event: InputEvent) -> void:
 		elif _any_panel():
 			_close_panels()
 		else:
+			_menu.speak("")
+			_menu.show_nexus("")
 			_menu.show_mode(_mode_line())
 			_show_panel(_menu)
 

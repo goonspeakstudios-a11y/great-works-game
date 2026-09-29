@@ -1,13 +1,17 @@
 extends PanelContainer
 ## The Esc menu: volume, walking speed and mouse speed (kept between games in
-## user://settings.cfg), and buttons to go back to the game or quit.
+## user://settings.cfg), and buttons to go back to the game or quit. The toad opens it too, with
+## something to say at the top; for a Theoros (Zen) it also offers the way back to the Nexus.
 
 const PATH := "user://settings.cfg"
 
 var player: CharacterBody3D
 var resume := Callable()  # what "Back to the game" does
 var switch_mode := Callable()  # changes the way you walk this world
+var go_nexus := Callable()  # the toad's offer: back to the Nexus
 var _mode_button: Button
+var _nexus_button: Button
+var _title: Label
 var _sliders := {}
 
 
@@ -18,10 +22,12 @@ func _init() -> void:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8)
 	add_child(box)
-	var title := Label.new()
-	title.text = "PAUSED"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(title)
+	_title = Label.new()
+	_title.text = "PAUSED"
+	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_title.custom_minimum_size = Vector2(280, 0)
+	box.add_child(_title)
 	var version := Label.new()
 	var show_version := func() -> void:
 		version.text = preload("res://scripts/version.gd").label()
@@ -40,6 +46,10 @@ func _init() -> void:
 	_mode_button.pressed.connect(func() -> void: if switch_mode.is_valid(): switch_mode.call())
 	_mode_button.hide()
 	box.add_child(_mode_button)
+	_nexus_button = Button.new()
+	_nexus_button.pressed.connect(func() -> void: if go_nexus.is_valid(): go_nexus.call())
+	_nexus_button.hide()
+	box.add_child(_nexus_button)
 	for b in [["Back to the game", _on_resume], ["Quit", _on_quit]]:
 		var btn := Button.new()
 		btn.text = b[0]
@@ -51,6 +61,17 @@ func _init() -> void:
 func show_mode(text: String) -> void:
 	_mode_button.text = text
 	_mode_button.visible = text != ""
+
+
+## What the menu says at the top: the toad's words, or PAUSED when Esc opened it.
+func speak(text: String) -> void:
+	_title.text = text if text != "" else "PAUSED"
+
+
+## The toad's offer of the way back to the Nexus ("" hides it).
+func show_nexus(text: String) -> void:
+	_nexus_button.text = text
+	_nexus_button.visible = text != ""
 
 
 func _slider(box: VBoxContainer, key: String, text: String, lo: float, hi: float, start: float) -> void:
