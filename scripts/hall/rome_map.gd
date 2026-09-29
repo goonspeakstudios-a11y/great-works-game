@@ -633,8 +633,19 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 		var p: Vector3 = j["at"]
 		if not inside(edge, p) or (not skip.is_empty() and inside(skip, p)):
 			continue
-		var a := Vector2(p.x, p.z).angle_to_point(Vector2.ZERO) + 1.3 + k * 0.7  # off the crossing, on a corner
-		var q := p + Vector3(cos(a), 0, sin(a)) * 6.5
+		var q := p  # on the corner: of twelve spots round the crossing, the one farthest from any street
+		var best := -1.0
+		for s in 12:
+			var a := TAU * (s + 0.5 * (k % 2)) / 12.0
+			var cand := p + Vector3(cos(a), 0, sin(a)) * 7.0
+			var off := INF
+			for r: Dictionary in c.get("roads", []):
+				var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
+				for i in pts.size() - 1:
+					off = minf(off, _to_segment(cand, pts[i], pts[i + 1]) - float(r["width"]) / 2.0)
+			if off > best:
+				best = off
+				q = cand
 		q.y = ground(q)
 		var yaw := atan2(p.x - q.x, p.z - q.z)
 		var g := Kit.group(world, q, yaw)
@@ -964,7 +975,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					best = d
 					target = s["at"]
 			if target != Vector3.INF and best > 4.0:
-				roads.append([end, target, float(r["width"]) / 2.0 + 2.0])
+				roads.append([end, target, float(r["width"]) / 2.0 + 2.0, true])  # a corridor, not a street to line
 	var landmarks: Array = standing.filter(func(s: Dictionary) -> bool: return (s["m"] as Dictionary).get("landmark", false)).map(
 		func(s: Dictionary) -> Vector3: return s["at"])
 	var ab: Dictionary = c.get("abitato", {})
@@ -986,6 +997,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	var trees: Array = []  # [where, kind, size]
 	var doors: Array = out.get("doors", [])
 	var taken := {}
+	var lined := {}  # road index -> [[metres along it, house width], ...]: the houses lined up on each street
 	for j in int((hi.y - lo.y) / PITCH) + 1:
 		for i in int((hi.x - lo.x) / PITCH) + 1:
 			if taken.has(Vector2i(i, j)):
@@ -1017,10 +1029,38 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				if roll < 0.12:
 					trees.append([p, "cypress", rng.randf_range(0.9, 1.2)])  # the sacred groves by the temples
 				continue
-			if roads.any(func(r: Array) -> bool: return _to_segment(p, r[0], r[1]) < r[2] + 6.0):
-				if roll < 0.5 and not fallen and not far:
-					out["stalls"].append(p)
-				continue
+			# a cell near a street is lined up along it, its front a step from the kerb, so the street
+			# has walls (the road entries are [a, b, half-width + 3, corridor?]); a cell on the street
+			# itself, or on a view corridor, is left open, with a stall now and then
+			var street := _nearest_road(p, roads)
+			var snapped := false
+			var w := rng.randf_range(9.5, 12.5)
+			var d := rng.randf_range(9.5, 12.5)
+			var yaw := 0.0
+			if float(street["d"]) < float(street["half"]) + 9.0:
+				var k: int = street["k"]
+				var half: float = street["half"]
+				var t: float = street["t"]
+				var room: bool = (roads[k] as Array).size() < 4 and float(street["d"]) >= half + 1.5
+				if room:  # not on top of a house already lined up on this stretch
+					for other: Array in lined.get(k, []):
+						if absf(float(other[0]) - t) < (float(other[1]) + w) / 2.0 + 0.8:
+							room = false
+							break
+				if not room:
+					if roll < 0.5 and not fallen and not far and (roads[k] as Array).size() < 4:
+						var stall: Vector3 = street["q"] + (street["n"] as Vector3) * (half + 1.2)
+						out["stalls"].append(stall)
+					continue
+				if not lined.has(k):
+					lined[k] = []
+				lined[k].append([t, w])
+				var dir: Vector3 = street["dir"]
+				yaw = atan2(-(street["n"] as Vector3).x, -(street["n"] as Vector3).z)  # the house's front (+Z) toward the street
+				p = (street["q"] as Vector3) + (street["n"] as Vector3) * (half + 1.6 + d / 2.0)
+				snapped = true
+				if dir == Vector3.ZERO:
+					snapped = false
 			var y := ground(p)
 			var hill := y > 4.0
 			var outer_hill := old and (hill or p.distance_to(forum) > 95.0) and inside(servian, p)  # the Esquiline, the Caelian, the Aventine's back
@@ -1045,19 +1085,18 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					if hill:
 						trees.append([p + Vector3(rng.randf_range(-5, 5), 0, rng.randf_range(-5, 5)), "cypress" if kind == "cypress" or roll2 < 0.5 else "pine", rng.randf_range(0.8, 1.1)])
 				continue
-			var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
-			var yaw := atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
+			if not snapped:
+				var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
+				yaw = atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
 			var basis := Basis(Vector3.UP, yaw)
-			var w := rng.randf_range(9.5, 12.5)
-			var d := rng.randf_range(9.5, 12.5)
 			if outer_hill and roll2 < 0.66:  # fields inside the wall, a farmhouse among them
-				if rng.randf() < 0.5:
+				if rng.randf() < 0.5 and not snapped:
 					taken[Vector2i(i + 1, j)] = true
 					w += PITCH
 					p += basis * Vector3(PITCH / 2.0, 0, 0)
 				_plot(add, p, basis, w, d, rng, palette, trees, doors, far)
 				continue
-			if rng.randf() < 0.22 and not hill and not old:  # a long block over two cells, the alley between built over
+			if rng.randf() < 0.22 and not hill and not old and not snapped:  # a long block over two cells, the alley between built over
 				taken[Vector2i(i + 1, j)] = true
 				w += PITCH
 				p += basis * Vector3(PITCH / 2.0, 0, 0)
@@ -1571,6 +1610,29 @@ static func _hill_tree(p: Vector3, y: float, roll: float) -> String:
 	if y > 4.0:
 		return "pine" if roll < 0.45 else "round"
 	return "round"
+
+
+## The street nearest a point: {k: its index in `roads`, d: how far, q: the nearest point on it,
+## t: metres along its segment, dir: the segment's direction, n: the normal toward `p`, half: the
+## street's half-width (the road entries carry half-width + 3)}.
+static func _nearest_road(p: Vector3, roads: Array) -> Dictionary:
+	var best := {"k": -1, "d": INF, "q": p, "t": 0.0, "dir": Vector3.ZERO, "n": Vector3.ZERO, "half": 0.0}
+	for k in roads.size():
+		var r: Array = roads[k]
+		var a: Vector3 = r[0]
+		var b: Vector3 = r[1]
+		var ab := Vector2(b.x - a.x, b.z - a.z)
+		var ap := Vector2(p.x - a.x, p.z - a.z)
+		var t := clampf(ap.dot(ab) / maxf(ab.length_squared(), 0.001), 0.0, 1.0)
+		var q := Vector2(a.x, a.z) + ab * t
+		var d := Vector2(p.x, p.z).distance_to(q)
+		if d < float(best["d"]):
+			var n := Vector2(p.x, p.z) - q
+			if n.length() < 0.01:
+				n = Vector2(-ab.y, ab.x)
+			best = {"k": k, "d": d, "q": Vector3(q.x, 0, q.y), "t": t * ab.length(), "dir": Vector3(ab.x, 0, ab.y).normalized(),
+				"n": Vector3(n.normalized().x, 0, n.normalized().y), "half": float(r[2]) - 3.0}
+	return best
 
 
 ## How the grid of blocks is bent at a point: two slow waves each way, so streets wander and

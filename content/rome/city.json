@@ -323,8 +323,8 @@
       "width": 6,
       "points": [
         [
-          -90,
-          60
+          -22,
+          14
         ],
         [
           0,
@@ -371,8 +371,8 @@
       "width": 4,
       "points": [
         [
-          -90,
-          40
+          -70,
+          2
         ],
         [
           -260,
@@ -1154,8 +1154,8 @@
       "name": "the Regia",
       "kind": "hall",
       "at": [
-        91,
-        -45
+        104,
+        -76
       ],
       "face": 225,
       "size": 0.6,
@@ -2614,8 +2614,8 @@
       "name": "the Temple of Jupiter the Stayer",
       "kind": "temple",
       "at": [
-        235,
-        -135
+        212,
+        -100
       ],
       "face": 300,
       "size": 0.6,

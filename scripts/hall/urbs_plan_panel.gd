@@ -220,7 +220,7 @@ func _paint_city(c: Control) -> void:
 		var at := _pxa(f, m["at"])
 		var sz := clampf(RomeMap.footprint(m) / 0.35 * float(f["s"]) * 0.6, 2.0, 18.0)
 		c.draw_rect(Rect2(at - Vector2(sz, sz) / 2.0, Vector2(sz, sz)), RED if st == "whole" else Color("8a8278"))
-		if zoomed and m.has("note"):
+		if zoomed and m.has("note") and (m.get("landmark", false) or RomeMap.footprint(m) >= 9.0):  # the big things; the small ones name themselves under the mouse
 			_label(c, font, at + Vector2(sz / 2.0 + 2, 4), _short(str(m["name"])), fs - 4, INK)
 	if not zoomed:
 		for r: Dictionary in regions:
