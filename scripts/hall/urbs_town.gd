@@ -33,6 +33,18 @@ var _smoke: Array = []
 var _players: Array = []  # AudioStreamPlayer3D, each on one sound at a time
 var _emitters: Array = []  # [person, sound file]
 var _sound_scan := 0.0
+var region := ""  # the part of the city you are in (hall.gd's corner name), for its sound bed
+var burnt: Array = []  # where the quarters burnt (rome_map.gd), for the smoke over them in 455
+var _beds: Array = []  # two AudioStreamPlayers, the region's bed crossfading between them
+var _bed_on := 0
+var _bed_file := ""
+
+## The sound under each part of the city (docs/rome-city-notes.md 2.2): the Forum's crowd, the
+## Subura's hammering, the Palatine's birds, the river port's gulls, the Campus's wind. By a word of
+## the region's name; the emptied city has only wind and crickets.
+const BEDS := {"forum": "crowd", "subura": "forge", "palat": "birds", "boarium": "gulls", "port": "gulls", "emporium": "gulls",
+	"tiber": "gulls", "river": "gulls", "campus": "wind", "capitol": "wind", "aventin": "sheep", "esquil": "loom", "caeli": "birds",
+	"quirinal": "birds", "viminal": "loom", "lateran": "birds", "vatican": "gulls", "circus": "crowd", "velabr": "crowd"}
 var _cry := 0.0
 var rng := RandomNumberGenerator.new()
 
@@ -52,6 +64,7 @@ func setup(the_world: Node3D, the_age: String, the_day: int, people: Array) -> v
 	_plan_rain()
 	_pigeons_in_forum()
 	_dogs(people)
+	_herds(people)
 	for p: Dictionary in people:
 		if p.has("citizen"):
 			var sfx: String = data().get("sounds", {}).get(p["citizen"]["job"], "")
@@ -59,6 +72,26 @@ func setup(the_world: Node3D, the_age: String, the_day: int, people: Array) -> v
 				_emitters.append([p, sfx])
 				if sfx in ["fire", "forge"] and _smoke.size() < 12 and age != "fall":
 					_smoke.append(_plume((p["root"] as Node3D).position + Vector3(0, 13.0, 0)))
+	if age == "collapse":  # the smoke still going up from the burnt quarters, seen across the city
+		for k in mini(16, burnt.size()):
+			var at: Vector3 = burnt[k * burnt.size() / mini(16, burnt.size())]
+			_smoke.append(_plume(at + Vector3(0, 9.0, 0), 3.0))
+
+
+## The sound bed of the region you are in (BEDS), by a word of its name; "" for none.
+static func bed_for(region_name: String, the_age: String, hour: float) -> String:
+	var n := region_name.to_lower()
+	if the_age == "fall":
+		return "wind" if hour >= 6.0 and hour < 20.0 else "crickets"
+	if hour < 6.0 or hour >= 21.0:
+		return "crickets"
+	for word: String in BEDS:
+		if n.contains(word):
+			var bed: String = BEDS[word]
+			if bed == "crowd" and (hour < 7.0 or the_age == "collapse"):
+				return "wind"
+			return bed
+	return "birds"
 
 
 ## Today: a market day, a festival, or an ordinary day.
@@ -122,6 +155,13 @@ func step(delta: float, at: Vector3, hour: float, moving: bool) -> void:
 		if _sound_scan <= 0.0:
 			_sound_scan = 0.5
 			_sounds(at, hour)
+			_bed(hour)
+		for k in _beds.size():  # the beds crossfade over a few seconds
+			var pl: AudioStreamPlayer = _beds[k]
+			var want := -16.0 if k == _bed_on and pl.playing else -60.0
+			pl.volume_db = move_toward(pl.volume_db, want, delta * 12.0)
+			if pl.volume_db <= -59.0 and pl.playing and k != _bed_on:
+				pl.stop()
 
 
 # ---------- the day's events ----------
@@ -333,6 +373,97 @@ func _dogs(people: Array) -> void:
 		people.append(dog)
 
 
+## Livestock and carts in the streets (docs/rome-city-notes.md 2.3): a flock of sheep driven down
+## the Vicus Tuscus to the cattle market and back by a shepherd, while Rome still has a cattle
+## market; and a muleteer's cart with its two mules going up and down the Via Lata.
+func _herds(people: Array) -> void:
+	if streets.is_empty() or not spawn.is_valid():
+		return
+	var roads: Array = RomeMap.city_data().get("roads", [])
+	var index := func(name: String) -> int:
+		for i in roads.size():
+			if str(roads[i]["name"]) == name:
+				return i
+		return -1
+	var ground := func(q: Vector3) -> float: return RomeMap.ground(q)
+	var loop_of := func(i: int) -> Array:
+		var path: Array = (streets[i] as Array).duplicate()
+		var back := path.duplicate()
+		back.reverse()
+		return path + back.slice(1, back.size() - 1)
+	var tuscus: int = index.call("the Vicus Tuscus")
+	if age in ["heroic", "early", "republic", "empire"] and tuscus >= 0 and tuscus < streets.size():
+		var loop: Array = loop_of.call(tuscus)
+		var shepherd: Dictionary = spawn.call("proletarius", loop[0], 0.0)
+		shepherd["path"] = loop
+		shepherd["speed"] = 0.7
+		shepherd["shift"] = "day"
+		shepherd["ground"] = ground
+		shepherd.erase("leg")
+		(shepherd["citizen"] as Dictionary)["title"] = "shepherd"
+		Kit.box(shepherd["hand"], Vector3(0.3, 0.9, 0.3), Vector3(0.05, 1.8, 0.05), "wood", false)  # the crook
+		for k in 6:
+			var off := Vector3(rng.randf_range(-1.6, 1.6), 0, -1.5 - k * 0.7)
+			var sheep := _sheep((loop[0] as Vector3) + off)
+			sheep["path"] = loop.map(func(q: Vector3) -> Vector3: return q + off)
+			sheep["speed"] = 0.7
+			sheep["shift"] = "day"
+			sheep["ground"] = ground
+			people.append(sheep)
+	var lata: int = index.call("the Via Lata")
+	if age != "fall" and lata >= 0 and lata < streets.size():
+		var loop: Array = loop_of.call(lata)
+		var cart := _cart(loop[0])
+		cart["path"] = loop
+		cart["speed"] = 1.1
+		cart["shift"] = "always"
+		cart["ground"] = ground
+		people.append(cart)
+		var driver: Dictionary = spawn.call("mulio", (loop[0] as Vector3) + Vector3(1.4, 0, 0), 0.0)
+		driver["path"] = loop.map(func(q: Vector3) -> Vector3: return q + Vector3(1.4, 0, 0))
+		driver["speed"] = 1.1
+		driver["shift"] = "always"
+		driver["ground"] = ground
+
+
+## A sheep: walks like a person (legs, head).
+func _sheep(at: Vector3) -> Dictionary:
+	var root := Kit.group(world, at)
+	Kit.blob(root, Vector3(0, 0.55, 0), 0.34, "#e8e2d6", Vector3(1.0, 0.8, 1.4), 5)
+	var head := Kit.group(root, Vector3(0, 0.62, 0.5))
+	Kit.box(head, Vector3(0, 0, 0.1), Vector3(0.2, 0.22, 0.3), "#3a3028", false)
+	var legs: Array = []
+	for z: float in [0.25, -0.25]:
+		var leg := Kit.group(root, Vector3(0, 0.35, z))
+		Kit.box(leg, Vector3(0, -0.17, 0), Vector3(0.3, 0.34, 0.08), "#3a3028", false)
+		legs.append(leg)
+	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs}
+
+
+## A mule cart: two mules in the traces, a two-wheeled cart with its load under a cloth behind
+## them. Walks like a person (the mules' legs swing).
+func _cart(at: Vector3) -> Dictionary:
+	var root := Kit.group(world, at)
+	var legs: Array = []
+	for x: float in [-0.5, 0.5]:  # the mules
+		Kit.box(root, Vector3(x, 1.0, 1.6), Vector3(0.5, 0.6, 1.5), "#6a5040", false)
+		Kit.box(root, Vector3(x, 1.35, 2.5), Vector3(0.3, 0.4, 0.6), "#6a5040", false)
+		Kit.box(root, Vector3(x, 1.65, 2.45), Vector3(0.36, 0.22, 0.06), "#5a4030", false)  # the ears
+		for z: float in [2.1, 1.1]:
+			var leg := Kit.group(root, Vector3(x, 0.7, z))
+			Kit.box(leg, Vector3(0, -0.35, 0), Vector3(0.4, 0.7, 0.12), "#5a4030", false)
+			legs.append(leg)
+	Kit.box(root, Vector3(0, 0.95, 0.6), Vector3(1.4, 0.08, 1.4), "wood", false)  # the shafts
+	Kit.box(root, Vector3(0, 1.1, -0.6), Vector3(1.6, 0.6, 1.8), "wood", false)  # the cart's body
+	Kit.blob(root, Vector3(0, 1.6, -0.6), 0.7, "#c8b890", Vector3(1.1, 0.5, 1.2), 6)  # the load under its cloth
+	for x: float in [-0.95, 0.95]:
+		var wheel := Kit.cylinder(root, Vector3(x, 0.0, -0.6), 0.6, 0.12, "wood", false, 10)
+		wheel.rotation = Vector3(0, 0, PI / 2.0)
+		wheel.position = Vector3(x, 0.6, -0.6)
+	var head := Kit.group(root, Vector3(0, 1.35, 2.5))
+	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs}
+
+
 # ---------- sounds and smoke ----------
 
 ## The trades heard at their doors: the three nearest, each on a player of its own, loud as you near.
@@ -375,18 +506,48 @@ func _sounds(at: Vector3, hour: float) -> void:
 		pl.global_position = near[k][1] + Vector3(0, 1.5, 0)
 
 
-## A thin plume of smoke over an oven or a forge.
-func _plume(at: Vector3) -> CPUParticles3D:
+## The region's sound bed, under the trades' sounds: started when the region (or the hour) changes,
+## the old one fading as the new comes up.
+func _bed(hour: float) -> void:
+	var file := bed_for(region, age, hour)
+	if file == _bed_file:
+		return
+	_bed_file = file
+	if _beds.is_empty():
+		for k in 2:
+			var pl := AudioStreamPlayer.new()
+			pl.volume_db = -60.0
+			pl.bus = "Master"
+			world.add_child(pl)
+			_beds.append(pl)
+	_bed_on = 1 - _bed_on
+	var pl: AudioStreamPlayer = _beds[_bed_on]
+	pl.stop()
+	if file == "":
+		return
+	var path := "res://assets/music/%s.wav" % file
+	var s: Variant = load(path) if ResourceLoader.exists(path) else null
+	if s is AudioStreamWAV:
+		var w: AudioStreamWAV = (s as AudioStreamWAV).duplicate()
+		w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		w.loop_end = int(w.get_length() * w.mix_rate)
+		pl.stream = w
+		pl.volume_db = -60.0
+		pl.play()
+
+
+## A thin plume of smoke over an oven or a forge; `size` above 1 for the smoke of a burnt quarter.
+func _plume(at: Vector3, size: float = 1.0) -> CPUParticles3D:
 	var p := CPUParticles3D.new()
-	p.amount = 14
-	p.lifetime = 6.0
+	p.amount = int(14 * size)
+	p.lifetime = 6.0 * size
 	p.direction = Vector3(0.2, 1, 0)
 	p.spread = 12.0
 	p.initial_velocity_min = 0.8
-	p.initial_velocity_max = 1.4
+	p.initial_velocity_max = 1.4 * size
 	p.gravity = Vector3(0.15, 0.05, 0)
-	p.scale_amount_min = 1.0
-	p.scale_amount_max = 2.6
+	p.scale_amount_min = 1.0 * size
+	p.scale_amount_max = 2.6 * size
 	var puff := SphereMesh.new()
 	puff.radius = 0.6
 	puff.height = 1.2

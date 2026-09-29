@@ -265,6 +265,52 @@ static func _cap(s: String) -> String:
 	return s.substr(0, 1).to_upper() + s.substr(1) if s != "" else s
 
 
+## A map position in the world (on the ground).
+static func to_world(m: Vector2) -> Vector3:
+	return RomeMap.on_ground([m.x, m.y])
+
+
+## The street you are on ("" if none within thirty metres), for the corner of the screen.
+static func street_at(at: Vector3) -> String:
+	var m := to_map(at)
+	var g := graph()
+	if (g["pts"] as Array).is_empty():
+		return ""
+	var i := nearest_point(m)
+	return str(g["road"][i]) if m.distance_to(g["pts"][i]) < 30.0 else ""
+
+
+## The way from `from` to `to` along the streets, as world points (for the live map's route line):
+## from where you stand to the street, along it, and off it to the place.
+static func way(from: Vector3, to: Vector3) -> Array:
+	var a := to_map(from)
+	var b := to_map(to)
+	var out: Array = [from]
+	if a.distance_to(b) >= 90.0:
+		var g := graph()
+		for i: int in route(a, b):
+			out.append(to_world(g["pts"][i]))
+	out.append(to)
+	return out
+
+
+## Where the way first turns: the end of its first leg (null if the place is just there).
+static func first_turn(from: Vector3, to: Vector3) -> Variant:
+	var a := to_map(from)
+	var b := to_map(to)
+	if a.distance_to(b) < 90.0:
+		return null
+	var g := graph()
+	var path := route(a, b)
+	var onto: Vector2 = g["pts"][path[0]]
+	if a.distance_to(onto) > 30.0:
+		return to_world(onto)
+	var ls := legs(path)
+	if ls.is_empty():
+		return null
+	return to_world(ls[0]["to"])
+
+
 ## Where you are, in words: the street you're on or nearest, and which way the Forum lies.
 static func whereabouts(at: Vector3) -> String:
 	var m := to_map(at)

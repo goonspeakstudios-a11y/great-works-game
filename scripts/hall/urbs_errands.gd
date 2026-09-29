@@ -13,11 +13,12 @@ const SPARE := 60.0  # seconds more than the walk
 
 ## A landmark to take something to, not too near and not too far from `from`.
 static func pick(landmarks: Array, from: Vector3, rng: RandomNumberGenerator) -> Dictionary:
-	var ok: Array = landmarks.filter(func(l: Dictionary) -> bool:
+	var big: Array = landmarks.filter(func(l: Dictionary) -> bool: return not l.get("minor", false))  # not to a street's fountain or shrine
+	var ok: Array = big.filter(func(l: Dictionary) -> bool:
 		var d := Vector2(l["pos"].x - from.x, l["pos"].z - from.z).length()
 		return d >= MIN_AWAY and d <= MAX_AWAY)
 	if ok.is_empty():
-		ok = landmarks
+		ok = big
 	return ok[rng.randi() % ok.size()] if not ok.is_empty() else {}
 
 

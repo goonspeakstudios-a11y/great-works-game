@@ -61,7 +61,7 @@ OFFERING_AGES = ["heroic", "early", "republic", "empire", "late"]
 def check_scene(sid, s):
     labels = {st["label"] for st in s["steps"] if "label" in st}
     kinds = ["say", "ask", "rite", "hold", "still", "timing", "type", "pick", "pay", "gain", "wage", "if", "play", "label",
-             "go", "hour", "errand", "end"]
+             "go", "hour", "errand", "ride", "end"]
     ends = 0
     for st in s["steps"]:
         k = [x for x in kinds if x in st]

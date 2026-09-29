@@ -141,6 +141,12 @@ def errand(pay, what):
     return {"errand": {"pay": pay, "what": what}}
 
 
+def ride(key):
+    """A ride across the city to the place the scene's {a}, {b} or {c} names (given by the hall's
+    `resolve_ride`: the walk done in a fade, an hour of the day gone)."""
+    return {"ride": key}
+
+
 def scene(title, where, *steps, **extra):
     s = {"title": title, "where": where, "steps": list(steps)}
     s.update(extra)

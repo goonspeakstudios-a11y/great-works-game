@@ -9,8 +9,10 @@ var player: CharacterBody3D
 var resume := Callable()  # what "Back to the game" does
 var switch_mode := Callable()  # changes the way you walk this world
 var go_nexus := Callable()  # the toad's offer: back to the Nexus
+var go_home := Callable()  # the toad's other offer, in Rome: home, the walk done in a fade
 var _mode_button: Button
 var _nexus_button: Button
+var _home_button: Button
 var _title: Label
 var _sliders := {}
 
@@ -50,6 +52,10 @@ func _init() -> void:
 	_nexus_button.pressed.connect(func() -> void: if go_nexus.is_valid(): go_nexus.call())
 	_nexus_button.hide()
 	box.add_child(_nexus_button)
+	_home_button = Button.new()
+	_home_button.pressed.connect(func() -> void: if go_home.is_valid(): go_home.call())
+	_home_button.hide()
+	box.add_child(_home_button)
 	for b in [["Back to the game", _on_resume], ["Quit", _on_quit]]:
 		var btn := Button.new()
 		btn.text = b[0]
@@ -72,6 +78,12 @@ func speak(text: String) -> void:
 func show_nexus(text: String) -> void:
 	_nexus_button.text = text
 	_nexus_button.visible = text != ""
+
+
+## The toad's offer of the way home, in Rome ("" hides it).
+func show_home(text: String) -> void:
+	_home_button.text = text
+	_home_button.visible = text != ""
 
 
 func _slider(box: VBoxContainer, key: String, text: String, lo: float, hi: float, start: float) -> void:

@@ -138,6 +138,16 @@ Z zooms in on where you stand, and the mouse names what is under it. Key 1 shows
 - the "around" topic says which street you're on and which way the Forum lies;
 - the tablet says where you are.
 
+**Joined up** (the notes of `docs/rome-city-notes.md` 3, built 2026-09-29):
+- the live map draws the way to where you've been sent (the errand, else the current quest's place) as a faint line along the streets (`Plan.way`), and when your house is off the map, an arrow the way home;
+- when anyone gives you the way, the corner where it first turns glows on the ground for half a minute (`Plan.first_turn`, `hall._show_way`);
+- with Claude on the line, a typed "where is X?" gives the citizen the way from where they stand as a fact of their persona, so anyone can be asked;
+- the corner of the screen shows the street you are on under the region's name, and passing a gate of the Servian wall is said ("You pass through the Capene Gate, out of the walls");
+- the crossroads shrines and the first fountain on each street are named landmarks ("the shrine at the crossing of the Argiletum and the Vicus Patricius", "the fountain on the Alta Semita"), used in directions and named on the map, though no errand sends you to one.
+
+### Rides, and the way home
+For the long walks (the Campus, the Aventine, the Lateran), the litter bearers, the muleteer and the boatman offer rides (`ride_litter`, `ride_cart`, `ride_boat` in `trades.json`, on their "act" button): three far places in different directions, and your house if it is far, for a fare in the age's coin; the walk is done in a fade and an hour of the day goes (`hall._ride_choices`, `_resolve_ride`, the scene step `{"ride": key}`). The toad, spoken to in Rome far from home, also offers the way home for an hour of the day.
+
 ### The recurring rites
 Ten rites, each held in all seven ages at its place and hours. When one is not on, you can wait for it.
 

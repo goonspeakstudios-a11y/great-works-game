@@ -26,12 +26,14 @@ extends RefCounted
 ##   {"hour": h}                               the scene ends at this hour of the day (sleep, waiting)
 ##   {"errand": {pay, what}}                   an errand across the city (urbs_errands.gd), given by
 ##                                             `resolve_errand`, which says where
+##   {"ride": key}                             a ride to the place the scene's {key} names, done by
+##                                             `resolve_ride` (the walk in a fade, an hour gone)
 ##   {"end": text}                             the end
 ## An option: {"text", "say": what follows, "then": label, "need": condition, + effects (fides, coin,
 ## dignitas, pay, earn, ledger, ledger_key, give, take, collect, once, class)}.
 
 const KINDS := ["say", "ask", "rite", "hold", "still", "timing", "type", "pick", "pay", "gain", "wage", "if", "play",
-	"label", "go", "hour", "errand", "end"]
+	"label", "go", "hour", "errand", "ride", "end"]
 const WAITS := ["say", "ask", "rite", "hold", "still", "timing", "type", "pick", "play"]
 
 var id := ""
@@ -50,6 +52,7 @@ var lines: Array = []  # everything said so far, oldest first
 var game := {}  # the game the scene waits on: {game, opts}
 var errand := {}  # an errand given in the scene (urbs_errands.gd)
 var resolve_errand: Callable  # (spec) -> the errand, with its directions
+var resolve_ride: Callable  # (key) -> {text}: the ride taken, the player moved
 var rng := RandomNumberGenerator.new()
 var _rite_at := 0
 var _rite_opts: Array = []
@@ -224,6 +227,12 @@ func _advance(to: String = "") -> void:
 			"errand":
 				errand = resolve_errand.call(s["errand"]) if resolve_errand.is_valid() else {}
 				_say(str(errand.get("text", "There's nothing to take after all.")))
+				i += 1
+				continue
+			"ride":
+				var taken: Dictionary = resolve_ride.call(str(s["ride"])) if resolve_ride.is_valid() else {}
+				if taken.has("text"):
+					_say(str(taken["text"]))
 				i += 1
 				continue
 			"say":

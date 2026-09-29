@@ -33,6 +33,7 @@ const Standing := preload("res://scripts/hall/urbs_standing.gd")
 const Quests := preload("res://scripts/hall/urbs_quests.gd")
 const Errands := preload("res://scripts/hall/urbs_errands.gd")
 const Plan := preload("res://scripts/hall/urbs_plan.gd")
+const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const PlanPanel := preload("res://scripts/hall/urbs_plan_panel.gd")
 const House := preload("res://scripts/hall/urbs_house.gd")
 
@@ -112,6 +113,8 @@ const TOAD_QUIPS := ["The toad puffs up proudly.", "The toad blinks at you, very
 const TOAD_WORDS := ["The toad looks up at you. \"Croak,\" it says, meaningfully.", "The toad settles on your foot. It seems to want something.",
 	"The toad regards you. Whatever you need, it seems to say, ask.", "\"Croak.\" The toad is listening."]
 const TOAD_NEXUS := "The toad knows the way back to the Nexus. Go?"
+const TOAD_HOME := "The toad knows the way home. Go? (an hour's walk)"
+const RIDE_FAR := 220.0  # a ride is for places at least this far off (world metres)
 
 var _view: SubViewport
 var _screen: TextureRect
@@ -133,6 +136,7 @@ var _quest_scene := ""  # the regular's story whose scene is being played
 var _after_talk := Callable()  # what follows when the talk panel closes (a regular's scene)
 var _errand := {}  # an errand across the city (urbs_errands.gd): {name, pos, pay, limit, text}
 var _errand_since := 0.0
+var _ride_to := {}  # the places a ride on offer goes to: "a", "b", "c" -> {name, pos}
 var _fronts := {}  # where to stand before each standing monument of the city, by id
 var _walk_check := 0.0
 var _talking := {}  # the citizen you are talking with (their interactable)
@@ -172,6 +176,11 @@ var _mouse_before := Input.MOUSE_MODE_CAPTURED  # how the mouse was before a pan
 var beat: RefCounted = null  # the moment being played, as its hero or as yourself (Beat)
 var _beat_it := {}  # the interactable that started it
 var _beat_mark: Node3D  # the glow over where a beat asks you to walk
+var _way_mark: Node3D  # the glow on the street corner where the way you were just given first turns
+var _way_until := 0.0
+var _servian: Array = []  # the Servian wall's line (world), for passing its gates
+var _outside := false  # outside the Servian wall
+var _street := ""  # the named street you are on, in the corner
 
 
 static func ensure_actions() -> void:
@@ -229,6 +238,7 @@ func _ready() -> void:
 	_menu.load_settings()
 	_menu.switch_mode = _switch_mode
 	_menu.go_nexus = _toad_takes_you_back
+	_menu.go_home = _toad_takes_you_home
 	_choice = Choice.new()
 	_choice.chosen.connect(_on_chosen)
 	_root.add_child(_choice)
@@ -527,6 +537,11 @@ func _load_place(to: String, keep: bool = false) -> void:
 	regions = built.get("regions", [])
 	landmarks = built.get("landmarks", [])
 	_fronts = built.get("fronts", {})
+	_servian = (RomeMap.data().get("wall", {}).get("gates", []) as Array).map(func(g: Dictionary) -> Vector3: return RomeMap.at(g["at"])) if to == "urbs" else []
+	_outside = not _servian.is_empty() and not RomeMap.inside(_servian, built.get("spawn", Vector3.ZERO))
+	_street = ""
+	if is_instance_valid(_way_mark):
+		_way_mark.queue_free()
 	life = built.get("life")
 	_here_zone = str(built.get("zone", ""))
 	backs = built.get("backs", {})
@@ -611,7 +626,8 @@ func _check_area() -> void:
 		music.play(_zone(area), backs.get(area, restored_here))
 
 
-## Walking a city: the name of the part of it you are in, in the corner (the nearest region's).
+## Walking a city: the name of the part of it you are in, in the corner (the nearest region's), and
+## under it the street you are on; and passing a gate of the wall is said.
 func _check_region() -> void:
 	var at := Vector2(player.position.x, player.position.z)
 	var best := ""
@@ -621,11 +637,65 @@ func _check_region() -> void:
 		if d < best_d:
 			best_d = d
 			best = r["name"]
-	if best == area:
+	var street: String = Plan.street_at(player.global_position) if here == "urbs" else ""
+	if not _servian.is_empty():
+		var outside: bool = not RomeMap.inside(_servian, player.global_position)
+		if outside != _outside:
+			_outside = outside
+			var gate := _nearest_gate()
+			if gate != "" and _t > 3.0:
+				_quip = "You pass through the %s, %s the walls." % [gate, "out of" if outside else "into"]
+				_quip_until = _t + 4.0
+	if best == area and street == _street:
 		return
 	area = best
+	_street = street
+	if life and life.town:
+		life.town.region = best  # its sound bed
 	if _where:
-		_where.text = "%s\n%s" % [here_name, best] if best != "" else here_name
+		var lines: Array = [here_name]
+		if best != "":
+			lines.append(best)
+		if street != "":
+			lines.append(street.substr(0, 1).to_upper() + street.substr(1))
+		_where.text = "\n".join(lines)
+
+
+## The gate of the Servian wall nearest you, by name ("" if none within sixty metres).
+func _nearest_gate() -> String:
+	var best := ""
+	var best_d := 60.0
+	for g: Dictionary in RomeMap.data().get("wall", {}).get("gates", []):
+		var d: float = RomeMap.at(g["at"]).distance_to(Vector3(player.global_position.x, 0, player.global_position.z))
+		if d < best_d:
+			best_d = d
+			best = str(g["name"])
+	return best
+
+
+## The way you were just given, shown on the ground: a glow on the corner where it first turns,
+## for a little while.
+func _show_way(to: Vector3) -> void:
+	if here != "urbs":
+		return
+	var turn: Variant = Plan.first_turn(player.global_position, to)
+	if turn == null:
+		return
+	if not is_instance_valid(_way_mark):
+		_way_mark = Kit.group(world, Vector3.ZERO)
+		Kit.cylinder(_way_mark, Vector3(0, 0, 0), 0.5, 2.6, "glow", false, 8, 0.08)
+		Kit.unsolid(_way_mark)
+	_way_mark.position = turn
+	_way_mark.show()
+	_way_until = _t + 30.0
+	if _plan.visible:
+		_plan.route = Plan.way(player.global_position, to)
+		_plan.refresh()
+
+
+func _tick_way() -> void:
+	if is_instance_valid(_way_mark) and _way_mark.visible and _t > _way_until:
+		_way_mark.hide()
 
 
 ## The world a place belongs to ("" for the Nexus, which is above them all).
@@ -1521,6 +1591,7 @@ func _process(delta: float) -> void:
 			music.play(_zone(here), life.music_back())  # the day's music, or the night's
 		if _plan.visible and _plan.live:
 			_plan.follow(player.global_position, player.rotation.y)  # the live map follows you
+		_tick_way()
 		_walk_check -= delta
 		if _walk_check <= 0.0 and not _any_panel() and not travelling:
 			_walk_check = 0.4
@@ -1739,6 +1810,8 @@ func speak_to_toad() -> void:
 	_menu.show_mode(_mode_line())
 	var w := _world_of(here)
 	_menu.show_nexus(TOAD_NEXUS if w != "" and progress.mode(w) == "zen" else "")
+	var far_from_home: bool = here == "urbs" and spots.has("room") and player.global_position.distance_to(spots["room"]) > 60.0
+	_menu.show_home(TOAD_HOME if far_from_home else "")
 	_show_panel(_menu)
 
 
@@ -1747,7 +1820,86 @@ func _toad_takes_you_back() -> void:
 	_close_panels()
 	_menu.speak("")
 	_menu.show_nexus("")
+	_menu.show_home("")
 	travel("nexus")
+
+
+## The toad's other offer taken, in Rome: the walk home done in a fade, an hour of the day gone.
+func _toad_takes_you_home() -> void:
+	_close_panels()
+	_menu.speak("")
+	_menu.show_nexus("")
+	_menu.show_home("")
+	if here != "urbs":
+		return
+	var door: Vector3 = RomeMap.on_ground(Activities.data()["room"]["toward"])  # the street before your house
+	_carry_to(door, "You walk home the long way, the toad in your hand.")
+
+
+## Carried across the city (a ride, or the toad's way home): the screen goes dark, you are put
+## down somewhere else, and an hour of the day has gone. `_show_way` is cleared: you are there.
+func _carry_to(dest: Vector3, line: String) -> void:
+	var put_down := func() -> void:
+		player.position = dest + Vector3(0, 0.1, 0)
+		player.velocity = Vector3.ZERO
+		if life:
+			life.hour = fmod(life.hour + 1.0, 24.0)
+		if is_instance_valid(_way_mark):
+			_way_mark.hide()
+		_quip = line
+		_quip_until = _t + 5.0
+	if offline:
+		put_down.call()
+		return
+	_fade_through(Color.BLACK, 0.7, 1.0, put_down)
+
+
+## Three far places a ride could go to from here, in different directions, and your house if it is
+## far: {"a", "b", "c" -> {name, pos}}, and the words for the scene ({a}, {b}, {c}).
+func _ride_choices() -> Dictionary:
+	var here_at := player.global_position
+	var far: Array = landmarks.filter(func(l: Dictionary) -> bool:
+		return not l.get("minor", false) and Vector2(l["pos"].x - here_at.x, l["pos"].z - here_at.z).length() >= RIDE_FAR)
+	if spots.has("room") and (spots["room"] as Vector3).distance_to(here_at) >= RIDE_FAR:
+		far.push_front({"name": "your house", "pos": spots["room"]})
+	var picked: Array = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(here_at.x * 7.0 + here_at.z * 13.0) + int(_t)
+	far.shuffle()
+	for l: Dictionary in far:  # not two the same way
+		var dir := Vector2(l["pos"].x - here_at.x, l["pos"].z - here_at.z).normalized()
+		var apart: bool = picked.all(func(p: Dictionary) -> bool:
+			return dir.dot(Vector2(p["pos"].x - here_at.x, p["pos"].z - here_at.z).normalized()) < 0.5)
+		if apart or str(l["name"]) == "your house":
+			picked.append(l)
+		if picked.size() == 3:
+			break
+	while picked.size() < 3 and not far.is_empty():
+		picked.append(far[picked.size() % far.size()])
+	_ride_to = {}
+	var subs := {}
+	for k in picked.size():
+		var key: String = ["a", "b", "c"][k]
+		_ride_to[key] = picked[k]
+		subs[key] = str(picked[k]["name"])
+	return subs
+
+
+## A ride's step: taken to the place its key names (see _ride_choices).
+func _resolve_ride(key: String) -> Dictionary:
+	var to: Dictionary = _ride_to.get(key, {})
+	if to.is_empty():
+		return {"text": "There's nowhere to go after all."}
+	var dest: Vector3 = to["pos"]
+	if _fronts.has(to.get("id", "")):
+		dest = _fronts[to["id"]]
+	else:  # before it, on the near side, on the ground
+		var back := (player.global_position - dest)
+		back.y = 0.0
+		dest = dest + back.normalized() * 10.0
+		dest.y = RomeMap.ground(dest)
+	_carry_to(dest, "Set down at %s." % to["name"])
+	return {"text": "An hour later you are set down at %s." % to["name"]}
 
 
 ## Everyone present breathes, writes when left alone, and looks up and turns toward you
@@ -2046,6 +2198,7 @@ func _start_scene(id: String, subs: Dictionary = {}, rite: String = "") -> void:
 
 func _play_scene(scene: RefCounted, rite: String, def: Dictionary) -> void:
 	scene.resolve_errand = _resolve_errand
+	scene.resolve_ride = _resolve_ride
 	_scene_rite = rite
 	_scene_def = def
 	_activity.open(scene, scene.standing)
@@ -2201,6 +2354,7 @@ func _resolve_errand(spec: Dictionary) -> Dictionary:
 		return {}
 	_errand = Errands.make(to, landmarks, player.global_position, _age_id(), int(spec.get("pay", 1)), str(spec.get("what", "it")))
 	_errand_since = _t
+	_show_way(_errand["pos"])
 	return _errand
 
 
@@ -2241,6 +2395,14 @@ func _open_plan(view: String, walking: bool = false) -> void:
 				marks.append({"kind": "sent", "name": str(step.get("name", "")), "pos": to})
 	_plan.marks = marks
 	_plan.highlight = str(_errand.get("name", ""))
+	_plan.home = spots.get("room", Vector3.INF)
+	var dest: Variant = _errand["pos"] if not _errand.is_empty() else null  # the way to where you've been sent, along the streets
+	if dest == null:
+		for mk: Dictionary in marks:
+			if mk["kind"] == "sent":
+				dest = mk["pos"]
+				break
+	_plan.route = Plan.way(player.global_position, dest) if dest != null else []
 	_plan.open(view, walking)
 	if not walking:
 		_show_panel(_plan)
@@ -2370,15 +2532,30 @@ func _on_said(topic: String, text: String) -> void:
 	if c.has("wife"):
 		_wife_said(c, topic, text)
 		return
-	if topic == "act":  # what you can do with them: a day's work, a purchase, a game
+	if topic == "act":  # what you can do with them: a day's work, a purchase, a game, a ride
 		var act: Dictionary = Activities.job_action(str(c["job"]), _age_id())
 		if not act.is_empty():
 			_close_panels()
-			_start_scene(str(act["scene"]))
+			var subs := {}
+			if str(act["scene"]).begins_with("ride_"):
+				subs = _ride_choices()
+				if subs.size() < 3:
+					_talk_panel.show_reply(c["name"], "Nowhere worth the fare from here. Everything's a short walk.")
+					return
+			_start_scene(str(act["scene"]), subs)
 		return
 	_talk_panel.show_you(_esc(text))
 	if topic == "" and AuthorAI.api_key() != "" and not author.chat_busy:
-		author.chat(c["id"], Citizen.persona(c, here_name, near_names()), text)
+		var persona: String = Citizen.persona(c, here_name, near_names())
+		if here == "urbs":  # anyone can tell you the way, from where they stand
+			var asked: Dictionary = Plan.asked_for(text, landmarks, spots.get("room", Vector3.ZERO))
+			if not asked.is_empty():
+				persona += "\n- The way to %s from here, which you know well: %s" % [asked["name"],
+					Plan.directions(player.global_position, asked["pos"], str(asked["name"]), landmarks, _age_id())]
+				_show_way(asked["pos"])
+			else:
+				persona += "\n- Where you are: %s" % Plan.local_words(player.global_position)
+		author.chat(c["id"], persona, text)
 		return
 	if topic == "":
 		topic = Citizen.heard(text)
@@ -2387,6 +2564,7 @@ func _on_said(topic: String, text: String) -> void:
 		var asked: Dictionary = Plan.asked_for(text, landmarks, spots.get("room", Vector3.ZERO))
 		if not asked.is_empty():
 			line = Plan.directions(player.global_position, asked["pos"], str(asked["name"]), landmarks, _age_id())
+			_show_way(asked["pos"])
 		else:
 			line = Plan.local_words(player.global_position) + " " + line
 	if topic == "news" and life and life.town:

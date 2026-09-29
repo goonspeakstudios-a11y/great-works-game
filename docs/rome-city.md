@@ -78,18 +78,72 @@ Decided with BB1 (2026-09-28):
   - Travertine steps before many shops, basalt streets, and the Forum's slabs.
   - The seven hills rise in walkable domes.
 - **River:** the Tiber runs between its banks, with the island, and bridges standing by date.
-- **Houses:**
+- **Houses: a kit per age** (`rome_map._house`, `_old_house`, `_plot`, `_ruin`; the notes of
+  `docs/rome-city-notes.md` 2.1, built 2026-09-29):
   - A bent, twisting grid of blocks, each split into two or three houses of their own height,
     kind and colour.
-  - Flats have a storey of arched shops, plaster or brick storeys with windows above, sometimes a
-    top storey set back, and a tiled roof or a roof terrace with planters, a potted tree and a
-    vine pergola. Some have wooden balconies with pots and washing, and awnings over wares.
+  - 280 and 201 BC: low houses of tufa blocks, or plaster over a timber frame with the timbers
+    showing, one or two storeys under wide eaves of tiles or thatch, a blank wall to the street with
+    a door in it, no shops. Two-thirds of the outer hills inside the wall (the Esquiline, the
+    Caelian, the Aventine's back) are vegetable plots in rows, vineyards on their posts and fenced
+    pasture with sheep, with a farmhouse and its fig among them.
+  - 50 BC: the first tall insulae of two to four storeys over shops.
+  - AD 150: brick-faced blocks of three to six storeys, arcaded shops, balconies, roof gardens.
+    Election notices and scratched words on the shop fronts (50 BC and AD 150, the chi-rho later).
+  - 384: the same blocks patched with plaster and brick, a third of the windows bricked up, shops
+    shut up for good, fewer awnings.
+  - 455: three in ten houses burnt to their charred beams, the doors off, scaffolding no one
+    finishes; smoke still going up from the burnt quarters, seen across the city.
+  - 552: open ground with a few ruins (two in five cells built by the river, one in seven beyond),
+    huts of wood and thatch inside the ruined walls where people still live.
+  - Every shop has a painted sign hung over its door: a wine jar, a loaf, a knife, a shoe, a bolt of
+    cloth, a pot, a fish.
   - The houses of the rich stand round courtyard gardens with a tree and a pool.
   - Warehouses line the river, and single-storey rows of shops line some streets.
-  - Little squares hold fountains with a lamp.
+  - Little squares hold fountains with a lamp. Within seventy metres of a landmark the flats are
+    kept to three storeys, so the landmark shows over the roofs.
   - Each house's plaster colour is its own, drawn from the age's palette.
-- **Trees:** stone pines, cypresses by the temples, round-headed trees in the squares, along the
-  river and in the gardens on the hills, and bushes in the ruins.
+- **Temples in three styles** (`kit_rome.temple`, `kit_urbs.temple_style`): the Etruscan temple
+  (a tufa podium, a deep porch of four widely spaced wooden Tuscan columns, stuccoed walls with a
+  painted dado, a wide-eaved terracotta roof with terracotta gods along the ridge and a chariot at
+  the peak) in 280 and 201 BC; the Greek marble temple (columns all round, sculpture in the
+  pediment) from 50 BC; the Corinthian imperial temple for one built under the emperors. A site's
+  scripted state can name its own (Jupiter's is imperial from Domitian on).
+- **Ten sites through seven states** (`tools/make_rome_sites.py` → each monument's `states` in
+  `city.json`, read by `RomeMap.state`/`staged` and shown by `kit_urbs.build`'s variants): the
+  Rostra (the beaks of Antium, Caesar's marble platform with the emperors on columns, the beaks
+  prised off, a stump with a pulpit); the Temple of Saturn (Etruscan, Greek, the porch re-columned
+  with odd granite columns, a lime kiln beside it); the Comitium (the stepped hollow, paved over,
+  cracked, grass); the Circus (timber stands, stone, marble, a stretch fallen, grass); the Cloaca's
+  mouth (running, choked); the Senate House (the kings' tufa hall, burnt with Clodius's body and
+  scaffolded, the Curia Julia); Jupiter's temple (Etruscan, Sulla's Greek marble, gilded roof,
+  stripped by the Vandals, open to the sky); Vesta's (thatch, stone, marble, cold); the Colosseum
+  (whole, cracked and propped, huts in its arches with beans in the arena); the Sublician bridge
+  (its note in every age); and your house. Each state has its own note, read where it stands.
+- **The Forum's furniture** (`make_rome_sites.py` NEW): the Lacus Curtius, the fig with the bronze
+  wolf, Duilius's column with its beaks, the Golden Milestone, the honorific statues on columns.
+- **The age of heroes' twenty structures** (same file): the Comitium, the Carcer, the Cloaca's
+  mouth, the Lacus Curtius, the Ara Maxima, the Lupercal, the Hut of Romulus, the Tarpeian Rock,
+  Duilius's column, the Tomb of the Scipios, Salus, Jupiter Victor, Venus Obsequens, Tellus, Juno
+  Lucina, Mars outside the Capene Gate, the altar of Consus, Honos and Virtus, the Porticus Aemilia
+  and the wall's towers at the Capene and Esquiline gates, each with a note.
+- **The streets** (`content/rome/streets.json`, `tools/make_rome_streets.py`):
+  - Paving per street: the Sacred Way in travertine (under the emperors), the main roads in basalt,
+    the alleys of the Subura and the hills in packed earth.
+  - The streets' names painted in red on a plaster board on the corner shop a few paces along each
+    street from every junction (`rome_map._corners`; the Romans did not, you need them).
+  - A crossroads shrine (compitum) at every second junction: the painted Lares and the snake, an
+    altar and a garland; a Christian niche with a cross in 384; broken in 455; a worn block in 552.
+    Each can be looked at, and while offerings are made a pinch of meal can be left for the Lares.
+  - Tombs along every road outside the Servian wall, every twenty-odd metres, alternating sides, an
+    altar tomb or now and then a great drum, broken after 455; each one read (twelve epitaphs in the
+    Roman formula, from the Scipios' to a Christian's).
+  - View corridors: from each end of a street to the monument it runs at, nothing is built across
+    the sight line (`CORRIDOR`).
+  - A guard at every gate of the Servian wall you can reach; passing a gate is said in the corner.
+- **Trees:** stone pines on the ridges, cypresses on the Palatine and by the temples, the fig and the
+  plane in the valleys, bare rock outcrops on the Capitol's face (`_hill_tree`), round-headed trees
+  in the squares, along the river and in the gardens, and bushes in the ruins.
 - **Walls and aqueducts:**
   - The Servian wall stands.
   - Aurelian's wall stands far off from AD 275.
@@ -104,7 +158,11 @@ Decided with BB1 (2026-09-28):
   about at the edges of the day. The watch, the innkeepers and the carters (allowed in only at
   night) are out after dark.
 - The hour is kept when you leave the city and come back. Screenshots: `--hour=H`.
-- In the later ages the light is greyer and the air thicker (`GLOOM` in `places_rome.gd`).
+- **The light of each age** (`places_rome.gd` `GLOOM`, `FOG`, `EXPOSURE`, `HAZE`, `SMOKE`;
+  `urbs_life.gd`): the age of heroes in clear air, the Republic and the Empire a little dustier,
+  384 in a yellow haze, 455 under brown smoke with plumes over the burnt quarters, and 552 with a
+  long evening: its sky is drawn for a stretched clock (`sky_hour`), the afternoon's last two and a
+  half hours lasting six, and dawn coming late.
 
 ## Music
 - **The town theme** (`tools/make_music.py`, `render_urbs`) is meant to sound like a game's
@@ -118,6 +176,11 @@ Decided with BB1 (2026-09-28):
 - **In the Fall** there is only the echo of Rome's old tune and the wind.
 - The music zones in `music.gd` are `urbs`, `urbs_late` and `urbs_fall`. Their layers need `day`
   or `night`.
+- **Sound beds by region** (`urbs_town.gd` `BEDS`, `bed_for`): under the trades' sounds at their
+  doors, a bed for the part of the city you are in, crossfading as the corner's name changes: the
+  Forum's crowd, the Subura's hammering, the Palatine's birds, the river port's gulls, the Campus's
+  and the Capitol's wind, sheep on the Aventine, looms on the Esquiline; crickets at night; only wind
+  in the emptied city and in the Forum after the sack.
 
 ## The citizens
 - Everyone in the city is a citizen with a name, a trade, a home region, a family, a mood and a

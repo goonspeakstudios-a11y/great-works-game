@@ -27,6 +27,9 @@ const SKY := [
 
 var hour := 8.0
 var gloom := 0.0  # how far the age has fallen: greyer, darker, thicker air
+var haze := 0.0  # the late city's haze: the air thick and yellow in the afternoon (384)
+var smoke := 0.0  # the smoke over the burnt quarters, browning the sky (455)
+var long_dusk := false  # the emptied city: the evening drawn out, the sun low for hours (552)
 var env: Environment
 var sun: DirectionalLight3D
 var sky: ProceduralSkyMaterial
@@ -136,19 +139,39 @@ func step(delta: float, at: Vector3) -> String:
 	return changed
 
 
-## The sky, the sun and the lamps for this hour (and the age's gloom).
+## The hour the sky is drawn for: the same as the clock, except in the emptied city, where the
+## evening is drawn out (the sky of five o'clock lasts from three to nine, and dawn comes late).
+func sky_hour() -> float:
+	if not long_dusk:
+		return hour
+	if hour >= 15.0 and hour < 21.0:
+		return 17.0 + (hour - 15.0) / 6.0 * 2.5  # six hours of the afternoon's last two and a half
+	if hour >= 21.0:
+		return 19.5 + (hour - 21.0) / 3.0 * 4.5
+	if hour < 7.5:
+		return hour * 5.0 / 7.5  # the night lasts till seven
+	return 5.0 + (hour - 7.5) / 7.5 * 10.0
+
+
+## The sky, the sun and the lamps for this hour (and the age's gloom, haze and smoke).
 func _apply() -> void:
+	var h := sky_hour()
 	var a: Array = SKY[0]
 	var b: Array = SKY[1]
 	for i in SKY.size() - 1:
-		if hour >= float(SKY[i][0]) and hour <= float(SKY[i + 1][0]):
+		if h >= float(SKY[i][0]) and h <= float(SKY[i + 1][0]):
 			a = SKY[i]
 			b = SKY[i + 1]
 			break
-	var t := clampf((hour - float(a[0])) / maxf(0.001, float(b[0]) - float(a[0])), 0.0, 1.0)
+	var t := clampf((h - float(a[0])) / maxf(0.001, float(b[0]) - float(a[0])), 0.0, 1.0)
 	var mix := func(k: int) -> Color:
 		var c := Color(str(a[k])).lerp(Color(str(b[k])), t)
-		return c.lerp(Color(c.get_luminance(), c.get_luminance(), c.get_luminance() * 1.05), gloom * 0.6).darkened(gloom * 0.25)
+		c = c.lerp(Color(c.get_luminance(), c.get_luminance(), c.get_luminance() * 1.05), gloom * 0.6).darkened(gloom * 0.25)
+		if haze > 0.0:  # yellowed, as through dust
+			c = c.lerp(Color("d8c08a") * c.get_luminance() * 1.3, haze * 0.5)
+		if smoke > 0.0:  # browned, as through smoke
+			c = c.lerp(Color("6a5040") * (0.4 + c.get_luminance()), smoke * 0.55)
+		return c
 	if sky:
 		sky.sky_top_color = mix.call(1)
 		sky.sky_horizon_color = mix.call(2)
@@ -156,19 +179,19 @@ func _apply() -> void:
 		sky.ground_bottom_color = (mix.call(3) as Color).darkened(0.5)
 	if env:
 		env.fog_light_color = mix.call(4)
-		env.fog_density = 0.0009 + 0.0022 * gloom + (0.001 if phase() == "night" else 0.0)
+		env.fog_density = 0.0009 + 0.0022 * gloom + (0.001 if phase() == "night" else 0.0) + 0.0018 * haze + 0.003 * smoke
 		env.ambient_light_color = mix.call(5)
-		env.ambient_light_energy = lerpf(float(a[6]), float(b[6]), t) * (1.0 - 0.3 * gloom)
+		env.ambient_light_energy = lerpf(float(a[6]), float(b[6]), t) * (1.0 - 0.3 * gloom - 0.15 * smoke)
 	if sun:
-		var day := clampf((hour - 6.0) / 13.0, 0.0, 1.0)
+		var day := clampf((h - 6.0) / 13.0, 0.0, 1.0)
 		var up := sin(day * PI)
 		if phase() == "night":  # the moon, high and small
 			sun.rotation_degrees = Vector3(-55.0, 200.0, 0.0)
 		else:
 			sun.rotation_degrees = Vector3(-(6.0 + 64.0 * up), 90.0 - 180.0 * day, 0.0)
 		sun.light_color = mix.call(7)
-		sun.light_energy = lerpf(float(a[8]), float(b[8]), t) * (1.0 - 0.35 * gloom)
-	var dark := 1.0 - clampf(minf(hour - DAWN, DUSK - hour), 0.0, 1.0) if hour > DAWN - 1.0 and hour < DUSK + 1.0 else 1.0
+		sun.light_energy = lerpf(float(a[8]), float(b[8]), t) * (1.0 - 0.35 * gloom - 0.2 * smoke)
+	var dark := 1.0 - clampf(minf(h - DAWN, DUSK - h), 0.0, 1.0) if h > DAWN - 1.0 and h < DUSK + 1.0 else 1.0
 	if windows:
 		windows.emission_energy_multiplier = 1.4 * dark * (1.0 - 0.6 * gloom)
 	if stars:

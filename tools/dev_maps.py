@@ -46,6 +46,23 @@ def world(p):
     return (float(p[0]) * SCALE, -float(p[1]) * SCALE)
 
 
+def state(m, age_i):
+    """As rome_map.gd's state(): "", "gone", "ruin" or "whole" in the age, a scripted site's own
+    state (its "states", by age id) overriding the ruin year."""
+    year = WHEN_YEAR[age_i]
+    if year < m["from"]:
+        return ""
+    if "gone" in m and year >= m["gone"]:
+        return "gone"
+    scripted = m.get("states", {}).get(AGES[age_i], {})
+    if scripted:
+        return scripted.get("state", "whole")
+    return "ruin" if "ruin" in m and year >= m["ruin"] else "whole"
+
+
+WHEN_YEAR = [a["year"] for a in CITY["ages"]]
+
+
 def capture(age_i, centre, span, res, path):
     wx, wz = world(centre)
     cmd = ["xvfb-run", "-a", "-s", "-screen 0 1280x720x24", "godot", "--path", ROOT, "--rendering-driver", "opengl3", "--",
@@ -83,12 +100,13 @@ def annotate(path, centre, span, age_i):
         d.text((3, ya + 2), str(y), font=f, fill=(255, 255, 255), stroke_width=2, stroke_fill=(0, 0, 0))
     year = CITY["ages"][age_i]["year"]
     for n, m in enumerate(CITY["monuments"], 1):
-        if year < m["from"] or ("gone" in m and year >= m["gone"]):
+        st = state(m, age_i)
+        if st in ("", "gone"):
             continue
         x, y = px(m["at"])
         if not (0 <= x < img.width and 0 <= y < img.height):
             continue
-        ruin = "ruin" in m and year >= m["ruin"]
+        ruin = st == "ruin"
         col = (255, 220, 60) if not ruin else (200, 200, 200)
         d.ellipse([x - 4, y - 4, x + 4, y + 4], outline=col, width=2)
         d.text((x + 6, y - 7), str(n), font=f, fill=col, stroke_width=2, stroke_fill=(0, 0, 0))

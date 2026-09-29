@@ -614,3 +614,187 @@ func test_the_toad_speaks_and_knows_the_way_back() -> void:
 	check(not hall._menu._nexus_button.visible, "in the Nexus there is no way back to offer")
 	hall._close_panels()
 	hall.free()
+
+
+func test_the_ten_sites_change_through_the_seven_ages() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var city: Dictionary = RomeMap.city_data()
+	var by_id := {}
+	for m: Dictionary in city["monuments"]:
+		by_id[str(m["id"])] = m
+	var sites := ["rostra", "saturn", "comitium", "circus", "cloaca", "jupiter", "vesta", "colosseum"]
+	for site: String in sites:
+		check(by_id.has(site), "%s is in the city" % site)
+		var m: Dictionary = by_id[site]
+		var notes := {}
+		for a: Dictionary in RomeMap.ages():
+			var st: String = RomeMap.state(m, int(a["year"]))
+			if st == "" or st == "gone":
+				continue
+			var s: Dictionary = m.get("states", {}).get(str(a["id"]), {})
+			check(s.has("note"), "%s has its own note in %s" % [site, a["id"]])
+			notes[str(s.get("note", ""))] = true
+		check(notes.size() >= 4 and notes.size() == (m["states"] as Dictionary).size(), "%s's notes differ from age to age (%d)" % [site, notes.size()])
+	# the Senate House is two buildings over the seven ages, and the Sublician bridge is not a monument
+	check((by_id["curia_hostilia"]["states"] as Dictionary).size() == 3 and (by_id["curia_julia"]["states"] as Dictionary).size() == 4, "the Senate House through seven ages")
+	var subl: Dictionary = (city["bridges"] as Array).filter(func(b: Dictionary) -> bool: return str(b["name"]).contains("Sublician"))[0]
+	check((subl["states"] as Dictionary).size() == 7, "the Sublician bridge through seven ages")
+	# a scripted state overrides the general rule, and the staged monument carries the age's note and look
+	check_eq(RomeMap.state(by_id["saturn"], 552), "ruin", "Saturn's is a ruin in 552 (a kiln beside it)")
+	check_eq(RomeMap.state(by_id["saturn"], 455), "whole", "but stands in 455, after its general ruin year")
+	check_eq(RomeMap.state(by_id["jupiter"], 455), "ruin", "Jupiter's is stripped in 455")
+	check_eq(RomeMap.state(by_id["circus"], 552), "ruin", "the Circus is grass in 552")
+	check_eq(str(RomeMap.staged(by_id["rostra"], "fall")["variant"]), "pulpit", "the Rostra is a pulpit in 552")
+	check(str(RomeMap.staged(by_id["rostra"], "heroic")["note"]).contains("Antium"), "and the beaks of Antium in 280 BC")
+	check(not by_id["rostra"].has("variant"), "the entry itself is untouched")
+	check_eq(RomeMap.age_id_for(-201), "early", "a year names its age")
+	check_eq(RomeMap.age_id_for(-85), "", "the Rhetorica's year is no age's")
+	# the Cloaca's mouth is on the bank
+	var mouth: Vector3 = RomeMap.on_ground(by_id["cloaca"]["at"])
+	check(RomeMap.river_edge(mouth) > 0.0 and RomeMap.river_edge(mouth) < 14.0, "the Cloaca's mouth is on the river's bank (%.1f m off the water)" % RomeMap.river_edge(mouth))
+	check(mouth.y > RomeMap.WATER, "and above the water")
+	# every age builds its sites in their state, and the notes read there are the age's
+	var root: Node = (Engine.get_main_loop() as SceneTree).root
+	for a: Dictionary in RomeMap.ages():
+		var world := Node3D.new()
+		root.add_child(world)
+		var fab: Dictionary = RomeMap.fabric(world, a, {"blocks": false, "no_terrain": true})
+		var got := {}
+		for s: Dictionary in fab["monuments"]:
+			got[str(s["m"]["id"])] = s
+		for site: String in sites:
+			var want: Dictionary = by_id[site].get("states", {}).get(str(a["id"]), {})
+			if want.is_empty():
+				check(not got.has(site) or str(a["id"]) in ["heroic", "early", "republic"] and site == "colosseum", "%s is not scripted in %s and is absent" % [site, a["id"]])
+				continue
+			check(got.has(site), "%s stands in %s" % [site, a["id"]])
+			if got.has(site):
+				check_eq(str(got[site]["m"]["note"]), str(want["note"]), "%s carries its %s note" % [site, a["id"]])
+				check_eq(str(got[site]["m"].get("variant", "")), str(want.get("variant", "")), "and its look")
+				check(world.find_child(site, true, false) != null, "and is built")
+		check(fab["bridges"].any(func(d: Array) -> bool: return d.size() == 4 and str(d[3]["name"]).contains("Sublician")), "the Sublician deck knows its bridge")
+		world.free()
+	# a temple's style follows the years: the old Italic temple, then Greek marble, then Corinthian
+	var Urbs: GDScript = load("res://scripts/hall/kit_urbs.gd")
+	check_eq(Urbs.temple_style(by_id["castor"], -280), "etruscan", "Castor's is Etruscan in 280 BC")
+	check_eq(Urbs.temple_style(by_id["castor"], -50), "greek", "Greek marble in 50 BC")
+	check_eq(Urbs.temple_style(by_id["castor"], 150), "greek", "and still the Republic's temple under the emperors")
+	check_eq(Urbs.temple_style(by_id["mars_ultor"], 150), "imperial", "Mars the Avenger's is imperial")
+	check_eq(Urbs.temple_style(RomeMap.staged(by_id["jupiter"], "collapse"), 455), "imperial", "a stripped roof is still the imperial temple")
+
+
+func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var Plan: GDScript = load("res://scripts/hall/urbs_plan.gd")
+	var Town: GDScript = load("res://scripts/hall/urbs_town.gd")
+	var Life: GDScript = load("res://scripts/hall/urbs_life.gd")
+	var Errands: GDScript = load("res://scripts/hall/urbs_errands.gd")
+	var root: Node = (Engine.get_main_loop() as SceneTree).root
+	var ages: Array = RomeMap.ages()
+	# the house kit per age: tufa and fields in the age of heroes, bricked windows in 384, burnt
+	# roofs in 455, open ground in 552; the shrines, tombs and corner names in every age
+	var shops := {}
+	var parts := func(world: Node3D, name: String) -> int:
+		var n: Node = world.find_child(name, false, false)
+		return (n as MultiMeshInstance3D).multimesh.instance_count if n else 0
+	for k in [0, 3, 4, 5, 6]:
+		var a: Dictionary = ages[k]
+		var world := Node3D.new()
+		root.add_child(world)
+		var fab: Dictionary = RomeMap.fabric(world, a, {"no_terrain": true})
+		var id := str(a["id"])
+		shops[id] = parts.call(world, "Houses_box_r_shop")
+		if id == "heroic":
+			check(parts.call(world, "Houses_box_tufa") > 20, "the age of heroes builds in tufa (%d)" % parts.call(world, "Houses_box_tufa"))
+			check(parts.call(world, "Houses_box_furrows") > 5, "and has fields inside its wall (%d plots)" % parts.call(world, "Houses_box_furrows"))
+			check(parts.call(world, "Houses_quad_graffiti_republic") == 0 and parts.call(world, "Houses_quad_graffiti_heroic") == 0, "and no election notices yet")
+			check(world.find_child("Tomb0", false, false) != null, "tombs stand along the roads outside the gates")
+		if id == "late":
+			check(parts.call(world, "Houses_quad_r_brick") > 10, "the late city bricks up its windows (%d)" % parts.call(world, "Houses_quad_r_brick"))
+			check(parts.call(world, "Houses_quad_graffiti_late") > 0, "and its walls carry the chi-rho")
+		if id == "collapse":
+			check((fab["burnt"] as Array).size() > 10, "the quarters burnt in 455 are known (%d), for the smoke over them" % (fab["burnt"] as Array).size())
+		if id == "empire":
+			check(parts.call(world, "Houses_quad_graffiti_empire") > 0, "election notices and scratched words under the emperors")
+		check(not (fab["compita"] as Array).is_empty(), "%s: shrines at the crossings (%d)" % [id, (fab["compita"] as Array).size()])
+		check(not (fab["tombs"] as Array).is_empty(), "%s: tombs along the roads (%d)" % [id, (fab["tombs"] as Array).size()])
+		check(world.find_children("*", "Label3D", true, false).size() > 20, "%s: the streets' names on the corners" % id)
+		world.free()
+	check(int(shops["fall"]) < int(shops["empire"]) / 3, "the emptied city is open ground with a few ruins (%d houses against %d)" % [shops["fall"], shops["empire"]])
+	# the streets have names you can stand on, and the way is drawn along them
+	var on_sacra: Vector3 = RomeMap.on_ground([60, -30])
+	check_eq(Plan.street_at(on_sacra), "the Sacred Way", "standing on the Sacred Way")
+	check_eq(Plan.street_at(RomeMap.on_ground([700, 700])), "", "and off any street, nothing")
+	var far: Vector3 = RomeMap.on_ground([-560, -700])
+	check(Plan.way(on_sacra, far).size() >= 4, "the way to the river port runs along the streets (%d points)" % Plan.way(on_sacra, far).size())
+	check(Plan.first_turn(on_sacra, far) != null, "and has a first turn to light up")
+	check(Plan.first_turn(on_sacra, RomeMap.on_ground([70, -40])) == null, "a place just there has no turn")
+	# the sound under each part of the city, and the light of the emptied city's long evening
+	check_eq(Town.bed_for("Regio VIII, the Roman Forum", "empire", 12.0), "crowd", "the Forum's crowd")
+	check_eq(Town.bed_for("The Forum", "collapse", 12.0), "wind", "and only wind there after the sack")
+	check_eq(Town.bed_for("Regio XIII, the Aventine", "empire", 12.0), "sheep", "sheep on the Aventine")
+	check_eq(Town.bed_for("The Campus Martius", "republic", 12.0), "wind", "wind on the Campus")
+	check_eq(Town.bed_for("Anywhere", "empire", 23.0), "crickets", "crickets at night")
+	check_eq(Town.bed_for("The Forum, empty", "fall", 12.0), "wind", "the emptied city is wind")
+	var life: RefCounted = Life.new()
+	life.long_dusk = true
+	life.hour = 18.0
+	check(life.sky_hour() > 17.0 and life.sky_hour() < 19.0, "552's evening is drawn out (six o'clock looks like %.1f)" % life.sky_hour())
+	life.hour = 12.0
+	check(absf(life.sky_hour() - 11.0) < 0.6, "and its noon is near noon (%.1f)" % life.sky_hour())
+	life.long_dusk = false
+	check_eq(life.sky_hour(), 12.0, "the other ages keep the clock")
+	# a ride: three far places, a fare, the walk done for you
+	var you := fresh("empire")
+	you.apply({"earn": 40})  # the fare
+	var def: Dictionary = Activities.filled(Activities.scene_def("ride_litter", "empire"), {"a": "the Baths of Trajan", "b": "the Circus Maximus", "c": "your house"})
+	var scene: RefCounted = Scene.new(def, "ride_litter", you)
+	var rode: Array = []
+	scene.resolve_ride = func(key: String) -> Dictionary:
+		rode.append(key)
+		return {"text": "Set down at %s." % key}
+	check((Scene.problems(def) as Array).is_empty(), "the litter's scene is sound: %s" % str(Scene.problems(def)))
+	scene.start()
+	check(autoplay(scene, 1) >= 0 and rode == ["b"], "the second place chosen, the ride taken (%s)" % str(rode))
+	check(scene.lines.any(func(l: String) -> bool: return l.contains("the Circus Maximus")), "and the scene names it")
+	check(str(Activities.job_action("lecticarius", "empire")["scene"]) == "ride_litter" and str(Activities.job_action("nauta", "republic")["scene"]) == "ride_boat"
+		and str(Activities.job_action("mulio", "late")["scene"]) == "ride_cart", "the bearers, the boatman and the muleteer offer rides")
+	# in the city: the shrines, the tombs and the bridge have their notes; the toad knows the way home
+	var hall: Node = Hall.new()
+	hall.offline = true
+	root.add_child(hall)
+	hall.progress.data = {"works": {}, "rome_hour": 9.0, "rome_day": 2}
+	hall.travel("urbs")
+	var looks: Array = hall.interactables.filter(func(i): return i["kind"] == "statue")
+	check(looks.any(func(i): return str(i["text"]).contains("shrine at the crossing")), "the crossroads shrines can be looked at")
+	check(looks.any(func(i): return str(i["text"]).begins_with("Read the tomb")), "and the tombs read")
+	check(looks.any(func(i): return str(i["text"]).contains("Sublician")), "and the Sublician Bridge has its story")
+	check(hall.landmarks.any(func(l): return l.get("minor", false)), "the shrines and fountains are landmarks the way can name")
+	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"].get("title", "") == "shepherd"), "a shepherd drives his flock to the cattle market")
+	check(hall.people.filter(func(p): return not p.has("citizen") and (p.get("legs", []) as Array).size() == 4).size() == 1, "and a mule cart goes up the Via Lata")
+	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"]["job"] == "lictor" and not p.has("path") and p.get("shift", "") == "always"), "a guard stands at a gate")
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 5
+	for k in 20:
+		check(not Errands.pick(hall.landmarks, hall.player.global_position, rng).get("minor", false), "but no errand goes to one")
+	hall.player.position = on_sacra
+	hall._check_region()
+	check(str(hall._where.text).contains("The Sacred Way"), "the street's name under the region's in the corner: %s" % str(hall._where.text).replace("\n", " / "))
+	check_eq(str(hall.life.town.region), str(hall.area), "and the town knows the region, for its sound bed")
+	var far_off: Vector3 = RomeMap.on_ground([-560, -700])
+	hall.player.position = far_off
+	hall.speak_to_toad()
+	check(hall._menu._home_button.visible, "far from home, the toad offers the way there")
+	var hour_before: float = hall.life.hour
+	hall._toad_takes_you_home()
+	check(hall.player.position.distance_to(hall.spots["room"]) < 40.0, "and the walk home is done in a fade (%.0f m from your house)" % hall.player.position.distance_to(hall.spots["room"]))
+	check(absf(fmod(hall.life.hour - hour_before + 24.0, 24.0) - 1.0) < 0.01, "at the cost of an hour")
+	hall.speak_to_toad()
+	check(not hall._menu._home_button.visible, "at home, no offer")
+	hall._close_panels()
+	hall.player.position = far_off
+	var subs: Dictionary = hall._ride_choices()
+	check(subs.size() == 3, "a ride from the port has three far places to go (%s)" % str(subs.values()))
+	hall._resolve_ride("a")
+	check(hall.player.position.distance_to(far_off) > 100.0, "and the ride takes you there")
+	hall.free()

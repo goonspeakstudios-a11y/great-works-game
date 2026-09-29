@@ -1,9 +1,22 @@
 # Rome: notes on the city's thematic effect and on navigating it
 
-Status: notes, 2026-09-29. Nothing here is built. They follow the audit of 2026-09-29 (86 structures,
-the seven-age overhead captures in `docs/dev/`, the plot in `docs/rome-plot.png`) and the walks taken
-for the screenshots. The two questions are taken separately: does the city *feel* like the theme
-(the age of heroes, the descent, the emptied city), and can the player find their way in it?
+Status: notes of 2026-09-29, all of them built the same day, in the order of section 4. Where each
+went: the ten sites and the Forum's furniture and the heroic structures in `tools/make_rome_sites.py`
+(→ `city.json` `states`, read by `rome_map.state`/`staged`, shown by `kit_urbs.build`'s variants);
+the temple styles in `kit_rome.temple`; the house kit per age, the farmland, the view corridors, the
+hill vegetation, the corner names, the compita and the road tombs in `rome_map.gd`; the streets'
+paving, epitaphs, signs and shrines in `tools/make_rome_streets.py` (→ `streets.json`); the live
+map's route line and the way home in `urbs_plan_panel.gd`; the first turn's glow, the street name
+in the corner, the gates as thresholds, the rides and the toad's way home in `hall.gd`; the sound
+beds in `urbs_town.gd`; the light per age in `urbs_life.gd` and `places_rome.gd`. The reference is
+`docs/rome-city.md` (the fabric, the light, the sound) and `docs/rome-activities.md` (the plan, the
+rides); the flock driven down the Vicus Tuscus and the mule cart on the Via Lata in
+`urbs_town._herds`. Nothing in these notes is left unbuilt.
+
+They follow the audit of 2026-09-29 (86 structures, the seven-age overhead captures in `docs/dev/`,
+the plot in `docs/rome-plot.png`) and the walks taken for the screenshots. The two questions are
+taken separately: does the city *feel* like the theme (the age of heroes, the descent, the emptied
+city), and can the player find their way in it?
 
 ## 1. What the city does well already
 

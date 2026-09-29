@@ -36,6 +36,8 @@ var landmarks: Array = []  # {name, pos}: the city's monuments with stories
 var marks: Array = []  # {name, pos, kind}: your house, regulars, where you've been sent
 var highlight := ""  # a place named in an errand
 var regions: Array = []  # {c: Vector2 world, name}
+var route: Array = []  # the way to where you've been sent, as world points along the streets (urbs_plan.way)
+var home := Vector3.INF  # your house, for the way home on the live map
 var _title: Label
 var _hint: Label
 var _under := ""
@@ -206,6 +208,11 @@ func _paint_city(c: Control) -> void:
 		c.draw_circle(_pxa(f, isle["at"]), maxf(3.0, float(isle.get("radius", 40)) * float(f["s"])), PARCHMENT)
 	for r: Dictionary in city.get("roads", []):
 		line.call(r["points"], Color("9a8a68"), maxf(1.5, float(r["width"]) * float(f["s"]) * 2.0))
+	if route.size() > 1:  # the way to where you've been sent, faint, along the streets
+		var ps := PackedVector2Array()
+		for p: Vector3 in route:
+			ps.append(_px(f, Plan.to_map(p)))
+		c.draw_polyline(ps, Color("8a2a6a", 0.55), 2.5, true)
 	for m: Dictionary in city.get("monuments", []):
 		var st := RomeMap.state(m, year)
 		if st == "" or st == "gone":
@@ -270,6 +277,14 @@ func _paint_city(c: Control) -> void:
 	var side := Vector2(-ahead.y, ahead.x)
 	c.draw_colored_polygon(PackedVector2Array([me + ahead * 9.0, me - ahead * 5.0 + side * 5.0, me - ahead * 5.0 - side * 5.0]), Color("c83a2a"))
 	_label(c, font, me + Vector2(8, -6), "You", fs - 2, Color("c83a2a"))
+	if live and home != Vector3.INF and home.distance_to(you) > 40.0:  # which way home lies, when it is off the live map
+		var hp := _px(f, Plan.to_map(home))
+		if not Rect2(Vector2.ZERO, c.size).has_point(hp):
+			var dir := (hp - me).normalized()
+			var tip := me + dir * 26.0
+			c.draw_line(me + dir * 14.0, tip, GOLD, 2.0)
+			c.draw_colored_polygon(PackedVector2Array([tip + dir * 5.0, tip - dir * 2.0 + Vector2(-dir.y, dir.x) * 4.0, tip - dir * 2.0 - Vector2(-dir.y, dir.x) * 4.0]), GOLD)
+			_label(c, font, tip + dir * 8.0 + Vector2(-12, 4), "home", fs - 4, GOLD)
 	var n := Vector2(c.size.x - 24, 26)  # north, and a scale of five hundred paces
 	c.draw_line(n + Vector2(0, 12), n - Vector2(0, 12), INK, 2.0)
 	c.draw_colored_polygon(PackedVector2Array([n - Vector2(0, 16), n - Vector2(5, 8), n + Vector2(5, -8)]), INK)
