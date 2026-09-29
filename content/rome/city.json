@@ -1394,10 +1394,10 @@
       "name": "the Lupercal",
       "kind": "cave",
       "at": [
-        10,
-        -300
+        -66,
+        -456
       ],
-      "face": 350,
+      "face": 250,
       "from": -800,
       "note": "The wolf's cave at the foot of the Palatine, where the she-wolf suckled the twins. On the fifteenth of February the Luperci, young men naked but for goat-skins, sacrifice goats and a dog here, and run round the hill striking the women they meet with thongs of the skins, for fertility. Antony offered Caesar a crown here in 44 BC. It goes on under Christian emperors until a pope stops it in 494.",
       "fall": "A cave under the Palatine's rock. The Lupercalia was stopped fifty-eight years ago; the last runners were senators."
@@ -1407,10 +1407,10 @@
       "name": "the Hut of Romulus",
       "kind": "hut",
       "at": [
-        60,
-        -330
+        -10,
+        -440
       ],
-      "face": 20,
+      "face": 250,
       "from": -750,
       "ruin": 455,
       "note": "The Casa Romuli on the Palatine's slope toward the Circus: a round hut of wattle and thatch, kept up as it was in the founder's day by the priests, and rebuilt in the same materials every time it burns, which is often. Under the emperors it is a shrine among marble palaces, and they keep it.",
@@ -1435,10 +1435,10 @@
       "kind": "tomb",
       "tomb": "round",
       "at": [
-        330,
-        -1090
+        640,
+        -1060
       ],
-      "face": 60,
+      "face": 330,
       "from": -280,
       "note": "The family tomb of the Cornelii Scipiones, cut into the tufa just inside the Capene Gate where the Appian Way begins: Scipio Barbatus, consul of 298 BC, in his carved sarcophagus, and his sons and grandsons in their niches, each with his verses in the old letters. Africanus is not here; he died angry at Rome and lies at Liternum.",
       "fall": "A tomb cut in the rock by the old gate, its sarcophagi robbed. The letters on them are the oldest Latin verses that survive."
@@ -1518,10 +1518,10 @@
       "name": "the Temple of Mars",
       "kind": "temple",
       "at": [
-        420,
-        -1180
+        740,
+        -1240
       ],
-      "face": 300,
+      "face": 320,
       "size": 0.75,
       "from": -388,
       "ruin": 400,
@@ -1547,8 +1547,8 @@
       "name": "the Temple of Honour and Valour",
       "kind": "double_temple",
       "at": [
-        470,
-        -1020
+        530,
+        -970
       ],
       "face": 320,
       "size": 0.35,
@@ -1570,32 +1570,6 @@
       "ruin": 450,
       "note": "The Aemilian Portico by the river port, built by the aediles of 193 BC and rebuilt in 174: a warehouse of fifty vaulted bays of concrete, five hundred metres long, the biggest roof in the world, where the grain and wine and oil of the provinces land. The Emporium in front of it is the port of Rome.",
       "fall": "The great warehouse by the river port, its vaults standing, empty of everything but goats. The grain of Africa does not come."
-    },
-    {
-      "id": "tower_capena",
-      "name": "the towers of the Capene Gate",
-      "kind": "tower",
-      "at": [
-        300,
-        -1015
-      ],
-      "face": 150,
-      "from": -378,
-      "ruin": 455,
-      "note": "The Servian wall's towers at the Capene Gate, where the Appian Way leaves the city: tufa, from the wall built after the Gauls in 378 BC, ten metres high and four thick, with an aqueduct dripping over the gate since the Marcia was built, so that Juvenal calls it the wet gate. The wall has sixteen gates and the city is inside it, in the age of heroes and long after."
-    },
-    {
-      "id": "tower_esquilina",
-      "name": "the towers of the Esquiline Gate",
-      "kind": "tower",
-      "at": [
-        1000,
-        490
-      ],
-      "face": 240,
-      "from": -378,
-      "ruin": 455,
-      "note": "The Servian wall's towers at the Esquiline Gate, on the city's east side, where the agger, the great earth rampart behind the wall, is highest: a hundred feet thick, with a ditch in front. The Sicilian slave leader Eunus, and Spartacus's men, and the Gauls were all expected here."
     },
     {
       "id": "curia_hostilia",

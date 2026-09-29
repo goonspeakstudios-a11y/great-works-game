@@ -11,7 +11,10 @@ in the corner, the gates as thresholds, the rides and the toad's way home in `ha
 beds in `urbs_town.gd`; the light per age in `urbs_life.gd` and `places_rome.gd`. The reference is
 `docs/rome-city.md` (the fabric, the light, the sound) and `docs/rome-activities.md` (the plan, the
 rides); the flock driven down the Vicus Tuscus and the mule cart on the Via Lata in
-`urbs_town._herds`. Nothing in these notes is left unbuilt.
+`urbs_town._herds`. Nothing in these notes is left unbuilt. Built on what was there: the wall's
+towers (`_servian_wall`), the she-wolf and the beasts of the kit, the map's landmarks and hills,
+the existing sounds, textures, fonts and the `offering` scene; the plot (`docs/rome-plot.png`) is
+regenerated with the new structures on it.
 
 They follow the audit of 2026-09-29 (86 structures, the seven-age overhead captures in `docs/dev/`,
 the plot in `docs/rome-plot.png`) and the walks taken for the screenshots. The two questions are

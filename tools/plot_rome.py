@@ -48,6 +48,8 @@ KIND_GROUP = {
     "hall": "civic", "curia": "civic", "basilica": "civic", "rostra": "civic", "tabularium": "civic", "vaulted_hall": "civic",
     "markets": "civic", "forum": "imperial", "arch": "imperial", "column": "imperial", "colossus": "imperial", "obelisk": "imperial",
     "palace": "imperial", "houses": "other", "fountain_cone": "other",
+    "comitium": "civic", "cloaca": "civic", "beak_column": "civic", "lacus": "sacred", "fig": "sacred", "milliarium": "civic",
+    "statues": "civic", "tomb": "tomb", "altar_open": "sacred", "hut": "sacred", "cave": "sacred", "rock": "other", "portico": "civic",
     "amphitheatre": "shows", "ludus": "shows", "circus": "shows", "open_circus": "shows", "theatre": "shows", "stadium": "shows",
     "baths": "baths", "church": "church", "mausoleum": "tomb",
 }

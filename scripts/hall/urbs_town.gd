@@ -10,6 +10,7 @@ extends RefCounted
 ## the rest (places_rome.gd's `spawn`), and go again when their time is over.
 
 const Kit := preload("res://scripts/hall/kit.gd")
+const Greek := preload("res://scripts/hall/kit_greek.gd")
 const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const FILE := "res://content/rome/town.json"
 
@@ -426,33 +427,23 @@ func _herds(people: Array) -> void:
 		driver["ground"] = ground
 
 
-## A sheep: walks like a person (legs, head).
+## A sheep (kit_greek's beast), walking like a person (legs, head).
 func _sheep(at: Vector3) -> Dictionary:
-	var root := Kit.group(world, at)
-	Kit.blob(root, Vector3(0, 0.55, 0), 0.34, "#e8e2d6", Vector3(1.0, 0.8, 1.4), 5)
-	var head := Kit.group(root, Vector3(0, 0.62, 0.5))
-	Kit.box(head, Vector3(0, 0, 0.1), Vector3(0.2, 0.22, 0.3), "#3a3028", false)
-	var legs: Array = []
-	for z: float in [0.25, -0.25]:
-		var leg := Kit.group(root, Vector3(0, 0.35, z))
-		Kit.box(leg, Vector3(0, -0.17, 0), Vector3(0.3, 0.34, 0.08), "#3a3028", false)
-		legs.append(leg)
-	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs}
+	var b: Dictionary = Greek.beast(world, at, 0.0, "sheep", "", 0.8)
+	Kit.unsolid(b["root"])
+	b["hand"] = Kit.group(b["root"], Vector3.ZERO)
+	return b
 
 
-## A mule cart: two mules in the traces, a two-wheeled cart with its load under a cloth behind
-## them. Walks like a person (the mules' legs swing).
+## A mule cart: two mules (kit_greek's horse, small and brown) in the traces, a two-wheeled cart
+## with its load under a cloth behind them. Walks like a person (the mules' legs swing).
 func _cart(at: Vector3) -> Dictionary:
 	var root := Kit.group(world, at)
 	var legs: Array = []
-	for x: float in [-0.5, 0.5]:  # the mules
-		Kit.box(root, Vector3(x, 1.0, 1.6), Vector3(0.5, 0.6, 1.5), "#6a5040", false)
-		Kit.box(root, Vector3(x, 1.35, 2.5), Vector3(0.3, 0.4, 0.6), "#6a5040", false)
-		Kit.box(root, Vector3(x, 1.65, 2.45), Vector3(0.36, 0.22, 0.06), "#5a4030", false)  # the ears
-		for z: float in [2.1, 1.1]:
-			var leg := Kit.group(root, Vector3(x, 0.7, z))
-			Kit.box(leg, Vector3(0, -0.35, 0), Vector3(0.4, 0.7, 0.12), "#5a4030", false)
-			legs.append(leg)
+	for x: float in [-0.55, 0.55]:  # the mules
+		var mule: Dictionary = Greek.beast(root, Vector3(x, 0, 1.7), 0.0, "horse", "#6a5040", 0.8)
+		Kit.unsolid(mule["root"])
+		legs.append_array(mule["legs"])
 	Kit.box(root, Vector3(0, 0.95, 0.6), Vector3(1.4, 0.08, 1.4), "wood", false)  # the shafts
 	Kit.box(root, Vector3(0, 1.1, -0.6), Vector3(1.6, 0.6, 1.8), "wood", false)  # the cart's body
 	Kit.blob(root, Vector3(0, 1.6, -0.6), 0.7, "#c8b890", Vector3(1.1, 0.5, 1.2), 6)  # the load under its cloth
@@ -461,7 +452,7 @@ func _cart(at: Vector3) -> Dictionary:
 		wheel.rotation = Vector3(0, 0, PI / 2.0)
 		wheel.position = Vector3(x, 0.6, -0.6)
 	var head := Kit.group(root, Vector3(0, 1.35, 2.5))
-	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs}
+	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs, "cart": true}
 
 
 # ---------- sounds and smoke ----------

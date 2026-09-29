@@ -265,17 +265,14 @@ static func lacus(g: Node3D, whole: bool) -> void:
 static func fig(g: Node3D, whole: bool) -> void:
 	Kit.cylinder(g, Vector3.ZERO, 0.35, 2.4 if whole else 1.0, "trunk", true, 7, 0.28)
 	if not whole:
+		Rome.she_wolf(g, Vector3(0, 0, 2.4), 0.3, false)
 		return
 	for a: float in [0.4, 2.3, 4.2]:
 		var d := Vector3(cos(a) * 1.4, 1.2, sin(a) * 1.4)
 		Kit.mesh(g, Kit._cyl(0.1, d.length()), "trunk", Vector3(0, 2.4, 0) + d / 2.0, Quaternion(Vector3.UP, d.normalized()).get_euler())
 	Kit.blob(g, Vector3(0, 4.2, 0), 2.8, "leaves", Vector3(1.2, 0.7, 1.2), 7)
 	Kit.blob(g, Vector3(1.2, 4.6, 0.6), 1.8, "leaves", Vector3(1.1, 0.7, 1.1), 6)
-	Kit.box(g, Vector3(0, 0.3, 1.4), Vector3(1.2, 0.6, 0.7), "travertine")  # the wolf's base
-	Kit.blob(g, Vector3(0, 0.95, 1.4), 0.3, "bronze", Vector3(1.6, 0.9, 0.8), 6)  # the wolf
-	Kit.blob(g, Vector3(0.55, 1.05, 1.4), 0.16, "bronze", Vector3(1.2, 1.0, 1.0), 5)  # her head
-	for x: float in [-0.2, 0.2]:
-		Kit.blob(g, Vector3(x, 0.72, 1.55), 0.12, "bronze")  # the twins
+	Rome.she_wolf(g, Vector3(0, 0, 2.4), 0.3, whole)  # the bronze wolf and the twins under the fig (kit_rome)
 
 
 ## The Golden Milestone (Milliarium Aureum) of Augustus by the Rostra: a marble column plated with

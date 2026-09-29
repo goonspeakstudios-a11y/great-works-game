@@ -47,15 +47,15 @@ NEW = [
     {"id": "ara_maxima", "name": "the Great Altar of Hercules", "kind": "altar_open", "at": [-250, -380], "face": 0, "from": -700, "ruin": 400,
      "note": "The Ara Maxima in the cattle market: the altar of Hercules, who killed the giant Cacus on the Aventine and recovered his stolen cattle here. The oldest cult in Rome, older than the city, kept by the Potitii and Pinarii until the state took it over; merchants tithe their profits to it; women may not attend and dogs are kept away.",
      "fall": "A block of tufa in the cattle market, the altar of a god nobody sacrifices to."},
-    {"id": "lupercal", "name": "the Lupercal", "kind": "cave", "at": [10, -300], "face": 350, "from": -800,
+    {"id": "lupercal", "name": "the Lupercal", "kind": "cave", "at": [-66, -456], "face": 250, "from": -800,
      "note": "The wolf's cave at the foot of the Palatine, where the she-wolf suckled the twins. On the fifteenth of February the Luperci, young men naked but for goat-skins, sacrifice goats and a dog here, and run round the hill striking the women they meet with thongs of the skins, for fertility. Antony offered Caesar a crown here in 44 BC. It goes on under Christian emperors until a pope stops it in 494.",
      "fall": "A cave under the Palatine's rock. The Lupercalia was stopped fifty-eight years ago; the last runners were senators."},
-    {"id": "casa_romuli", "name": "the Hut of Romulus", "kind": "hut", "at": [60, -330], "face": 20, "from": -750, "ruin": 455,
+    {"id": "casa_romuli", "name": "the Hut of Romulus", "kind": "hut", "at": [-10, -440], "face": 250, "from": -750, "ruin": 455,
      "note": "The Casa Romuli on the Palatine's slope toward the Circus: a round hut of wattle and thatch, kept up as it was in the founder's day by the priests, and rebuilt in the same materials every time it burns, which is often. Under the emperors it is a shrine among marble palaces, and they keep it.",
      "fall": "A ring of stones where the hut of the founder stood until the last fire, which nobody rebuilt after."},
     {"id": "tarpeia", "name": "the Tarpeian Rock", "kind": "rock", "at": [-215, 40], "face": 160, "size": 1.0, "from": -800,
      "note": "The cliff of the Capitol above the Forum, named for the girl who let the Sabines in and was crushed under their shields. Traitors, perjurers and runaway slaves are thrown from it. Manlius, who saved the Capitol from the Gauls, was thrown from the rock he saved."},
-    {"id": "scipios_tomb", "name": "the Tomb of the Scipios", "kind": "tomb", "tomb": "round", "at": [330, -1090], "face": 60, "from": -280,
+    {"id": "scipios_tomb", "name": "the Tomb of the Scipios", "kind": "tomb", "tomb": "round", "at": [640, -1060], "face": 330, "from": -280,
      "note": "The family tomb of the Cornelii Scipiones, cut into the tufa just inside the Capene Gate where the Appian Way begins: Scipio Barbatus, consul of 298 BC, in his carved sarcophagus, and his sons and grandsons in their niches, each with his verses in the old letters. Africanus is not here; he died angry at Rome and lies at Liternum.",
      "fall": "A tomb cut in the rock by the old gate, its sarcophagi robbed. The letters on them are the oldest Latin verses that survive."},
     {"id": "salus", "name": "the Temple of Salus", "kind": "temple", "at": [400, 880], "face": 200, "size": 0.7, "from": -302, "ruin": 400,
@@ -68,22 +68,21 @@ NEW = [
      "note": "The temple of the Earth (Tellus) on the Carinae, vowed in 268 BC in a battle with the Picentes during which the ground shook. It stands where the house of Spurius Cassius stood, pulled down when he was executed for aiming at kingship. A map of Italy is painted on its wall. The Senate met here on the day after Caesar's murder."},
     {"id": "juno_lucina", "name": "the Temple of Juno Lucina", "kind": "temple", "at": [700, 320], "face": 220, "size": 0.65, "from": -375, "ruin": 400,
      "note": "Juno who brings to light: the goddess of childbirth, on the Esquiline in her sacred grove, dedicated in 375 BC. On the first of March, the Matronalia, the married women of Rome climb here with their daughters and pray with their hair loose and every knot untied."},
-    {"id": "mars_capena", "name": "the Temple of Mars", "kind": "temple", "at": [420, -1180], "face": 300, "size": 0.75, "from": -388, "ruin": 400,
+    {"id": "mars_capena", "name": "the Temple of Mars", "kind": "temple", "at": [740, -1240], "face": 320, "size": 0.75, "from": -388, "ruin": 400,
      "note": "Mars outside the Capene Gate on the Appian Way, dedicated in 388 BC after the Gauls: the god of war kept outside the walls, as the old rule required. The army musters here before it marches out; the knights ride from here in July in their parade; the road from the gate to the temple was the first paved in Rome.",
      "fall": "Mars outside the gate, roofless. The road the army marched out on is grass between its stones."},
     {"id": "consus", "name": "the altar of Consus", "kind": "altar_open", "at": [130, -740], "face": 0, "from": -750, "ruin": 455,
      "note": "The buried altar of Consus, the god of the stored harvest, at the far turning post of the Circus, dug out only for his festival in August and December, when the horses and mules are garlanded and race, and the priests sacrifice on it. Romulus held his games for Consus here, and the Sabine women were carried off from them.",
      "fall": "A hollow at the end of the Circus's grass where an altar is buried. Nobody digs it out any more."},
-    {"id": "honos_virtus", "name": "the Temple of Honour and Valour", "kind": "double_temple", "at": [470, -1020], "face": 320, "size": 0.35, "from": -222, "ruin": 400,
+    {"id": "honos_virtus", "name": "the Temple of Honour and Valour", "kind": "double_temple", "at": [530, -970], "face": 320, "size": 0.35, "from": -222, "ruin": 400,
      "note": "Honos and Virtus by the Capene Gate: Marcellus, who took Syracuse in 212 BC, vowed a temple to both and the pontiffs would not let one temple hold two gods, so his son built two cells. Marcellus filled them with the statues of Syracuse, the first Greek art Rome ever saw, and old men complained of it for a generation."},
     {"id": "porticus_aemilia", "name": "the Porticus Aemilia", "kind": "portico", "at": [-560, -820], "face": 90, "size": 1.0, "from": -193, "ruin": 450,
      "note": "The Aemilian Portico by the river port, built by the aediles of 193 BC and rebuilt in 174: a warehouse of fifty vaulted bays of concrete, five hundred metres long, the biggest roof in the world, where the grain and wine and oil of the provinces land. The Emporium in front of it is the port of Rome.",
      "fall": "The great warehouse by the river port, its vaults standing, empty of everything but goats. The grain of Africa does not come."},
-    {"id": "tower_capena", "name": "the towers of the Capene Gate", "kind": "tower", "at": [300, -1015], "face": 150, "from": -378, "ruin": 455,
-     "note": "The Servian wall's towers at the Capene Gate, where the Appian Way leaves the city: tufa, from the wall built after the Gauls in 378 BC, ten metres high and four thick, with an aqueduct dripping over the gate since the Marcia was built, so that Juvenal calls it the wet gate. The wall has sixteen gates and the city is inside it, in the age of heroes and long after."},
-    {"id": "tower_esquilina", "name": "the towers of the Esquiline Gate", "kind": "tower", "at": [1000, 490], "face": 240, "from": -378, "ruin": 455,
-     "note": "The Servian wall's towers at the Esquiline Gate, on the city's east side, where the agger, the great earth rampart behind the wall, is highest: a hundred feet thick, with a ditch in front. The Sicilian slave leader Eunus, and Spartacus's men, and the Gauls were all expected here."},
 ]
+
+# Entries once added here and since folded into something that already existed.
+REMOVED = ["tower_capena", "tower_esquilina"]
 
 # site id -> age id -> {state? (whole unless said), variant?, style? (a temple's), note}
 SITES = {
@@ -193,6 +192,7 @@ def main() -> int:
             k = next(i for i, x in enumerate(city["monuments"]) if x["id"] == "curia_hostilia")
             city["monuments"].insert(k, m)
             by_id[m["id"]] = m
+    city["monuments"] = [m for m in city["monuments"] if m["id"] not in REMOVED]
     for site, states in SITES.items():
         m = by_id[site]
         m["states"] = {a: dict(states[a]) for a in AGES if a in states}

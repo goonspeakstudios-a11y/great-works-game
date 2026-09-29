@@ -125,8 +125,11 @@ Decided with BB1 (2026-09-28):
 - **The age of heroes' twenty structures** (same file): the Comitium, the Carcer, the Cloaca's
   mouth, the Lacus Curtius, the Ara Maxima, the Lupercal, the Hut of Romulus, the Tarpeian Rock,
   Duilius's column, the Tomb of the Scipios, Salus, Jupiter Victor, Venus Obsequens, Tellus, Juno
-  Lucina, Mars outside the Capene Gate, the altar of Consus, Honos and Virtus, the Porticus Aemilia
-  and the wall's towers at the Capene and Esquiline gates, each with a note.
+  Lucina, Mars outside the Capene Gate, the altar of Consus, Honos and Virtus and the Porticus
+  Aemilia, each with a note, placed by the map's own landmarks (`republican_rome.json`). The wall's
+  towers are the ones `_servian_wall` already builds at every gate; each gate you can reach has its
+  note beside them (`streets.json` "gates"). The wolf under the fig is `kit_rome.she_wolf`, the
+  sheep and the mules are `kit_greek.beast`.
 - **The streets** (`content/rome/streets.json`, `tools/make_rome_streets.py`):
   - Paving per street: the Sacred Way in travertine (under the emperors), the main roads in basalt,
     the alleys of the Subura and the hills in packed earth.

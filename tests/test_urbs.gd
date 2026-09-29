@@ -772,7 +772,8 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 	check(looks.any(func(i): return str(i["text"]).contains("Sublician")), "and the Sublician Bridge has its story")
 	check(hall.landmarks.any(func(l): return l.get("minor", false)), "the shrines and fountains are landmarks the way can name")
 	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"].get("title", "") == "shepherd"), "a shepherd drives his flock to the cattle market")
-	check(hall.people.filter(func(p): return not p.has("citizen") and (p.get("legs", []) as Array).size() == 4).size() == 1, "and a mule cart goes up the Via Lata")
+	check(hall.people.filter(func(p): return p.get("cart", false)).size() == 1, "and a mule cart goes up the Via Lata")
+	check(looks.any(func(i): return str(i["text"]).contains("Gate")), "the gates of the wall have their notes")
 	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"]["job"] == "lictor" and not p.has("path") and p.get("shift", "") == "always"), "a guard stands at a gate")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 5

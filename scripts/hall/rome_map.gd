@@ -90,6 +90,14 @@ static func landmark(id: String) -> Vector3:
 	return at(data()["landmarks"][id]["at"])
 
 
+## One of the seven hills (republican_rome.json "hills"), by name: [its centre (world), its radius].
+static func hill(name: String) -> Array:
+	for h: Dictionary in data().get("hills", []):
+		if str(h["name"]) == name:
+			return [at(h["at"]), span(float(h.get("radius", 150)))]
+	return [Vector3.ZERO, 0.0]
+
+
 static func zone(id: String) -> Dictionary:
 	for z: Dictionary in data().get("zones", []):
 		if z["id"] == id:
@@ -529,6 +537,7 @@ static func _corners(world: Node3D, c: Dictionary, skip: Array) -> void:
 			Kit.box(g, Vector3(0, 0, -0.05), Vector3(3.6, 0.7, 0.08), "plaster", false)
 			var label := Label3D.new()
 			label.text = name.trim_prefix("the ").split(" and ")[0].to_upper()
+			label.font = load("res://scripts/hall/lettering.gd").LAPIDARY  # the game's own capitals
 			label.font_size = 48
 			label.pixel_size = 0.0075
 			label.modulate = Color("9a2a1a")
@@ -1551,11 +1560,11 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 ## cypresses on the Palatine, the fig and the plane in the valleys, and on the Capitol's face
 ## toward the Forum bare rock ("rock", drawn as an outcrop).
 static func _hill_tree(p: Vector3, y: float, roll: float) -> String:
-	var capitol := at([-190, 110])
-	var palatine := at([150, -430])
-	if y > 4.0 and Vector2(p.x - capitol.x, p.z - capitol.z).length() < span(150.0) and roll < 0.7:
+	var capitol := hill("Capitoline")
+	var palatine := hill("Palatine")
+	if y > 4.0 and Vector2(p.x - capitol[0].x, p.z - capitol[0].z).length() < capitol[1] * 1.3 and roll < 0.7:
 		return "rock"
-	if Vector2(p.x - palatine.x, p.z - palatine.z).length() < span(210.0) and roll < 0.65:
+	if Vector2(p.x - palatine[0].x, p.z - palatine[0].z).length() < palatine[1] * 1.15 and roll < 0.65:
 		return "cypress"
 	if y > 8.0 and roll < 0.75:
 		return "pine"

@@ -220,7 +220,7 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	var landmarks: Array = (fab["monuments"] as Array).filter(func(m: Dictionary) -> bool: return (m["m"] as Dictionary).has("note")).map(
 		func(m: Dictionary) -> Dictionary: return {"name": str(m["m"]["name"]), "pos": m["at"]})
 	landmarks.append_array(_street_marks(fab))  # the crossroads shrines and the street fountains, named, for the way
-	_gate_guards(spawn, id)
+	_gate_guards(spawn, id, out, str(age["when"]))
 	var birds: Array = Kit.flock(world, Vector3(0, 0, 0), 9 if id != "fall" else 4, 40.0, 26.0)
 	return {"name": "Rome, %s" % age["when"], "interactables": out, "spawn": arrival + Vector3(0, 0.05, 0),
 		"yaw": Places.look_yaw(arrival_to - arrival), "spots": spots, "flicker": flicker, "people": people, "squads": squads,
@@ -249,14 +249,20 @@ static func _street_marks(fab: Dictionary) -> Array:
 
 
 ## A guard at each gate of the Servian wall you can reach: the gate is a threshold, and someone
-## keeps it.
-static func _gate_guards(spawn: Callable, age: String) -> void:
-	if age == "fall":
-		return
+## keeps it. The gate's note (streets.json "gates") is read beside its tower, which the wall builds.
+static func _gate_guards(spawn: Callable, age: String, out: Array = [], when: String = "") -> void:
 	var edge := RomeMap.walkable()
+	var notes: Dictionary = RomeMap.streets_data().get("gates", {})
 	for g: Dictionary in RomeMap.data().get("wall", {}).get("gates", []):
 		var at := RomeMap.at(g["at"])
 		if not RomeMap.inside(edge, at):
+			continue
+		if notes.has(str(g["name"])):
+			var look := at + Vector3(0, 0, 4.0)
+			look.y = RomeMap.ground(look)
+			out.append({"kind": "statue", "pos": look, "text": "Look at the %s" % g["name"],
+				"note": "[b]The %s[/b], %s\n\n%s" % [g["name"], when, notes[str(g["name"])]]})
+		if age == "fall":
 			continue
 		var toward := Vector3.ZERO - at
 		toward.y = 0.0

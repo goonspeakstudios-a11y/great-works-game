@@ -7,6 +7,7 @@ content/rome/streets.json:
              Christian niche, then broken
   paving     what each named street is paved with (its "kind" of ribbon: basalt, travertine or earth)
   corners    the streets' names on the corner shops at their junctions, and how they are said
+  gates      what is said of each gate of the Servian wall (rome_map builds the wall and its towers)
 
     python3 tools/make_rome_streets.py
 """
@@ -19,8 +20,6 @@ ROOT = os.path.abspath(os.path.join(HERE, ".."))
 OUT = os.path.join(ROOT, "content", "rome", "streets.json")
 
 EPITAPHS = [
-    {"text": "STRANGER, STOP AND READ. HERE LIES LUCIUS CORNELIUS SCIPIO, AEDILE, CONSUL, CENSOR, WHO TOOK CORSICA AND THE CITY OF ALERIA.",
-     "note": "The old formula: the office, the deed, no feeling. The Scipios' tomb by the Capene Gate is the first of the line of tombs down the Appian Way."},
     {"text": "TO THE SPIRITS OF THE DEAD. GAIUS VETTIUS, FREEDMAN OF GAIUS, BAKER, LIVED 61 YEARS. ANTONIA HIS WIFE MADE THIS FOR HIM AND FOR HERSELF WHILE SHE LIVED.",
      "note": "A freedman's tomb: the trade named with pride, the wife's name after. D M at the top, to the spirits of the dead, on nearly every stone from the emperors on."},
     {"text": "STOP, TRAVELLER, AND LOOK TO YOUR LEFT. I WAS A CHILD OF NINE YEARS, THREE MONTHS AND FOUR DAYS. MY FATHER AND MOTHER SET THIS UP AND WEEP.",
@@ -80,6 +79,27 @@ PAVING = {
     "the street of the Esquiline": "earth",
 }
 
+# The gates of the Servian wall, as thresholds: what is said of each you can reach (rome_map builds
+# the wall and its towers; places_rome puts these notes at the gates).
+GATES = {
+    "Capene Gate": "The Servian wall's gate to the Appian Way, where the road south leaves the city: tufa, from the wall built after the Gauls in 378 BC, ten metres high and four thick, a tower each side, and an aqueduct dripping over it since the Marcia was built, so that Juvenal calls it the wet gate. The tombs begin outside it.",
+    "Esquiline Gate": "The gate on the city's east side, where the agger, the great earth rampart behind the wall, is highest: a hundred feet thick with a ditch in front. The Gauls, Hannibal, the slave armies were all expected here; the executioners' ground and the paupers' pits lie outside it.",
+    "Carmental Gate": "The gate under the Capitol toward the river, named for Carmenta, Evander's mother. The three hundred and six Fabii marched out of its right-hand arch to die at the Cremera, and no one uses that arch since.",
+    "Trigemina Gate": "The triple gate to the river port and the road to Ostia, under the Aventine: the busiest of them all, the carts of grain and oil going in and out of the Emporium.",
+    "Colline Gate": "The gate at the north end of the Quirinal, where the Salarian Way leaves: Hannibal rode up to it in 211 BC and looked at the walls, and Sulla fought the Samnites under it in 82 BC and won Rome.",
+    "Fontinal Gate": "The gate of the springs, on the Capitol's north side toward the Campus, where the Via Lata goes out to the Flaminian Way.",
+    "Caelimontane Gate": "The gate on the Caelian toward the Latin Way. Under the emperors the wall is a line of stones through people's yards here, and the gate an arch in a street.",
+    "Naevian Gate": "The gate through the Aventine's back toward the Ardeatine Way and the sheep pastures south of the city.",
+    "Raudusculan Gate": "The bronze-sheathed gate at the Aventine's foot, said to be named for the raw bronze (raudus) on its doors, or for a general's horns.",
+    "Lavernal Gate": "The gate of Laverna, the goddess of thieves, on the Aventine's west side, with her grove and altar beside it.",
+    "Flumentan Gate": "The river gate, low on the bank below the Capitol, where the Tiber floods in first.",
+    "Sanqual Gate": "The gate of Sancus, the Sabine god of oaths, on the Quirinal's south side.",
+    "Salutary Gate": "The gate by the Temple of Salus on the Quirinal's brow.",
+    "Quirinal Gate": "The gate at the Quirinal's north, where the road to the Sabine country climbs out.",
+    "Viminal Gate": "The gate in the agger between the Viminal and the Esquiline, the wall at its strongest.",
+    "Querquetulan Gate": "The oak-grove gate, between the Esquiline and the Caelian, named for the grove that stood here before the city reached it.",
+}
+
 CORNERS = {
     "note": "The Romans put no names on their streets: you asked. The painted names on the corner shops are for you, in the letters the shops' notices used.",
     "letters": "red",
@@ -94,6 +114,7 @@ def main() -> int:
         "compita": COMPITA,
         "paving": PAVING,
         "corners": CORNERS,
+        "gates": GATES,
     }
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
