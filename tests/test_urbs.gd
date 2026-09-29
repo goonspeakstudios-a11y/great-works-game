@@ -107,7 +107,8 @@ func test_every_scene_is_sound_and_plays_to_its_end() -> void:
 	var all: Dictionary = Scene.all()
 	check(all.size() >= 150, "the city is full of things to do (%d scenes)" % all.size())
 	for id: String in all:
-		var def: Dictionary = Activities.filled(all[id], {"god": "Saturn", "temple": "the Temple of Saturn"})
+		var def: Dictionary = Activities.filled(all[id], {"god": "Saturn", "temple": "the Temple of Saturn",
+			"a": "the Baths of Caracalla", "b": "the Circus Maximus", "c": "your house"})  # the rides' far places
 		var bad: Array = Scene.problems(def)
 		check(bad.is_empty(), "%s: %s" % [id, bad])
 		for pick: int in [0, -1, 1]:
