@@ -66,6 +66,7 @@ func setup(the_world: Node3D, the_age: String, the_day: int, people: Array) -> v
 	_pigeons_in_forum()
 	_dogs(people)
 	_herds(people)
+	_cats()
 	for p: Dictionary in people:
 		if p.has("citizen"):
 			var sfx: String = data().get("sounds", {}).get(p["citizen"]["job"], "")
@@ -372,6 +373,29 @@ func _dogs(people: Array) -> void:
 		var dog := {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs, "path": [a, b, a],
 			"speed": 1.6, "ground": func(q: Vector3) -> float: return RomeMap.ground(q)}
 		people.append(dog)
+
+
+## Cats on the doorsteps and the counters, sitting, as cats do (kit_greek's dog, small, in a
+## cat's colours). They do not move; the dogs do.
+func _cats() -> void:
+	if streets.is_empty():
+		return
+	var coats := ["#8a8078", "#c88a4a", "#2a2624", "#d8d0c0", "#6a5a4a"]
+	for k in (30 if age != "fall" else 8):
+		var road: Array = streets[rng.randi() % streets.size()]
+		var i := rng.randi_range(0, road.size() - 2)
+		var a: Vector3 = road[i]
+		var b: Vector3 = road[i + 1]
+		var p := a.lerp(b, rng.randf())
+		var dir := (b - a).normalized()
+		var side := Vector3(dir.z, 0, -dir.x) * (rng.randf_range(3.5, 5.0) * (1.0 if rng.randf() < 0.5 else -1.0))  # by the house fronts
+		p += side
+		p.y = RomeMap.ground(p)
+		var cat: Dictionary = Greek.beast(world, p, rng.randf() * TAU, "dog", coats[rng.randi() % coats.size()], 0.32)
+		Kit.unsolid(cat["root"])
+		(cat["root"] as Node3D).scale.y *= 0.9
+		for leg: Node3D in cat["legs"]:
+			leg.rotation.x = -1.1 if leg.position.z < 0.0 else 0.0  # sitting on its haunches
 
 
 ## Livestock and carts in the streets (docs/rome-city-notes.md 2.3): a flock of sheep driven down

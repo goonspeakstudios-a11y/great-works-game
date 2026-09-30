@@ -35,6 +35,8 @@ var sun: DirectionalLight3D
 var sky: ProceduralSkyMaterial
 var stars: Node3D
 var windows: StandardMaterial3D  # the windows' glass: lit from within at night
+var shops: MultiMeshInstance3D  # the shop fronts (rome_map.gd): their shutters go up at dusk and come down at dawn
+var _shut := false
 var flames: Array = []  # braziers and torches, lit at dusk
 var people: Array = []  # {root, citizen?, shift}
 var town: RefCounted  # urbs_town.gd: the calendar, the events, rain, birds, dogs, sounds
@@ -194,6 +196,9 @@ func _apply() -> void:
 	var dark := 1.0 - clampf(minf(h - DAWN, DUSK - h), 0.0, 1.0) if h > DAWN - 1.0 and h < DUSK + 1.0 else 1.0
 	if windows:
 		windows.emission_energy_multiplier = 1.4 * dark * (1.0 - 0.6 * gloom)
+	if is_instance_valid(shops) and (dark > 0.5) != _shut:
+		_shut = dark > 0.5
+		shops.material_override = load("res://scripts/hall/rome_map.gd").tinted("h_shop_shut" if _shut else "h_shop")
 	if stars:
 		stars.visible = dark > 0.3
 	for f: Node in flames:

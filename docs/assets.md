@@ -68,6 +68,20 @@ giallo antico, stone pine, toga wool, iron, rust, scutum (and faded). Greece: ho
 (lambda) / Athens (owl) / dead, Persian rosette cloth, wicker, black-figure pottery, papyrus,
 sand, grass, ploughed furrows, cave rock, cast shadow.
 
+### The house set (scripts/hall/textures_houses.gd, `Textures.material("h_<name>")`)
+The textures of Rome's houses, 64 pixels to a 4 m tile in the hall's pixel style, the pale ones
+tinted per house (`rome_map.tinted`); shown together in `docs/dev/materials.png`. Walls, tiled
+over the world: `h_plaster` (lime plaster, a crack, a chip), `h_plaster_worn` (patched, the brick
+showing, grime under the sills), `h_brick` (each brick its own red, a yellow bonding course),
+`h_tufa` (opus quadratum), `h_timber` (opus craticium: plaster panels in a timber frame),
+`h_stucco` (drafted blocks of the good houses). Roofs: `h_roof`, `h_roof_moss`, `h_roof_broken`.
+Fronts, one image to one quad: `h_shop` (the arched bay, shutters folded back, the counter and its
+pots) and `h_shop_shut` (the shutters up, urbs_life.gd swaps them at dusk), `h_door` and its
+painted `h_door_red`, `h_door_green`, `h_window` (frame and sill, clear in the middle for the
+lit pane), `h_window_small` (barred), `h_shutter` (one leaf), `h_cloth` (washing, tinted the
+tunics' colours), `h_vine`, `h_sign`. Storey-aligned things (the damp at the foot, the painted
+dado) are geometry, since a world-tiled texture repeats up the wall.
+
 ## Music (assets/music, from tools/make_music.py)
 Every place track is 48 s, in layers that loop in step, with a ghost (the faint echo heard while
 the place is lost). Zones are listed in `scripts/pixel/music.gd`.

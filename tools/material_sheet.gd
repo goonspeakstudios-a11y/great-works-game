@@ -7,7 +7,10 @@ extends SceneTree
 const KINDS := ["r_ground", "r_dirt", "r_wall", "r_brick", "r_shop", "r_roof", "r_slab", "cobble", "rubble", "basalt", "paving",
 	"travertine", "tufa", "brick", "reticulatum", "plaster", "fresco", "mosaic", "marble", "stone", "wood", "roof", "terracotta",
 	"insula", "insula_white", "awning", "leaves", "pine", "trunk", "bronze", "gold", "iron", "rust", "clay", "wicker", "toga",
-	"graffiti_republic", "porphyry", "giallo", "water", "drybed", "deadwood"]
+	"graffiti_republic", "porphyry", "giallo", "water", "drybed", "deadwood",
+	"h_plaster", "h_plaster_worn", "h_brick", "h_tufa", "h_timber", "h_stucco", "h_roof", "h_roof_moss", "h_roof_broken",
+	"h_shop", "h_shop_shut", "h_door", "h_door_red", "h_door_green", "h_window", "h_window_small", "h_shutter", "h_cloth",
+	"h_vine", "h_sign"]
 
 
 func _initialize() -> void:

@@ -211,6 +211,7 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	Kit.stars(sky)
 	life.stars = sky
 	life.windows = RomeMap.window_glass()
+	life.shops = fab.get("shops")
 	life.flames = fab.get("flames", [])
 	var start: float = float(progress.data.get("rome_hour", 8.0)) if progress != null else 8.0
 	life.haze = float(HAZE.get(id, 0.0))

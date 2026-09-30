@@ -704,19 +704,23 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 		root.add_child(world)
 		var fab: Dictionary = RomeMap.fabric(world, a, {"no_terrain": true})
 		var id := str(a["id"])
-		shops[id] = parts.call(world, "Houses_box_r_shop")
+		shops[id] = parts.call(world, "Houses_quad_h_shop")
 		if id == "heroic":
-			check(parts.call(world, "Houses_box_tufa") > 20, "the age of heroes builds in tufa (%d)" % parts.call(world, "Houses_box_tufa"))
+			check(parts.call(world, "Houses_box_h_tufa") > 20, "the age of heroes builds in tufa (%d)" % parts.call(world, "Houses_box_h_tufa"))
 			check(parts.call(world, "Houses_box_furrows") > 5, "and has fields inside its wall (%d plots)" % parts.call(world, "Houses_box_furrows"))
 			check(parts.call(world, "Houses_quad_graffiti_republic") == 0 and parts.call(world, "Houses_quad_graffiti_heroic") == 0, "and no election notices yet")
 			check(world.find_child("Tomb0", false, false) != null, "tombs stand along the roads outside the gates")
 		if id == "late":
-			check(parts.call(world, "Houses_quad_r_brick") > 10, "the late city bricks up its windows (%d)" % parts.call(world, "Houses_quad_r_brick"))
+			check(parts.call(world, "Houses_quad_h_brick") > 10, "the late city bricks up its windows (%d)" % parts.call(world, "Houses_quad_h_brick"))
+			check(parts.call(world, "Houses_quad_h_shop_shut") > 5, "and shuts shops for good (%d)" % parts.call(world, "Houses_quad_h_shop_shut"))
 			check(parts.call(world, "Houses_quad_graffiti_late") > 0, "and its walls carry the chi-rho")
 		if id == "collapse":
 			check((fab["burnt"] as Array).size() > 10, "the quarters burnt in 455 are known (%d), for the smoke over them" % (fab["burnt"] as Array).size())
 		if id == "empire":
 			check(parts.call(world, "Houses_quad_graffiti_empire") > 0, "election notices and scratched words under the emperors")
+			check(parts.call(world, "Houses_quad_h_window") > 200 and parts.call(world, "Houses_quad_h_shutter") > 50, "windows with frames and open shutters (%d, %d)" % [parts.call(world, "Houses_quad_h_window"), parts.call(world, "Houses_quad_h_shutter")])
+			check(parts.call(world, "Houses_quad_h_cloth") > 20 and parts.call(world, "Houses_quad_h_door") > 20, "washing on the lines, doors in the walls")
+			check(fab.get("shops") != null, "the shop fronts are known, for their shutters at night")
 		check(not (fab["compita"] as Array).is_empty(), "%s: shrines at the crossings (%d)" % [id, (fab["compita"] as Array).size()])
 		check(not (fab["tombs"] as Array).is_empty(), "%s: tombs along the roads (%d)" % [id, (fab["tombs"] as Array).size()])
 		check(world.find_children("*", "Label3D", true, false).size() > 20, "%s: the streets' names on the corners" % id)

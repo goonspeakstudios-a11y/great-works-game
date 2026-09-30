@@ -22,6 +22,22 @@ static func material(kind: String) -> Material:
 		m.uv1_triplanar = true
 		m.uv1_world_triplanar = true
 		m.uv1_scale = Vector3(scale, scale, scale)
+	if kind.begins_with("h_"):  # the house set (textures_houses.gd): walls, roofs, fronts of Rome's houses
+		var made: Dictionary = load("res://scripts/hall/textures_houses.gd").make(kind)
+		if made.is_empty():
+			push_warning("no house texture " + kind)
+			m.albedo_color = Color("ff00ff")
+		elif made.get("uv", false):  # one image to one quad
+			m.albedo_texture = made["tex"]
+			m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+			if made.get("cut", false):
+				m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+				m.alpha_scissor_threshold = 0.5
+				m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		else:
+			world_tex.call(made["tex"], float(made["scale"]))
+		_cache[kind] = m
+		return m
 	if kind.begins_with("ph_"):  # a CC0 Poly Haven texture, e.g. "ph_marble_tiles" (assets/polyhaven)
 		var path := "res://assets/polyhaven/textures/%s.png" % kind.substr(3)
 		if ResourceLoader.exists(path):

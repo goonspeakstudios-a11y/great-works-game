@@ -102,6 +102,17 @@ Decided with BB1 (2026-09-28):
     huts of wood and thatch inside the ruined walls where people still live.
   - Every shop has a painted sign hung over its door: a wine jar, a loaf, a knife, a shoe, a bolt of
     cloth, a pot, a fish.
+  - **The fronts** (the house set, `textures_houses.gd`; `_bays`, `_window`, `_washing`): the
+    ground storey is bays, each a shop (its arched bay, a counter of stone before it with pots on
+    it, the shutters put up at dusk and taken down at dawn by `urbs_life.gd`), a door (planks and
+    iron bands, some painted red or green, a bronze lamp beside it) or blank wall with a barred
+    window; the sides have fewer. Every window has its wooden frame and sill, the pane behind it
+    lit at night; on half the shutters stand open, on a third a pot of flowers sits on the sill. A
+    third of the tall houses on a street hang their washing on a line across it, in the tunics'
+    colours; vines climb one wall in seven; a band of damp darkens every wall's foot; the ridges
+    carry a line of cover tiles and, here and there, pigeons. The old houses are tufa or timber and
+    plaster with a bench by the door, a lean-to and a woodpile; the houses of the rich are drafted
+    stucco over a painted dado, with a porch. Cats sit by the house fronts (`urbs_town._cats`).
   - The houses of the rich stand round courtyard gardens with a tree and a pool.
   - Warehouses line the river, and single-storey rows of shops line some streets.
   - Little squares hold fountains with a lamp. Within seventy metres of a landmark the flats are
