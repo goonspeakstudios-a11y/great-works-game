@@ -756,7 +756,7 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(parts.call(world, "TreeOlives") > 40, "olives in the orchards of the small city (%d)" % parts.call(world, "TreeOlives"))
 			var wn0: Array = RomeMap.waters(-280).map(func(w: Dictionary) -> String: return str(w["name"]))
 			check(wn0.has("the Goat Marsh") and wn0.has("the Petronia") and not wn0.has("Agrippa's lake"), "in 280 BC the Goat Marsh and the Petronia brook, no lake yet")
-			check((fab["lacus"] as Array).size() >= 2 and (fab["lacus"] as Array).size() < 20, "a few basins, from the Appia alone (%d)" % (fab["lacus"] as Array).size())
+			check((fab["lacus"] as Array).size() >= 8 and (fab["lacus"] as Array).size() < 30, "a few basins, from the Appia alone (%d)" % (fab["lacus"] as Array).size())
 			check(parts.call(world, "Houses_disc_water") > 3, "ponds in the pastures (%d)" % parts.call(world, "Houses_disc_water"))
 			var names0: Array = RomeMap.groves(-280).map(func(g: Dictionary) -> String: return str(g["name"]))
 			check(names0.has("the Caelian's oaks") and not names0.has("the gardens of Maecenas"), "in 280 BC the hills are wooded and there are no horti yet")
@@ -775,6 +775,9 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(parts.call(world, "Houses_quad_h_window") > 200 and parts.call(world, "Houses_quad_h_shutter") > 50, "windows with frames and open shutters (%d, %d)" % [parts.call(world, "Houses_quad_h_window"), parts.call(world, "Houses_quad_h_shutter")])
 			check(parts.call(world, "Houses_quad_h_cloth") > 20 and parts.call(world, "Houses_quad_h_door") > 20, "washing on the lines, doors in the walls")
 			check(fab.get("shops") != null, "the shop fronts are known, for their shutters at night")
+			check((fab["stalls"] as Array).size() > 100 and (fab["stalls"] as Array).size() < 600, "stalls on the kerbs where no house fits, not everywhere (%d)" % (fab["stalls"] as Array).size())
+			check((fab["fountains"] as Array).size() > 8, "little squares with fountains off the streets (%d)" % (fab["fountains"] as Array).size())
+			check(RomeMap._obbs.size() > 2000, "the city is full (%d houses and plots)" % RomeMap._obbs.size())
 			# the green city: trees as leaves on crossed quads, the groves and gardens, the grass and reeds
 			check(parts.call(world, "TreeCrowns") > 900 and parts.call(world, "TreePines") > 600 and parts.call(world, "TreeCypresses") > 400,
 				"planes, pines and cypresses stand through the city (%d, %d, %d quads)" % [parts.call(world, "TreeCrowns"), parts.call(world, "TreePines"), parts.call(world, "TreeCypresses")])
@@ -786,9 +789,9 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			var names: Array = RomeMap.groves(150).map(func(g: Dictionary) -> String: return str(g["name"]))
 			check(names.has("the gardens of Sallust") and names.has("the Asylum") and not names.has("the Caelian's oaks"), "in AD 150 the horti are laid out and the Caelian's oaks are long gone")
 			# running water: basins along the streets, gutters, the lake and its canal, the sound of it all
-			check((fab["lacus"] as Array).size() > 12, "street basins along the streets, each against a house front (%d)" % (fab["lacus"] as Array).size())
+			check((fab["lacus"] as Array).size() > 30, "street basins every fifty-odd paces, each against a house front (%d)" % (fab["lacus"] as Array).size())
 			check(world.find_children("Lacus*", "Node3D", false, false).size() == (fab["lacus"] as Array).size(), "each built")
-			check(world.find_children("*", "GPUParticles3D", true, false).size() > 20, "water falling in them and in the fountains (%d jets)" % world.find_children("*", "GPUParticles3D", true, false).size())
+			check(world.find_children("*", "GPUParticles3D", true, false).size() > 40, "water falling in them and in the fountains (%d jets)" % world.find_children("*", "GPUParticles3D", true, false).size())
 			var wn: Array = RomeMap.waters(150).map(func(w: Dictionary) -> String: return str(w["name"]))
 			check(wn.has("Agrippa's lake") and wn.has("the Euripus") and not wn.has("the Goat Marsh"), "in AD 150 Agrippa's lake and canal, the marsh long drained")
 			check(world.find_children("Pond*", "MeshInstance3D", true, false).size() >= 2 and world.find_children("Stream*", "MeshInstance3D", true, false).size() >= 1, "the waters are laid in")

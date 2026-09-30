@@ -35,13 +35,11 @@ func _initialize() -> void:
 	var house_road := 0
 	var house_keep := 0
 	for o: Array in obbs:
-		var bad_road := false
+		var bad_road: bool = RomeMap._box_on_road(o[0], o[1], o[2], o[3], -0.2)
 		var bad_keep := false
 		for sx: float in [-1.0, 1.0]:
 			for sz: float in [-1.0, 1.0]:
 				var q: Vector3 = o[0] + (o[1] as Basis) * Vector3(sx * o[2] / 2.0, 0, sz * o[3] / 2.0)
-				if RomeMap._on_road(q, -0.2):
-					bad_road = true
 				for k: Array in keep:
 					if Vector2(q.x - k[0].x, q.z - k[0].z).length() < float(k[1]) - 0.2:
 						bad_keep = true
@@ -49,7 +47,24 @@ func _initialize() -> void:
 			house_road += 1
 		if bad_keep:
 			house_keep += 1
-	print("houses with a corner in a street: %d; on a monument's or a tomb's ground: %d" % [house_road, house_keep])
+	print("houses over a street or a lane: %d; on a monument's or a tomb's ground: %d" % [house_road, house_keep])
+	var lined := 0
+	var touching := 0
+	for i in obbs.size():
+		var a: Array = obbs[i]
+		var near: Array = RomeMap._near(a[0], 16.0)
+		var best := INF
+		for j: int in near:
+			if j == i:
+				continue
+			var b: Array = obbs[j]
+			var gap: float = Vector2(a[0].x - b[0].x, a[0].z - b[0].z).length() - float(a[2]) / 2.0 - float(b[2]) / 2.0
+			best = minf(best, gap)
+		if best < 1.5:
+			touching += 1
+		lined += 1
+	print("houses with a neighbour within a pace and a half: %d of %d" % [touching, lined])
+	print("stalls: %d" % (fab.get("stalls", []) as Array).size())
 	var tree_house := 0
 	var tree_road := 0
 	for t: Array in trees:

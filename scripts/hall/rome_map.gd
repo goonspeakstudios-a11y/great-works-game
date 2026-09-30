@@ -579,6 +579,114 @@ static var _streets := {}
 static var _burnt: Array = []  # where the houses burnt, while the blocks are built (out["burnt"])
 static var _obbs: Array = []  # every house, plot and ruin built this time: [centre, basis, w, d], so nothing is built into another
 static var _bands: Array = []  # the streets, lanes and corridors: [a, b, half + 3], so nothing stands in them
+const BIN := 16.0  # the boxes and bands are kept by bin, so a test looks only at its neighbours
+static var _cells := {}  # Vector2i -> [box index]
+static var _band_cells := {}  # Vector2i -> [band index]
+
+
+static func _cell_of(x: float, z: float) -> Vector2i:
+	return Vector2i(floori(x / BIN), floori(z / BIN))
+
+
+## Files a box among the built, in every cell it reaches.
+static func _register(c: Vector3, b: Basis, w: float, d: float) -> void:
+	var idx := _obbs.size()
+	_obbs.append([c, b, w, d])
+	var r := Vector2(w, d).length() / 2.0
+	var lo := _cell_of(c.x - r, c.z - r)
+	var hi := _cell_of(c.x + r, c.z + r)
+	for i in range(lo.x, hi.x + 1):
+		for j in range(lo.y, hi.y + 1):
+			var key := Vector2i(i, j)
+			if not _cells.has(key):
+				_cells[key] = []
+			_cells[key].append(idx)
+
+
+## The boxes within `r` of a point (their indices, each once).
+static func _near(c: Vector3, r: float) -> Array:
+	var seen := {}
+	var out: Array = []
+	var lo := _cell_of(c.x - r, c.z - r)
+	var hi := _cell_of(c.x + r, c.z + r)
+	for i in range(lo.x, hi.x + 1):
+		for j in range(lo.y, hi.y + 1):
+			for idx: int in _cells.get(Vector2i(i, j), []):
+				if not seen.has(idx):
+					seen[idx] = true
+					out.append(idx)
+	return out
+
+
+## Takes the streets, lanes and corridors as the bands nothing stands in, filed by cell.
+static func _set_bands(bands: Array) -> void:
+	_bands = bands
+	_band_cells = {}
+	for idx in bands.size():
+		var r: Array = bands[idx]
+		var a: Vector3 = r[0]
+		var b: Vector3 = r[1]
+		var hw := float(r[2])
+		var lo := _cell_of(minf(a.x, b.x) - hw, minf(a.z, b.z) - hw)
+		var hi := _cell_of(maxf(a.x, b.x) + hw, maxf(a.z, b.z) + hw)
+		for i in range(lo.x, hi.x + 1):
+			for j in range(lo.y, hi.y + 1):
+				var key := Vector2i(i, j)
+				if not _band_cells.has(key):
+					_band_cells[key] = []
+				_band_cells[key].append(idx)
+
+
+static func _bands_near(c: Vector3, r: float) -> Array:
+	var seen := {}
+	var out: Array = []
+	var lo := _cell_of(c.x - r, c.z - r)
+	var hi := _cell_of(c.x + r, c.z + r)
+	for i in range(lo.x, hi.x + 1):
+		for j in range(lo.y, hi.y + 1):
+			for idx: int in _band_cells.get(Vector2i(i, j), []):
+				if not seen.has(idx):
+					seen[idx] = true
+					out.append(idx)
+	return out
+
+
+## Whether a box lies over any band (a street, a lane, a corridor), anywhere along it: each band
+## near the box is walked at a pace's step through the part of it within the box's reach, and
+## the box tested (grown by the band's half-width and `margin`) at each step.
+static func _box_on_road(c: Vector3, b: Basis, w: float, d: float, margin: float = 0.0) -> bool:
+	var reach := Vector2(w, d).length() / 2.0 + margin + 4.0
+	var bt := b.transposed()
+	var cc := Vector3(c.x, 0, c.z)
+	for idx: int in _bands_near(c, reach):
+		var r: Array = _bands[idx]
+		var hw := float(r[2]) - 3.0 + margin
+		var a: Vector3 = r[0]
+		var e: Vector3 = r[1]
+		var ab := Vector2(e.x - a.x, e.z - a.z)
+		var length := ab.length()
+		if length < 0.01:
+			continue
+		var dirv := ab / length
+		var ac := Vector2(c.x - a.x, c.z - a.z)
+		var tc := ac.dot(dirv)
+		var perp := absf(ac.cross(dirv))
+		var span_r := Vector2(w, d).length() / 2.0 + hw
+		if perp > span_r:
+			continue
+		var half_chord := sqrt(maxf(0.0, span_r * span_r - perp * perp))
+		if tc - half_chord > length or tc + half_chord < 0.0:
+			continue
+		var t0 := clampf(tc - half_chord, 0.0, length)
+		var t1 := clampf(tc + half_chord, 0.0, length)
+		var n := maxi(2, int((t1 - t0) / 1.0) + 1)
+		for k in n:
+			var t := t0 + (t1 - t0) * float(k) / float(n - 1)
+			var q := Vector3(a.x + dirv.x * t, 0, a.z + dirv.y * t)
+			var local := bt * (q - cc)
+			if absf(local.x) <= w / 2.0 + hw and absf(local.z) <= d / 2.0 + hw:
+				return true
+	return false
 static var _keep: Array = []  # the monuments' ground and the tombs: [centre, radius]
 static var _last_trees: Array = []  # what was planted, after the culling (for the audit, tools/audit_rome.gd)
 static var _pergolas: Array = []  # the pergolas and pools of the gardens, which no tree may stand in
@@ -601,7 +709,8 @@ static func _sat(c1: Vector3, b1: Basis, w1: float, d1: float, c2: Vector3, b2: 
 ## Whether a box would be built into something already built.
 static func _overlaps(c: Vector3, b: Basis, w: float, d: float, margin: float = 0.5) -> bool:
 	var reach := Vector2(w, d).length() / 2.0 + margin
-	for o: Array in _obbs:
+	for idx: int in _near(c, reach + 12.0):
+		var o: Array = _obbs[idx]
 		var oc: Vector3 = o[0]
 		if Vector2(oc.x - c.x, oc.z - c.z).length() > reach + Vector2(float(o[2]), float(o[3])).length() / 2.0 + margin:
 			continue
@@ -612,11 +721,12 @@ static func _overlaps(c: Vector3, b: Basis, w: float, d: float, margin: float = 
 
 ## Whether a point stands inside something built (grown by `margin`).
 static func _in_obb(p: Vector3, margin: float = 0.0) -> bool:
-	for o: Array in _obbs:
+	for idx: int in _near(p, margin + 12.0):
+		var o: Array = _obbs[idx]
 		var oc: Vector3 = o[0]
 		if Vector2(oc.x - p.x, oc.z - p.z).length() > Vector2(float(o[2]), float(o[3])).length() / 2.0 + margin + 0.5:
 			continue
-		var local: Vector3 = (o[1] as Basis).inverse() * (p - oc)
+		var local: Vector3 = (o[1] as Basis).transposed() * (p - oc)
 		if absf(local.x) <= float(o[2]) / 2.0 + margin and absf(local.z) <= float(o[3]) / 2.0 + margin:
 			return true
 	return false
@@ -624,7 +734,8 @@ static func _in_obb(p: Vector3, margin: float = 0.0) -> bool:
 
 ## Whether a point stands in a street, a lane or a corridor (their real width, plus `margin`).
 static func _on_road(p: Vector3, margin: float = 0.0) -> bool:
-	for r: Array in _bands:
+	for idx: int in _bands_near(p, margin + 0.5):
+		var r: Array = _bands[idx]
 		if _to_segment(p, r[0], r[1]) < float(r[2]) - 3.0 + margin:
 			return true
 	return false
@@ -633,15 +744,15 @@ static func _on_road(p: Vector3, margin: float = 0.0) -> bool:
 ## Whether a box's corners all keep out of the streets and off the monuments' ground, and no
 ## monument or tomb stands inside it.
 static func _corners_clear(c: Vector3, b: Basis, w: float, d: float) -> bool:
+	if _box_on_road(c, b, w, d, 0.6):
+		return false
 	for sx: float in [-1.0, 1.0]:
 		for sz: float in [-1.0, 1.0]:
 			var q := c + b * Vector3(sx * w / 2.0, 0, sz * d / 2.0)
-			if _on_road(q, 0.6):
-				return false
 			for k: Array in _keep:
 				if Vector2(q.x - (k[0] as Vector3).x, q.z - (k[0] as Vector3).z).length() < float(k[1]):
 					return false
-	var inv := b.inverse()
+	var inv := b.transposed()
 	for k: Array in _keep:
 		var kc: Vector3 = k[0]
 		if Vector2(kc.x - c.x, kc.z - c.z).length() > Vector2(w, d).length() / 2.0 + float(k[1]):
@@ -706,6 +817,11 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 		return
 	var style := str(st.get("style", "lares"))
 	var edge := walkable()
+	var named: Array = []  # the named streets' stretches: [a, b, half-width]
+	for r: Dictionary in c.get("roads", []):
+		var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
+		for i in pts.size() - 1:
+			named.append([pts[i], pts[i + 1], float(r["width"]) / 2.0])
 	var k := 0
 	for j: Dictionary in junctions(c):
 		k += 1
@@ -721,10 +837,8 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 			for reach: float in [3.5, 5.0, 7.0, 9.0, 12.0]:
 				var cand := p + Vector3(cos(a), 0, sin(a)) * reach
 				var off := INF
-				for r: Dictionary in c.get("roads", []):
-					var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
-					for i in pts.size() - 1:
-						off = minf(off, _to_segment(cand, pts[i], pts[i + 1]) - float(r["width"]) / 2.0)
+				for r: Array in named:
+					off = minf(off, _to_segment(cand, r[0], r[1]) - float(r[2]))
 				if off < 0.5 or _in_obb(cand, 0.4) or _on_road(cand, 0.5):
 					continue  # in a house, or in a lane
 				if off < best:
@@ -773,14 +887,22 @@ static func _street_basins(world: Node3D, c: Dictionary, year: int, lost: bool, 
 				n += 1
 				if not inside(edge, q) or river_edge(q) < 8.0 or (not skip.is_empty() and inside(skip, q)):
 					continue
+				var found := false  # slid along the street to the nearest house front, either way
+				for slide: float in [0.0, 3.0, -3.0, 6.0, -6.0, 9.0, -9.0, 12.0, -12.0, 15.0, -15.0]:
+					var qq := q + dir * slide
+					if not _in_obb(qq, 0.2) and _in_obb(qq + across * side * 1.6, 0.0) and not _on_road(qq, 0.2):
+						q = qq
+						found = true
+						break
+				if not found:
+					continue
 				if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
 					continue
-				if stalls.any(func(st: Vector3) -> bool: return Vector2(st.x - q.x, st.z - q.z).length() < 2.2):
-					continue
+				for si in range(stalls.size() - 1, -1, -1):  # a basin takes its place over a stall
+					if Vector2((stalls[si] as Vector3).x - q.x, (stalls[si] as Vector3).z - q.z).length() < 2.6:
+						stalls.remove_at(si)
 				if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
 					continue
-				if _in_obb(q, 0.2) or not _in_obb(q + across * side * 1.6, 0.0):
-					continue  # a basin stands on the pavement against a house front, nowhere else
 				q.y = ground(q)
 				var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
 				g.name = "Lacus%d" % out["lacus"].size()
@@ -1112,13 +1234,15 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		if w["kind"] == "stream":  # a stream is a corridor nothing is built across, its banks left green
 			var pts: Array = w["points"]
 			for i in pts.size() - 1:
-				roads.append([pts[i], pts[i + 1], float(w["width"]) / 2.0 + 1.0, true])
+				roads.append([pts[i], pts[i + 1], float(w["width"]) / 2.0 + 3.0, true])
 		else:
 			pools.append([w["at"], float(w["r"]) + 3.0])
+	var lines: Array = []  # the streets and lanes to line with houses, whole: {pts (world), half}
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = r["points"]
 		for i in pts.size() - 1:
 			roads.append([at(pts[i]), at(pts[i + 1]), float(r["width"]) / 2.0 + 3.0])
+		lines.append({"pts": pts.map(func(q: Array) -> Vector3: return at(q)), "half": float(r["width"]) / 2.0})
 		# the view corridor: from each end of the street to the monument it runs at (the Sacred Way
 		# to the Capitol, the Argiletum to the Senate House), so nothing is built across the sight line
 		for end: Vector3 in [at(pts[0]), at(pts[pts.size() - 1])]:
@@ -1130,7 +1254,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					best = d
 					target = s["at"]
 			if target != Vector3.INF and best > 4.0:
-				roads.append([end, target, float(r["width"]) / 2.0 + 2.0, true])  # a corridor, not a street to line
+				roads.append([end, target, float(r["width"]) / 2.0 + 3.0, true])  # a corridor, not a street to line
 	var landmarks: Array = standing.filter(func(s: Dictionary) -> bool: return (s["m"] as Dictionary).get("landmark", false)).map(
 		func(s: Dictionary) -> Vector3: return s["at"])
 	var wall_line: Array = []  # the Servian wall's stretches, which no house or lane crosses
@@ -1151,11 +1275,11 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	_pools = []
 	_springs = []
 	_obbs = []
+	_cells = {}
 	_pergolas = []
+	_keep = keep_off.duplicate()
 	for tomb: Dictionary in out.get("tombs", []):
-		keep_off.append([tomb["at"], 4.5])
-	_keep = keep_off
-	var placed: Array = []  # [centre, reach] of every house built, so none is built into another
+		_keep.append([tomb["at"], 4.5])
 	# the lanes between the blocks: unpaved streets along the bent grid every third row and column,
 	# broken at the named streets, the squares, the monuments, the river and the wall, which the
 	# houses front onto like the named streets (so the city is blocks of houses between streets)
@@ -1164,7 +1288,8 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		ribbon(world, pts, LANE, "path" if not fallen else "rubble", 0.1)
 		for i in pts.size() - 1:
 			roads.append([lane[i], lane[i + 1], LANE / 2.0 + 3.0])
-	_bands = roads
+		lines.append({"pts": lane, "half": LANE / 2.0})
+	_set_bands(roads)
 	var add := func(kind: String, mat: String, xf: Transform3D, col: Color = Color.WHITE) -> void:
 		var key := kind + "|" + mat
 		if not parts.has(key):
@@ -1173,7 +1298,6 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	var trees: Array = []  # [where, kind, size]
 	var doors: Array = out.get("doors", [])
 	var taken := {}
-	var lined := {}  # road index and side -> [[metres along it, house width], ...]: the houses lined up on each street
 	# raising a house on a plot found free: a ruin in the emptied city or the lost world, a plain
 	# block far off, a domus on the hills and here and there, else the block split into houses
 	var raise := func(p: Vector3, basis: Basis, w: float, d: float, far: bool, street_half: float, roll2: float, hill: bool) -> void:
@@ -1237,30 +1361,54 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	# the streets lined first, house against house along both sides of every named street and
 	# lane, each with its front a step from the kerb, so every street has walls; the gaps left
 	# (a square, a garden) are where the age leaves them
-	for r: Array in roads:
-		if r.size() >= 4:
-			continue  # a view corridor or a stream: not a street to line
-		var a: Vector3 = r[0]
-		var b: Vector3 = r[1]
-		var half := float(r[2]) - 3.0
-		var dir := b - a
-		dir.y = 0.0
-		var length := dir.length()
-		dir = dir.normalized()
-		var n := Vector3(dir.z, 0, -dir.x)
+	for line: Dictionary in lines:
+		var pts: Array = line["pts"]
+		var half: float = line["half"]
+		var cum: Array = [0.0]  # the distance along the line to each point
+		for i in pts.size() - 1:
+			var seg := Vector2((pts[i + 1] as Vector3).x - (pts[i] as Vector3).x, (pts[i + 1] as Vector3).z - (pts[i] as Vector3).z).length()
+			cum.append(float(cum[-1]) + seg)
+		var length := float(cum[-1])
+		if length < 12.0:
+			continue
+		var along := func(t: float) -> Array:  # [the point on the line at t, the direction there]
+			var i := 0
+			while i < cum.size() - 2 and float(cum[i + 1]) < t:
+				i += 1
+			var a: Vector3 = pts[i]
+			var b: Vector3 = pts[i + 1]
+			var seg := maxf(float(cum[i + 1]) - float(cum[i]), 0.001)
+			var f := clampf((t - float(cum[i])) / seg, 0.0, 1.0)
+			var dir := b - a
+			dir.y = 0.0
+			return [Vector3(a.x, 0, a.z).lerp(Vector3(b.x, 0, b.z), f), dir.normalized()]
 		for side: float in [-1.0, 1.0]:
-			var t := 9.0 + rng.randf_range(0.0, 4.0)
-			while t < length - 9.0:
+			var t := 3.0 + rng.randf_range(0.0, 4.0)
+			var last_stall := -INF
+			while t < length - 3.0:
 				var w := rng.randf_range(9.5, 13.5)
 				if rng.randf() < 0.15:
 					w += 5.0
-				if t + w > length - 9.0:
-					break
+				if t + w > length - 3.0:
+					w = length - 3.0 - t
+					if w < 6.0:
+						break
 				var d := rng.randf_range(8.0, 10.0)
-				var p := a + dir * (t + w / 2.0) + n * side * (half + 1.6 + d / 2.0)
+				var mid: Array = along.call(t + w / 2.0)
+				var dir: Vector3 = mid[1]
+				var n := Vector3(dir.z, 0, -dir.x)
+				var p: Vector3 = (mid[0] as Vector3) + n * side * (half + 1.6 + d / 2.0)
 				var far := not inside(edge, p)
 				var y := ground(p)
 				var hill := y > 4.0
+				if half > 2.0 and not far and not fallen and rng.randf() < 0.05 and not blocked.call(p):  # a little square off the street, with its fountain
+					var sq: Vector3 = (mid[0] as Vector3) + n * side * (half + 5.5)
+					if not _in_obb(sq, 4.0) and not _on_road(sq, 3.0) and not _keep.any(func(k: Array) -> bool: return Vector2((k[0] as Vector3).x - sq.x, (k[0] as Vector3).z - sq.z).length() < float(k[1]) + 4.0):
+						sq.y = ground(sq)
+						out["fountains"].append(sq)
+						_keep.append([sq, 5.0])
+						t += 12.0
+						continue
 				var keep := 0.92
 				if republic and not inside(servian, p):
 					keep = 0.5 if not old else 0.3
@@ -1278,12 +1426,33 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					continue
 				var yaw := atan2(-n.x * side, -n.z * side)  # the house's front (+Z) toward the street
 				var basis := Basis(Vector3.UP, yaw)
-				if blocked.call(p) or _overlaps(p, basis, w, d) or not _corners_clear(p, basis, w, d):
-					t += 4.0
-					continue
-				_obbs.append([p, basis, w, d])
-				raise.call(p, basis, w, d, far, half, rng.randf(), hill)
-				t += w + rng.randf_range(0.3, 1.5)
+				var built := false
+				if not blocked.call(p):
+					# the house as drawn, else narrower (up to a lane's mouth), else shallower, its front still at the kerb
+					for trial: Array in [[w, d], [w * 0.75, d], [w * 0.5, d], [w, d * 0.7], [w * 0.5, d * 0.7]]:
+						var ww: float = trial[0]
+						var dd: float = trial[1]
+						if ww < 6.0:
+							continue
+						var m2: Array = along.call(t + ww / 2.0)
+						var dir2: Vector3 = m2[1]
+						var n2 := Vector3(dir2.z, 0, -dir2.x)
+						var pp: Vector3 = (m2[0] as Vector3) + n2 * side * (half + 1.6 + dd / 2.0)
+						var b2 := Basis(Vector3.UP, atan2(-n2.x * side, -n2.z * side))
+						if _overlaps(pp, b2, ww, dd, 0.0) or not _corners_clear(pp, b2, ww, dd):
+							continue
+						_register(pp, b2, ww, dd)
+						raise.call(pp, b2, ww, dd, far, half, rng.randf(), hill)
+						built = true
+						t += ww + rng.randf_range(0.0, 1.2)
+						break
+				if not built:
+					if not fallen and not far and half > 2.0 and t - last_stall > 30.0 and rng.randf() < 0.5:  # no room for a house: a stall on the kerb now and then
+						var stall := (mid[0] as Vector3) + n * side * (half + 1.2)
+						if not _in_obb(stall, 0.4) and not blocked.call(stall) and not _on_road(stall, 0.3):
+							out["stalls"].append(stall)
+							last_stall = t
+					t += 2.0
 	for j in int((hi.y - lo.y) / PITCH) + 1:
 		for i in int((hi.x - lo.x) / PITCH) + 1:
 			if taken.has(Vector2i(i, j)):
@@ -1336,43 +1505,19 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					p = (near["q"] as Vector3) + (near["n"] as Vector3) * (float(near["half"]) + 5.0)  # the trees stand back from the street
 				_grove_cell(world, trees, rng, p, str(grove["kind"]), far, fallen, add)
 				continue
-			# a cell near a street is lined up along it, its front a step from the kerb, so the street
-			# has walls (the road entries are [a, b, half-width + 3, corridor?]); a cell on the street
-			# itself, or on a view corridor, is left open, with a stall now and then
+			# the kerbs were lined above; a cell near a street is left open, with a stall now and then
 			var street := _nearest_road(p, roads)
-			var snapped := false
 			var w := rng.randf_range(9.5, 12.5)
 			var d := rng.randf_range(9.5, 12.5)
 			var yaw := 0.0
-			if float(street["d"]) < float(street["half"]) + 9.0:
+			if float(street["d"]) < float(street["half"]) + 9.0:  # the kerbs are lined above; here a stall now and then
 				var k: int = street["k"]
 				var half: float = street["half"]
-				var t: float = street["t"]
-				var room: bool = (roads[k] as Array).size() < 4 and float(street["d"]) >= half + 1.5
-				var dir0: Vector3 = street["dir"]
-				var n0: Vector3 = street["n"]
-				var side_key := "%d%s" % [k, "+" if dir0.x * n0.z - dir0.z * n0.x > 0.0 else "-"]  # this side of this stretch
-				if room:  # not on top of a house already lined up on this side of this stretch
-					for other: Array in lined.get(side_key, []):
-						if absf(float(other[0]) - t) < (float(other[1]) + w) / 2.0 + 0.8:
-							room = false
-							break
-				if not room:
-					if roll < 0.25 and not fallen and not far and (roads[k] as Array).size() < 4:
-						var stall: Vector3 = street["q"] + (street["n"] as Vector3) * (half + 1.2)
-						if not _in_obb(stall, 0.4):
-							out["stalls"].append(stall)
-					continue
-				if not lined.has(side_key):
-					lined[side_key] = []
-				lined[side_key].append([t, w])
-				var dir: Vector3 = street["dir"]
-				d = minf(d, 10.0)  # shallow enough that the row behind keeps its yard
-				yaw = atan2(-(street["n"] as Vector3).x, -(street["n"] as Vector3).z)  # the house's front (+Z) toward the street
-				p = (street["q"] as Vector3) + (street["n"] as Vector3) * (half + 1.6 + d / 2.0)
-				snapped = true
-				if dir == Vector3.ZERO:
-					snapped = false
+				if roll < 0.25 and not fallen and not far and (roads[k] as Array).size() < 4 and float(street["d"]) >= half + 1.5:
+					var stall: Vector3 = street["q"] + (street["n"] as Vector3) * (half + 1.2)
+					if not _in_obb(stall, 0.4):
+						out["stalls"].append(stall)
+				continue
 			var y := ground(p)
 			var hill := y > 4.0
 			var outer_hill := old and (hill or p.distance_to(forum) > 95.0) and inside(servian, p)  # the Esquiline, the Caelian, the Aventine's back
@@ -1409,15 +1554,16 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					if not far:
 						_plant(trees, rng, p, "grass", 4, 7.0)
 				continue
-			if not snapped:
-				var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
-				yaw = atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
+			var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
+			yaw = atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
 			var basis := Basis(Vector3.UP, yaw)
 			if outer_hill and roll2 < 0.66:  # fields inside the wall, a farmhouse among them
-				if rng.randf() < 0.5 and not snapped:
-					taken[Vector2i(i + 1, j)] = true
-					w += PITCH
-					p += basis * Vector3(PITCH / 2.0, 0, 0)
+				if rng.randf() < 0.5:
+					var p2 := p + basis * Vector3(PITCH / 2.0, 0, 0)
+					if not _overlaps(p2, basis, w + PITCH, d) and _corners_clear(p2, basis, w + PITCH, d):
+						taken[Vector2i(i + 1, j)] = true
+						w += PITCH
+						p = p2
 				var fits := false
 				for shrink: float in [1.0, 0.8, 0.65]:
 					if not _overlaps(p, basis, w * shrink, d * shrink) and _corners_clear(p, basis, w * shrink, d * shrink):
@@ -1427,10 +1573,10 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						break
 				if not fits:
 					continue
-				_obbs.append([p, basis, w, d])
+				_register(p, basis, w, d)
 				_plot(add, p, basis, w, d, rng, palette, trees, doors, far)
 				continue
-			if rng.randf() < 0.22 and not hill and not old and not snapped:  # a long block over two cells, the alley between built over
+			if rng.randf() < 0.22 and not hill and not old:  # a long block over two cells, the alley between built over
 				var p2 := p + basis * Vector3(PITCH / 2.0, 0, 0)
 				if not _overlaps(p2, basis, w + PITCH, d) and _corners_clear(p2, basis, w + PITCH, d):
 					taken[Vector2i(i + 1, j)] = true
@@ -1451,15 +1597,14 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					break
 			if not fitted:
 				continue  # into a house already built, a street, or a monument's ground
-			_obbs.append([p, basis, w, d])
-			placed.append([p, maxf(w, d) / 2.0])
+			_register(p, basis, w, d)
 			if hill and rng.randf() < 0.45:  # the yard behind a hill house: a fig, a cypress
 				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.5)), "round" if rng.randf() < 0.5 else ("cypress" if rng.randf() < 0.6 else "olive"), rng.randf_range(0.6, 0.9)])
 			elif not hill and rng.randf() < (0.4 if not far else 0.2):  # a pine or a cypress in the yard behind, grown up over the roofs
 				var tall := rng.randf() < 0.55
 				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.6)), "pine" if tall else "cypress",
 					rng.randf_range(1.8, 2.4)])
-			raise.call(p, basis, w, d, far, float(street["half"]) if snapped else 0.0, roll2, hill)
+			raise.call(p, basis, w, d, far, 0.0, roll2, hill)
 	for tomb: Dictionary in out.get("tombs", []):  # a cypress either side of each tomb along the roads
 		var tb := Basis(Vector3.UP, float(tomb["yaw"]))
 		for side: float in [-1.0, 1.0]:
