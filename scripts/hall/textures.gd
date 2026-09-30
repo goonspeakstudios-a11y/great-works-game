@@ -64,6 +64,14 @@ static func material(kind: String) -> Material:
 			m.albedo_color = Color("ff00ff")
 		_cache[kind] = m
 		return m
+	if kind.begins_with("graffiti_"):  # writing on the walls, graffiti_<age>_<n>: the age's notices (NOTICES)
+		var bits := kind.trim_prefix("graffiti_").split("_")
+		m.albedo_texture = _graffiti(bits[0], int(bits[1]) if bits.size() > 1 else 0)
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+		m.alpha_scissor_threshold = 0.5
+		m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		_cache[kind] = m
+		return m
 	match kind:
 		"marble":
 			world_tex.call(_noise(Color("e4dccb"), Color("cfc5b0"), Color("f2ece0"), 11), 0.5)
@@ -249,11 +257,6 @@ static func material(kind: String) -> Material:
 			world_tex.call(_r_slab(), 0.3)
 		"leaves":  # a garden's leaves: box, myrtle, vines
 			world_tex.call(_noise(Color("4a6a34"), Color("36522a"), Color("6a8a44"), 197), 1.0)
-		"graffiti_republic", "graffiti_empire", "graffiti_late":  # writing on the walls: red painted election notices and scratched words; later, the chi-rho
-			m.albedo_texture = _graffiti(kind.trim_prefix("graffiti_"))
-			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-			m.alpha_scissor_threshold = 0.5
-			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"awning":  # a shop's striped awning
 			world_tex.call(_stripes(Color("a8342a"), Color("e0d0b0")), 1.0)
 		"terracotta":
@@ -719,36 +722,101 @@ static func _r_slab() -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
-## Writing on a wall, 64 x 32: lines of rough capitals (letter-like marks, painted red for the
-## election notices of the Republic and the Empire, scratched grey-black for graffiti), and in the
-## late city the chi-rho scratched beside them. Clear elsewhere.
-static func _graffiti(age: String) -> ImageTexture:
-	var img := Image.create(64, 32, false, Image.FORMAT_RGBA8)
+const Caps := preload("res://scripts/hall/pixel_caps.gd")
+
+## What is written on the walls (CIL IV, the walls of Pompeii). The painted election notices,
+## red on a whitewashed field: "M. Cerrinium Vatiam aed(ilem) o(ro) v(os) f(aciatis)", make
+## Marcus Cerrinius Vatia aedile, I beg you; Gaius Julius Polybius for duovir, he brings good
+## bread; Gnaeus Helvius Sabinus for aedile, worthy of the state; the neighbours ask for Lucius
+## Statius Receptus as duovir with judicial power. The scratched words, grey in the plaster: I
+## wonder, wall, that you have not fallen in ruins, holding up the tedium of so many writers;
+## this is no place for idlers, move along, loiterer; shitter, beware the evil; we came here
+## eager, much more eager are we to leave; Celadus the Thracian, the girls' sigh; here dwells
+## happiness. And the coarser hands: Restituta, take off your tunic, I beg; Lucilla made money
+## from her body; Serena can't stand Isidorus; Vibius Restitutus slept here alone and longed for
+## his Urbana. In the late city the chi-rho beside a Christian's wish: may you live in God; in
+## peace; hope in God.
+const PROGRAMMATA := [
+	{"lines": ["M CERRINIVM", "VATIAM AED", "O V F"], "painted": true},
+	{"lines": ["C IVLIVM", "POLYBIVM IIVIR", "O V F PANEM", "BONVM FERT"], "painted": true},
+	{"lines": ["CN HELVIVM", "SABINVM AED", "D R P O V F"], "painted": true},
+	{"lines": ["L STATIVM", "RECEPTVM IIVIR", "I D O V F VICINI"], "painted": true},
+]
+const SCRATCHED := [
+	{"lines": ["ADMIROR PARIES TE", "NON CECIDISSE", "RVINIS QVI TOT", "SCRIPTORVM TAEDIA", "SVSTINEAS"], "painted": false},
+	{"lines": ["OTIOSIS LOCVS", "HIC NON EST", "DISCEDE MORATOR"], "painted": false},
+	{"lines": ["CACATOR CAVE", "MALVM"], "painted": false},
+	{"lines": ["VENIMVS HVC", "CVPIDI MVLTO", "MAGIS IRE", "CVPIMVS"], "painted": false},
+]
+const SCRATCHED_LATER := [
+	{"lines": ["SVSPIRIVM", "PVELLARVM", "CELADVS THRAEX"], "painted": false},
+	{"lines": ["HIC HABITAT", "FELICITAS"], "painted": false},
+	{"lines": ["RESTITVTA PONE", "TVNICAM ROGO"], "painted": false},
+	{"lines": ["LVCILLA EX", "CORPORE LVCRVM", "FACIEBAT"], "painted": false},
+	{"lines": ["SERENA", "ISIDORV FASTIDIT"], "painted": false},
+	{"lines": ["VIBIVS RESTITVTVS", "HIC SOLVS DORMIVIT", "ET VRBANAM SVAM", "DESIDERABAT"], "painted": false},
+]
+const CHRISTIAN := [
+	{"lines": ["VIVAS IN DEO"], "painted": false, "chi_rho": true},
+	{"lines": ["IN PACE"], "painted": false, "chi_rho": true},
+	{"lines": ["SPES IN DEO"], "painted": false, "chi_rho": true},
+]
+
+
+## The notices an age's walls carry: the Republic's and the emperors' election notices and
+## scratches, the late city's chi-rhos over the old scratches.
+static func notices(age: String) -> Array:
+	match age:
+		"republic":
+			return PROGRAMMATA + SCRATCHED
+		"empire":
+			return PROGRAMMATA + SCRATCHED + SCRATCHED_LATER
+		_:
+			return CHRISTIAN + SCRATCHED.slice(0, 2)
+
+
+## One notice as a wall texture, 108 x 48 (a quad 1.8 by 0.8 m): its lines in the pixel
+## capitals, centred, each line set a little off as a hand would; the painted ones on a
+## whitewashed field, the scratched ones on the bare wall (clear round the letters); the chi-rho
+## scratched beside a Christian's.
+static func _graffiti(age: String, which: int) -> ImageTexture:
+	var img := Image.create(108, 48, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
+	var list := notices(age)
+	var n: Dictionary = list[clampi(which, 0, list.size() - 1)]
+	var lines: Array = n["lines"]
+	var painted: bool = n.get("painted", false)
+	var chi_rho: bool = n.get("chi_rho", false)
+	var ink := Color("a8281e") if painted else Color("3a3028")
 	var rng := RandomNumberGenerator.new()
-	rng.seed = age.length() * 13 + 7
-	var ink := Color("a8281e") if age != "late" else Color("3a3028")
-	var lines := 2 if age != "late" else 1
-	for row in lines:
-		var y0 := 3 + row * 12
-		var x := 2
-		while x < 58:
-			if rng.randf() < 0.18:
-				x += 3  # a space between words
-				continue
-			for dy in 7:  # one letter: a random stroke pattern on a 4 x 7 grid, like a rough capital
-				for dx in 4:
-					var edge := dx == 0 or dy == 0 or dy == 6 or dy == 3
-					if edge and rng.randf() < 0.55:
-						img.set_pixel(x + dx, y0 + dy, ink)
-			x += 6
-	if age == "late":  # the chi-rho
-		for k in 10:
-			img.set_pixel(40 + k, 16 + k, ink)
-			img.set_pixel(49 - k, 16 + k, ink)
-			img.set_pixel(45, 13 + k, ink)
+	rng.seed = which * 31 + age.length()
+	var text_h := lines.size() * Caps.CELL_H - 1
+	var y0 := maxi(2, (48 - text_h) / 2)
+	var widest := 0
+	for l in lines:
+		widest = maxi(widest, Caps.width(str(l)))
+	var room := 108 - (14 if chi_rho else 0)
+	var x0 := (room - widest) / 2
+	if painted:
+		for y in range(y0 - 4, y0 + text_h + 4):
+			for x in range(x0 - 5, x0 + widest + 4):
+				if x >= 0 and x < 108 and y >= 0 and y < 48:
+					img.set_pixel(x, y, Color("e8e0cc").darkened(rng.randf() * 0.06))
+	var hand := ink if painted else ink.lightened(rng.randf() * 0.15)  # scratched shallower or deeper
+	for i in lines.size():
+		var l := str(lines[i])
+		var x := (room - Caps.width(l)) / 2 + rng.randi_range(-2, 2)
+		Caps.stamp(img, x, y0 + i * Caps.CELL_H, l, hand)
+	if chi_rho:  # the X and the P, scratched beside
+		var cx := 100
+		var cy := 24
+		for k in range(-6, 7):
+			img.set_pixel(cx + k, cy + k, ink)
+			img.set_pixel(cx - k, cy + k, ink)
+		for k in range(-9, 8):
+			img.set_pixel(cx, cy + k, ink)
 		for k in 4:
-			img.set_pixel(46 + (1 if k in [1, 2] else 0), 13 + k, ink)
+			img.set_pixel(cx + 1 + (1 if k in [1, 2] else 0), cy - 9 + k, ink)
 	return ImageTexture.create_from_image(img)
 
 

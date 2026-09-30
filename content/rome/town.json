@@ -526,8 +526,8 @@
         "collapse"
       ],
       "at": [
-        520,
-        400
+        640,
+        292
       ],
       "speaker": "meretrix",
       "crowd": 4,
@@ -772,6 +772,110 @@
           "Who cares who's emperor, who's driving for the Greens?"
         ]
       }
+    },
+    {
+      "id": "fornices",
+      "kind": "gathering",
+      "from": 20.5,
+      "to": 24.0,
+      "ages": [
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        200,
+        -690
+      ],
+      "speaker": "meretrix",
+      "crowd": 2,
+      "cries": [
+        "Under the arches, handsome. Two asses.",
+        "Fornix, they call this. It's a living.",
+        "Not that one, he's the watch's cousin.",
+        "Cold tonight. Come in under the vault."
+      ]
+    },
+    {
+      "id": "slave_market",
+      "kind": "gathering",
+      "from": 8.0,
+      "to": 12.0,
+      "market": true,
+      "ages": [
+        "early",
+        "republic",
+        "empire",
+        "late"
+      ],
+      "at": [
+        70,
+        -6
+      ],
+      "speaker": "mango",
+      "crowd": 5,
+      "cries": [
+        "A Cappadocian! Strong as an ox, thirty years, no vices, I swear it on my mother!",
+        "Chalked feet, fresh off the boat at Puteoli. Look at his teeth. Look!",
+        "Reads and writes Greek, this one, keeps accounts. Two thousand, and I lose on it.",
+        "Jump. Jump, I said. See? Sound in wind and limb.",
+        "A girl of sixteen, a Syrian, sings. Bids start at eight hundred.",
+        "Sold to the gentleman in the striped tunic."
+      ]
+    },
+    {
+      "id": "drunks",
+      "kind": "gathering",
+      "from": 21.0,
+      "to": 24.0,
+      "ages": [
+        "republic",
+        "empire",
+        "late",
+        "collapse"
+      ],
+      "at": [
+        -40,
+        120
+      ],
+      "speaker": "caupo",
+      "crowd": 3,
+      "cries": [
+        "Another cup, Fortunata! Water it less this time!",
+        "I can't feel my legs. Where are my legs?",
+        "Hnnngh... oh gods. Oh gods.",
+        "Dice! Who's for dice? The Venus throw wins the pot!",
+        "Six! Six! Pay up, you dog!",
+        "The Saturnalia was better in my father's day.",
+        "Sing, you bastards! Sing!"
+      ]
+    },
+    {
+      "id": "brawl",
+      "kind": "gathering",
+      "from": 22.5,
+      "to": 23.6,
+      "every": 2,
+      "ages": [
+        "republic",
+        "empire",
+        "late",
+        "collapse"
+      ],
+      "at": [
+        560,
+        300
+      ],
+      "speaker": "proletarius",
+      "crowd": 2,
+      "cries": [
+        "Knife! He's got a knife!",
+        "Thief! Stop him!",
+        "The watch! Someone call the watch!",
+        "Hold him down! Hold him!",
+        "Leave it. Leave it, he's done for.",
+        "Nobody saw anything. Nobody."
+      ]
     }
   ],
   "rain": {
@@ -1007,10 +1111,12 @@
   "sounds": {
     "faber": "forge",
     "textrix": "loom",
-    "caupo": "crowd",
-    "popinarius": "crowd",
+    "caupo": "tavern",
+    "popinarius": "tavern",
     "pistor": "fire",
-    "fullo": "fountain"
+    "fullo": "fountain",
+    "molitor": "mill",
+    "vinarius": "tavern"
   },
   "regulars": [
     {
@@ -1069,7 +1175,8 @@
           "My son joined a barbarian general's household guard. Better paid than the Emperor's.",
           "They sell relics where the mill was. Bones and cloth. Nobody wants bread they can't afford."
         ]
-      }
+      },
+      "habit": "as my father used to say"
     },
     {
       "id": "gladiator",
@@ -1115,7 +1222,8 @@
       "jobs": {
         "early": "veteranus",
         "heroic": "veteranus"
-      }
+      },
+      "habit": "by the sword"
     },
     {
       "id": "senator",
@@ -1169,7 +1277,8 @@
           "I paid the Vandals not to burn my house. I paid the new Emperor's general for the right to have paid the Vandals.",
           "Rome is eternal. I say it every morning. My steward has started laughing."
         ]
-      }
+      },
+      "habit": "as I told the Senate"
     },
     {
       "id": "fishwife",
@@ -1224,7 +1333,8 @@
           "Fish is dear now. So is everything. So is nothing, if you've nothing.",
           "My daughter works in the Subura at night. Don't look at me like that."
         ]
-      }
+      },
+      "habit": "fresh this morning, mind"
     },
     {
       "id": "barber",
@@ -1266,7 +1376,8 @@
           "The old senators still won't let me near them. Their beards are the Republic, they say.",
           "Everyone in this chair talks of Pyrrhus. Me, I talk of the price of razors."
         ]
-      }
+      },
+      "habit": "between you and me"
     }
   ]
 }

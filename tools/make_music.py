@@ -1172,6 +1172,80 @@ def render_drip(seconds: int = 12, seed: int = 131) -> list[float]:
     return [a + b for a, b in zip(out, _fold(drops, total))]
 
 
+def render_mill(seconds: int = 10, seed: int = 197) -> list[float]:
+    """A donkey mill turning: the stone's slow grind, a low rumble that swells and eases with each
+    turn, grit crunching in it."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE
+    out, lo = [], 0.0
+    for n in range(total + fade):
+        t = n / RATE
+        turn = 0.55 + 0.45 * math.sin(TAU * t / 2.6)  # one turn of the mill in 2.6 s
+        x = rng.uniform(-1, 1)
+        lo += (x - lo) * 0.02
+        grit = x * 0.08 if rng.random() < 0.3 else 0.0
+        out.append((lo * 0.9 + grit) * turn)
+    return _seam(out, total, fade)
+
+
+def render_tavern(seconds: int = 12, seed: int = 199) -> list[float]:
+    """A tavern's noise at its door: the crowd's murmur close, cups knocked down on the boards."""
+    base = render_crowd(seconds, seed, voices=8)
+    rng = random.Random(seed)
+    total = seconds * RATE
+    knocks = [0.0] * (total + RATE)
+    t = rng.uniform(0.3, 1.0)
+    while t < seconds - 0.2:
+        _knock(knocks, int(t * RATE), rng.uniform(180.0, 320.0), 0.35, 28.0, rng)
+        t += rng.uniform(0.4, 1.6)
+    return [a * 0.8 + b for a, b in zip(base, _fold(knocks, total))]
+
+
+def render_trickle(seconds: int = 10, seed: int = 211) -> list[float]:
+    """A street basin's spout: a thin stream falling into its trough, lighter than a fountain's
+    splash, a bubble now and then."""
+    rng = random.Random(seed)
+    total, fade = seconds * RATE, RATE
+    out, hi, lo = [], 0.0, 0.0
+    for n in range(total + fade):
+        x = rng.uniform(-1, 1)
+        hi += (x - hi) * 0.35
+        lo += (hi - lo) * 0.08
+        bub = rng.uniform(0.2, 0.5) if rng.random() < 0.004 else 0.0
+        out.append((hi - lo) * 0.45 + bub * 0.3)
+    return _seam(out, total, fade)
+
+
+def _step(seconds: float, seed: int, tone: float, noise: float, decay: float, thud: float) -> list[float]:
+    """One footfall: a thud of `tone` and a burst of noise, dying at `decay`."""
+    rng = random.Random(seed)
+    n = int(seconds * RATE)
+    out, phase, lo = [], 0.0, 0.0
+    for i in range(n):
+        t = i / RATE
+        env = math.exp(-t * decay)
+        x = rng.uniform(-1, 1)
+        lo += (x - lo) * 0.2
+        phase += tone * TABLE_SIZE / RATE
+        out.append(SINE[int(phase) % TABLE_SIZE] * thud * math.exp(-t * decay * 1.6) + (x * noise + lo * noise) * env)
+    return out
+
+
+def render_step_stone(seed: int = 221) -> list[float]:
+    """A footfall on basalt: a hard knock with grit in it."""
+    return _step(0.16, seed, 140.0, 0.5, 40.0, 0.35)
+
+
+def render_step_earth(seed: int = 223) -> list[float]:
+    """A footfall on packed earth: a soft thud."""
+    return _step(0.18, seed, 90.0, 0.25, 30.0, 0.5)
+
+
+def render_step_slab(seed: int = 227) -> list[float]:
+    """A footfall on travertine slabs: a slap on smooth stone."""
+    return _step(0.15, seed, 220.0, 0.35, 45.0, 0.3)
+
+
 def render_gulls(seconds: int = 12, seed: int = 137) -> list[float]:
     """Gulls over a harbour: harsh falling cries in little bouts."""
     rng = random.Random(seed)
@@ -1534,6 +1608,13 @@ JOBS: dict[str, Callable[[], None]] = {
     "sheep": _one("sheep", render_sheep, 0.35),
     "salpinx": _one("salpinx", render_salpinx, 0.7),
     "shades": _one("shades", render_shades, 0.4),
+    # the streets' details: the trades at their doors, the basins, the footfalls by surface
+    "mill": _one("mill", render_mill, 0.45),
+    "tavern": _one("tavern", render_tavern, 0.4),
+    "trickle": _one("trickle", render_trickle, 0.3),
+    "step_stone": _one("step_stone", render_step_stone, 0.5),
+    "step_earth": _one("step_earth", render_step_earth, 0.5),
+    "step_slab": _one("step_slab", render_step_slab, 0.5),
 }
 
 

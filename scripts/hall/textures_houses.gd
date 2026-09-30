@@ -25,6 +25,7 @@ extends RefCounted
 ##   h_cloth          washing on a line, pale (tinted the colours of tunics), with its folds
 ##   h_vine           a vine climbing a wall (clear round the leaves)
 ##   h_sign           a shop's painted board: a frame and a pale field for its picture
+##   h_sign_<trade>   the same with the picture of the trade in the field: wine, bread, knife, shoe, cloth, pot, fish
 
 const TILE := 64
 
@@ -73,6 +74,8 @@ static func make(kind: String) -> Dictionary:
 			return {"tex": vine(), "uv": true, "cut": true}
 		"h_sign":
 			return {"tex": signboard(), "uv": true}
+	if kind.begins_with("h_sign_"):  # h_sign_wine, h_sign_bread, ... the board with its picture
+		return {"tex": signboard(kind.trim_prefix("h_sign_")), "uv": true}
 	return {}
 
 
@@ -432,7 +435,261 @@ static func vine() -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
-static func signboard() -> ImageTexture:
+## The trades a sign can show, each a picture in the pale field: a wine jar, a loaf, a knife, a
+## shoe, a bolt of cloth, a pot, a fish. Each is 26 by 18 pixels, one letter a colour, "." the field.
+const SIGNS := ["wine", "bread", "knife", "shoe", "cloth", "pot", "fish", "hammer", "shears", "scales", "cup", "roll"]
+const _SIGN_INK := {
+	"a": Color("b0643e"), "d": Color("7a4028"), "k": Color("3a2a1e"), "g": Color("d8a860"), "s": Color("9aa4ae"),
+	"w": Color("e8ecf0"), "h": Color("6a4a2a"), "r": Color("c0a040"), "b": Color("5a3a22"), "l": Color("c8a870"),
+	"p": Color("6a3a8a"), "q": Color("50286a"), "e": Color("1a1a1a"), "i": Color("5a5e66"),
+}
+const _SIGN_ART := {
+	"wine": [
+		"..........dddddd..........",
+		".........d......d.........",
+		".........daaaaaad.........",
+		"..........daaaad..........",
+		".......dd.daaaad.dd.......",
+		"......d..daaaaaad..d......",
+		"......d.daaaaaaaad.d......",
+		"......d.daaaaaaaad.d......",
+		"......d.daaaaaaaad.d......",
+		"......ddaaaaaaaaaadd......",
+		"........daaaaaaaad........",
+		"........daaaaaaaad........",
+		".........daaaaaad.........",
+		".........daaaaaad.........",
+		"..........daaaad..........",
+		"...........daad...........",
+		"...........daad...........",
+		"..........dddddd..........",
+	],
+	"bread": [
+		"..........................",
+		"..........................",
+		"..........................",
+		"........kkkkkkkkkk........",
+		"......kkggggggggggkk......",
+		".....kggggggggggggggk.....",
+		"....kggggkgggggkggggggk...",
+		"....kgggggkgggggkggggggk..",
+		"...kggggggggkgggggkgggggk.",
+		"...kggggggggggggggggggggk.",
+		"...kggggggggggggggggggggk.",
+		"....kggggggggggggggggggk..",
+		".....kkggggggggggggggkk...",
+		".......kkkkkkkkkkkkkk.....",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"knife": [
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..hhhhhhhh....ssssssss....",
+		"..hhrhhhrhhsssssssssssss..",
+		"..hhhhhhhhhsssssssssssssss",
+		"..hhhhhhhhhsssssssssssss..",
+		"..hhrhhhrhhwwwwwwwwwww....",
+		"..hhhhhhhh................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"shoe": [
+		"..........................",
+		"..........................",
+		"..........................",
+		".........bbbbbb...........",
+		".........bbbbbb...........",
+		".........bblbbb...........",
+		".........bbbbbb...........",
+		".........bblbbb...........",
+		".........bbbbbb...........",
+		".........bblbbb...........",
+		".........bbbbbbb..........",
+		".........bbbbbbbbbb.......",
+		".........bbbbbbbbbbbbb....",
+		"........bbbbbbbbbbbbbbb...",
+		".......kkkkkkkkkkkkkkkkk..",
+		".......kkkkkkkkkkkkkkkkk..",
+		"..........................",
+		"..........................",
+	],
+	"cloth": [
+		"..........................",
+		"..........................",
+		"..........................",
+		"....qqq...................",
+		"...qpppq..................",
+		"...qpppppppppppppppppp....",
+		"...qpqqqqqqqqqqqqqqqqpq...",
+		"...qpppppppppppppppppppq..",
+		"...qpqqqqqqqqqqqqqqqqpppq.",
+		"...qpppppppppppppppppqqpq.",
+		"...qpqqqqqqqqqqqqqqqqppppq",
+		"...qpppppppppppppppppppqq.",
+		"...qpqqqqqqqqqqqqqqqqpq...",
+		"...qpppppppppppppppppp....",
+		"....qqqqqqqqqqqqqqqqq.....",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"pot": [
+		"..........................",
+		"..........................",
+		"........dddddddddd........",
+		".......dkkkkkkkkkkd.......",
+		".......dddddddddddd.......",
+		"........daaaaaaaad........",
+		"........daaaaaaaad........",
+		"........daaaaaaaad........",
+		".......daaaaaaaaaad.......",
+		".......daaaaaaaaaad.......",
+		".......daaaaaaaaaad.......",
+		"........daaaaaaaad........",
+		"........daaaaaaaad........",
+		".........daaaaaad.........",
+		".........daaaaaad.........",
+		"..........dddddd..........",
+		"..........................",
+		"..........................",
+	],
+	"fish": [
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........kkkkk......k....",
+		"........kkssssskk...kk....",
+		"......kkssssssssskk.kkk...",
+		".....kssswesssssssssskkk..",
+		".....kssssssssssssssskkk..",
+		"......kkssssssssskk.kkk...",
+		"........kkssssskk...kk....",
+		"..........kkkkk......k....",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"hammer": [
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........iiiiiiiii.......",
+		"..........iiiiiiiii.......",
+		"..........iiiiiiiii.......",
+		"..........iiiiiiiii.......",
+		"..............hh..........",
+		"..............hh..........",
+		"..............hh..........",
+		"..............hh..........",
+		"..............hh..........",
+		"..............hh..........",
+		"..............hh..........",
+		"..............hh..........",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"shears": [
+		"..........................",
+		"..........................",
+		".....s..............s.....",
+		"......s............s......",
+		".......s..........s.......",
+		"........s........s........",
+		".........s......s.........",
+		"..........s....s..........",
+		"...........s..s...........",
+		"............rr............",
+		"...........ss.ss..........",
+		"..........ss...ss.........",
+		".........ss.....ss........",
+		"........ss.......ss.......",
+		".......ss.........ss......",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"scales": [
+		"..........................",
+		"............k.............",
+		"............k.............",
+		".....hhhhhhhhhhhhhhhh.....",
+		".....k......k.......k.....",
+		".....k......k.......k.....",
+		".....k......k.......k.....",
+		".....k......k.......k.....",
+		".....k......k.......k.....",
+		"....rrr.....k......rrr....",
+		"...rrrrr....k.....rrrrr...",
+		"............k.............",
+		"............k.............",
+		"..........hhhhhh..........",
+		"..........hhhhhh..........",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"cup": [
+		"..........................",
+		"..........................",
+		"......d.dddddddddd.d......",
+		".....d.dddddddddddd.d.....",
+		".....d.dddddddddddd.d.....",
+		".....d..dddddddddd..d.....",
+		"......d..dddddddd..d......",
+		".......d..dddddd..d.......",
+		"........dd.dddd.dd........",
+		"............dd............",
+		"............dd............",
+		"............dd............",
+		"...........dddd...........",
+		".........dddddddd.........",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+	"roll": [
+		"..........................",
+		"..........................",
+		"..........................",
+		"...hh..................hh.",
+		"...hhllllllllllllllllllhh.",
+		"...hhl.k.kk.kkk.k.kk.klhh.",
+		"...hhllllllllllllllllllhh.",
+		"...hhl.kk.k.kk.kkk.k.klhh.",
+		"...hhllllllllllllllllllhh.",
+		"...hhl.k.kkk.k.kk.k.kklhh.",
+		"...hhllllllllllllllllllhh.",
+		"...hhl.kk.k.kkk.k.k.kklhh.",
+		"...hhllllllllllllllllllhh.",
+		"...hh..................hh.",
+		"..........................",
+		"..........................",
+		"..........................",
+		"..........................",
+	],
+}
+
+
+## A shop's painted board, 32 x 24: a wooden frame, a red painted border, a pale field, and in the
+## field the picture of the trade (`kind` one of SIGNS; "" leaves the field bare).
+static func signboard(kind: String = "") -> ImageTexture:
 	var img := _img(32, 24)
 	var rng := _rng(397)
 	for y in 24:
@@ -443,4 +700,12 @@ static func signboard() -> ImageTexture:
 			elif x < 3 or x >= 29 or y < 3 or y >= 21:
 				c = Color("a83a2a")  # the painted border
 			img.set_pixel(x, y, c)
+	if _SIGN_ART.has(kind):
+		var rows: Array = _SIGN_ART[kind]
+		for y in mini(rows.size(), 18):
+			var row: String = rows[y]
+			for x in mini(row.length(), 26):
+				var ch := row[x]
+				if _SIGN_INK.has(ch):
+					img.set_pixel(3 + x, 3 + y, _SIGN_INK[ch])
 	return ImageTexture.create_from_image(img)

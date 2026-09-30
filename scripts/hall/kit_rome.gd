@@ -46,6 +46,23 @@ static func column(parent: Node3D, base: Vector3, height: float, radius: float, 
 	Kit.box(parent, base + Vector3(0, height - radius * 0.2, 0), Vector3(radius * 3.0, radius * 0.4, radius * 3.0), mat, false)
 
 
+## Letters cut in stone, in the game's own inscription capitals: `lines` one under the other on
+## a face at `pos` (facing +Z of the parent), the letters in the red the Romans painted into the
+## cut, or the dark of an old cut.
+static func inscription(parent: Node3D, pos: Vector3, lines: Array, size: int = 40, colour: String = "8a2a1a") -> Label3D:
+	var label := Label3D.new()
+	label.text = "\n".join(lines)
+	label.font = load("res://scripts/hall/lettering.gd").LAPIDARY
+	label.font_size = size
+	label.pixel_size = 0.0075
+	label.modulate = Color(colour)
+	label.outline_size = 0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = pos
+	parent.add_child(label)
+	return label
+
+
 ## A Roman temple: a high podium with a stair only at the front, the porch of columns, a pediment,
 ## and the cella (the god's room) behind with its tall door. Three styles carry the city's descent
 ## (docs/rome-city-notes.md 2.1):
@@ -61,7 +78,8 @@ static func column(parent: Node3D, base: Vector3, height: float, radius: float, 
 ## "kiln" (a lime kiln beside the podium, burning the temple's marble).
 ## In ruin only three columns stand, carrying a piece of their beam, on a podium stripped of its
 ## marble. Faces +Z. Returns where you stand at the top of the stair.
-static func temple(parent: Node3D, at: Vector3, yaw: float, whole: bool = true, style: String = "imperial", variant: String = "") -> Vector3:
+static func temple(parent: Node3D, at: Vector3, yaw: float, whole: bool = true, style: String = "imperial", variant: String = "",
+		dedication: String = "") -> Vector3:
 	var g := Kit.group(parent, at, yaw)
 	const W := 14.0
 	const D := 24.0
@@ -139,6 +157,8 @@ static func temple(parent: Node3D, at: Vector3, yaw: float, whole: bool = true, 
 	var eave := top + col_h
 	Kit.box(g, Vector3(0, eave + 0.6, -2.0), Vector3(W + 0.4, 1.2, D - 3.0), "marble", false)  # the entablature
 	Kit.box(g, Vector3(0, eave + 0.8, 8.55), Vector3(W + 0.4, 0.5, 0.1), "#b8a888" if not odd else "plaque", false)  # its frieze band, or the inscription
+	if dedication != "" and whole:  # the dedication cut along the frieze
+		inscription(g, Vector3(0, eave + 0.8, 8.62), [dedication], 34)
 	_pediment(g, Vector3(0, eave + 1.2, 8.1), W + 0.4, 2.55, 0.8)
 	if greek:  # the sculpture in the pediment
 		for k in 5:
@@ -168,7 +188,7 @@ static func _tuscan(parent: Node3D, base: Vector3, height: float, radius: float)
 ## carrying its inscription, and the bronze four-horse chariot of the triumph on top. Faces +Z;
 ## you walk through it along Z. Lost: the chariot gone for its bronze, the inscription torn out,
 ## half the attic fallen and two columns missing.
-static func triumphal_arch(parent: Node3D, at: Vector3, yaw: float, chariot: bool = true, whole: bool = true) -> void:
+static func triumphal_arch(parent: Node3D, at: Vector3, yaw: float, chariot: bool = true, whole: bool = true, text: String = "") -> void:
 	var g := Kit.group(parent, at, yaw)
 	if not whole:
 		chariot = false
@@ -188,6 +208,8 @@ static func triumphal_arch(parent: Node3D, at: Vector3, yaw: float, chariot: boo
 	if whole:
 		Kit.box(g, Vector3(0, 15.4, 0), Vector3(W - 1.0, 4.0, DEPTH), "marble", false)  # the attic
 		Kit.box(g, Vector3(0, 15.4, DEPTH / 2.0 + 0.02), Vector3(7.5, 2.4, 0.05), "plaque", false)  # SENATVS POPVLVSQVE ROMANVS
+		if text != "":
+			inscription(g, Vector3(0, 15.4, DEPTH / 2.0 + 0.06), text.split("\n"), 42)
 	else:
 		Kit.box(g, Vector3(-3.0, 14.4, 0), Vector3(W * 0.5, 2.0, DEPTH), "marble", false)
 		Kit.box(g, Vector3(-2.2, 14.4, DEPTH / 2.0 + 0.02), Vector3(3.6, 1.2, 0.05), "dark", false)  # where the letters were
@@ -313,7 +335,7 @@ static func milestone(parent: Node3D, at: Vector3, yaw: float, whole: bool = tru
 ## and ox skulls (like Caecilia Metella's on the Appian Way), 20 m across. "altar": a tall
 ## altar-shaped monument on steps, with an inscription and an urn on top. Faces +Z (the road).
 ## Lost: the round one's mound gone and its frieze broken; the altar one's urn fallen.
-static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar", whole: bool = true) -> void:
+static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar", whole: bool = true, epitaph: String = "") -> void:
 	var g := Kit.group(parent, at, yaw)
 	if kind == "round":
 		Kit.box(g, Vector3(0, 3.0, 0), Vector3(22.0, 6.0, 22.0), "tufa")
@@ -325,6 +347,8 @@ static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar"
 			var a := TAU * k / 16.0
 			Kit.blob(g, Vector3(cos(a) * 10.25, 15.8, sin(a) * 10.25), 0.35, "bone", Vector3(1.0, 1.0, 0.5), 5)
 		Kit.box(g, Vector3(0, 13.0, 10.1), Vector3(3.0, 1.2, 0.1), "plaque", false)
+		if epitaph != "":
+			inscription(g, Vector3(0, 13.0, 10.17), epitaph.split("\n").slice(0, 4), 26)
 		if whole:
 			Kit.cylinder(g, Vector3(0, 17.0, 0), 9.6, 3.0, "earth", false, 16, 4.0)  # the earth mound it was crowned with
 		return
@@ -332,6 +356,8 @@ static func tomb(parent: Node3D, at: Vector3, yaw: float, kind: String = "altar"
 		Kit.box(g, Vector3(0, 0.2 + k * 0.4, 0), Vector3(3.0 - k * 0.5, 0.4, 3.0 - k * 0.5), "stone")
 	Kit.box(g, Vector3(0, 2.1, 0), Vector3(1.8, 2.6, 1.8), "marble")
 	Kit.box(g, Vector3(0, 2.3, 0.92), Vector3(1.2, 0.9, 0.04), "plaque", false)  # D M: to the spirits of the dead
+	if epitaph != "":
+		inscription(g, Vector3(0, 2.3, 0.95), epitaph.split("\n"), 15, "3a3028")
 	Kit.box(g, Vector3(0, 3.5, 0), Vector3(2.1, 0.2, 2.1), "marble", false)
 	for side: float in [-1.0, 1.0]:
 		Kit.mesh(g, Greek._prism(0.18, 2.0, 8), "marble", Vector3(side * 0.8, 3.75, 0), Vector3(PI / 2.0, 0, 0))
@@ -667,6 +693,9 @@ static func jet(parent: Node3D, from: Vector3, dir: Vector3, speed: float, amoun
 ## empty, a stain where the water was.
 static func lacus(parent: Node3D, at: Vector3, yaw: float, flowing: bool = true) -> void:
 	var g := Kit.group(parent, at, yaw)
+	if flowing:  # the lead pipe up the pillar's side, with the water's stamp on it
+		Kit.box(g, Vector3(0.32, 0.5, -0.55), Vector3(0.1, 1.0, 0.1), "#6a6a72", false)
+		inscription(g, Vector3(0.32, 0.72, -0.49), ["AQ", "MARCIA" if int(at.x + at.z) % 2 == 0 else "CLAVDIA"], 10, "2a2a2e")
 	Kit.box(g, Vector3(0, 0.4, 0), Vector3(2.0, 0.8, 1.0), "travertine")
 	Kit.box(g, Vector3(0, 0.62 if flowing else 0.35, 0), Vector3(1.7, 0.05, 0.7), "water" if flowing else "drybed", false)
 	Kit.box(g, Vector3(0, 0.85, -0.65), Vector3(0.5, 1.7, 0.3), "travertine")  # the pillar

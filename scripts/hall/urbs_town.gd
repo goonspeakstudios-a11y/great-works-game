@@ -28,8 +28,17 @@ var raining := false
 var _rain_from := 25.0
 var _rain_to := 25.0
 var _rain: CPUParticles3D
+var _puddles: Array = []  # the puddles the rain leaves in the streets, for a while after
+var _puddle_life := 0.0
 var _events := {}  # event id -> {people: [], ends, path?}
 var _pigeons: Array = []  # {node, home, flying}
+var _hens: Array = []  # chickens in the lanes: {node, home, run, dir}
+var _lizards: Array = []  # {node, hid}: lizards on the sunny walls, darting off as you come
+var _swallows: Array = []  # {node, wings, center, r, h, speed, angle, phase}: over the roofs at dusk
+var _hoops: Array = []  # [child, hoop node]
+var _watch: Dictionary = {}  # the watchman with his torch, out at night crying the hour
+var _watch_cry := 0.0
+const NIGHT_HOURS := ["PRIMA", "SECVNDA", "TERTIA", "QVARTA", "QVINTA", "SEXTA", "SEPTIMA", "OCTAVA", "NONA", "DECIMA", "VNDECIMA", "DVODECIMA"]
 var _smoke: Array = []
 var _players: Array = []  # AudioStreamPlayer3D, each on one sound at a time
 var waters: Array = []  # [pos, "fountain" or "stream"]: where water runs, for the sound of it (rome_map out["waters"])
@@ -70,6 +79,12 @@ func setup(the_world: Node3D, the_age: String, the_day: int, people: Array) -> v
 	_dogs(people)
 	_herds(people)
 	_cats()
+	_sleepers()
+	_chickens()
+	_lizards_on_walls()
+	_dusk_flocks()
+	_children(people)
+	_watchman()
 	for p: Dictionary in people:
 		if p.has("citizen"):
 			var sfx: String = data().get("sounds", {}).get(p["citizen"]["job"], "")
@@ -148,10 +163,22 @@ func step(delta: float, at: Vector3, hour: float, moving: bool) -> void:
 		_set_rain(wet)
 		if wet:
 			_cry_near(at, data()["rain"]["cries"])
+			_puddle(at)
+		else:
+			_puddle_life = 70.0  # they dry in an hour or two
+	if not raining and not _puddles.is_empty():
+		_puddle_life -= delta
+		if _puddle_life <= 0.0:
+			for pd: Node in _puddles:
+				if is_instance_valid(pd):
+					pd.queue_free()
+			_puddles.clear()
 	if _rain:
 		_rain.global_position = at + Vector3(0, 14.0, 0)
 	_run_events(hour, at)
 	_scare_pigeons(delta, at, moving)
+	_small_life(delta, at, hour, moving)
+	_hours(delta, at, hour)
 	for s: Node in _smoke:
 		if is_instance_valid(s):
 			(s as CPUParticles3D).emitting = hour > 5.0 and hour < 20.0
@@ -322,7 +349,194 @@ func _set_rain(on: bool) -> void:
 		_rain.emitting = on
 
 
+## Puddles in the streets round you while it rains: sheets of water in the hollows of the paving
+## and the ruts of the lanes, gone an hour or two after the rain stops.
+func _puddle(at: Vector3) -> void:
+	if streets.is_empty():
+		return
+	for k in 36:
+		var road: Array = streets[rng.randi() % streets.size()]
+		var i := rng.randi_range(0, road.size() - 2)
+		var p: Vector3 = (road[i] as Vector3).lerp(road[i + 1], rng.randf())
+		if Vector2(p.x - at.x, p.z - at.z).length() > 140.0:
+			continue
+		p += Vector3(rng.randf_range(-2.0, 2.0), 0, rng.randf_range(-2.0, 2.0))
+		p.y = RomeMap.ground(p) + 0.135
+		var puddle := Kit.cylinder(world, p, rng.randf_range(0.5, 1.4), 0.02, "water", false, 10)
+		(puddle as Node3D).scale.x = rng.randf_range(0.7, 1.4)
+		_puddles.append(puddle)
+
+
 # ---------- birds and dogs ----------
+
+## Dogs asleep in the sun against the house fronts: curled on the warm pavement, not stirring.
+func _sleepers() -> void:
+	if streets.is_empty():
+		return
+	var coats := ["#6a4a2a", "#3a3028", "#a88a5a", "#d8ccb8", "#8a6a4a"]
+	for k in (9 if age != "fall" else 3):
+		var road: Array = streets[rng.randi() % streets.size()]
+		var i := rng.randi_range(0, road.size() - 2)
+		var a: Vector3 = road[i]
+		var b: Vector3 = road[i + 1]
+		var p := a.lerp(b, rng.randf())
+		var dir := (b - a).normalized()
+		p += Vector3(dir.z, 0, -dir.x) * (rng.randf_range(3.2, 4.6) * (1.0 if rng.randf() < 0.5 else -1.0))
+		p.y = RomeMap.ground(p)
+		var dog: Dictionary = Greek.beast(world, p, rng.randf() * TAU, "dog", coats[rng.randi() % coats.size()], 0.55)
+		Kit.unsolid(dog["root"])
+		var root: Node3D = dog["root"]
+		root.scale.y *= 0.55  # flat on its side
+		for leg: Node3D in dog["legs"]:
+			leg.rotation.x = 1.3  # stretched out
+		(dog["head"] as Node3D).rotation.x = 0.6  # chin on the ground
+
+
+## Chickens in the lanes, pecking, scattering as you come and drifting back.
+func _chickens() -> void:
+	var lanes: Array = (RomeMap._bands as Array).filter(func(r: Array) -> bool: return r.size() == 3 and absf(float(r[2]) - RomeMap.LANE / 2.0 - 3.0) < 0.01)
+	if lanes.is_empty() or age == "fall":
+		return
+	var edge: Array = RomeMap.walkable()
+	var coats := ["#e8e0d0", "#8a5a3a", "#2a2624", "#c8a060"]
+	for k in 24:
+		var lane: Array = lanes[rng.randi() % lanes.size()]
+		var p: Vector3 = (lane[0] as Vector3).lerp(lane[1], rng.randf()) + Vector3(rng.randf_range(-1.2, 1.2), 0, rng.randf_range(-1.2, 1.2))
+		if not RomeMap.inside(edge, p):
+			continue
+		p.y = RomeMap.ground(p) + 0.1
+		var hen := Kit.group(world, p, rng.randf() * TAU)
+		var coat: String = coats[rng.randi() % coats.size()]
+		Kit.blob(hen, Vector3(0, 0.14, 0), 0.13, coat, Vector3(1.0, 0.9, 1.4), 5)
+		Kit.blob(hen, Vector3(0, 0.3, 0.14), 0.06, coat, Vector3.ONE, 5)
+		Kit.box(hen, Vector3(0, 0.37, 0.14), Vector3(0.03, 0.06, 0.08), "#c83a2a", false)  # the comb
+		Kit.box(hen, Vector3(0, 0.29, 0.22), Vector3(0.03, 0.03, 0.06), "#e0a030", false)  # the beak
+		for x: float in [-0.05, 0.05]:
+			Kit.box(hen, Vector3(x, 0.05, 0), Vector3(0.02, 0.1, 0.02), "#e0a030", false)
+		_hens.append({"node": hen, "home": p, "run": 0.0, "dir": Vector3.ZERO})
+
+
+## Lizards on the sunlit walls, low, that dart away as you come near and creep back.
+func _lizards_on_walls() -> void:
+	var boxes: Array = RomeMap._obbs
+	if boxes.is_empty():
+		return
+	var edge: Array = RomeMap.walkable()
+	for k in 40:
+		var o: Array = boxes[rng.randi() % boxes.size()]
+		var b: Basis = o[1]
+		var side := 1.0 if rng.randf() < 0.5 else -1.0
+		var wall: Vector3 = (o[0] as Vector3) + b * Vector3(rng.randf_range(-float(o[2]) * 0.4, float(o[2]) * 0.4), 0, side * (float(o[3]) / 2.0 + 0.04))
+		if not RomeMap.inside(edge, wall):
+			continue
+		wall.y = RomeMap.ground(wall) + rng.randf_range(0.8, 1.7)
+		var liz := Kit.group(world, wall, b.get_euler().y + (0.0 if side > 0.0 else PI))
+		var up := rng.randf() < 0.5
+		Kit.blob(liz, Vector3(0, 0, 0), 0.03, "#5a7a3a", Vector3(0.7, 2.2, 0.6) if up else Vector3(2.2, 0.7, 0.6), 5)
+		Kit.blob(liz, Vector3(0, 0.1, 0) if up else Vector3(0.1, 0, 0), 0.028, "#6a8a44", Vector3(0.6, 0.7, 0.5), 5)
+		_lizards.append({"node": liz, "hid": 0.0})
+
+
+## Swallows over the roofs at dusk: two flocks wheeling low over the Forum and the Subura.
+func _dusk_flocks() -> void:
+	if age == "fall":
+		return
+	for centre: Vector3 in [RomeMap.at([0, 10]) + Vector3(0, 14, 0), RomeMap.at([260, -200]) + Vector3(0, 16, 0)]:
+		for sw: Dictionary in Kit.flock(world, centre, 14, 22.0, 6.0):
+			(sw["node"] as Node3D).scale = Vector3(0.6, 0.6, 0.6)
+			(sw["node"] as Node3D).visible = false
+			sw["speed"] = float(sw["speed"]) * 2.6
+			_swallows.append(sw)
+
+
+## Children rolling hoops along the streets with a stick, as the Roman children did (Horace's
+## boys, Martial's).
+func _children(people: Array) -> void:
+	if streets.is_empty() or age == "fall":
+		return
+	for k in 3:
+		var road: Array = streets[rng.randi() % streets.size()]
+		var i := rng.randi_range(0, road.size() - 2)
+		var a: Vector3 = road[i]
+		var b: Vector3 = road[i + 1]
+		var dir := (b - a).normalized()
+		var off := Vector3(dir.z, 0, -dir.x) * 1.2
+		var path: Array = []
+		for j in range(-3, 4):
+			var q := a.lerp(b, 0.5) + dir * (j * 7.0) + off
+			q.y = RomeMap.ground(q)
+			path.append(q)
+		var back := path.duplicate()
+		back.reverse()
+		path = path + back.slice(1, back.size() - 1)
+		var child: Dictionary = Kit.walker(world, path[0], 0.0, {"robe": ["c8a860", "a86a4a", "7a8ab0"][k % 3], "hair_color": "3a2a1e", "skin": "d8b08a", "beard": "none"})
+		Kit.unsolid(child["root"])
+		(child["root"] as Node3D).scale = Vector3(0.62, 0.62, 0.62)
+		var hand: Node3D = child["hand"]
+		Kit.box(hand, Vector3(0.3, 0.9, 0.5), Vector3(0.03, 0.03, 0.9), "wood", false)  # the stick
+		var hoop := Kit.cylinder(hand, Vector3(0.3, 0.55, 1.1), 0.55, 0.04, "wood", false, 14)
+		(hoop as Node3D).rotation = Vector3(0, 0, PI / 2.0)
+		child["path"] = path
+		child["speed"] = 1.7
+		child["shift"] = "day"
+		child["ground"] = func(q: Vector3) -> float: return RomeMap.ground(q)
+		people.append(child)
+		_hoops.append([child, hoop])
+
+
+## The small life each frame: hens scatter and come back, lizards hide and creep out, the
+## swallows wheel at dusk, the hoops roll.
+func _small_life(delta: float, at: Vector3, hour: float, moving: bool) -> void:
+	for h: Dictionary in _hens:
+		var node: Node3D = h["node"]
+		if not is_instance_valid(node):
+			continue
+		var d := Vector2(node.position.x - at.x, node.position.z - at.z).length()
+		if h["run"] <= 0.0 and moving and d < 3.5:
+			h["run"] = 5.0
+			h["dir"] = Vector3(node.position.x - at.x, 0, node.position.z - at.z).normalized()
+		if h["run"] > 0.0:
+			h["run"] -= delta
+			if h["run"] > 3.5:
+				node.position += (h["dir"] as Vector3) * 3.0 * delta
+				node.rotation.y = atan2((h["dir"] as Vector3).x, (h["dir"] as Vector3).z)
+				node.position.y = (h["home"] as Vector3).y + absf(sin(Time.get_ticks_msec() / 90.0)) * 0.08
+			else:
+				node.position = node.position.lerp(h["home"], minf(1.0, delta * 0.8))
+		else:
+			node.rotation.x = 0.5 * maxf(0.0, sin(Time.get_ticks_msec() / 350.0 + node.position.x))  # pecking
+	var sunny := hour >= 9.0 and hour < 17.5 and not raining
+	for lz: Dictionary in _lizards:
+		var node: Node3D = lz["node"]
+		if not is_instance_valid(node):
+			continue
+		if lz["hid"] > 0.0:
+			lz["hid"] -= delta
+		var d := Vector2(node.position.x - at.x, node.position.z - at.z).length()
+		if d < 3.2 and moving and lz["hid"] <= 0.0:
+			lz["hid"] = 18.0
+		node.visible = sunny and lz["hid"] <= 0.0
+	var dusk := hour >= 17.5 and hour < 20.5
+	for sw: Dictionary in _swallows:
+		var node: Node3D = sw["node"]
+		if not is_instance_valid(node):
+			continue
+		node.visible = dusk
+		if not dusk:
+			continue
+		sw["angle"] = float(sw["angle"]) + float(sw["speed"]) * delta
+		var ang: float = sw["angle"]
+		var r: float = sw["r"]
+		var centre: Vector3 = sw["center"]
+		var pos := centre + Vector3(cos(ang) * r, float(sw["h"]) - 6.0 + sin(ang * 3.0 + float(sw["phase"])) * 2.5, sin(ang) * r)
+		node.look_at_from_position(pos, pos + Vector3(-sin(ang), 0, cos(ang)) * signf(float(sw["speed"])), Vector3.UP)
+		for w: Node3D in sw["wings"]:
+			w.rotation.z = sin(Time.get_ticks_msec() / 60.0 + float(sw["phase"])) * 0.7 * (-1.0 if w.position.x < 0.0 else 1.0)
+	for hp: Array in _hoops:
+		var hoop: Node3D = hp[1]
+		if is_instance_valid(hoop) and ((hp[0] as Dictionary)["root"] as Node3D).visible:
+			hoop.rotation.x += delta * 3.2  # rolling
+
 
 func _pigeons_in_forum() -> void:
 	var centre := RomeMap.at([0, 10])
@@ -439,19 +653,23 @@ func _herds(people: Array) -> void:
 			sheep["shift"] = "day"
 			sheep["ground"] = ground
 			people.append(sheep)
-	var lata: int = index.call("the Via Lata")
-	if age != "fall" and lata >= 0 and lata < streets.size():
-		var loop: Array = loop_of.call(lata)
+	# the carts: by day only the one on the Via Lata (the road in from the north), by night the
+	# night carts Caesar's law let into the streets, rumbling down the Argiletum and the Sacred Way
+	for cart_road: Array in [["the Via Lata", "always"], ["the Argiletum and the Clivus Suburanus", "night"], ["the Sacred Way", "night"]]:
+		var ri: int = index.call(cart_road[0])
+		if age == "fall" or ri < 0 or ri >= streets.size():
+			continue
+		var loop: Array = loop_of.call(ri)
 		var cart := _cart(loop[0])
 		cart["path"] = loop
 		cart["speed"] = 1.1
-		cart["shift"] = "always"
+		cart["shift"] = cart_road[1]
 		cart["ground"] = ground
 		people.append(cart)
 		var driver: Dictionary = spawn.call("mulio", (loop[0] as Vector3) + Vector3(1.4, 0, 0), 0.0)
 		driver["path"] = loop.map(func(q: Vector3) -> Vector3: return q + Vector3(1.4, 0, 0))
 		driver["speed"] = 1.1
-		driver["shift"] = "always"
+		driver["shift"] = cart_road[1]
 		driver["ground"] = ground
 
 
@@ -481,6 +699,69 @@ func _cart(at: Vector3) -> Dictionary:
 		wheel.position = Vector3(x, 0.6, -0.6)
 	var head := Kit.group(root, Vector3(0, 1.35, 2.5))
 	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs, "cart": true}
+
+
+# ---------- the hours of the streets ----------
+
+## The watchman: one of the watch out alone at night with a torch, walking the Sacred Way and
+## the Argiletum, crying the hour of the night as he goes.
+func _watchman() -> void:
+	if streets.is_empty() or not spawn.is_valid() or age == "fall":
+		return
+	var roads: Array = RomeMap.city_data().get("roads", [])
+	var ri := -1
+	for i in roads.size():
+		if str(roads[i]["name"]) == "the Sacred Way":
+			ri = i
+	if ri < 0 or ri >= streets.size():
+		return
+	var path: Array = (streets[ri] as Array).duplicate()
+	var back := path.duplicate()
+	back.reverse()
+	path = path + back.slice(1, back.size() - 1)
+	var job := "vigil" if age in ["empire", "late", "collapse"] else "lictor"
+	var p: Dictionary = spawn.call(job, path[0], 0.0)
+	p["path"] = path
+	p["speed"] = 0.9
+	p["shift"] = "night"
+	p["ground"] = func(q: Vector3) -> float: return RomeMap.ground(q)
+	(p["citizen"] as Dictionary)["title"] = "watchman"
+	_torch(p)
+	_watch = p
+
+
+## What the hours bring to the streets: the shopkeepers sweeping before their doors at dawn as
+## the shutters come down, the watchman crying the hour of the night as he passes.
+func _hours(delta: float, at: Vector3, hour: float) -> void:
+	var sweeping := hour >= 5.5 and hour < 6.9
+	if life:
+		for p: Dictionary in life.people:
+			if not p.has("citizen") or not is_instance_valid(p["root"]):
+				continue
+			var root: Node3D = p["root"]
+			var keeps: bool = str(load("res://scripts/hall/citizen.gd").job(p["citizen"]["job"]).get("place", "")) == "door"
+			if not keeps or (not sweeping and not p.has("broom")):
+				continue
+			if sweeping and root.visible and Vector2(root.global_position.x - at.x, root.global_position.z - at.z).length() < 45.0:
+				if not p.has("broom"):
+					var hand: Node3D = p["hand"]
+					var broom := Kit.group(hand, Vector3(0.3, 0.2, 0.5), 0.0)
+					Kit.box(broom, Vector3(0, 0.7, 0), Vector3(0.03, 1.4, 0.03), "wood", false)
+					Kit.blob(broom, Vector3(0, 0.02, 0.05), 0.08, "#c8b070", Vector3(2.2, 1.0, 1.4), 5)
+					broom.rotation.x = 0.5
+					p["broom"] = broom
+				(p["broom"] as Node3D).visible = true
+				(p["hand"] as Node3D).rotation.z = sin(Time.get_ticks_msec() / 220.0 + root.position.x) * 0.3
+			elif p.has("broom"):
+				(p["broom"] as Node3D).visible = false
+				(p["hand"] as Node3D).rotation.z = 0.0
+	if not _watch.is_empty() and is_instance_valid(_watch["root"]) and (_watch["root"] as Node3D).visible:
+		_watch_cry -= delta
+		if _watch_cry <= 0.0 and (_watch["root"] as Node3D).global_position.distance_to(at) < 32.0:
+			_watch_cry = 38.0
+			var since := fmod(hour - 20.0 + 24.0, 24.0)  # the night's twelve hours run from dusk to dawn
+			var which := clampi(int(since / 9.5 * 12.0), 0, 11)
+			life.say(_watch["root"], "Hora %s noctis! %s" % [NIGHT_HOURS[which], ["All quiet.", "Mind your lamps.", "Bar your doors."][which % 3]])
 
 
 # ---------- sounds and smoke ----------

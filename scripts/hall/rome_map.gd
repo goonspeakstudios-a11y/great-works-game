@@ -32,6 +32,7 @@ const FOOTPRINT := {"temple": 16.0, "double_temple": 42.0, "round_temple": 8.0, 
 	"amphitheatre": 100.0, "colossus": 6.0, "fountain_cone": 9.0, "ludus": 24.0, "baths": 70.0, "palace": 62.0,
 	"houses": 50.0, "circus": 118.0, "obelisk": 4.0, "open_circus": 55.0, "theatre": 42.0, "pantheon": 30.0,
 	"stadium": 52.0, "altar": 10.0, "mausoleum": 30.0, "church": 50.0, "comitium": 12.0, "cloaca": 6.0, "beak_column": 3.0,
+	"lupanar": 8.0, "catasta": 4.0, "gibbets": 10.0, "puticuli": 14.0,
 	"lacus": 5.0, "fig": 4.0, "milliarium": 3.0, "statues": 10.0, "tomb": 6.0, "altar_open": 9.0, "hut": 7.0, "cave": 8.0,
 	"rock": 10.0, "tower": 6.0, "portico": 22.0}
 
@@ -60,9 +61,106 @@ static func city_data() -> Dictionary:
 		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(CITY_FILE))
 		if parsed is Dictionary:
 			_city = parsed
+			_city["roads"] = _bend_roads(_city.get("roads", []), _city.get("monuments", []))
 		else:
 			push_error("city.json does not parse")
 	return _city
+
+
+## A street's name as the Romans would have cut it, when city.json gives none: capitals, V for U.
+static func street_latin(name: String) -> String:
+	return name.trim_prefix("the ").split(" and ")[0].to_upper().replace("U", "V").replace("J", "I")
+
+
+## The named streets bent as streets are, once, when the city is read (every part of the game reads
+## them from here, so the map, the way-finding, the walkers and the blocks agree): each run sampled
+## every fifteen map metres and swayed sideways by two slow waves, the sway dying out at a street's
+## ends, at its junctions with other streets, over the river (where the bridges are), within the
+## Forum and against the monuments; a corner between two runs bevelled unless a street meets there.
+## A street marked "straight" (the Via Lata, the Via Appia, the Via Recta) keeps its line. The
+## points stay map metres east and north of the Forum, denser than the plan's.
+static func _bend_roads(roads: Array, monuments: Array) -> Array:
+	var lines: Array = []
+	for r: Dictionary in roads:
+		lines.append((r["points"] as Array).map(func(p: Array) -> Vector2: return Vector2(float(p[0]), float(p[1]))))
+	var scale: float = data().get("scale", 0.35)
+	var out: Array = []
+	for i in roads.size():
+		var r: Dictionary = roads[i]
+		var pts: Array = lines[i]
+		if r.get("straight", false) or pts.size() < 2:
+			out.append(r)
+			continue
+		var pins: Array = [pts[0], pts[-1]]  # where the sway is nothing: the ends and the junctions
+		for j in roads.size():
+			if j == i:
+				continue
+			var q: Array = lines[j]
+			for e in q.size():  # a point of the other street on this one
+				var reach := 40.0 if (e == 0 or e == q.size() - 1) else 12.0
+				for k in pts.size() - 1:
+					var near: Vector2 = Geometry2D.get_closest_point_to_segment(q[e], pts[k], pts[k + 1])
+					if near.distance_to(q[e]) < reach:
+						pins.append(near)
+			for k in pts.size() - 1:  # the streets crossing
+				for m in q.size() - 1:
+					var x: Variant = Geometry2D.segment_intersects_segment(pts[k], pts[k + 1], q[m], q[m + 1])
+					if x != null:
+						pins.append(x as Vector2)
+		var pinned := func(p: Vector2) -> bool:
+			for pin: Vector2 in pins:
+				if pin.distance_to(p) < 20.0:
+					return true
+			return false
+		var path: Array = [pts[0]]  # the corners bevelled where no street meets
+		for k in range(1, pts.size() - 1):
+			var v: Vector2 = pts[k]
+			if pinned.call(v):
+				path.append(v)
+				continue
+			var a: Vector2 = pts[k - 1]
+			var b: Vector2 = pts[k + 1]
+			var cut := minf(25.0, 0.35 * minf(v.distance_to(a), v.distance_to(b)))
+			path.append(v + (a - v).normalized() * cut)
+			path.append(v + (b - v).normalized() * cut)
+		path.append(pts[-1])
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash(str(r["name"]))
+		var amp := 4.0 + 0.6 * float(r.get("width", 4.0))
+		var ph1 := rng.randf() * TAU
+		var ph2 := rng.randf() * TAU
+		var bent: Array = []
+		var along := 0.0
+		for k in path.size() - 1:
+			var a: Vector2 = path[k]
+			var b: Vector2 = path[k + 1]
+			var length := a.distance_to(b)
+			var dir := (b - a) / maxf(length, 0.001)
+			var normal := Vector2(-dir.y, dir.x)
+			var steps := maxi(1, int(length / 15.0))
+			for s in range(0 if k == 0 else 1, steps + 1):
+				var t := float(s) / steps
+				var p := a.lerp(b, t)
+				var here := along + t * length
+				var env := 1.0
+				for pin: Vector2 in pins:
+					env = minf(env, clampf((pin.distance_to(p) - 10.0) / 50.0, 0.0, 1.0))
+				env = minf(env, clampf((p.length() - 120.0) / 200.0, 0.0, 1.0))  # the Forum's streets keep their lines
+				env = minf(env, clampf((river_edge(at([p.x, p.y])) - 10.0) / 25.0, 0.0, 1.0))  # straight over the bridges
+				for mon: Dictionary in monuments:
+					if not mon.has("at") or not mon.has("kind"):
+						continue
+					var keep := footprint(mon) / scale + 12.0
+					env = minf(env, clampf((Vector2(float(mon["at"][0]), float(mon["at"][1])).distance_to(p) - keep) / 40.0, 0.0, 1.0))
+				env = env * env * (3.0 - 2.0 * env)
+				var off := amp * env * (0.7 * sin(TAU * here / 260.0 + ph1) + 0.3 * sin(TAU * here / 90.0 + ph2))
+				var bp := p + normal * off
+				bent.append([bp.x, bp.y])
+			along += length
+		var rr := r.duplicate()
+		rr["points"] = bent
+		out.append(rr)
+	return out
 
 
 static func ages() -> Array:
@@ -327,6 +425,56 @@ static func plain(world: Node3D, whole: bool) -> void:
 	terrain(world, "r_ground" if whole else "rubble")
 
 
+## What the traffic leaves on a paved street: the wheels' ruts worn in the stones a cart's gauge
+## apart, stepping stones across it every so often (the Pompeian way over the wet and the dung),
+## and an iron grate over the drain at the kerb now and then.
+static func _street_wear(world: Node3D, pts: Array, width: float, fallen: bool) -> void:
+	var cum: Array = [0.0]
+	for i in pts.size() - 1:
+		cum.append(float(cum[-1]) + Vector2((pts[i + 1] as Vector3).x - (pts[i] as Vector3).x, (pts[i + 1] as Vector3).z - (pts[i] as Vector3).z).length())
+	var total := float(cum[-1])
+	var along_at := func(t: float) -> Array:  # [point, direction] at t metres along
+		var i := 0
+		while i < cum.size() - 2 and float(cum[i + 1]) < t:
+			i += 1
+		var a: Vector3 = pts[i]
+		var b: Vector3 = pts[i + 1]
+		var f := clampf((t - float(cum[i])) / maxf(float(cum[i + 1]) - float(cum[i]), 0.001), 0.0, 1.0)
+		var dir := b - a
+		dir.y = 0.0
+		return [a.lerp(b, f), dir.normalized()]
+	for side: float in [-0.7, 0.7]:  # the ruts
+		var rut: Array = []
+		for i in pts.size():
+			var dir: Vector3 = (pts[mini(i + 1, pts.size() - 1)] as Vector3) - (pts[maxi(i - 1, 0)] as Vector3)
+			dir.y = 0.0
+			dir = dir.normalized()
+			rut.append((pts[i] as Vector3) + Vector3(dir.z, 0, -dir.x) * side)
+		ribbon(world, rut, 0.16, "#38383e", 0.125)
+	var t := 26.0
+	while t < total - 8.0:  # stepping stones across, and a grate at the kerb between
+		var here: Array = along_at.call(t)
+		var p: Vector3 = here[0]
+		var dir: Vector3 = here[1]
+		var across := Vector3(dir.z, 0, -dir.x)
+		var n := maxi(2, int(width / 1.3))
+		for k in n:
+			var q := p + across * ((k - (n - 1) / 2.0) * 1.25)
+			q.y = ground(q) + 0.12
+			Kit.box(world, q + Vector3(0, 0.13, 0), Vector3(0.55, 0.26, 0.5), "travertine" if not fallen else "rubble", false, Vector3(0, atan2(dir.x, dir.z), 0))
+		var g: Array = along_at.call(t + 34.0)
+		if t + 34.0 < total - 8.0:
+			var gp: Vector3 = g[0]
+			var gd: Vector3 = g[1]
+			var kerb := gp + Vector3(gd.z, 0, -gd.x) * (width / 2.0 - 0.45)
+			kerb.y = ground(kerb) + 0.17
+			var yaw := atan2(gd.x, gd.z)
+			Kit.box(world, kerb, Vector3(0.55, 0.04, 0.8), "iron", false, Vector3(0, yaw, 0))
+			for sl in 3:
+				Kit.box(world, kerb + Basis(Vector3.UP, yaw) * Vector3(-0.15 + sl * 0.15, 0.01, 0), Vector3(0.06, 0.05, 0.62), "dark", false, Vector3(0, yaw, 0))
+		t += 70.0
+
+
 ## A strip laid on the ground along a line of world points (a street, the river): `width` wide,
 ## `lift` above the ground (or at the fixed height `y` when given).
 static func ribbon(world: Node3D, points: Array, width: float, mat: String, lift: float = 0.12, y: float = NAN) -> MeshInstance3D:
@@ -465,8 +613,46 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	var flicker: Array = []
 	if not opts.get("no_terrain", false):
 		terrain(world, "rubble" if fallen else "r_ground")
+	# the feasibility map, laid over the ground first: void beyond the city's edge, then everything
+	# built painted on it in order, so each thing placed after finds only free ground
+	var outer_pts: Array = (c.get("outer", []) as Array).map(func(q: Array) -> Vector3: return at(q))
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for q: Vector3 in outer_pts:
+		lo = Vector2(minf(lo.x, q.x), minf(lo.y, q.z))
+		hi = Vector2(maxf(hi.x, q.x), maxf(hi.y, q.z))
+	_occ = Occupancy.new()
+	_occ.setup(lo, hi)
+	_occ.paint_poly(outer_pts, Occupancy.FREE)
+	if not skip.is_empty():
+		_occ.paint_poly(skip, Occupancy.VOID)
+		for q: Vector3 in skip:
+			_occ.paint_disc(q, 12.0, Occupancy.VOID)
+	for q: Vector3 in opts.get("clear", []):
+		_occ.paint_disc(q, 16.0, Occupancy.VOID)
+	# the soft kinds first (the open squares, the groves, the waters' banks, the Forum's paving),
+	# the hard kinds over them, so a street through a grove is still a street on the map
+	for o: Dictionary in c.get("open", []):
+		if o.has("until") and year >= int(o["until"]):
+			continue
+		_occ.paint_disc(at(o["at"]), span(float(o["r"])), Occupancy.OPEN)
+	for g: Dictionary in groves(year):
+		_occ.paint_disc(g["at"], float(g["r"]), Occupancy.GROVE)
+	for wt: Dictionary in waters(year):
+		if wt["kind"] == "stream":
+			_occ.paint_line(wt["points"], float(wt["width"]) / 2.0 + 3.0, Occupancy.BANK)
+			_occ.paint_line(wt["points"], float(wt["width"]) / 2.0, Occupancy.WATER)
+		else:
+			_occ.paint_disc(wt["at"], float(wt["r"]) + 5.0, Occupancy.BANK)
+			_occ.paint_disc(wt["at"], float(wt["r"]), Occupancy.WATER)
+	var forum := at([0, 0])
+	if skip.is_empty() or not inside(skip, forum):
+		_occ.paint_box(forum, Basis(Vector3.UP, -0.617 + PI / 2.0), 70.0, 30.0, Occupancy.OPEN, 1.0)
+	_monuments = []
 	_river(world, year, fallen)
 	var bridges := _bridges(world, year, fallen)
+	for deck: Array in bridges:
+		_occ.paint_band(deck[0], deck[1], float(deck[2]) / 2.0 + 0.6, Occupancy.ROAD)
 	_servian_wall(world, year, lost)
 	_edges(world, year)
 	var streets: Array = []
@@ -477,6 +663,7 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 		if mat == "travertine" and year < -200:
 			mat = "basalt"  # the Sacred Way was paved in marble only under the emperors' fathers
 		ribbon(world, pts, float(r["width"]), mat if mat != "earth" else "path")
+		_occ.paint_line(pts, float(r["width"]) / 2.0 + 0.6, Occupancy.ROAD)  # the street and its kerb
 		streets.append(pts)
 		if year >= -200 and year < 537 and not lost and mat != "earth":  # the gutter along the kerb, running with the basins' overflow
 			for i in pts.size() - 1:
@@ -484,6 +671,7 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 				var b: Vector3 = pts[i + 1]
 				var n := Vector3((b - a).normalized().z, 0, -(b - a).normalized().x) * (float(r["width"]) / 2.0 - 0.3)
 				ribbon(world, [a + n, b + n], 0.35, "water", 0.16)
+			_street_wear(world, pts, float(r["width"]), fallen)
 	for a: Dictionary in c.get("aqueducts", []):
 		if year < int(a["year"]):
 			continue
@@ -491,6 +679,7 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 		var to := on_ground(a["to"])
 		var base := Vector3(0, minf(from.y, to.y), 0)
 		Rome.aqueduct(world, Vector3(from.x, base.y, from.z), Vector3(to.x, base.y, to.z), int(a.get("tiers", 1)), year < 537 and not lost)
+		_occ.paint_band(from, to, 2.5, Occupancy.MONUMENT)
 	var standing: Array = []
 	var age_id := str(age.get("id", age_id_for(year)))
 	for entry: Dictionary in c.get("monuments", []):
@@ -504,13 +693,36 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 		if not skip.is_empty() and inside(skip, where):
 			continue
 		var yaw := facing(m, where)
+		var before := world.get_child_count()
 		var light := Urbs.build(world, m, where, yaw, st == "whole" and not lost, span(1.0), year)
 		if light:
 			flicker.append(light)
+		var built: Array = []
+		for k in range(before, world.get_child_count()):
+			built.append(world.get_child(k))
+		_paint_monument(world, built, where, yaw)
 		standing.append({"m": m, "at": where, "yaw": yaw, "state": st})
-	var forum := at([0, 0])
 	if skip.is_empty() or not inside(skip, forum):  # the Forum's paving of travertine slabs
 		Kit.box(world, forum + Vector3(0, 0.03, 0), Vector3(70.0, 0.06, 30.0), "paving", false, Vector3(0, -0.617 + PI / 2.0, 0))
+	# the view corridors, from each street's end to the monument it runs at, under the monuments
+	for r: Dictionary in c.get("roads", []):
+		var pts: Array = r["points"]
+		for end: Vector3 in [at(pts[0]), at(pts[pts.size() - 1])]:
+			var target := Vector3.INF
+			var best := CORRIDOR
+			for st: Dictionary in standing:
+				var dd: float = Vector2(st["at"].x - end.x, st["at"].z - end.z).length()
+				if dd < best and (st["m"] as Dictionary).has("note"):
+					best = dd
+					target = st["at"]
+			if target != Vector3.INF and best > 4.0:
+				_occ.paint_band(end, target, float(r["width"]) / 2.0 + 2.0, Occupancy.OPEN)
+	for r: Dictionary in c.get("roads", []):  # the streets again over the corridors: open ground round them, the street still the street
+		_occ.paint_line((r["points"] as Array).map(func(p: Array) -> Vector3: return at(p)), float(r["width"]) / 2.0 + 0.6, Occupancy.ROAD)
+	for deck: Array in bridges:
+		_occ.paint_band(deck[0], deck[1], float(deck[2]) / 2.0 + 0.6, Occupancy.ROAD)
+	for mb: Array in _monuments:
+		_occ.paint_box(mb[0], mb[1], float(mb[2]), float(mb[3]), Occupancy.MONUMENT, 1.5)
 	var out := {"flicker": flicker, "monuments": standing, "streets": streets, "bridges": bridges, "stalls": [], "fountains": [],
 		"clear": opts.get("clear", []), "doors": [], "banks": [], "flames": [], "compita": [], "tombs": [], "waters": [], "lacus": []}
 	if opts.get("blocks", true):
@@ -522,36 +734,154 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	return out
 
 
-## The streets' names painted on the corners at their junctions (the Romans did not; you need them):
-## a board on the wall a few paces along each street from the crossing, red letters on plaster.
+## The streets' names painted on the corners at their junctions (the Romans did not; you need
+## them): on a house wall a few paces along each street from the crossing, a whitewashed panel with
+## the name in red capitals, in Latin (city.json "latin"), the letters the shops' notices used.
+## Where no house stands at the corner there is no name.
 static func _corners(world: Node3D, c: Dictionary, skip: Array) -> void:
 	var edge := walkable()
-	var widths := {}
+	var halves := {}
+	var latin := {}
 	for r: Dictionary in c.get("roads", []):
-		widths[str(r["name"])] = float(r["width"]) / 2.0 * span(1.0)
+		halves[str(r["name"])] = float(r["width"]) / 2.0
+		latin[str(r["name"])] = str(r.get("latin", street_latin(str(r["name"]))))
+	var n := 0
+	var placed: Array = []  # where a name stands already
 	for j: Dictionary in junctions(c):
 		var p: Vector3 = j["at"]
 		if not inside(edge, p) or (not skip.is_empty() and inside(skip, p)):
 			continue
 		for name: String in j["streets"]:
 			var dir := _street_dir(c, name, p)
-			if dir == Vector3.ZERO:
+			if dir == Vector3.ZERO or _occ == null:
 				continue
-			var side := Vector3(dir.z, 0, -dir.x)
-			var q := p + dir * 9.0 + side * (float(widths.get(name, 1.5)) + 0.4)
-			q.y = ground(q) + 3.4
-			var yaw := atan2(-side.x, -side.z)
-			var g := Kit.group(world, q, yaw)
-			Kit.box(g, Vector3(0, 0, -0.05), Vector3(3.6, 0.7, 0.08), "plaster", false)
-			var label := Label3D.new()
-			label.text = name.trim_prefix("the ").split(" and ")[0].to_upper()
-			label.font = load("res://scripts/hall/lettering.gd").LAPIDARY  # the game's own capitals
-			label.font_size = 48
-			label.pixel_size = 0.0075
-			label.modulate = Color("9a2a1a")
-			label.outline_size = 0
-			label.position = Vector3(0, 0, 0.01)
-			g.add_child(label)
+			var half: float = float(halves.get(name, 2.0))
+			var text: String = latin[name]
+			var wide := 0.27 * text.length() + 0.5
+			var found := false
+			for along: float in [8.0, 12.0, 16.0, 20.0, 24.0, 28.0]:
+				for sgn: float in [1.0, -1.0]:
+					var side := Vector3(dir.z, 0, -dir.x) * sgn
+					var base := Vector3(p.x, 0, p.z) + dir * along
+					var bi := _box_at(base + side * (half + 2.2))  # the house beside the street here
+					if bi < 0:
+						continue
+					var t := _hit_box(bi, base, side)  # to its wall
+					if t < half + 0.4 or t > half + 3.4:
+						continue
+					var wall := true  # the same wall behind the panel's whole width, nothing before it
+					for dx: float in [-wide / 2.0, wide / 2.0]:
+						if _box_at(base + dir * dx + side * (t + 0.35)) != bi or _occ.kind_at(base + dir * dx + side * (t - 0.35)) == Occupancy.HOUSE:
+							wall = false
+					if not wall:
+						continue
+					var q := base + side * (t - 0.04)
+					if _near_name(placed, q, wide / 2.0 + 2.5):
+						continue
+					placed.append(q)
+					q.y = ground(q) + 4.78  # over the shop signs, under the first storey's windows
+					var g := Kit.group(world, q, atan2(-side.x, -side.z))
+					g.name = "Corner%d" % n
+					n += 1
+					Kit.box(g, Vector3(0, 0, -0.03), Vector3(wide, 0.56, 0.04), "#efe8d8", false)
+					g.add_child(_name_label(text, 44))
+					found = true
+					break
+				if found:
+					break
+			if found:
+				continue
+			# no house wall at this corner (the Forum's streets run between monuments): a cippus of
+			# travertine on the kerb, the name cut in it in two lines, as the boundary stones were
+			for along: float in [6.0, 10.0, 14.0]:
+				if found:
+					break
+				for sgn: float in [1.0, -1.0]:
+					var side := Vector3(dir.z, 0, -dir.x) * sgn
+					var q := Vector3(p.x, 0, p.z) + dir * along + side * (half + 1.1)
+					# on open ground, or on a monument's margin (its footprint is painted a pace and a half wide), not in it
+					if not _occ.disc_free(q, 0.8, (1 << Occupancy.OPEN) | (1 << Occupancy.GROVE) | (1 << Occupancy.MONUMENT)) or _in_monument(q, 0.7) or _near_name(placed, q, 2.5):
+						continue
+					q.y = ground(q)
+					var g := Kit.group(world, q, atan2(-side.x, -side.z))
+					g.name = "Corner%d" % n
+					n += 1
+					Kit.box(g, Vector3(0, 0.55, 0), Vector3(1.1, 1.1, 0.45), "travertine", false)
+					Kit.box(g, Vector3(0, 1.14, 0), Vector3(1.2, 0.08, 0.55), "travertine", false)  # its cap
+					var label := _name_label(text.replace(" ", "\n"), 22)
+					label.position = Vector3(0, 0.62, 0.23)
+					g.add_child(label)
+					_occ.paint_disc(q, 0.8, Occupancy.FURNITURE)
+					placed.append(q)
+					found = true
+					break
+
+
+## Whether a point stands in a monument's own footprint (the built meshes' bounds), grown by `margin`.
+static func _in_monument(p: Vector3, margin: float) -> bool:
+	for m: Array in _monuments:
+		var local: Vector3 = (m[1] as Basis).transposed() * (Vector3(p.x, 0, p.z) - Vector3((m[0] as Vector3).x, 0, (m[0] as Vector3).z))
+		if absf(local.x) < float(m[2]) / 2.0 + margin and absf(local.z) < float(m[3]) / 2.0 + margin:
+			return true
+	return false
+
+
+## Whether a name already stands within `reach` of a point (two streets' names would sit on one another).
+static func _near_name(placed: Array, q: Vector3, reach: float) -> bool:
+	for o: Vector3 in placed:
+		if Vector2(o.x - q.x, o.z - q.z).length() < reach:
+			return true
+	return false
+
+
+## A street's name in the game's own capitals, red, for a panel or a stone.
+static func _name_label(text: String, size: int) -> Label3D:
+	var label := Label3D.new()
+	label.text = text
+	label.font = load("res://scripts/hall/lettering.gd").LAPIDARY
+	label.font_size = size
+	label.pixel_size = 0.0075
+	label.modulate = Color("9a2a1a")
+	label.outline_size = 0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector3(0, 0, 0.01)
+	return label
+
+
+## The house or plot standing on a point (an index into _obbs), or -1.
+static func _box_at(p: Vector3) -> int:
+	var key := Vector2i(floori(p.x / BIN), floori(p.z / BIN))
+	for i: int in _cells.get(key, []):
+		var o: Array = _obbs[i]
+		var local: Vector3 = (o[1] as Basis).transposed() * (p - o[0])
+		if absf(local.x) <= float(o[2]) / 2.0 and absf(local.z) <= float(o[3]) / 2.0:
+			return i
+	return -1
+
+
+## How far from `from` along `dir` (level) a box's wall is met, or -1 when it is not (or `from` is inside).
+static func _hit_box(i: int, from: Vector3, dir: Vector3) -> float:
+	var o: Array = _obbs[i]
+	var bt: Basis = (o[1] as Basis).transposed()
+	var lf := bt * (Vector3(from.x, 0, from.z) - Vector3((o[0] as Vector3).x, 0, (o[0] as Vector3).z))
+	var ld := bt * Vector3(dir.x, 0, dir.z)
+	var tmin := -INF
+	var tmax := INF
+	for axis in 2:
+		var pos := lf.x if axis == 0 else lf.z
+		var vel := ld.x if axis == 0 else ld.z
+		var h := float(o[2]) / 2.0 if axis == 0 else float(o[3]) / 2.0
+		if absf(vel) < 1e-6:
+			if absf(pos) > h:
+				return -1.0
+			continue
+		var t1 := (-h - pos) / vel
+		var t2 := (h - pos) / vel
+		tmin = maxf(tmin, minf(t1, t2))
+		tmax = minf(tmax, maxf(t1, t2))
+	if tmax < tmin or tmax < 0.0 or tmin <= 0.0:
+		return -1.0
+	return tmin
 
 
 ## Which way a named street runs away from a point on it (the direction of its nearest segment,
@@ -577,6 +907,147 @@ static func _street_dir(c: Dictionary, name: String, p: Vector3) -> Vector3:
 
 static var _streets := {}
 static var _burnt: Array = []  # where the houses burnt, while the blocks are built (out["burnt"])
+static var _obbs: Array = []  # every house, plot and ruin built this time: [centre, basis, w, d], for the audit
+static var _bands: Array = []  # the streets, lanes and corridors: [a, b, half + 3], for the audit
+static var _monuments: Array = []  # the monuments' real footprints: [centre, basis, w, d], for the audit
+static var _occ: RefCounted = null  # the feasibility map (urbs_occupancy.gd) of the city last built
+const Occupancy := preload("res://scripts/hall/urbs_occupancy.gd")
+const Houses := preload("res://scripts/hall/textures_houses.gd")
+const TexSet := preload("res://scripts/hall/textures.gd")
+const Citizen := preload("res://scripts/hall/citizen.gd")
+## The trades a shop (taberna) can be: [the job in people.json, the picture on its sign, its weight].
+## A street's shops are drawn from those of them the age has (the job's "ages").
+const TRADES := [["pistor", "bread", 3], ["vinarius", "wine", 2], ["caupo", "wine", 2], ["popinarius", "cup", 2], ["lanius", "knife", 2],
+	["faber", "hammer", 2], ["sutor", "shoe", 2], ["vestiarius", "cloth", 2], ["fullo", "cloth", 1], ["tonsor", "shears", 2],
+	["medicus", "cup", 1], ["nummularius", "scales", 1], ["librarius", "roll", 1], ["figulus", "pot", 2], ["cetarius", "fish", 2],
+	["olearius", "wine", 1], ["unguentarius", "wine", 1], ["lucernarius", "pot", 1], ["crustularius", "bread", 1]]
+static var _trade_bags := {}
+static var _lamps: Array = []  # the lamps by the house doors, lit at dusk (the flames multimesh)
+const STALL_ON := [Occupancy.FREE, Occupancy.ROAD, Occupancy.LANE, Occupancy.OPEN, Occupancy.GROVE]  # where a stall may be set out
+static var _last_trees: Array = []  # what was planted, after the culling (for the audit, tools/audit_rome.gd)
+
+
+const BIN := 16.0  # the boxes are also kept by bin, for the exact check behind the map
+static var _cells := {}  # Vector2i -> [box index]
+
+
+## Files a house, plot or ruin among the built: on the map, and by bin for the audit and the
+## exact check.
+static func _register(c: Vector3, b: Basis, w: float, d: float) -> void:
+	var idx := _obbs.size()
+	_obbs.append([c, b, w, d])
+	_occ.paint_box(c, b, w, d, Occupancy.HOUSE)
+	var r := Vector2(w, d).length() / 2.0
+	for i in range(floori((c.x - r) / BIN), floori((c.x + r) / BIN) + 1):
+		for j in range(floori((c.z - r) / BIN), floori((c.z + r) / BIN) + 1):
+			var key := Vector2i(i, j)
+			if not _cells.has(key):
+				_cells[key] = []
+			_cells[key].append(idx)
+
+
+## Whether a box may be built: free on the map (grown by `grow`), and, since a corner clip thinner
+## than a cell can slip between the cells' centres, not into any box already built near it.
+static func _fits(c: Vector3, b: Basis, w: float, d: float, grow: float) -> bool:
+	if not _occ.box_free(c, b, w, d, grow):
+		return false
+	var r := Vector2(w, d).length() / 2.0 + grow
+	var seen := {}
+	for i in range(floori((c.x - r) / BIN), floori((c.x + r) / BIN) + 1):
+		for j in range(floori((c.z - r) / BIN), floori((c.z + r) / BIN) + 1):
+			for idx: int in _cells.get(Vector2i(i, j), []):
+				if seen.has(idx):
+					continue
+				seen[idx] = true
+				var o: Array = _obbs[idx]
+				if Vector2((o[0] as Vector3).x - c.x, (o[0] as Vector3).z - c.z).length() > r + Vector2(float(o[2]), float(o[3])).length() / 2.0:
+					continue
+				if _sat(c, b, w, d, o[0], o[1], float(o[2]), float(o[3]), 0.0):
+					return false
+	return true
+
+
+## The footprint of a monument just built: the smallest box in its own frame round every mesh
+## under `nodes` (its group and whatever else the builder hung on the world), painted on the map.
+static func _paint_monument(world: Node3D, nodes: Array, where: Vector3, yaw: float) -> void:
+	var inv := Basis(Vector3.UP, -yaw)
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for n: Node in nodes:
+		var meshes: Array = n.find_children("*", "MeshInstance3D", true, false)
+		if n is MeshInstance3D:
+			meshes.append(n)
+		for mi: Node in meshes:
+			var xf: Transform3D = (mi as Node3D).transform
+			var up: Node = mi.get_parent()
+			while up != null and up != world:
+				xf = (up as Node3D).transform * xf
+				up = up.get_parent()
+			var aabb: AABB = (mi as MeshInstance3D).get_aabb()
+			for k in 8:
+				var corner := xf * aabb.get_endpoint(k)
+				var local := inv * (corner - where)
+				lo = Vector2(minf(lo.x, local.x), minf(lo.y, local.z))
+				hi = Vector2(maxf(hi.x, local.x), maxf(hi.y, local.z))
+	if lo.x > hi.x:
+		return
+	var b := Basis(Vector3.UP, yaw)
+	var centre := where + b * Vector3((lo.x + hi.x) / 2.0, 0, (lo.y + hi.y) / 2.0)
+	var w := hi.x - lo.x
+	var d := hi.y - lo.y
+	_monuments.append([centre, b, w, d])
+	_occ.paint_box(centre, b, w, d, Occupancy.MONUMENT, 1.5)
+
+
+## The audit's own reading of a box against the streets, lanes and corridors: each band near it
+## walked at a pace's step through the part within the box's reach.
+static func _box_on_road(c: Vector3, b: Basis, w: float, d: float, margin: float = 0.0, corridors: bool = true) -> bool:
+	var bt := b.transposed()
+	var cc := Vector3(c.x, 0, c.z)
+	var span_all := Vector2(w, d).length() / 2.0
+	for r: Array in _bands:
+		if r.size() >= 4 and not corridors:
+			continue
+		var hw := float(r[2]) - 3.0 + margin
+		var a: Vector3 = r[0]
+		var e: Vector3 = r[1]
+		var ab := Vector2(e.x - a.x, e.z - a.z)
+		var length := ab.length()
+		if length < 0.01:
+			continue
+		var dirv := ab / length
+		var ac := Vector2(c.x - a.x, c.z - a.z)
+		var tc := ac.dot(dirv)
+		var perp := absf(ac.cross(dirv))
+		var span_r := span_all + hw
+		if perp > span_r or tc - span_r > length or tc + span_r < 0.0:
+			continue
+		var half_chord := sqrt(maxf(0.0, span_r * span_r - perp * perp))
+		var t0 := clampf(tc - half_chord, 0.0, length)
+		var t1 := clampf(tc + half_chord, 0.0, length)
+		var n := maxi(2, int((t1 - t0) / 1.0) + 1)
+		for k in n:
+			var t := t0 + (t1 - t0) * float(k) / float(n - 1)
+			var q := Vector3(a.x + dirv.x * t, 0, a.z + dirv.y * t)
+			var local := bt * (q - cc)
+			if absf(local.x) <= w / 2.0 + hw and absf(local.z) <= d / 2.0 + hw:
+				return true
+	return false
+
+
+
+## Whether two boxes on the ground overlap (each grown by `margin` all round), by the separating
+## axis test on the two boxes' own axes.
+static func _sat(c1: Vector3, b1: Basis, w1: float, d1: float, c2: Vector3, b2: Basis, w2: float, d2: float, margin: float = 0.0) -> bool:
+	var axes: Array = [Vector2(b1.x.x, b1.x.z), Vector2(b1.z.x, b1.z.z), Vector2(b2.x.x, b2.x.z), Vector2(b2.z.x, b2.z.z)]
+	var dc := Vector2(c2.x - c1.x, c2.z - c1.z)
+	for ax: Vector2 in axes:
+		var a := ax.normalized()
+		var e1 := absf(a.dot(Vector2(b1.x.x, b1.x.z))) * (w1 / 2.0 + margin) + absf(a.dot(Vector2(b1.z.x, b1.z.z))) * (d1 / 2.0 + margin)
+		var e2 := absf(a.dot(Vector2(b2.x.x, b2.x.z))) * (w2 / 2.0 + margin) + absf(a.dot(Vector2(b2.z.x, b2.z.z))) * (d2 / 2.0 + margin)
+		if absf(a.dot(dc)) > e1 + e2:
+			return false
+	return true
 
 
 ## content/rome/streets.json: the epitaphs, the shops' signs, the crossroads shrines, the paving.
@@ -633,6 +1104,11 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 		return
 	var style := str(st.get("style", "lares"))
 	var edge := walkable()
+	var named: Array = []  # the named streets' stretches: [a, b, half-width]
+	for r: Dictionary in c.get("roads", []):
+		var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
+		for i in pts.size() - 1:
+			named.append([pts[i], pts[i + 1], float(r["width"]) / 2.0])
 	var k := 0
 	for j: Dictionary in junctions(c):
 		k += 1
@@ -641,20 +1117,24 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 		var p: Vector3 = j["at"]
 		if not inside(edge, p) or (not skip.is_empty() and inside(skip, p)):
 			continue
-		var q := p  # on the corner: of twelve spots round the crossing, the one farthest from any street
-		var best := -1.0
+		var q := Vector3.INF  # on the corner: of twelve spots round the crossing, one on the pavement and in no house
+		var best := INF
 		for s in 12:
 			var a := TAU * (s + 0.5 * (k % 2)) / 12.0
-			var cand := p + Vector3(cos(a), 0, sin(a)) * 7.0
-			var off := INF
-			for r: Dictionary in c.get("roads", []):
-				var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
-				for i in pts.size() - 1:
-					off = minf(off, _to_segment(cand, pts[i], pts[i + 1]) - float(r["width"]) / 2.0)
-			if off > best:
-				best = off
-				q = cand
+			for reach: float in [3.5, 5.0, 7.0, 9.0, 12.0]:
+				var cand := p + Vector3(cos(a), 0, sin(a)) * reach
+				var off := INF
+				for r: Array in named:
+					off = minf(off, _to_segment(cand, r[0], r[1]) - float(r[2]))
+				if off < 0.5 or not _occ.disc_free(cand, 1.2, Occupancy.ALLOW_FURNITURE):
+					continue  # in a house, a lane, a tree
+				if off < best:
+					best = off
+					q = cand
+		if q == Vector3.INF:
+			continue
 		q.y = ground(q)
+		_occ.paint_disc(q, 1.2, Occupancy.FURNITURE)
 		var yaw := atan2(p.x - q.x, p.z - q.z)
 		var g := Kit.group(world, q, yaw)
 		g.name = "Compitum%d" % k
@@ -676,39 +1156,52 @@ static func _street_basins(world: Node3D, c: Dictionary, year: int, lost: bool, 
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = (r["points"] as Array).map(func(p: Array) -> Vector3: return at(p))
 		var half := float(r["width"]) / 2.0
-		var along := 25.0 + float(n % 3) * 9.0
+		var cum: Array = [0.0]  # the street walked whole by arc length (its points are dense where it bends)
 		for i in pts.size() - 1:
+			cum.append(float(cum[-1]) + Vector2((pts[i + 1] as Vector3).x - (pts[i] as Vector3).x, (pts[i + 1] as Vector3).z - (pts[i] as Vector3).z).length())
+		var total := float(cum[-1])
+		var along := 25.0 + float(n % 3) * 9.0
+		while along < total - 10.0:
+			var i := 0
+			while i < cum.size() - 2 and float(cum[i + 1]) < along:
+				i += 1
 			var a: Vector3 = pts[i]
 			var b: Vector3 = pts[i + 1]
 			var dir := b - a
 			dir.y = 0.0
-			var length := dir.length()
 			dir = dir.normalized()
 			var across := Vector3(dir.z, 0, -dir.x)
-			while along < length:
-				var p := a + dir * along
-				along += gap
-				if along - gap < 10.0 or length - (along - gap) < 10.0:
-					continue  # not at the crossings
-				var side := 1.0 if n % 2 == 0 else -1.0
-				var q := p + across * side * (half + 0.9)
-				n += 1
-				if not inside(edge, q) or river_edge(q) < 8.0 or (not skip.is_empty() and inside(skip, q)):
-					continue
-				if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
-					continue
-				if stalls.any(func(st: Vector3) -> bool: return Vector2(st.x - q.x, st.z - q.z).length() < 2.6):
-					continue
-				if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
-					continue
-				q.y = ground(q)
-				var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
-				g.name = "Lacus%d" % out["lacus"].size()
-				Rome.lacus(g, Vector3.ZERO, 0.0, flowing)
-				out["lacus"].append(q)
-				if flowing:
-					out["waters"].append([q, "fountain"])
-			along -= length
+			var p: Vector3 = a.lerp(b, clampf((along - float(cum[i])) / maxf(float(cum[i + 1]) - float(cum[i]), 0.001), 0.0, 1.0))
+			along += gap
+			var side := 1.0 if n % 2 == 0 else -1.0
+			var q := p + across * side * (half + 0.9)
+			n += 1
+			if not inside(edge, q) or river_edge(q) < 8.0 or (not skip.is_empty() and inside(skip, q)):
+				continue
+			var found := false  # slid along the street to the nearest house front, either way
+			for slide: float in [0.0, 3.0, -3.0, 6.0, -6.0, 9.0, -9.0, 12.0, -12.0, 15.0, -15.0]:
+				var qq := q + dir * slide
+				if _occ.kind_at(qq) == Occupancy.FREE and _occ.kind_at(qq + across * side * 1.6) == Occupancy.HOUSE:
+					q = qq
+					found = true
+					break
+			if not found:
+				continue
+			if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
+				continue
+			for si in range(stalls.size() - 1, -1, -1):  # a basin takes its place over a stall
+				if Vector2((stalls[si] as Vector3).x - q.x, (stalls[si] as Vector3).z - q.z).length() < 2.6:
+					stalls.remove_at(si)
+			if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
+				continue
+			q.y = ground(q)
+			var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
+			g.name = "Lacus%d" % out["lacus"].size()
+			Rome.lacus(g, Vector3.ZERO, 0.0, flowing)
+			_occ.paint_disc(q, 1.3, Occupancy.FURNITURE)
+			out["lacus"].append(q)
+			if flowing:
+				out["waters"].append([q, "trickle"])  # the thin fall of the spout, not a fountain's splash
 
 
 ## The tombs along the roads outside the gates: every so many paces on the stretch of each road
@@ -750,8 +1243,11 @@ static func _road_tombs(world: Node3D, c: Dictionary, year: int, age_id: String,
 				var kind := "round" if n % 9 == 4 and year > -100 else "altar"
 				var g := Kit.group(world, q, atan2(p.x - q.x, p.z - q.z))
 				g.name = "Tomb%d" % n
-				Rome.tomb(g, Vector3.ZERO, 0.0, kind, whole)
-				out["tombs"].append({"at": q, "yaw": g.rotation.y, "kind": kind, "road": str(r["name"])})
+				var epitaphs: Array = streets_data().get("epitaphs", [])
+				var which := n % maxi(1, epitaphs.size())
+				Rome.tomb(g, Vector3.ZERO, 0.0, kind, whole, str(epitaphs[which].get("latin", "")) if not epitaphs.is_empty() else "")
+				_occ.paint_disc(q, 4.5, Occupancy.FURNITURE)
+				out["tombs"].append({"at": q, "yaw": g.rotation.y, "kind": kind, "road": str(r["name"]), "epitaph": which})
 				n += 1
 				if n > 90:
 					return
@@ -762,6 +1258,9 @@ static func _road_tombs(world: Node3D, c: Dictionary, year: int, age_id: String,
 static func _river(world: Node3D, year: int, fallen: bool) -> void:
 	var course: Array = (data()["tiber"]["course"] as Array).map(func(p: Array) -> Vector3: return at(p))
 	var mat := "water" if not fallen else "#4a4a3a"
+	_occ.paint_line(course, _half_width() + 9.0, Occupancy.BANK)  # the bank, where nothing is built but the quays
+	_occ.paint_line(course, _half_width() + BANK * 0.7, Occupancy.WATER)
+	_occ.paint_disc(_isle(), _isle_r() + ISLE_ARM + BANK * 0.7, Occupancy.WATER)
 	ribbon(world, course, _half_width() * 2.0 + BANK * 1.4, mat, 0.0, WATER)
 	var disc := Kit.cylinder(world, Vector3(_isle().x, WATER - 0.05, _isle().z), _isle_r() + ISLE_ARM + BANK * 0.7, 0.05, mat, false, 20)
 	disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -885,6 +1384,7 @@ static func _servian_wall(world: Node3D, year: int, lost: bool) -> void:
 		var gap := 7.0
 		var dir := (b - a)
 		dir.y = 0.0
+		_occ.paint_band(a, b, 9.0, Occupancy.WALL)  # the wall, its agger and the way along it
 		var length := dir.length() - gap
 		if length <= 0.0:
 			continue
@@ -1032,13 +1532,15 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		if w["kind"] == "stream":  # a stream is a corridor nothing is built across, its banks left green
 			var pts: Array = w["points"]
 			for i in pts.size() - 1:
-				roads.append([pts[i], pts[i + 1], float(w["width"]) / 2.0 + 1.0, true])
+				roads.append([pts[i], pts[i + 1], float(w["width"]) / 2.0 + 3.0, true])
 		else:
 			pools.append([w["at"], float(w["r"]) + 3.0])
+	var lines: Array = []  # the streets and lanes to line with houses, whole: {pts (world), half}
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = r["points"]
 		for i in pts.size() - 1:
 			roads.append([at(pts[i]), at(pts[i + 1]), float(r["width"]) / 2.0 + 3.0])
+		lines.append({"pts": pts.map(func(q: Array) -> Vector3: return at(q)), "half": float(r["width"]) / 2.0})
 		# the view corridor: from each end of the street to the monument it runs at (the Sacred Way
 		# to the Capitol, the Argiletum to the Senate House), so nothing is built across the sight line
 		for end: Vector3 in [at(pts[0]), at(pts[pts.size() - 1])]:
@@ -1050,12 +1552,9 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					best = d
 					target = s["at"]
 			if target != Vector3.INF and best > 4.0:
-				roads.append([end, target, float(r["width"]) / 2.0 + 2.0, true])  # a corridor, not a street to line
+				roads.append([end, target, float(r["width"]) / 2.0 + 3.0, true])  # a corridor, not a street to line
 	var landmarks: Array = standing.filter(func(s: Dictionary) -> bool: return (s["m"] as Dictionary).get("landmark", false)).map(
 		func(s: Dictionary) -> Vector3: return s["at"])
-	var wall_line: Array = []  # the Servian wall's stretches, which no house or lane crosses
-	for gi in servian.size():
-		wall_line.append([servian[gi], servian[(gi + 1) % servian.size()]])
 	var ab: Dictionary = c.get("abitato", {})
 	var abitato := at(ab.get("at", [-800, 450]))
 	var abitato_r := span(float(ab.get("radius", 500)))
@@ -1070,24 +1569,208 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	_roosts = []
 	_pools = []
 	_springs = []
-	var placed: Array = []  # [centre, reach] of every house built, so none is built into another
+	_obbs = []
+	_cells = {}
+	_lamps = []
+	var named: Array = []  # the named streets' stretches, [a, b, half + 3], for the lanes' mouths
+	for r: Array in roads:
+		if r.size() < 4:
+			named.append(r)
 	# the lanes between the blocks: unpaved streets along the bent grid every third row and column,
-	# broken at the named streets, the squares, the monuments, the river and the wall, which the
-	# houses front onto like the named streets (so the city is blocks of houses between streets)
-	for lane: Array in _lanes(lo, hi, outer, roads, keep_off + pools, opens, wall_line):
+	# each laid only where its whole length is free of the map, broken at the named streets (and
+	# opening into them), the squares, the monuments, the water and the wall; the houses front onto
+	# them like the named streets (so the city is blocks of houses between streets)
+	for lane: Array in _lanes(lo, hi, outer, named):
 		var pts: Array = lane.map(func(q: Vector3) -> Vector3: return Vector3(q.x, ground(q), q.z))
 		ribbon(world, pts, LANE, "path" if not fallen else "rubble", 0.1)
+		_occ.paint_line(lane, LANE / 2.0 + 0.6, Occupancy.LANE)
 		for i in pts.size() - 1:
 			roads.append([lane[i], lane[i + 1], LANE / 2.0 + 3.0])
+		lines.append({"pts": lane, "half": LANE / 2.0})
+	_bands = roads
 	var add := func(kind: String, mat: String, xf: Transform3D, col: Color = Color.WHITE) -> void:
 		var key := kind + "|" + mat
 		if not parts.has(key):
 			parts[key] = []
 		parts[key].append([xf, col])
+	for line: Dictionary in lines:  # what the animals leave in the lanes: dung, and straw fallen from the loads
+		if absf(float(line["half"]) - LANE / 2.0) > 0.01:
+			continue
+		var lpts: Array = line["pts"]
+		for i in lpts.size() - 1:
+			if rng.randf() > (0.35 if not fallen else 0.1):
+				continue
+			var q: Vector3 = (lpts[i] as Vector3).lerp(lpts[i + 1], rng.randf())
+			q += Vector3(rng.randf_range(-1.0, 1.0), 0, rng.randf_range(-1.0, 1.0))
+			q.y = ground(q) + 0.1
+			if rng.randf() < 0.55:
+				add.call("rock", "#4a3a26", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(0.3, 0.1, 0.26)), q + Vector3(0, 0.03, 0)))
+			else:
+				add.call("box", "#c8b070", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(0.7, 0.02, 0.45)), q + Vector3(0, 0.01, 0)))
 	var trees: Array = []  # [where, kind, size]
+	if id in ["late", "collapse", "fall"]:  # weeds in the gutters of the streets no aedile keeps
+		for line: Dictionary in lines:
+			if absf(float(line["half"]) - LANE / 2.0) < 0.01:
+				continue
+			var spts: Array = line["pts"]
+			var shalf := float(line["half"])
+			for i in spts.size() - 1:
+				var a: Vector3 = spts[i]
+				var bq: Vector3 = spts[i + 1]
+				var dirv := (bq - a)
+				dirv.y = 0.0
+				var seg := dirv.length()
+				dirv = dirv.normalized()
+				var t: float = rng.randf_range(0.0, 6.0)
+				while t < seg:
+					if rng.randf() < 0.6:
+						var q := a + dirv * t + Vector3(dirv.z, 0, -dirv.x) * (shalf - 0.3) * (1.0 if rng.randf() < 0.5 else -1.0)
+						q.y = ground(q) + 0.12
+						trees.append([q, "grass", rng.randf_range(0.6, 1.0), true])
+					t += rng.randf_range(4.0, 9.0)
 	var doors: Array = out.get("doors", [])
 	var taken := {}
-	var lined := {}  # road index and side -> [[metres along it, house width], ...]: the houses lined up on each street
+	# raising a house on a plot found free: a ruin in the emptied city or the lost world, a plain
+	# block far off, a domus on the hills and here and there, else the block split into houses
+	var raise := func(p: Vector3, basis: Basis, w: float, d: float, far: bool, street_half: float, roll2: float, hill: bool) -> void:
+		var yaw := basis.get_euler().y
+		var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
+		if not far:
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(w, 14.0 if not ruin else 6.0, d)
+			Kit.solid(world, shape, Vector3(p.x, ground(p) + 2.0, p.z), Vector3(0, yaw, 0))
+		if ruin:
+			_ruin(add, p, basis, w, d, rng, trees, fallen and not lost and p.distance_to(abitato) < abitato_r * 1.3)
+			return
+		if far:
+			_far_house(add, p, basis, w, d, rng, palette, republic, old)
+			return
+		var near_river := river_edge(p) < 40.0
+		if hill or (roll2 < 0.1 and not near_river):
+			_domus(add, p, basis, w, d, rng, palette, trees)
+			return
+		# the block split into two or three houses side by side along its length
+		var lots := 1 if w < 11.0 else (2 if w < 20.0 else 3)
+		var x0 := -w / 2.0
+		for k in lots:
+			var lw := w / lots
+			var centre := p + basis * Vector3(x0 + lw * (k + 0.5), 0, 0)
+			var kind := "insula"
+			if near_river and rng.randf() < 0.5:
+				kind = "horreum"
+			elif rng.randf() < 0.12:
+				kind = "row"
+			var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
+			if old:
+				floors = 1 if rng.randf() < 0.55 else 2
+			if fallen:
+				floors = rng.randi_range(1, 2)
+			if floors > 3 and landmarks.any(func(l: Vector3) -> bool: return Vector2(l.x - centre.x, l.z - centre.z).length() < LANDMARK_LOW):
+				floors = 3  # kept low round the landmarks, so they show over the roofs
+			_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors, id, street_half)
+	# the streets lined first, house against house along both sides of every named street and
+	# lane, each with its front a step from the kerb, so every street has walls; the gaps left
+	# (a square, a garden) are where the age leaves them
+	for line: Dictionary in lines:
+		var pts: Array = line["pts"]
+		var half: float = line["half"]
+		var cum: Array = [0.0]  # the distance along the line to each point
+		for i in pts.size() - 1:
+			var seg := Vector2((pts[i + 1] as Vector3).x - (pts[i] as Vector3).x, (pts[i + 1] as Vector3).z - (pts[i] as Vector3).z).length()
+			cum.append(float(cum[-1]) + seg)
+		var length := float(cum[-1])
+		if length < 12.0:
+			continue
+		var along := func(t: float) -> Array:  # [the point on the line at t, the direction there]
+			var i := 0
+			while i < cum.size() - 2 and float(cum[i + 1]) < t:
+				i += 1
+			var a: Vector3 = pts[i]
+			var b: Vector3 = pts[i + 1]
+			var seg := maxf(float(cum[i + 1]) - float(cum[i]), 0.001)
+			var f := clampf((t - float(cum[i])) / seg, 0.0, 1.0)
+			var dir := b - a
+			dir.y = 0.0
+			return [Vector3(a.x, 0, a.z).lerp(Vector3(b.x, 0, b.z), f), dir.normalized()]
+		for side: float in [-1.0, 1.0]:
+			var t := 3.0 + rng.randf_range(0.0, 4.0)
+			var last_stall := -INF
+			while t < length - 3.0:
+				var w := rng.randf_range(9.5, 13.5)
+				if rng.randf() < 0.15:
+					w += 5.0
+				if t + w > length - 3.0:
+					w = length - 3.0 - t
+					if w < 6.0:
+						break
+				var d := rng.randf_range(8.0, 10.0)
+				var mid: Array = along.call(t + w / 2.0)
+				var dir: Vector3 = mid[1]
+				var n := Vector3(dir.z, 0, -dir.x)
+				var p: Vector3 = (mid[0] as Vector3) + n * side * (half + 1.6 + d / 2.0)
+				var far := not inside(edge, p)
+				var y := ground(p)
+				var hill := y > 4.0
+				if half > 2.0 and not far and not fallen and rng.randf() < 0.08:  # a little square off the street, with its fountain
+					var sq: Vector3 = (mid[0] as Vector3) + n * side * (half + 6.6)
+					if _occ.disc_free(sq, 5.0):
+						sq.y = ground(sq)
+						out["fountains"].append(sq)
+						_occ.paint_disc(sq, 3.0, Occupancy.FURNITURE)
+						t += 12.0
+						continue
+				var keep := 0.92
+				if republic and not inside(servian, p):
+					keep = 0.5 if not old else 0.3
+				if hill:
+					keep = 0.8
+				if fallen and not lost:
+					keep = 0.4 if p.distance_to(abitato) < abitato_r else 0.15
+				if old and (hill or p.distance_to(forum) > 95.0) and inside(servian, p):
+					keep = 0.35  # the fields of the small city's hills, a farmhouse among them
+				if far and rng.randf() < 0.3:
+					t += w + 2.0
+					continue
+				if rng.randf() > keep:
+					t += w + 2.0
+					continue
+				var yaw := atan2(-n.x * side, -n.z * side)  # the house's front (+Z) toward the street
+				var basis := Basis(Vector3.UP, yaw)
+				var built := false
+				if _occ.kind_at(p) != Occupancy.VOID:
+					# the house as drawn, else narrower (up to a lane's mouth), else shallower, its front still at the kerb
+					for trial: Array in [[w, d], [w * 0.75, d], [w * 0.5, d], [w, d * 0.7], [w * 0.5, d * 0.7]]:
+						var ww: float = trial[0]
+						var dd: float = trial[1]
+						if ww < 6.0:
+							continue
+						var m2: Array = along.call(t + ww / 2.0)
+						var dir2: Vector3 = m2[1]
+						var n2 := Vector3(dir2.z, 0, -dir2.x)
+						var pp: Vector3 = (m2[0] as Vector3) + n2 * side * (half + 1.6 + dd / 2.0)
+						var b2 := Basis(Vector3.UP, atan2(-n2.x * side, -n2.z * side))
+						if not _fits(pp, b2, ww, dd, 0.25):
+							continue
+						_register(pp, b2, ww, dd)
+						raise.call(pp, b2, ww, dd, far, half, rng.randf(), hill)
+						built = true
+						# a stall set up on the pavement before the shops, oftener on the named streets than in the lanes
+						if not far and not fallen and rng.randf() < (0.14 if half > 2.0 else 0.08):
+							var st: Vector3 = (m2[0] as Vector3) + n2 * side * (half + 0.9)
+							if _occ.kind_at(st) in STALL_ON:
+								out["stalls"].append(st)
+								_occ.paint_disc(st, 1.3, Occupancy.FURNITURE)
+								last_stall = t
+						t += ww + rng.randf_range(0.0, 1.2)
+						break
+				if not built:
+					if not fallen and not far and half > 2.0 and t - last_stall > 30.0 and rng.randf() < 0.5:  # no room for a house: a stall on the kerb now and then
+						var stall := (mid[0] as Vector3) + n * side * (half + 0.9)
+						if _occ.kind_at(stall) in STALL_ON:
+							out["stalls"].append(stall)
+							_occ.paint_disc(stall, 1.3, Occupancy.FURNITURE)
+							last_stall = t
+					t += 2.0
 	for j in int((hi.y - lo.y) / PITCH) + 1:
 		for i in int((hi.x - lo.x) / PITCH) + 1:
 			if taken.has(Vector2i(i, j)):
@@ -1098,84 +1781,43 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			var p := Vector3(bx + bend.x + rng.randf_range(-1.0, 1.0), 0, bz + bend.y + rng.randf_range(-1.0, 1.0))
 			var roll := rng.randf()
 			var roll2 := rng.randf()
-			if not inside(outer, p):
+			var here: int = _occ.kind_at(p)
+			if here == Occupancy.VOID or here == Occupancy.WALL or here == Occupancy.WATER:
 				continue
 			var far := not inside(edge, p)  # beyond where you walk: seen, not visited
 			if far and roll < (0.35 if not old else 0.6):
 				continue
-			if clear.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 16.0):
+			if here == Occupancy.BANK:  # the river's or a pond's bank: trees along it, reeds at the water
+				if roll < 0.4:
+					trees.append([p, "round" if roll2 < 0.6 else ("olive" if roll2 < 0.8 else "pine"), rng.randf_range(0.8, 1.2)])
+				if not far and river_edge(p) < 9.0:
+					_plant(trees, rng, p, "reeds", 3, 5.0, 0.8, 1.3)
+					_plant(trees, rng, p, "grass", 2, 6.0)
 				continue
-			if not skip.is_empty() and (inside(skip, p) or skip.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 12.0)):
-				continue
-			if wall_line.any(func(seg: Array) -> bool: return _to_segment(p, seg[0], seg[1]) < 11.0):
-				continue  # the wall, and the way along it
-			if river_edge(p) < 9.0:
-				if river_edge(p) > 4.0:
-					if roll < 0.4:
-						trees.append([p, "round" if roll2 < 0.6 else ("olive" if roll2 < 0.8 else "pine"), rng.randf_range(0.8, 1.2)])  # trees along the bank
-					if not far:
-						_plant(trees, rng, p, "reeds", 3, 5.0, 0.8, 1.3)  # the reeds at the water
-						_plant(trees, rng, p, "grass", 2, 6.0)
-				continue
-			if pools.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1] + 4.0):
-				continue  # in the water, or on its bank (the reeds are planted with it)
-			if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
+			if here == Occupancy.OPEN:  # a square, the Campus: a plane now and then, grass
 				if roll < 0.14:
 					trees.append([p, "round", rng.randf_range(0.9, 1.3)])
 				if not far and roll2 < 0.5:
 					_plant(trees, rng, p, "grass", 3, 7.0)
 				continue
-			if keep_off.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
+			if here == Occupancy.MONUMENT:  # a monument's ground: the sacred grove by the temple
 				if roll < 0.3:
-					trees.append([p, "cypress" if roll2 < 0.7 else "round", rng.randf_range(0.9, 1.2)])  # the sacred groves by the temples
+					trees.append([p + Vector3(rng.randf_range(-4, 4), 0, rng.randf_range(-4, 4)), "cypress" if roll2 < 0.7 else "round", rng.randf_range(0.9, 1.2)])
 				continue
-			var grove: Dictionary = {}
-			for g: Dictionary in wooded:
-				if Vector2(p.x - (g["at"] as Vector3).x, p.z - (g["at"] as Vector3).z).length() < float(g["r"]):
-					grove = g
-					break
-			if not grove.is_empty():
-				var near := _nearest_road(p, roads)
-				if float(near["d"]) < float(near["half"]) + 3.0 and near["n"] != Vector3.ZERO:
-					p = (near["q"] as Vector3) + (near["n"] as Vector3) * (float(near["half"]) + 5.0)  # the trees stand back from the street
-				_grove_cell(world, trees, rng, p, str(grove["kind"]), far, fallen, add)
+			if here == Occupancy.GROVE:
+				var grove: Dictionary = {}
+				for g: Dictionary in wooded:
+					if Vector2(p.x - (g["at"] as Vector3).x, p.z - (g["at"] as Vector3).z).length() < float(g["r"]):
+						grove = g
+						break
+				if not grove.is_empty():
+					_grove_cell(world, trees, rng, p, str(grove["kind"]), far, fallen, add)
 				continue
-			# a cell near a street is lined up along it, its front a step from the kerb, so the street
-			# has walls (the road entries are [a, b, half-width + 3, corridor?]); a cell on the street
-			# itself, or on a view corridor, is left open, with a stall now and then
-			var street := _nearest_road(p, roads)
-			var snapped := false
+			if here != Occupancy.FREE:
+				continue  # a street, a lane, a house lined along one, a fountain, a tomb
 			var w := rng.randf_range(9.5, 12.5)
 			var d := rng.randf_range(9.5, 12.5)
 			var yaw := 0.0
-			if float(street["d"]) < float(street["half"]) + 9.0:
-				var k: int = street["k"]
-				var half: float = street["half"]
-				var t: float = street["t"]
-				var room: bool = (roads[k] as Array).size() < 4 and float(street["d"]) >= half + 1.5
-				var dir0: Vector3 = street["dir"]
-				var n0: Vector3 = street["n"]
-				var side_key := "%d%s" % [k, "+" if dir0.x * n0.z - dir0.z * n0.x > 0.0 else "-"]  # this side of this stretch
-				if room:  # not on top of a house already lined up on this side of this stretch
-					for other: Array in lined.get(side_key, []):
-						if absf(float(other[0]) - t) < (float(other[1]) + w) / 2.0 + 0.8:
-							room = false
-							break
-				if not room:
-					if roll < 0.5 and not fallen and not far and (roads[k] as Array).size() < 4:
-						var stall: Vector3 = street["q"] + (street["n"] as Vector3) * (half + 1.2)
-						out["stalls"].append(stall)
-					continue
-				if not lined.has(side_key):
-					lined[side_key] = []
-				lined[side_key].append([t, w])
-				var dir: Vector3 = street["dir"]
-				d = minf(d, 10.0)  # shallow enough that the row behind keeps its yard
-				yaw = atan2(-(street["n"] as Vector3).x, -(street["n"] as Vector3).z)  # the house's front (+Z) toward the street
-				p = (street["q"] as Vector3) + (street["n"] as Vector3) * (half + 1.6 + d / 2.0)
-				snapped = true
-				if dir == Vector3.ZERO:
-					snapped = false
 			var y := ground(p)
 			var hill := y > 4.0
 			var outer_hill := old and (hill or p.distance_to(forum) > 95.0) and inside(servian, p)  # the Esquiline, the Caelian, the Aventine's back
@@ -1195,10 +1837,11 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						_plant(trees, rng, p, "grass", 5, 7.0, 0.8, 1.4)
 						_plant(trees, rng, p, "bush", 1, 6.0, 0.6, 1.0)
 				elif kind == "rock":  # the Capitol's bare face
-					add.call("rock", "rock", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(rng.randf_range(3.0, 6.0), rng.randf_range(1.5, 3.0), rng.randf_range(3.0, 6.0))), Vector3(p.x, y + 0.2, p.z)))
+					add.call("rock", "rock", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(rng.randf_range(3.0, 6.0), rng.randf_range(1.5, 3.0), rng.randf_range(3.0, 6.0))), Vector3(p.x, y + 0.2, p.z)))
 					_plant(trees, rng, p, "grass", 3, 6.0)
-				elif roll2 < 0.35 and not far and not hill:
+				elif roll2 < 0.35 and not far and not hill and _occ.disc_free(p, 3.5):
 					out["fountains"].append(p)
+					_occ.paint_disc(p, 3.0, Occupancy.FURNITURE)
 					trees.append([p + Vector3(3.5, 0, 2.5), "round", rng.randf_range(0.9, 1.2)])  # the plane over the fountain
 				elif roll2 < 0.8 or hill:
 					trees.append([p, kind, rng.randf_range(0.8, 1.3)])
@@ -1212,65 +1855,57 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					if not far:
 						_plant(trees, rng, p, "grass", 4, 7.0)
 				continue
-			if not snapped:
-				var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
-				yaw = atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
+			var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
+			yaw = atan2(-along.y, 1.0 + along.x) + rng.randf_range(-0.03, 0.03)
 			var basis := Basis(Vector3.UP, yaw)
 			if outer_hill and roll2 < 0.66:  # fields inside the wall, a farmhouse among them
-				if rng.randf() < 0.5 and not snapped:
-					taken[Vector2i(i + 1, j)] = true
-					w += PITCH
-					p += basis * Vector3(PITCH / 2.0, 0, 0)
+				if rng.randf() < 0.5:
+					var p2 := p + basis * Vector3(PITCH / 2.0, 0, 0)
+					if _fits(p2, basis, w + PITCH, d, 0.5):
+						taken[Vector2i(i + 1, j)] = true
+						w += PITCH
+						p = p2
+				var fits := false
+				for shrink: float in [1.0, 0.8, 0.65]:
+					if _fits(p, basis, w * shrink, d * shrink, 0.5):
+						w *= shrink
+						d *= shrink
+						fits = true
+						break
+				if not fits:
+					continue
+				_register(p, basis, w, d)
 				_plot(add, p, basis, w, d, rng, palette, trees, doors, far)
 				continue
-			if rng.randf() < 0.22 and not hill and not old and not snapped:  # a long block over two cells, the alley between built over
-				taken[Vector2i(i + 1, j)] = true
-				w += PITCH
-				p += basis * Vector3(PITCH / 2.0, 0, 0)
-			var reach := maxf(w, d) / 2.0 * 0.8
-			if placed.any(func(o: Array) -> bool: return Vector2(o[0].x - p.x, o[0].z - p.z).length() < float(o[1]) + reach):
-				continue  # into a house already built
-			placed.append([p, reach])
+			if rng.randf() < 0.22 and not hill and not old:  # a long block over two cells, the alley between built over
+				var p2 := p + basis * Vector3(PITCH / 2.0, 0, 0)
+				if _fits(p2, basis, w + PITCH, d, 0.5):
+					taken[Vector2i(i + 1, j)] = true
+					w += PITCH
+					p = p2
+			# a block between the rows lined along the streets and lanes takes what room is left: it
+			# is built smaller if it must, and not at all under six paces
+			var fitted := false
+			for shrink: float in [1.0, 0.85, 0.72, 0.6, 0.5]:
+				var ww := w * shrink
+				var dd := d * shrink
+				if ww < 6.0 or dd < 6.0:
+					break
+				if _fits(p, basis, ww, dd, 0.5):
+					w = ww
+					d = dd
+					fitted = true
+					break
+			if not fitted:
+				continue  # into a house already built, a street, or a monument's ground
+			_register(p, basis, w, d)
 			if hill and rng.randf() < 0.45:  # the yard behind a hill house: a fig, a cypress
 				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.5)), "round" if rng.randf() < 0.5 else ("cypress" if rng.randf() < 0.6 else "olive"), rng.randf_range(0.6, 0.9)])
-			elif not hill and rng.randf() < (0.36 if not far else 0.18):  # a pine or a cypress in a courtyard, grown up over the roofs
+			elif not hill and rng.randf() < (0.4 if not far else 0.2):  # a pine or a cypress in the yard behind, grown up over the roofs
 				var tall := rng.randf() < 0.55
-				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, rng.randf_range(-d * 0.25, d * 0.25)), "pine" if tall else "cypress",
-					rng.randf_range(1.8, 2.4) if tall else rng.randf_range(1.8, 2.4)])
-			var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
-			if not far:
-				var shape := BoxShape3D.new()
-				shape.size = Vector3(w, 14.0 if not ruin else 6.0, d)
-				Kit.solid(world, shape, Vector3(p.x, ground(p) + 2.0, p.z), Vector3(0, yaw, 0))
-			if ruin:
-				_ruin(add, p, basis, w, d, rng, trees, fallen and not lost and p.distance_to(abitato) < abitato_r * 1.3)
-				continue
-			if far:
-				_far_house(add, p, basis, w, d, rng, palette, republic, old)
-				continue
-			var near_river := river_edge(p) < 40.0
-			if hill or (roll2 < 0.1 and not near_river):
-				_domus(add, p, basis, w, d, rng, palette, trees)
-				continue
-			# the block split into two or three houses side by side along its length
-			var lots := 1 if w < 11.0 else (2 if w < 20.0 else 3)
-			var x0 := -w / 2.0
-			for k in lots:
-				var lw := w / lots
-				var centre := p + basis * Vector3(x0 + lw * (k + 0.5), 0, 0)
-				var kind := "insula"
-				if near_river and rng.randf() < 0.5:
-					kind = "horreum"
-				elif rng.randf() < 0.12:
-					kind = "row"
-				var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
-				if old:
-					floors = 1 if rng.randf() < 0.55 else 2
-				if fallen:
-					floors = rng.randi_range(1, 2)
-				if floors > 3 and landmarks.any(func(l: Vector3) -> bool: return Vector2(l.x - centre.x, l.z - centre.z).length() < LANDMARK_LOW):
-					floors = 3  # kept low round the landmarks, so they show over the roofs
-				_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors, id, float(street["half"]) if snapped else 0.0)
+				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.6)), "pine" if tall else "cypress",
+					rng.randf_range(1.8, 2.4)])
+			raise.call(p, basis, w, d, far, 0.0, roll2, hill)
 	for tomb: Dictionary in out.get("tombs", []):  # a cypress either side of each tomb along the roads
 		var tb := Basis(Vector3.UP, float(tomb["yaw"]))
 		for side: float in [-1.0, 1.0]:
@@ -1289,8 +1924,8 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			for k in int(r[2]):
 				var q := at + bb * Vector3(rng.randf_range(-1.2, 1.2), 0.1, rng.randf_range(-0.2, 0.2))
 				var turn := bb * Basis(Vector3.UP, rng.randf_range(-0.6, 0.6))
-				add.call("box", "#8a8a94", Transform3D(turn.scaled(Vector3(0.16, 0.14, 0.3)), q))
-				add.call("box", "#5a6a70", Transform3D(turn.scaled(Vector3(0.1, 0.1, 0.12)), q + turn * Vector3(0, 0.09, 0.14)))
+				add.call("box", "#8a8a94", Transform3D(turn.scaled_local(Vector3(0.16, 0.14, 0.3)), q))
+				add.call("box", "#5a6a70", Transform3D(turn.scaled_local(Vector3(0.1, 0.1, 0.12)), q + turn * Vector3(0, 0.09, 0.14)))
 	out["shops"] = _draw(world, parts)
 	# the street fountains, with a lamp on a post by each
 	var flames := MultiMesh.new()
@@ -1300,7 +1935,9 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	flame_mesh.height = 0.4
 	flames.mesh = flame_mesh
 	var fountains: Array = out["fountains"]
-	flames.instance_count = fountains.size()
+	flames.instance_count = fountains.size() + _lamps.size()
+	for k in _lamps.size():  # the little flames of the door lamps
+		flames.set_instance_transform(fountains.size() + k, Transform3D(Basis.IDENTITY.scaled(Vector3(0.45, 0.45, 0.45)), _lamps[k]))
 	for k in fountains.size():
 		var f: Vector3 = fountains[k]
 		var y := ground(f)
@@ -1340,6 +1977,29 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						break
 	trees.append_array(reeds)
 	_waters(world, year, fallen, trees, rng, out)
+	# nothing grows through a house, in a street or under a pergola (a fourth entry marks a tree
+	# planted where it belongs inside a plot: a garden's, a ruin's, a field's, a roof's)
+	var grown: Array = []
+	for t: Array in trees:
+		if t.size() > 3:
+			grown.append(t)
+			continue
+		var q: Vector3 = t[0]
+		var kind: String = t[1]
+		var trunked := kind in ["pine", "cypress", "round", "olive"]
+		if trunked:
+			if not _occ.disc_free(q, 1.0, Occupancy.ALLOW_PLANT):
+				continue
+		else:
+			var allow: int = Occupancy.ALLOW_PLANT | ((1 << Occupancy.WATER) if kind == "reeds" else 0)
+			if not _occ.disc_free(q, 0.5, allow):  # a pace round it, so a tuft is not sunk into a house's corner between two cells
+				continue
+		grown.append(t)
+	trees = grown
+	_last_trees = trees
+	for t: Array in trees:  # the trunks, so what is set out after (a basin, a shrine) keeps off them
+		if t[1] in ["pine", "cypress", "round", "olive"]:
+			_occ.paint_disc(t[0], 0.7, Occupancy.TREE)
 	_trees(world, trees, fallen)
 	for i in course.size() - 1:
 		var a: Vector3 = course[i]
@@ -1374,7 +2034,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
 	var old := age_id in ["heroic", "early"]
 	var late := age_id == "late"
-	var burnt := age_id == "collapse" and rng.randf() < 0.3
+	# the burnt quarters of 455; and in every age a house or two in each quarter gutted by the fires Rome never lacked
+	var burnt := (age_id == "collapse" and rng.randf() < 0.3) or (age_id in ["republic", "empire", "late"] and rng.randf() < 0.008)
 	if burnt:
 		_burnt.append(Vector3(c.x, y + floors * 4.0, c.z))
 	if old and kind != "horreum":
@@ -1385,8 +2046,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 	var wall_tint := Color.WHITE if brick else (tint if not burnt else tint.darkened(0.5))
 	if kind == "horreum":  # a warehouse: plain brick, a few small high windows, a flat roof, a big door
 		var h := 8.0
-		add.call("box", "h_brick", Transform3D(b.scaled(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)))
-		add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, y + h + 0.15, c.z)))
+		add.call("box", "h_brick", Transform3D(b.scaled_local(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)))
+		add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, y + h + 0.15, c.z)))
 		for s: float in [1.0, -1.0]:
 			for k in maxi(1, int(w / 4.0)):
 				var x := -w / 2.0 + (k + 0.5) * w / maxi(1, int(w / 4.0))
@@ -1395,8 +2056,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 		return
 	var ground_h := 4.0
 	# the ground storey, and its bays: shops, doors, blank wall
-	add.call("box", wall, Transform3D(b.scaled(Vector3(w, y + ground_h - low, d)), Vector3(c.x, (low + y + ground_h) / 2.0, c.z)), wall_tint)
-	add.call("box", "#8a8074", Transform3D(b.scaled(Vector3(w + 0.04, 0.9, d + 0.04)), Vector3(c.x, y + 0.45, c.z)), tint.darkened(0.35))  # the damp at the foot
+	add.call("box", wall, Transform3D(b.scaled_local(Vector3(w, y + ground_h - low, d)), Vector3(c.x, (low + y + ground_h) / 2.0, c.z)), wall_tint)
+	add.call("box", "#8a8074", Transform3D(b.scaled_local(Vector3(w + 0.04, 0.9, d + 0.04)), Vector3(c.x, y + 0.45, c.z)), tint.darkened(0.35))  # the damp at the foot
 	var shops := 0
 	for s: float in [1.0, -1.0]:
 		shops += _bays(add, c, b, w, d, y, s, kind, rng, fallen, late, burnt, doors, age_id)
@@ -1404,14 +2065,14 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 			shops += _bays(add, c, b, w, d, y, s, kind, rng, fallen, late, burnt, doors, age_id, true)
 	var top := y + ground_h
 	if kind == "row" or floors <= 1:  # a row of shops: a lean-to of tiles
-		add.call("prism", _roof_of(age_id, burnt), Transform3D(b.scaled(Vector3(w + 0.6, 1.6, d + 0.8)), Vector3(c.x, top + 0.8, c.z)))
+		add.call("prism", _roof_of(age_id, burnt), Transform3D(b.scaled_local(Vector3(w + 0.6, 1.6, d + 0.8)), Vector3(c.x, top + 0.8, c.z)))
 		_ridge(add, c, b, w, d, top + 1.6, rng)
 	else:
 		var upper := (floors - 1) * 4.0
 		var setback := floors >= 4 and rng.randf() < 0.35
 		if setback:
 			upper -= 4.0
-		add.call("box", wall, Transform3D(b.scaled(Vector3(w, upper, d)), Vector3(c.x, top + upper / 2.0, c.z)), wall_tint)
+		add.call("box", wall, Transform3D(b.scaled_local(Vector3(w, upper, d)), Vector3(c.x, top + upper / 2.0, c.z)), wall_tint)
 		if late or burnt:  # plaster patched over the brick
 			for k in rng.randi_range(1, 3):
 				var s := 1.0 if rng.randf() < 0.5 else -1.0
@@ -1424,75 +2085,93 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 		top += upper
 		if burnt:  # the roof gone to its charred beams, the top storey open
 			for k in maxi(2, int(w / 2.2)):
-				add.call("box", "#2a2622", Transform3D(b.scaled(Vector3(0.25, 0.3, d + 0.6)), Vector3(c.x, top + 0.4, c.z) + b * Vector3(-w / 2.0 + (k + 0.5) * w / maxi(2, int(w / 2.2)), 0, 0)))
-			add.call("box", "#2a2622", Transform3D(b.scaled(Vector3(w + 0.4, 0.2, 0.25)), Vector3(c.x, top + 0.4, c.z)))
+				add.call("box", "#2a2622", Transform3D(b.scaled_local(Vector3(0.25, 0.3, d + 0.6)), Vector3(c.x, top + 0.4, c.z) + b * Vector3(-w / 2.0 + (k + 0.5) * w / maxi(2, int(w / 2.2)), 0, 0)))
+			add.call("box", "#2a2622", Transform3D(b.scaled_local(Vector3(w + 0.4, 0.2, 0.25)), Vector3(c.x, top + 0.4, c.z)))
 			if rng.randf() < 0.4:  # scaffolding no one finishes
 				var s := 1.0 if rng.randf() < 0.5 else -1.0
 				for x: float in [-w * 0.3, 0.0, w * 0.3]:
-					add.call("box", "wood", Transform3D(b.scaled(Vector3(0.18, top - y + 2.0, 0.18)), Vector3(c.x, (y + top + 2.0) / 2.0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.0))))
-				add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.7, 0.12, 1.2)), Vector3(c.x, top - 1.0, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.7))))
+					add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.18, top - y + 2.0, 0.18)), Vector3(c.x, (y + top + 2.0) / 2.0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.0))))
+				add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w * 0.7, 0.12, 1.2)), Vector3(c.x, top - 1.0, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.7))))
 			return
 		if setback:  # a top storey set back, lighter, often timber-framed
 			var tw := w - 1.8
 			var td := d - 1.8
 			var tint2 := Color("#" + str(palette[rng.randi() % palette.size()]))
-			add.call("box", "h_timber" if rng.randf() < 0.5 else "h_plaster", Transform3D(b.scaled(Vector3(tw, 3.4, td)), Vector3(c.x, top + 1.7, c.z)), tint2)
+			add.call("box", "h_timber" if rng.randf() < 0.5 else "h_plaster", Transform3D(b.scaled_local(Vector3(tw, 3.4, td)), Vector3(c.x, top + 1.7, c.z)), tint2)
 			_windows(add, c, b, tw, td, top + 1.6, rng, 0.0, true)
-			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.25, d)), Vector3(c.x, top + 0.12, c.z)))  # the terrace round it
+			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w, 0.25, d)), Vector3(c.x, top + 0.12, c.z)))  # the terrace round it
 			top += 3.4
 		if rng.randf() < 0.6 or republic:  # a tiled roof
 			var rw := w + 0.8 if not setback else w - 1.0
 			var rd := d + 0.8 if not setback else d - 1.0
-			add.call("prism", _roof_of(age_id, false), Transform3D(b.scaled(Vector3(rw, 2.2, rd)), Vector3(c.x, top + 1.1, c.z)))
+			add.call("prism", _roof_of(age_id, false), Transform3D(b.scaled_local(Vector3(rw, 2.2, rd)), Vector3(c.x, top + 1.1, c.z)))
 			_ridge(add, c, b, rw, rd, top + 2.2, rng)
+			if rng.randf() < 0.3:  # a patch of the roof re-tiled: newer tiles on the mossy roofs of the late city, older ones before
+				var ps := 1.0 if rng.randf() < 0.5 else -1.0
+				var slope := atan2(2.2, rd / 2.0)
+				var patch := Vector3(c.x, top, c.z) + b * Vector3(rng.randf_range(-rw * 0.3, rw * 0.3), 1.1 + 0.06, ps * rd * 0.25)
+				add.call("box", "h_roof" if late else "h_roof", Transform3D((b * Basis(Vector3.RIGHT, -slope * ps)).scaled_local(Vector3(rng.randf_range(1.6, 2.8), 0.06, 1.4)), patch),
+					Color.WHITE if late else Color(0.84, 0.78, 0.72))
 		else:  # a roof terrace with its parapet, sometimes a garden and a pergola on it
-			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, top + 0.15, c.z)))
-			add.call("box", "h_plaster", Transform3D(b.scaled(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, d / 2.0)), tint)
-			add.call("box", "h_plaster", Transform3D(b.scaled(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, -d / 2.0)), tint)
+			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, top + 0.15, c.z)))
+			add.call("box", "h_plaster", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, d / 2.0)), tint)
+			add.call("box", "h_plaster", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, -d / 2.0)), tint)
 			if rng.randf() < 0.55 and not fallen:
 				for k in rng.randi_range(2, 4):  # planters of box and myrtle, and a little tree in a pot
 					var q := Vector3(c.x, top, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0.5, rng.randf_range(-d * 0.35, d * 0.35))
-					add.call("box", "terracotta", Transform3D(b.scaled(Vector3(1.4, 0.6, 0.6)), q))
-					add.call("box", "leaves", Transform3D(b.scaled(Vector3(1.3, 0.5, 0.5)), q + Vector3(0, 0.5, 0)))
-				trees.append([Vector3(c.x, top + 0.3, c.z) + b * Vector3(w * 0.2, 0, 0), "round", 0.45])
+					add.call("box", "terracotta", Transform3D(b.scaled_local(Vector3(1.4, 0.6, 0.6)), q))
+					add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(1.3, 0.5, 0.5)), q + Vector3(0, 0.5, 0)))
+				trees.append([Vector3(c.x, top + 0.3, c.z) + b * Vector3(w * 0.2, 0, 0), "round", 0.45, true])
 				for x: float in [-1.0, 1.0]:  # the pergola's posts and beams, a vine over it
 					for z: float in [-1.0, 1.0]:
-						add.call("box", "wood", Transform3D(b.scaled(Vector3(0.15, 2.4, 0.15)), Vector3(c.x, top, c.z) + b * Vector3(x * w * 0.25 - w * 0.15, 1.2, z * d * 0.2)))
-				add.call("box", "leaves", Transform3D(b.scaled(Vector3(w * 0.55, 0.25, d * 0.45)), Vector3(c.x, top, c.z) + b * Vector3(-w * 0.15, 2.5, 0)))
+						add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.15, 2.4, 0.15)), Vector3(c.x, top, c.z) + b * Vector3(x * w * 0.25 - w * 0.15, 1.2, z * d * 0.2)))
+				add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(w * 0.55, 0.25, d * 0.45)), Vector3(c.x, top, c.z) + b * Vector3(-w * 0.15, 2.5, 0)))
 			if rng.randf() < 0.5:
 				_roost(c + b * Vector3(rng.randf_range(-w * 0.4, w * 0.4), 0, d / 2.0), top + 0.8, rng)
 		if floors >= 3 and rng.randf() < 0.45 and not fallen:  # a wooden balcony along the second storey
 			var s := 1.0 if rng.randf() < 0.5 else -1.0
-			add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.8, 0.2, 1.1)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.0, s * (d / 2.0 + 0.55))))
-			add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, 0.08)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.5, s * (d / 2.0 + 1.08))))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w * 0.8, 0.2, 1.1)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.0, s * (d / 2.0 + 0.55))))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w * 0.8, 0.8, 0.08)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.5, s * (d / 2.0 + 1.08))))
 			for k in 3:  # pots and washing on it
-				add.call("box", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.35, 0.35, 0.35)),
+				add.call("box", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.35, 0.35, 0.35)),
 					Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.3, s * (d / 2.0 + 0.8))))
-				add.call("box", "leaves", Transform3D(Basis.IDENTITY.scaled(Vector3(0.4, 0.3, 0.4)),
+				add.call("box", "leaves", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.4, 0.3, 0.4)),
 					Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.65, s * (d / 2.0 + 0.8))))
 			for k in rng.randi_range(2, 4):
 				add.call("quad", "h_cloth", _face(b, c, Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.9 + y - c.y, s * (d / 2.0 + 1.12)), s, Vector2(0.7, 0.8)),
 					TUNICS[rng.randi() % TUNICS.size()])
+	var prop_chance: float = {"late": 0.22, "collapse": 0.4, "empire": 0.05, "republic": 0.05}.get(age_id, 0.0)
+	if floors >= 2 and not burnt and rng.randf() < prop_chance:  # a wall shored up with timber props from the pavement
+		var ps := 1.0 if rng.randf() < 0.5 else -1.0
+		var px := rng.randf_range(-w * 0.3, w * 0.3)
+		var lean := atan2(2.3, 5.6)
+		for k in 2:
+			var foot := Vector3(c.x, y, c.z) + b * Vector3(px + k * 1.4, 0, ps * (d / 2.0 + 2.3))
+			var mid := foot + b * Vector3(0, 2.9, -ps * 1.15)
+			add.call("box", "wood", Transform3D((b * Basis(Vector3.RIGHT, lean * ps)).scaled_local(Vector3(0.22, 6.1, 0.22)), mid))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(1.9, 0.14, 0.14)), Vector3(c.x, y + 3.0, c.z) + b * Vector3(px + 0.7, 0, ps * (d / 2.0 + 1.1))))  # the brace between them
 	if rng.randf() < 0.14 and not burnt:  # a vine up the wall
 		var s := 1.0 if rng.randf() < 0.5 else -1.0
 		add.call("quad", "h_vine", _face(b, c, Vector3(rng.randf_range(-w * 0.4, w * 0.4), y + 2.6 - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.3, 5.0)))
 	for s: float in [1.0, -1.0]:  # before the shops: a step of slabs, an awning, wares
 		if rng.randf() < 0.55:
-			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.1, 1.5)), Vector3(c.x, y + 0.02, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.75))))
+			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w, 0.1, 1.5)), Vector3(c.x, y + 0.02, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.75))))
 		if fallen:
 			continue
 		if rng.randf() < (0.35 if age_id in ["republic", "empire"] else 0.15) and age_id not in ["heroic", "early"]:  # election notices and scratched words by the shop doors
-			add.call("quad", "graffiti_" + (age_id if age_id in ["republic", "empire"] else "late"),
-				_face(b, c, Vector3(rng.randf_range(-w * 0.3, w * 0.3), 2.9 + y - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.6, 0.8)))
+			var notice_age := age_id if age_id in ["republic", "empire"] else "late"
+			var notice_n: int = (TexSet.notices(notice_age) as Array).size()
+			add.call("quad", "graffiti_%s_%d" % [notice_age, rng.randi() % maxi(1, notice_n)],
+				_face(b, c, Vector3(rng.randf_range(-w * 0.3, w * 0.3), 2.9 + y - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.8, 0.8)))
 		if shops > 0 and rng.randf() < (0.4 if not late else 0.2):
-			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled(Vector3(w * 0.6, 0.06, 1.8)),
+			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled_local(Vector3(w * 0.6, 0.06, 1.8)),
 				Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 3.3, s * (d / 2.0 + 0.9))))
 			for k in rng.randi_range(2, 5):
 				var q := Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, s * (d / 2.0 + rng.randf_range(0.5, 1.4)))
 				if rng.randf() < 0.6:
 					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY, q + Vector3(0, 0.45, 0)))
 				else:
-					add.call("box", "wood", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(0.7, 0.6, 0.7)), q + Vector3(0, 0.3, 0)))
+					add.call("box", "wood", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(0.7, 0.6, 0.7)), q + Vector3(0, 0.3, 0)))
 
 
 ## The colours washing is dyed: the undyed wool of most tunics, and the reds, blues and ochres of
@@ -1509,7 +2188,7 @@ static func _roof_of(age_id: String, burnt: bool) -> String:
 ## The ridge of a tiled roof: a line of cover tiles, and now and then the pigeons sitting on it.
 static func _ridge(add: Callable, c: Vector3, b: Basis, rw: float, rd: float, top: float, rng: RandomNumberGenerator) -> void:
 	var along_x := rw >= rd  # the prism's ridge runs along its longer side
-	add.call("box", "#8a4a30", Transform3D(b.scaled(Vector3(rw if along_x else 0.3, 0.22, 0.3 if along_x else rd)), Vector3(c.x, top - 0.05, c.z)))
+	add.call("box", "#8a4a30", Transform3D(b.scaled_local(Vector3(rw if along_x else 0.3, 0.22, 0.3 if along_x else rd)), Vector3(c.x, top - 0.05, c.z)))
 	if rng.randf() < 0.18:
 		var t := rng.randf_range(-0.4, 0.4)
 		_roost(c + b * (Vector3(rw * t, 0, 0) if along_x else Vector3(0, 0, rd * t)), top + 0.1, rng, b)
@@ -1527,13 +2206,13 @@ static func _washing(add: Callable, c: Vector3, b: Basis, w: float, d: float, h:
 	var length := 2.0 * (street_w + 1.6) + 0.3
 	var x := rng.randf_range(-w * 0.3, w * 0.3)
 	var start := Vector3(c.x, 0, c.z) + b * Vector3(x, h, d / 2.0)
-	add.call("box", "#4a3a2a", Transform3D(b.scaled(Vector3(0.03, 0.03, length)), start + b * Vector3(0, 0, length / 2.0)))
+	add.call("box", "#4a3a2a", Transform3D(b.scaled_local(Vector3(0.03, 0.03, length)), start + b * Vector3(0, 0, length / 2.0)))
 	var n := int(length / 0.95)
 	for k in n:
 		if rng.randf() < 0.25:
 			continue
 		var z := d / 2.0 + 0.5 + k * 0.95
-		add.call("quad", "h_cloth", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(0.75, rng.randf_range(0.6, 1.0), 1.0)),
+		add.call("quad", "h_cloth", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled_local(Vector3(0.75, rng.randf_range(0.6, 1.0), 1.0)),
 			Vector3(c.x, 0, c.z) + b * Vector3(x, h - 0.45, z)), TUNICS[rng.randi() % TUNICS.size()])
 
 
@@ -1561,75 +2240,151 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 			continue
 		if shop and not fallen:
 			shops += 1
+			var trade: Array = _trade_for(age_id, rng)  # [job, picture]
 			add.call("quad", "h_shop", _face(b, c, Vector3(x, y + 1.9 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(minf(bw - 0.3, 3.4), 3.7)))
-			add.call("box", "travertine", Transform3D(b.scaled(Vector3(minf(bw - 1.2, 2.4), 0.95, 0.5)), Vector3(c.x, y + 0.47, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))
-			for j in rng.randi_range(1, 3):  # the pots on the counter
-				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.6, 0.6, 0.6)),
-					Vector3(c.x, y + 1.2, c.z) + b * Vector3(x + rng.randf_range(-0.8, 0.8), 0, s * (d / 2.0 + 0.25))))
-			if rng.randf() < 0.45:
-				_sign(add, c, b, w, d, y, s, rng, x)
+			add.call("box", "travertine", Transform3D(b.scaled_local(Vector3(minf(bw - 1.2, 2.4), 0.95, 0.5)), Vector3(c.x, y + 0.47, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))
+			_wares(add, c, b, x, s, d, y, str(trade[1]) if not trade.is_empty() else "wine", rng)
+			if rng.randf() < 0.6:
+				_sign(add, c, b, w, d, y, s, rng, x, str(trade[1]) if not trade.is_empty() else "")
+			if not trade.is_empty() and doors.size() < 1800:  # the shop's door, for its keeper (places_rome.gd)
+				var at_shop := Vector3(c.x, 0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))
+				at_shop.y = ground(at_shop)
+				doors.append([at_shop, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z), str(trade[0])])
 			if rng.randf() < 0.22 and not late:  # a vine trained over the front on two poles
-				var out_to := s * (d / 2.0 + 2.2)
+				var out_to := s * (d / 2.0 + 1.35)
 				for px: float in [-bw * 0.4, bw * 0.4]:
-					add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 3.1, 0.12)), Vector3(c.x, y + 1.55, c.z) + b * Vector3(x + px, 0, out_to)))
-				add.call("box", "wood", Transform3D(b.scaled(Vector3(bw * 0.8 + 0.2, 0.08, 0.08)), Vector3(c.x, y + 3.1, c.z) + b * Vector3(x, 0, out_to)))
-				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled(Vector3(bw * 0.9, 2.4, 1.0)),
-					Vector3(c.x, y + 3.25, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))))
+					add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.12, 3.1, 0.12)), Vector3(c.x, y + 1.55, c.z) + b * Vector3(x + px, 0, out_to)))
+				add.call("box", "wood", Transform3D(b.scaled_local(Vector3(bw * 0.8 + 0.2, 0.08, 0.08)), Vector3(c.x, y + 3.1, c.z) + b * Vector3(x, 0, out_to)))
+				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled_local(Vector3(bw * 0.9, 1.5, 1.0)),
+					Vector3(c.x, y + 3.25, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.7))))
 		elif door or (shop and fallen):
 			var which := "h_door" if roll < 0.72 else ("h_door_red" if roll < 0.76 else "h_door_green")
 			if burnt:
 				add.call("quad", "dark", _face(b, c, Vector3(x, y + 1.4 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(1.4, 2.8)))  # off its hinges
 			else:
 				add.call("quad", which, _face(b, c, Vector3(x, y + 1.4 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(1.5, 2.9)))
-				add.call("box", "bronze", Transform3D(b.scaled(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.6, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.1))))  # the lamp
+				add.call("box", "bronze", Transform3D(b.scaled_local(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.6, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.1))))  # the lamp
+				if not fallen:
+					_lamps.append(Vector3(c.x, y + 2.84, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.22)))
+				add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(1.6, 0.07, 0.5)), Vector3(c.x, y + 0.035, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))  # the threshold
+				add.call("box", "#a8a094", Transform3D(b.scaled_local(Vector3(0.9, 0.075, 0.28)), Vector3(c.x, y + 0.036, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))  # worn hollow by the feet
 				if rng.randf() < 0.4:  # a bush of box or a rose in a pot by the door
 					var pot := Vector3(c.x, y, c.z) + b * Vector3(x - 1.0, 0, s * (d / 2.0 + 0.45))
-					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.9, 0.55, 0.9)), pot + Vector3(0, 0.25, 0)))
+					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.9, 0.55, 0.9)), pot + Vector3(0, 0.25, 0)))
 					var potted := "g_flowers" if rng.randf() < 0.5 else "g_bush"
 					add.call("quad", potted, _face(b, c, Vector3(x - 1.0, y + 0.85 - c.y, s * (d / 2.0 + 0.45)), s, Vector2(0.9, 0.8)))
 					add.call("quad", potted, _face(b, c, Vector3(x - 1.0, y + 0.85 - c.y, s * (d / 2.0 + 0.45)), s, Vector2(0.9, 0.8), true))
 			if rng.randf() < 0.4 and doors.size() < 900 and not fallen:
 				var at_door := Vector3(c.x, 0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))
 				at_door.y = ground(at_door)
-				doors.append([at_door, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z)])
+				doors.append([at_door, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z), ""])
 		elif rng.randf() < 0.3:  # blank wall, a window low in it
 			add.call("quad", "h_window_small", _face(b, c, Vector3(x, y + 2.6 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(0.8, 0.9)))
 	return shops
 
 
-## A shop's sign on its front: a board hung out over the door with what the shop sells on it, the
+## A trade for a shop of the age, drawn by weight from the trades whose job the age has: [job, picture].
+static func _trade_for(age_id: String, rng: RandomNumberGenerator) -> Array:
+	var key := "late" if age_id == "collapse" else age_id
+	if not _trade_bags.has(key):
+		var bag: Array = []
+		for t: Array in TRADES:
+			var j: Dictionary = Citizen.job(str(t[0]))
+			if j.is_empty() or not (j.get("ages", []) as Array).has(key):
+				continue
+			for k in int(t[2]):
+				bag.append([t[0], t[1]])
+		_trade_bags[key] = bag
+	var bag: Array = _trade_bags[key]
+	return bag[rng.randi() % bag.size()] if not bag.is_empty() else []
+
+
+## The wares of a trade set out on its counter (and, for the butcher, hung from the lintel): loaves,
+## jars and cups, joints and a cleaver, tools on an anvil, shoes, bolts of cloth, the barber's shears,
+## mirror and stool, the changer's scales and coins, rolls, pots, fish.
+static func _wares(add: Callable, c: Vector3, b: Basis, x: float, s: float, d: float, y: float, picture: String, rng: RandomNumberGenerator) -> void:
+	var top := y + 0.95
+	var out := s * (d / 2.0 + 0.25)
+	var at := func(dx: float, dy: float, dz: float = 0.0) -> Vector3:
+		return Vector3(c.x, top + dy, c.z) + b * Vector3(x + dx, 0, out + s * dz)
+	match picture:
+		"bread":
+			for k in rng.randi_range(3, 5):
+				add.call("box", "#c8a060", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.4, 0.4))).scaled_local(Vector3(0.28, 0.13, 0.2)), at.call(-0.8 + k * 0.4, 0.07, rng.randf_range(-0.1, 0.1))))
+		"wine":
+			for k in rng.randi_range(2, 3):
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.6, 0.6, 0.6)), at.call(-0.6 + k * 0.6, 0.25)))
+			add.call("disc", "#8a6a4a", Transform3D(b.scaled_local(Vector3(0.12, 0.09, 0.12)), at.call(0.9, 0.05)))
+		"cup":
+			add.call("disc", "iron", Transform3D(b.scaled_local(Vector3(0.45, 0.28, 0.45)), at.call(-0.5, 0.14)))  # the pot of stew
+			for k in 3:
+				add.call("disc", "#8a6a4a", Transform3D(b.scaled_local(Vector3(0.12, 0.1, 0.12)), at.call(0.2 + k * 0.3, 0.05, rng.randf_range(-0.1, 0.1))))
+		"knife":
+			add.call("box", "iron", Transform3D((b * Basis(Vector3.UP, 0.3)).scaled_local(Vector3(0.35, 0.03, 0.1)), at.call(0.4, 0.02)))  # the cleaver
+			add.call("box", "#a03a2a", Transform3D(b.scaled_local(Vector3(0.4, 0.12, 0.25)), at.call(-0.5, 0.06)))  # a joint on the block
+			for k in 2:  # joints hung from the lintel
+				add.call("box", "#a03a2a", Transform3D(b.scaled_local(Vector3(0.18, 0.4, 0.14)), Vector3(c.x, y + 2.9, c.z) + b * Vector3(x - 0.9 + k * 0.5, 0, s * (d / 2.0 + 0.2))))
+		"hammer":
+			add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.5, 0.25, 0.22)), at.call(-0.5, 0.12)))  # a small anvil
+			for k in 3:
+				add.call("box", "iron", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.5, 0.5))).scaled_local(Vector3(0.4, 0.04, 0.05)), at.call(0.3 + k * 0.25, 0.02)))
+		"shoe":
+			for k in 4:
+				add.call("box", "#5a3a22", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.3, 0.3))).scaled_local(Vector3(0.12, 0.09, 0.28)), at.call(-0.75 + k * 0.5, 0.05)))
+		"cloth":
+			for k in 3:
+				add.call("box", TUNICS[(k * 2 + rng.randi() % 2) % TUNICS.size()].to_html(false).insert(0, "#"), Transform3D(b.scaled_local(Vector3(0.7, 0.12, 0.25)), at.call(-0.6 + k * 0.6, 0.06)))
+		"shears":
+			add.call("box", "iron", Transform3D((b * Basis(Vector3.UP, 0.6)).scaled_local(Vector3(0.28, 0.02, 0.08)), at.call(0.3, 0.02)))
+			add.call("disc", "bronze", Transform3D(b.scaled_local(Vector3(0.16, 0.02, 0.16)), at.call(-0.4, 0.01)))  # the mirror
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.36, 0.45, 0.36)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(x + 1.2, 0, s * (d / 2.0 + 0.9))))  # the stool on the pavement
+		"scales":
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.05, 0.4, 0.05)), at.call(0.5, 0.2)))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.6, 0.03, 0.03)), at.call(0.5, 0.4)))
+			for dx: float in [0.2, 0.8]:
+				add.call("disc", "bronze", Transform3D(b.scaled_local(Vector3(0.14, 0.02, 0.14)), at.call(dx, 0.2)))
+			for k in 4:
+				add.call("disc", "bronze", Transform3D(b.scaled_local(Vector3(0.06, 0.05, 0.06)), at.call(-0.8 + k * 0.18, 0.025)))
+		"roll":
+			for k in 4:
+				add.call("box", "parchment", Transform3D(b.scaled_local(Vector3(0.26, 0.05, 0.05)), at.call(-0.7 + k * 0.4, 0.03, rng.randf_range(-0.12, 0.12))))
+		"pot":
+			for k in 2:
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.5, 0.5, 0.5)), at.call(-0.7 + k * 0.5, 0.2)))
+			for k in 2:
+				add.call("disc", "terracotta", Transform3D(b.scaled_local(Vector3(0.24, 0.2, 0.24)), at.call(0.3 + k * 0.45, 0.1)))
+		"fish":
+			for k in 5:
+				add.call("box", "#8a9aa8", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.6, 0.6))).scaled_local(Vector3(0.36, 0.05, 0.11)), at.call(-0.8 + k * 0.4, 0.03, rng.randf_range(-0.12, 0.12))))
+		_:
+			for j in rng.randi_range(1, 3):
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.6, 0.6, 0.6)), at.call(rng.randf_range(-0.8, 0.8), 0.25)))
+
+
+## A shop's sign: a painted board hung out over the pavement from an iron bracket, edge-on to the
+## front so it reads from along the street both ways, with what the shop sells painted on it, the
 ## Romans' way (a wine jar, a loaf, a knife, a shoe, a bolt of cloth, a pot, a fish).
-static func _sign(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: float, s: float, rng: RandomNumberGenerator, x: float = NAN) -> void:
+static func _sign(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: float, s: float, rng: RandomNumberGenerator, x: float = NAN,
+		picture: String = "") -> void:
 	if is_nan(x):
 		x = rng.randf_range(-w * 0.35, w * 0.35)
-	var board := Vector3(c.x, y, c.z) + b * Vector3(x, 3.5, s * (d / 2.0 + 0.5))
-	add.call("box", "wood", Transform3D(b.scaled(Vector3(1.1, 0.7, 0.06)), board))
-	add.call("box", "wood", Transform3D(b.scaled(Vector3(0.06, 0.06, 0.9)), Vector3(c.x, y, c.z) + b * Vector3(x, 3.9, s * (d / 2.0 + 0.25))))
-	var front := board + b * Vector3(0, 0, s * 0.06)
-	match rng.randi() % 7:
-		0:  # a wine jar
-			add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.5, 0.5, 0.3)), front))
-		1:  # a loaf
-			add.call("box", "#c8a060", Transform3D(b.scaled(Vector3(0.5, 0.28, 0.1)), front))
-		2:  # a knife
-			add.call("box", "iron", Transform3D((b * Basis(Vector3(0, 0, 1), 0.5)).scaled(Vector3(0.7, 0.1, 0.04)), front))
-		3:  # a shoe
-			add.call("box", "#5a3a22", Transform3D(b.scaled(Vector3(0.6, 0.18, 0.1)), front + b * Vector3(0, -0.1, 0)))
-			add.call("box", "#5a3a22", Transform3D(b.scaled(Vector3(0.22, 0.3, 0.1)), front + b * Vector3(-0.19, 0.1, 0)))
-		4:  # a bolt of cloth
-			add.call("box", "#6a3a8a", Transform3D(b.scaled(Vector3(0.7, 0.35, 0.08)), front))
-		5:  # a pot
-			add.call("box", "terracotta", Transform3D(b.scaled(Vector3(0.4, 0.4, 0.1)), front))
-		_:  # a fish
-			add.call("box", "#8a9aa8", Transform3D(b.scaled(Vector3(0.7, 0.22, 0.06)), front))
-			add.call("box", "#8a9aa8", Transform3D((b * Basis(Vector3(0, 0, 1), 0.8)).scaled(Vector3(0.22, 0.22, 0.06)), front + b * Vector3(0.4, 0, 0)))
+	var trade: String = picture if picture != "" else Houses.SIGNS[rng.randi() % Houses.SIGNS.size()]
+	var base := Vector3(c.x, y, c.z)
+	var out := s * (d / 2.0 + 0.7)  # the board's middle, out from the wall
+	add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.05, 0.05, 1.3)), base + b * Vector3(x, 4.35, s * (d / 2.0 + 0.65))))  # the bracket's arm
+	add.call("box", "iron", Transform3D((b * Basis(Vector3.RIGHT, -0.36 * s)).scaled_local(Vector3(0.04, 0.04, 1.28)), base + b * Vector3(x, 4.12, s * (d / 2.0 + 0.6))))  # its brace
+	for hang: float in [0.3, 1.1]:  # the two hangers
+		add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.03, 0.1, 0.03)), base + b * Vector3(x, 4.32, s * (d / 2.0 + hang))))
+	add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.05, 0.75, 1.0)), base + b * Vector3(x, 3.9, out)))  # the board's edges
+	for side: float in [1.0, -1.0]:  # the picture on both faces
+		add.call("quad", "h_sign_" + trade, _face(b, c, Vector3(x + side * 0.03, y + 3.9 - c.y, out), side, Vector2(1.0, 0.75), true))
 
 
 ## A window on a face: a quad of glass (a dark shutter by day, lamplight by night) facing out along
 ## the house's `s` side. `local` is from the house's centre.
 static func _face(b: Basis, c: Vector3, local: Vector3, s: float, size: Vector2, side: bool = false) -> Transform3D:
 	var turn := b * (Basis(Vector3.UP, PI / 2.0 * s) if side else (Basis.IDENTITY if s > 0.0 else Basis(Vector3.UP, PI)))
-	return Transform3D(turn.scaled(Vector3(size.x, size.y, 1.0)), c + b * local)
+	return Transform3D(turn.scaled_local(Vector3(size.x, size.y, 1.0)), c + b * local)
 
 
 ## A storey's windows round a house, at height `h`: each its wooden frame and sill, the pane
@@ -1669,12 +2424,12 @@ static func _window(add: Callable, c: Vector3, b: Basis, local: Vector3, s: floa
 		for e: float in [-1.0, 1.0]:
 			var hinge := c + b * local + turn * Vector3(e * 0.55, 0, 0)
 			var leaf := turn * Basis(Vector3.UP, -e * 1.15)
-			add.call("quad", "h_shutter", Transform3D(leaf.scaled(Vector3(0.5, 1.4, 1.0)), hinge + leaf * Vector3(e * 0.25, 0, 0)))
+			add.call("quad", "h_shutter", Transform3D(leaf.scaled_local(Vector3(0.5, 1.4, 1.0)), hinge + leaf * Vector3(e * 0.25, 0, 0)))
 	if roll > 0.7:  # a pot of flowers on the sill
 		var sill := c + b * local + turn * Vector3(rng.randf_range(-0.25, 0.25), -0.6, 0.2)
-		add.call("box", "terracotta", Transform3D(turn.scaled(Vector3(0.3, 0.28, 0.3)), sill))
-		add.call("box", "leaves", Transform3D(turn.scaled(Vector3(0.36, 0.22, 0.36)), sill + Vector3(0, 0.24, 0)))
-		add.call("box", TUNICS[2 + rng.randi() % 3].to_html(false).insert(0, "#"), Transform3D(turn.scaled(Vector3(0.18, 0.1, 0.18)), sill + Vector3(0, 0.38, 0)))
+		add.call("box", "terracotta", Transform3D(turn.scaled_local(Vector3(0.3, 0.28, 0.3)), sill))
+		add.call("box", "leaves", Transform3D(turn.scaled_local(Vector3(0.36, 0.22, 0.36)), sill + Vector3(0, 0.24, 0)))
+		add.call("box", TUNICS[2 + rng.randi() % 3].to_html(false).insert(0, "#"), Transform3D(turn.scaled_local(Vector3(0.18, 0.1, 0.18)), sill + Vector3(0, 0.38, 0)))
 
 
 ## A house of the early city: one or two storeys of tufa blocks, or plaster over a timber frame,
@@ -1685,10 +2440,10 @@ static func _old_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, 
 	var y := ground(c)
 	var h := 4.2 if floors <= 1 else 7.2
 	var tufa := rng.randf() < 0.55
-	add.call("box", "h_tufa" if tufa else "h_timber", Transform3D(b.scaled(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)),
+	add.call("box", "h_tufa" if tufa else "h_timber", Transform3D(b.scaled_local(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)),
 		Color.WHITE if tufa else tint)
 	var thatch := rng.randf() < 0.35
-	add.call("prism", "wicker" if thatch else "h_roof", Transform3D(b.scaled(Vector3(w + 1.8, 2.6 if thatch else 2.0, d + 1.8)), Vector3(c.x, y + h + (1.3 if thatch else 1.0), c.z)))
+	add.call("prism", "wicker" if thatch else "h_roof", Transform3D(b.scaled_local(Vector3(w + 1.8, 2.6 if thatch else 2.0, d + 1.8)), Vector3(c.x, y + h + (1.3 if thatch else 1.0), c.z)))
 	if not thatch:
 		_ridge(add, c, b, w + 1.8, d + 1.8, y + h + 2.0, rng)
 	for s: float in [1.0, -1.0]:
@@ -1700,15 +2455,15 @@ static func _old_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, 
 	var dx := rng.randf_range(-w * 0.3, w * 0.3)
 	add.call("quad", "h_door", _face(b, c, Vector3(dx, y + 1.3 - c.y, side * (d / 2.0 + 0.04)), side, Vector2(1.3, 2.5)))
 	if rng.randf() < 0.5:  # a bench by the door
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(1.4, 0.08, 0.4)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(dx + 1.4, 0, side * (d / 2.0 + 0.3))))
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 0.8, 0, side * (d / 2.0 + 0.3))))
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 2.0, 0, side * (d / 2.0 + 0.3))))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(1.4, 0.08, 0.4)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(dx + 1.4, 0, side * (d / 2.0 + 0.3))))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 0.8, 0, side * (d / 2.0 + 0.3))))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 2.0, 0, side * (d / 2.0 + 0.3))))
 	if rng.randf() < 0.4:  # a lean-to shed against one end, and the woodpile under it
 		var e := 1.0 if rng.randf() < 0.5 else -1.0
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(2.4, 2.2, d * 0.6)), Vector3(c.x, y + 1.1, c.z) + b * Vector3(e * (w / 2.0 + 1.2), 0, 0)))
-		add.call("box", "wicker", Transform3D((b * Basis(Vector3(0, 0, 1), -e * 0.35)).scaled(Vector3(3.0, 0.15, d * 0.65)), Vector3(c.x, y + 2.5, c.z) + b * Vector3(e * (w / 2.0 + 1.3), 0, 0)))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(2.4, 2.2, d * 0.6)), Vector3(c.x, y + 1.1, c.z) + b * Vector3(e * (w / 2.0 + 1.2), 0, 0)))
+		add.call("box", "wicker", Transform3D((b * Basis(Vector3(0, 0, 1), -e * 0.35)).scaled_local(Vector3(3.0, 0.15, d * 0.65)), Vector3(c.x, y + 2.5, c.z) + b * Vector3(e * (w / 2.0 + 1.3), 0, 0)))
 		for k in 5:
-			add.call("box", "trunk", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(0.9, 0.2, 0.2)), Vector3(c.x, y + 0.1 + (k / 3) * 0.2, c.z) + b * Vector3(e * (w / 2.0 + 2.6), 0, -0.4 + (k % 3) * 0.25)))
+			add.call("box", "trunk", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled_local(Vector3(0.9, 0.2, 0.2)), Vector3(c.x, y + 0.1 + (k / 3) * 0.2, c.z) + b * Vector3(e * (w / 2.0 + 2.6), 0, -0.4 + (k % 3) * 0.25)))
 	if rng.randf() < 0.12:
 		add.call("quad", "h_vine", _face(b, c, Vector3(rng.randf_range(-w * 0.4, w * 0.4), y + 2.2 - c.y, -side * (d / 2.0 + 0.05)), -side, Vector2(1.2, 4.0)))
 	if rng.randf() < 0.3 and doors.size() < 900:
@@ -1726,37 +2481,37 @@ static func _plot(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 	if roll < 0.2 and not far:  # the farmhouse, small, and its fig
 		var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
 		_old_house(add, c + b * Vector3(-w * 0.2, 0, 0), b, w * 0.5, d * 0.6, 1, rng, tint, y - 1.5, doors)
-		trees.append([c + b * Vector3(w * 0.3, 0, d * 0.2), "round", 0.8])
+		trees.append([c + b * Vector3(w * 0.3, 0, d * 0.2), "round", 0.8, true])
 		return
 	if roll < 0.5:  # vegetables in rows
-		add.call("box", "furrows", Transform3D(b.scaled(Vector3(w, 0.16, d)), Vector3(c.x, y + 0.02, c.z)))
+		add.call("box", "furrows", Transform3D(b.scaled_local(Vector3(w, 0.16, d)), Vector3(c.x, y + 0.02, c.z)))
 		for k in int(d / 1.6):
-			add.call("box", "leaves", Transform3D(b.scaled(Vector3(w * 0.9, 0.35, 0.5)), Vector3(c.x, y + 0.3, c.z) + b * Vector3(0, 0, -d / 2.0 + (k + 0.5) * 1.6)))
+			add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(w * 0.9, 0.35, 0.5)), Vector3(c.x, y + 0.3, c.z) + b * Vector3(0, 0, -d / 2.0 + (k + 0.5) * 1.6)))
 		return
 	if roll < 0.75:  # a vineyard
-		add.call("box", "earth", Transform3D(b.scaled(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))
+		add.call("box", "earth", Transform3D(b.scaled_local(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))
 		for k in int(w / 2.4):
 			var x := -w / 2.0 + (k + 0.5) * 2.4
 			for j in 3:
-				add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 1.8, 0.12)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(x, 0, -d / 2.0 + 1.0 + j * (d - 2.0) / 2.0)))
-			add.call("box", "leaves", Transform3D(b.scaled(Vector3(0.7, 1.2, d - 1.6)), Vector3(c.x, y + 1.4, c.z) + b * Vector3(x, 0, 0)))
+				add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.12, 1.8, 0.12)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(x, 0, -d / 2.0 + 1.0 + j * (d - 2.0) / 2.0)))
+			add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(0.7, 1.2, d - 1.6)), Vector3(c.x, y + 1.4, c.z) + b * Vector3(x, 0, 0)))
 		return
-	add.call("box", "grass", Transform3D(b.scaled(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))  # pasture, fenced
+	add.call("box", "grass", Transform3D(b.scaled_local(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))  # pasture, fenced
 	for s: float in [1.0, -1.0]:
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(w, 0.1, 0.1)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(0, 0, s * d / 2.0)))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w, 0.1, 0.1)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(0, 0, s * d / 2.0)))
 		for k in int(w / 3.0) + 1:
-			add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 1.1, 0.12)), Vector3(c.x, y + 0.55, c.z) + b * Vector3(-w / 2.0 + k * w / maxi(1, int(w / 3.0)), 0, s * d / 2.0)))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.12, 1.1, 0.12)), Vector3(c.x, y + 0.55, c.z) + b * Vector3(-w / 2.0 + k * w / maxi(1, int(w / 3.0)), 0, s * d / 2.0)))
 	if rng.randf() < 0.35:  # the pond the sheep drink at
 		var pc := c + b * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, rng.randf_range(-d * 0.25, d * 0.25))
-		add.call("disc", "earth", Transform3D(Basis.IDENTITY.scaled(Vector3(4.6, 0.14, 4.6)), Vector3(pc.x, y + 0.05, pc.z)))
-		add.call("disc", "water", Transform3D(Basis.IDENTITY.scaled(Vector3(3.4, 0.1, 3.4)), Vector3(pc.x, y + 0.12, pc.z)))
+		add.call("disc", "earth", Transform3D(Basis.IDENTITY.scaled_local(Vector3(4.6, 0.14, 4.6)), Vector3(pc.x, y + 0.05, pc.z)))
+		add.call("disc", "water", Transform3D(Basis.IDENTITY.scaled_local(Vector3(3.4, 0.1, 3.4)), Vector3(pc.x, y + 0.12, pc.z)))
 		for k in 6:
 			var a := TAU * k / 6.0
-			trees.append([pc + Vector3(cos(a) * 1.9, 0, sin(a) * 1.9), "reeds", rng.randf_range(0.6, 0.9)])
+			trees.append([pc + Vector3(cos(a) * 1.9, 0, sin(a) * 1.9), "reeds", rng.randf_range(0.6, 0.9), true])
 	for k in rng.randi_range(2, 4):  # the sheep
-		add.call("box", "#e0d8c8", Transform3D(b.scaled(Vector3(0.9, 0.5, 0.5)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, rng.randf_range(-d * 0.35, d * 0.35))))
+		add.call("box", "#e0d8c8", Transform3D(b.scaled_local(Vector3(0.9, 0.5, 0.5)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, rng.randf_range(-d * 0.35, d * 0.35))))
 	if rng.randf() < 0.5:
-		trees.append([c + b * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, rng.randf_range(-d * 0.3, d * 0.3)), "round", rng.randf_range(0.7, 1.0)])
+		trees.append([c + b * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, rng.randf_range(-d * 0.3, d * 0.3)), "round", rng.randf_range(0.7, 1.0), true])
 
 
 ## A house of the rich: two storeys of drafted stucco with a painted dado round a courtyard garden
@@ -1773,26 +2528,26 @@ static func _domus(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng:
 	for wing: Array in wings:
 		var q: Vector3 = c + b * (wing[0] as Vector3)
 		var size: Vector3 = wing[1]
-		add.call("box", "h_stucco", Transform3D(b.scaled(Vector3(size.x, y + h - low, size.z)), Vector3(q.x, (low + y + h) / 2.0, q.z)), tint)
-		add.call("box", "#8a3a2a", Transform3D(b.scaled(Vector3(size.x + 0.04, 1.3, size.z + 0.04)), Vector3(q.x, y + 0.65, q.z)))  # the painted dado
-		add.call("box", "#c8a060", Transform3D(b.scaled(Vector3(size.x + 0.04, 0.2, size.z + 0.04)), Vector3(q.x, y + 1.4, q.z)))  # and its band
-		add.call("prism", "h_roof", Transform3D(b.scaled(Vector3(size.x + 0.6, 1.8, size.z + 0.6)) if size.x > size.z else
-			(b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
-	add.call("box", "g_turf", Transform3D(b.scaled(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
-	add.call("box", "water", Transform3D(b.scaled(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
-	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7])
-	trees.append([c + b * Vector3(-1.4, 0, -1.2), "olive" if rng.randf() < 0.5 else "cypress", 0.6])
+		add.call("box", "h_stucco", Transform3D(b.scaled_local(Vector3(size.x, y + h - low, size.z)), Vector3(q.x, (low + y + h) / 2.0, q.z)), tint)
+		add.call("box", "#8a3a2a", Transform3D(b.scaled_local(Vector3(size.x + 0.04, 1.3, size.z + 0.04)), Vector3(q.x, y + 0.65, q.z)))  # the painted dado
+		add.call("box", "#c8a060", Transform3D(b.scaled_local(Vector3(size.x + 0.04, 0.2, size.z + 0.04)), Vector3(q.x, y + 1.4, q.z)))  # and its band
+		add.call("prism", "h_roof", Transform3D(b.scaled_local(Vector3(size.x + 0.6, 1.8, size.z + 0.6)) if size.x > size.z else
+			(b * Basis(Vector3.UP, PI / 2.0)).scaled_local(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
+	add.call("box", "g_turf", Transform3D(b.scaled_local(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
+	add.call("box", "water", Transform3D(b.scaled_local(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
+	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7, true])
+	trees.append([c + b * Vector3(-1.4, 0, -1.2), "olive" if rng.randf() < 0.5 else "cypress", 0.6, true])
 	for k in 3:
-		trees.append([Vector3(c.x, y + 0.3, c.z) + b * Vector3(rng.randf_range(-1.8, 1.8), 0, rng.randf_range(-1.6, 1.6)), "flowers" if k < 2 else "bush", 0.6])
+		trees.append([Vector3(c.x, y + 0.3, c.z) + b * Vector3(rng.randf_range(-1.8, 1.8), 0, rng.randf_range(-1.6, 1.6)), "flowers" if k < 2 else "bush", 0.6, true])
 	_roost(c + b * Vector3(0, 0, d / 2.0 + 0.2), y + h + 1.8, rng, b)
 	for s: float in [1.0, -1.0]:  # a few small windows high up
 		for k in 2:
 			add.call("quad", "h_window_small", _face(b, c, Vector3(-w * 0.25 + k * w * 0.5, 5.2 + y - c.y, s * (d / 2.0 + 0.04)), s, Vector2(0.7, 0.9)))
 	add.call("quad", "h_door_red" if rng.randf() < 0.5 else "h_door", _face(b, c, Vector3(0, y + 1.5 - c.y, d / 2.0 + 0.04), 1.0, Vector2(1.7, 3.0)))
 	for x: float in [-1.3, 1.3]:  # the porch
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(0.2, 3.2, 0.2)), Vector3(c.x, y + 1.6, c.z) + b * Vector3(x, 0, d / 2.0 + 1.3)))
-	add.call("box", "h_roof", Transform3D((b * Basis(Vector3.RIGHT, 0.3)).scaled(Vector3(3.4, 0.2, 1.8)), Vector3(c.x, y + 3.4, c.z) + b * Vector3(0, 0, d / 2.0 + 0.8)))
-	add.call("box", "bronze", Transform3D(b.scaled(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.7, c.z) + b * Vector3(1.2, 0, d / 2.0 + 0.1)))  # the lamp
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.2, 3.2, 0.2)), Vector3(c.x, y + 1.6, c.z) + b * Vector3(x, 0, d / 2.0 + 1.3)))
+	add.call("box", "h_roof", Transform3D((b * Basis(Vector3.RIGHT, 0.3)).scaled_local(Vector3(3.4, 0.2, 1.8)), Vector3(c.x, y + 3.4, c.z) + b * Vector3(0, 0, d / 2.0 + 0.8)))
+	add.call("box", "bronze", Transform3D(b.scaled_local(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.7, c.z) + b * Vector3(1.2, 0, d / 2.0 + 0.1)))  # the lamp
 
 
 ## A house far off, beyond where you walk: a plain block and its roof.
@@ -1803,8 +2558,8 @@ static func _far_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, 
 	if old:
 		h = rng.randf_range(4.0, 6.5)
 	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
-	add.call("box", "r_wall" if not old or rng.randf() < 0.5 else "tufa", Transform3D(b.scaled(Vector3(w, h + 1.0, d)), Vector3(c.x, y + h / 2.0 - 0.5, c.z)), tint)
-	add.call("prism", "r_roof", Transform3D(b.scaled(Vector3(w + 0.8 + (1.0 if old else 0.0), 2.2, d + 0.8 + (1.0 if old else 0.0))), Vector3(c.x, y + h + 1.1, c.z)))
+	add.call("box", "r_wall" if not old or rng.randf() < 0.5 else "tufa", Transform3D(b.scaled_local(Vector3(w, h + 1.0, d)), Vector3(c.x, y + h / 2.0 - 0.5, c.z)), tint)
+	add.call("prism", "r_roof", Transform3D(b.scaled_local(Vector3(w + 0.8 + (1.0 if old else 0.0), 2.2, d + 0.8 + (1.0 if old else 0.0))), Vector3(c.x, y + h + 1.1, c.z)))
 
 
 ## A house fallen to ruin: broken walls without a roof, sometimes one wall still high, bushes and a
@@ -1814,9 +2569,9 @@ static func _ruin(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 	var y := ground(c)
 	if hut and rng.randf() < 0.5:
 		var hp := c + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 0, rng.randf_range(-d * 0.15, d * 0.15))
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(3.6, 2.4, 3.0)), Vector3(hp.x, y + 1.2, hp.z)))
-		add.call("prism", "wicker", Transform3D(b.scaled(Vector3(4.2, 1.4, 3.6)), Vector3(hp.x, y + 3.1, hp.z)))
-		add.call("quad", "h_door", Transform3D(b.scaled(Vector3(0.9, 1.7, 1.0)), Vector3(hp.x, y + 0.9, hp.z) + b * Vector3(0, 0, 1.52)))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(3.6, 2.4, 3.0)), Vector3(hp.x, y + 1.2, hp.z)))
+		add.call("prism", "wicker", Transform3D(b.scaled_local(Vector3(4.2, 1.4, 3.6)), Vector3(hp.x, y + 3.1, hp.z)))
+		add.call("quad", "h_door", Transform3D(b.scaled_local(Vector3(0.9, 1.7, 1.0)), Vector3(hp.x, y + 0.9, hp.z) + b * Vector3(0, 0, 1.52)))
 	for wall: Array in [[Vector3(0, 0, d / 2.0), Vector3(w, 0, 0.8)], [Vector3(0, 0, -d / 2.0), Vector3(w, 0, 0.8)],
 			[Vector3(w / 2.0, 0, 0), Vector3(0.8, 0, d)], [Vector3(-w / 2.0, 0, 0), Vector3(0.8, 0, d)]]:
 		if rng.randf() < 0.25:
@@ -1824,15 +2579,15 @@ static func _ruin(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 		var h := rng.randf_range(0.8, 4.5) if rng.randf() < 0.85 else rng.randf_range(6.0, 11.0)
 		var q: Vector3 = c + b * (wall[0] as Vector3)
 		var size: Vector3 = wall[1]
-		add.call("box", "h_brick", Transform3D(b.scaled(Vector3(size.x, h + 1.0, size.z)), Vector3(q.x, y + h / 2.0 - 0.5, q.z)))
+		add.call("box", "h_brick", Transform3D(b.scaled_local(Vector3(size.x, h + 1.0, size.z)), Vector3(q.x, y + h / 2.0 - 0.5, q.z)))
 		if h > 3.0 and rng.randf() < 0.4:
 			var along_x := size.x > size.z
 			var s := 1.0 if rng.randf() < 0.5 else -1.0
 			var local := (wall[0] as Vector3) + (Vector3(0, y + 1.8 - c.y, s * 0.42) if along_x else Vector3(s * 0.42, y + 1.8 - c.y, 0))
 			add.call("quad", "h_vine", _face(b, c, local, s, Vector2(1.2, 3.4), not along_x))
-	add.call("box", "rubble", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, d * 0.6)), Vector3(c.x, y + 0.1, c.z)))
+	add.call("box", "rubble", Transform3D(b.scaled_local(Vector3(w * 0.8, 0.8, d * 0.6)), Vector3(c.x, y + 0.1, c.z)))
 	if rng.randf() < 0.45:
-		trees.append([c + b * Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2)), "bush" if rng.randf() < 0.6 else "round", rng.randf_range(0.6, 1.1)])
+		trees.append([c + b * Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2)), "bush" if rng.randf() < 0.6 else "round", rng.randf_range(0.6, 1.1), true])
 
 
 ## Draws all the houses' parts: one MultiMesh for each mesh and surface, each part its own colour.
@@ -1911,7 +2666,7 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 	var cross := func(tex: String, at: Vector3, w: float, h: float, n: int) -> void:
 		var yaw := rng.randf() * TAU
 		for k in n:
-			quads[tex].append(Transform3D(Basis(Vector3.UP, yaw + PI * k / n).scaled(Vector3(w, h, 1.0)), at))
+			quads[tex].append(Transform3D(Basis(Vector3.UP, yaw + PI * k / n).scaled_local(Vector3(w, h, 1.0)), at))
 	for t: Array in trees:
 		var p: Vector3 = t[0]
 		var kind: String = t[1]
@@ -1920,13 +2675,13 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 		var lean := Basis(Vector3(1, 0, 0), rng.randf_range(-0.05, 0.05)) * Basis(Vector3(0, 0, 1), rng.randf_range(-0.05, 0.05))
 		match kind:
 			"pine":
-				trunks.append(Transform3D(lean.scaled(Vector3(0.7, 9.0, 0.7) * s), Vector3(p.x, y + 4.5 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled_local(Vector3(0.7, 9.0, 0.7) * s), Vector3(p.x, y + 4.5 * s, p.z)))
 				cross.call("g_pine", Vector3(p.x, y + 9.6 * s, p.z), 8.0 * s, 4.0 * s, 3)
 			"cypress":
-				trunks.append(Transform3D(Basis.IDENTITY.scaled(Vector3(0.4, 1.0, 0.4) * s), Vector3(p.x, y + 0.5 * s, p.z)))
+				trunks.append(Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.4, 1.0, 0.4) * s), Vector3(p.x, y + 0.5 * s, p.z)))
 				cross.call("g_cypress", Vector3(p.x, y + 5.0 * s, p.z), 2.0 * s, 10.0 * s, 2)
 			"olive":
-				trunks.append(Transform3D(lean.scaled(Vector3(0.6, 2.4, 0.6) * s), Vector3(p.x, y + 1.2 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled_local(Vector3(0.6, 2.4, 0.6) * s), Vector3(p.x, y + 1.2 * s, p.z)))
 				cross.call("g_olive", Vector3(p.x, y + 3.6 * s, p.z), 4.6 * s, 3.4 * s, 3)
 			"bush":
 				cross.call("g_bush", Vector3(p.x, y + 0.8 * s, p.z), 2.4 * s, 1.6 * s, 2)
@@ -1937,7 +2692,7 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 			"flowers":
 				cross.call("g_flowers", Vector3(p.x, y + 0.4 * s, p.z), 1.1 * s, 0.8 * s, 2)
 			_:
-				trunks.append(Transform3D(lean.scaled(Vector3(0.6, 3.2, 0.6) * s), Vector3(p.x, y + 1.6 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled_local(Vector3(0.6, 3.2, 0.6) * s), Vector3(p.x, y + 1.6 * s, p.z)))
 				cross.call("g_olive" if fallen else "g_crown", Vector3(p.x, y + 4.5 * s, p.z), 5.4 * s, 4.6 * s, 3)
 	var draw := func(xfs: Array, mesh: Mesh, mat: String, name: String, shadows: bool) -> void:
 		if xfs.is_empty():
@@ -2103,8 +2858,9 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 			_plant(trees, rng, p, "round", 3, 6.0, 0.9, 1.4)
 			if rng.randf() < 0.4:
 				_plant(trees, rng, p, "cypress", 1, 5.0, 1.0, 1.3)
-			if rng.randf() < 0.15 and not far:  # the grove's spring, which runs whatever the aqueducts do
+			if rng.randf() < 0.15 and not far and _occ.disc_free(p, 3.0, Occupancy.ALLOW_FURNITURE):  # the grove's spring, which runs whatever the aqueducts do
 				Rome.spring(world, Vector3(p.x, y, p.z), true)
+				_occ.paint_disc(p, 2.5, Occupancy.FURNITURE)
 				_plant(trees, rng, p, "reeds", 4, 3.0)
 				_springs.append(Vector3(p.x, y, p.z))
 		"wood":
@@ -2118,11 +2874,12 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 						"olive" if rng.randf() < 0.6 else "round", rng.randf_range(0.7, 0.9)])
 		_:  # horti
 			if y < 4.0 and not fallen:
-				add.call("box", "g_turf", Transform3D(Basis.IDENTITY.scaled(Vector3(14.0, 0.5, 14.0)), Vector3(p.x, y - 0.15, p.z)))
-			if rng.randf() < 0.2 and not fallen:  # a pool in its rim of travertine, with a jet in the middle of it
+				add.call("box", "g_turf", Transform3D(Basis.IDENTITY.scaled_local(Vector3(14.0, 0.5, 14.0)), Vector3(p.x, y - 0.15, p.z)))
+			if rng.randf() < 0.2 and not fallen and _occ.disc_free(p, 4.5, Occupancy.ALLOW_FURNITURE):  # a pool in its rim of travertine, with a jet in the middle of it
 				var pb := Basis(Vector3.UP, rng.randf() * TAU)
-				add.call("box", "travertine", Transform3D(pb.scaled(Vector3(7.0, 0.5, 5.0)), Vector3(p.x, y + 0.2, p.z)))
-				add.call("box", "water", Transform3D(pb.scaled(Vector3(6.2, 0.12, 4.2)), Vector3(p.x, y + 0.42, p.z)))
+				add.call("box", "travertine", Transform3D(pb.scaled_local(Vector3(7.0, 0.5, 5.0)), Vector3(p.x, y + 0.2, p.z)))
+				add.call("box", "water", Transform3D(pb.scaled_local(Vector3(6.2, 0.12, 4.2)), Vector3(p.x, y + 0.42, p.z)))
+				_occ.paint_box(Vector3(p.x, y, p.z), pb, 7.0, 5.0, Occupancy.FURNITURE, 0.5)
 				if not far:
 					Rome.jet(world, Vector3(p.x, y + 0.45, p.z), Vector3(0, 1, 0), 2.2, 14)
 					_pools.append(Vector3(p.x, y, p.z))
@@ -2131,8 +2888,10 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 			_plant(trees, rng, p, "olive", 1, 6.0, 0.8, 1.0)
 			_plant(trees, rng, p, "bush", 2, 6.0, 0.8, 1.2)
 			_plant(trees, rng, p, "flowers", 3, 6.5)
-			if not far and rng.randf() < 0.14 and not fallen:
-				Rome.pergola(world, Vector3(p.x, y, p.z), rng.randf() * TAU, 6.0)
+			if not far and rng.randf() < 0.14 and not fallen and _occ.disc_free(p, 4.5, Occupancy.ALLOW_FURNITURE):
+				var pyaw := rng.randf() * TAU
+				Rome.pergola(world, Vector3(p.x, y, p.z), pyaw, 6.0)
+				_occ.paint_box(Vector3(p.x, y, p.z), Basis(Vector3.UP, pyaw), 6.4, 3.2, Occupancy.FURNITURE, 0.5)
 	if not far:
 		_plant(trees, rng, p, "grass", 3 if fallen else 4, 7.0, 0.8, 1.3)
 
@@ -2155,55 +2914,72 @@ static func _hill_tree(p: Vector3, y: float, roll: float) -> String:
 
 
 ## The lanes between the blocks: along the bent grid, every third row and every third column, as
-## polylines of world points (no height), each broken where it would cross a named street's band,
-## a square, a monument's ground, the river or the Servian wall. `roads` are the named streets'
-## segments [a, b, half + 3].
-static func _lanes(lo: Vector2, hi: Vector2, outer: Array, roads: Array, keep_off: Array, opens: Array, wall_line: Array) -> Array:
+## polylines of world points (no height). Each stretch is laid only where its whole width is free
+## of the map (a grove is no bar), so a lane never runs through a monument, a square, the water,
+## the wall or a named street; where it meets a named street it opens into it, its end brought to
+## the kerb. `named` are the named streets' stretches [a, b, half + 3].
+static func _lanes(lo: Vector2, hi: Vector2, outer: Array, named: Array) -> Array:
 	var out: Array = []
+	var half := LANE / 2.0 + 0.5
 	var ok := func(p: Vector3) -> bool:
-		if not inside(outer, p) or river_edge(p) < 10.0:
+		if not inside(outer, p):
 			return false
-		if roads.any(func(r: Array) -> bool: return _to_segment(p, r[0], r[1]) < float(r[2]) - 1.0):
-			return false
-		if keep_off.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < float(o[1]) - 2.0):
-			return false
-		if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < float(o[1])):
-			return false
-		if wall_line.any(func(seg: Array) -> bool: return _to_segment(p, seg[0], seg[1]) < 7.0):
-			return false
-		return true
+		var k: int = _occ.kind_at(p)
+		return k == Occupancy.FREE or k == Occupancy.GROVE
+	var mouth := func(from: Vector3) -> Vector3:  # where a lane from `from` meets the kerb of the nearest street, or INF
+		var r := _nearest_road(from, named)
+		if int(r["k"]) < 0 or r["n"] == Vector3.ZERO:
+			return Vector3.INF
+		var m: Vector3 = (r["q"] as Vector3) + (r["n"] as Vector3) * (float(r["half"]) + 0.4)
+		if m.distance_to(from) > PITCH * 1.5:
+			return Vector3.INF
+		if _occ.band_free(from, m, half, Occupancy.ALLOW_LANE | (1 << Occupancy.ROAD)):
+			return m
+		return Vector3.INF
+	var lay := func(points: Array) -> void:  # one grid line's samples in order: cut into the runs that are free
+		var run: Array = []
+		var prev := Vector3.INF
+		var prev_ok := false
+		for p: Vector3 in points:
+			var free: bool = ok.call(p)
+			if free and prev_ok and _occ.band_free(prev, p, half, Occupancy.ALLOW_LANE):
+				run.append(p)
+			else:
+				if run.size() >= 1:
+					var end: Vector3 = mouth.call(run[-1])  # the run's end opened into the street it stopped at
+					if end != Vector3.INF and _occ.kind_at(p) == Occupancy.ROAD:
+						run.append(end)
+					if run.size() > 1:
+						out.append(run)
+				run = []
+				if free:
+					run = [p]
+					if prev_ok == false and prev != Vector3.INF and _occ.kind_at(prev) == Occupancy.ROAD:
+						var start: Vector3 = mouth.call(p)  # the run begins at the street it comes from
+						if start != Vector3.INF:
+							run = [start, p]
+			prev = p
+			prev_ok = free
+		if run.size() > 1:
+			out.append(run)
 	var rows := int((hi.y - lo.y) / PITCH) + 1
 	var cols := int((hi.x - lo.x) / PITCH) + 1
 	for j in range(0, rows, 3):  # along the rows
 		var z0 := lo.y + j * PITCH - PITCH / 2.0
-		var run: Array = []
+		var points: Array = []
 		for i in cols + 1:
 			var x := lo.x + i * PITCH - PITCH / 2.0
 			var bend := _warp(x, z0)
-			var p := Vector3(x + bend.x, 0, z0 + bend.y)
-			if ok.call(p):
-				run.append(p)
-			else:
-				if run.size() > 1:
-					out.append(run)
-				run = []
-		if run.size() > 1:
-			out.append(run)
+			points.append(Vector3(x + bend.x, 0, z0 + bend.y))
+		lay.call(points)
 	for i in range(0, cols, 3):  # and the columns
 		var x0 := lo.x + i * PITCH - PITCH / 2.0
-		var run: Array = []
+		var points: Array = []
 		for j in rows + 1:
 			var z := lo.y + j * PITCH - PITCH / 2.0
 			var bend := _warp(x0, z)
-			var p := Vector3(x0 + bend.x, 0, z + bend.y)
-			if ok.call(p):
-				run.append(p)
-			else:
-				if run.size() > 1:
-					out.append(run)
-				run = []
-		if run.size() > 1:
-			out.append(run)
+			points.append(Vector3(x0 + bend.x, 0, z + bend.y))
+		lay.call(points)
 	return out
 
 

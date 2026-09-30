@@ -23,6 +23,7 @@ Decided with BB1 (2026-09-28):
 | Rome's reading list | `content/rome/works.json` (module `r1`) |
 | Rome's rooms and beats | `content/rome/rooms.json`, `content/rome/beats.json` |
 | The map projection, ground, river, bridges, walls, streets, blocks of houses | `scripts/hall/rome_map.gd` |
+| The feasibility map every placement is tested against and painted onto | `scripts/hall/urbs_occupancy.gd` |
 | One builder per kind of monument | `scripts/hall/kit_urbs.gd` |
 | The hub: ages, people, the navel, the gateways | `scripts/hall/places_rome.gd` (`urbs`) |
 | The day and night, who is out, what people say out loud | `scripts/hall/urbs_life.gd` |
@@ -76,7 +77,19 @@ Decided with BB1 (2026-09-28):
     dark, sun-bleached, lighter on the hills), so it reads as earth and wear rather than a pattern.
     It is rubble in the Fall.
   - Travertine steps before many shops, basalt streets, and the Forum's slabs.
+  - **The named streets bend as streets do** (`rome_map._bend_roads`, done once when city.json is
+    read, so the map, the way-finding, the walkers and the blocks all follow the same lines):
+    each run is sampled every fifteen map metres and swayed sideways by two slow waves, the sway
+    dying out at the street's ends, at its junctions with other streets, over the river where the
+    bridges are, within the Forum and against the monuments, and the corners between runs are
+    bevelled unless a street meets there. The Via Lata, the Via Appia and the Via Recta are
+    marked `"straight"` in city.json and keep their lines, as they did.
   - The seven hills rise in walkable domes.
+  - **Underfoot** (`rome_map._street_wear`, `_bays`, `_blocks`, `urbs_town._puddle`): the paved
+    streets carry the carts' ruts a cart's gauge apart, stepping stones across them every seventy
+    paces and an iron grate over the drain at the kerb between; every door has its travertine
+    threshold worn hollow by the feet; the lanes have dung and straw in them; while it rains
+    puddles stand in the streets round you and dry an hour or two after.
 - **River:** the Tiber runs between its banks, with the island, and bridges standing by date.
 - **Houses: a kit per age** (`rome_map._house`, `_old_house`, `_plot`, `_ruin`; the notes of
   `docs/rome-city-notes.md` 2.1, built 2026-09-29):
@@ -86,6 +99,10 @@ Decided with BB1 (2026-09-28):
     monuments, the river and the wall; so the city is blocks of houses between streets. A house
     near a street (named or lane) is lined up along it, its front a step from the kerb, one after
     another on each side (`_nearest_road`, `lined`); no house is built into another (`placed`).
+  - Every part of a house is scaled in the house's own axes (`Basis.scaled_local`, never
+    `Basis.scaled`, which scales along the world's: with it every house turned off the world's
+    axes was sheared, and its thin parts, the signs, counters, balconies and brackets, were
+    flattened to slivers along the world's x).
   - 280 and 201 BC: low houses of tufa blocks, or plaster over a timber frame with the timbers
     showing, one or two storeys under wide eaves of tiles or thatch, a blank wall to the street with
     a door in it, no shops. Two-thirds of the outer hills inside the wall (the Esquiline, the
@@ -93,15 +110,22 @@ Decided with BB1 (2026-09-28):
     pasture with sheep, with a farmhouse and its fig among them.
   - 50 BC: the first tall insulae of two to four storeys over shops.
   - AD 150: brick-faced blocks of three to six storeys, arcaded shops, balconies, roof gardens.
-    Election notices and scratched words on the shop fronts (50 BC and AD 150, the chi-rho later).
+    Writing on the walls by the shop doors (50 BC and AD 150; `textures.notices`,
+    `pixel_caps.gd`, rendered in `docs/dev/notices_set.png`): the election notices of Pompeii's
+    walls (CIL IV) painted red on a whitewashed field, M CERRINIVM VATIAM AED O V F and its
+    fellows, and the scratched words in the plaster, ADMIROR PARIES, OTIOSIS LOCVS HIC NON EST,
+    CACATOR CAVE MALVM, VENIMVS HVC CVPIDI; in 384 the chi-rho beside VIVAS IN DEO, IN PACE,
+    SPES IN DEO, over the old scratches.
   - 384: the same blocks patched with plaster and brick, a third of the windows bricked up, shops
     shut up for good, fewer awnings.
   - 455: three in ten houses burnt to their charred beams, the doors off, scaffolding no one
     finishes; smoke still going up from the burnt quarters, seen across the city.
   - 552: open ground with a few ruins (two in five cells built by the river, one in seven beyond),
     huts of wood and thatch inside the ruined walls where people still live.
-  - Every shop has a painted sign hung over its door: a wine jar, a loaf, a knife, a shoe, a bolt of
-    cloth, a pot, a fish.
+  - Every second shop has a painted sign hung out over the pavement from an iron bracket, edge-on
+    to the front so it reads from along the street both ways, the trade pictured on both faces
+    (`textures_houses.signboard`, `h_sign_<trade>`): a wine jar, a loaf, a knife, a shoe, a bolt
+    of cloth, a pot, a fish.
   - **The fronts** (the house set, `textures_houses.gd`; `_bays`, `_window`, `_washing`): the
     ground storey is bays, each a shop (its arched bay, a counter of stone before it with pots on
     it, the shutters put up at dusk and taken down at dawn by `urbs_life.gd`), a door (planks and
@@ -114,6 +138,59 @@ Decided with BB1 (2026-09-28):
     plaster with a bench by the door, a lean-to and a woodpile; the houses of the rich are drafted
     stucco over a painted dado, with a porch. Cats sit by the house fronts (`urbs_town._cats`).
   - The houses of the rich stand round courtyard gardens with a lawn, two trees and a pool.
+  - **Every shop is a trade** (`rome_map.TRADES`, `_trade_for`, `_wares`; the trades' jobs in
+    people.json, drawn by weight from those the age has): the sign's picture is the trade's, the
+    wares on the counter are its (loaves; jars and a cup; the cookshop's pot and cups; the
+    butcher's joints hung from the lintel and his cleaver; tools on an anvil; shoes; bolts of
+    cloth; the barber's shears, mirror and stool on the pavement; the changer's scales and coins;
+    rolls; pots; fish), and its keeper stands at its door (`places_rome._people`: a third of the
+    city's people are shopkeepers at shops of their own trade, and every tradesman placed after
+    takes a shop of his trade while one is unkept).
+  - **Wear and age** (`_house`): a patch of a roof re-tiled in three roofs out of ten (older tiles
+    on a new roof, new on the mossy roofs of 384); walls shored up with timber props from the
+    pavement (a house in twenty under the emperors, one in five in 384, two in five in 455); a
+    house or two in every quarter gutted by fire in every age, its roof gone to charred beams;
+    weeds in the gutters of the streets no aedile keeps from 384 on.
+  - **Nothing is built into anything: the feasibility map** (`scripts/hall/urbs_occupancy.gd`,
+    `rome_map._occ`): before a house, lane, tree, stall or basin is set down, the whole city is
+    a map of what stands where, one byte a half-metre cell (an `Image` of the ground, the same
+    2000 by 2000 cells whatever age), each cell one kind: free, water, bank, wall, monument, open
+    ground, grove, road, lane, house, furniture, tree, or void off the walkable ground. Everything
+    is painted onto it in the order it is laid, soft kinds first and hard kinds after, so the
+    hard always show through: the walkable outline, then the open grounds, groves, ponds and
+    their banks, the Forum's paving and the river's bank; then the river and the wall; the
+    bridges and every named street with its kerb; the aqueducts; every monument's footprint
+    (read from the built meshes' bounds, grown a pace and a half); the view corridors from each
+    street's end to the monument it runs at, and the streets again over them; and the monuments
+    last. The blocks then ask the map, not each other: a lane is laid only along a stretch
+    whose whole band is free (`band_free`, so no lane runs through a monument, into the water or
+    across the paving; it opens into the named street at its end and is painted a lane), a
+    house only where its box is free (`box_free`, a get_region of the rows it covers and a
+    count of the bytes, so 3200 houses test in a few hundred milliseconds; an exact
+    separating-axis check against the boxes in its 16 m bin confirms the corners thinner than a
+    cell), a fountain's square, a stall, a shrine, a basin, a tomb, a spring or a pool only on a
+    free disc, each painted furniture as soon as it stands, and a tree only where a pace round
+    its trunk is free ground, bank, open or grove (a tuft half a pace, reeds in the water too).
+    The streets and lanes are lined first, each walked whole by arc length, house against house
+    along both sides (a house narrowed to fit before a lane's mouth, or made shallower, its
+    front always a step from the kerb; half have a neighbour within a pace and a half); now
+    and then the line leaves a little square with a fountain; a stall stands on the pavement
+    before the shops here and there, oftener on the named streets than in the lanes, and on
+    the kerb where no house fits (never two within thirty paces there). The blocks between
+    take what room is left, shrinking to fit or not built. Basins stand on the pavement against
+    a house front (slid along the street to the nearest one), shrines on a corner pavement
+    clear of every lane. `tools/audit_rome.gd -- --age=N [--map=path]` counts what is built
+    into what (houses into houses, over a street, into a monument; lanes through a monument,
+    in the water, across the paving; plants in a house or a street; basins, shrines, tombs and
+    fountains in a house) and dumps the map; every count is zero in all four ages, and the
+    whole city builds in five to seven seconds. `python3 tools/dev_maps.py feasibility 3 0`
+    colours the map a kind a colour with a key (`docs/dev/feasibility_empire.png`,
+    `feasibility_heroic.png`).
+    The monuments of the Forum's cluster (city.json) were spaced and sized so no two solid
+    buildings stand in one another: the Basilica Aemilia east of the Senate House, Janus's
+    shrine at the Argiletum's mouth, the Carcer and Vespasian's temple at the Capitol's foot,
+    Minerva's temple in Nerva's forum, the Meta Sudans and the gladiators' school clear of the
+    Colosseum, the Basilica Julia clear of Castor's temple.
   - **Water** (`Rome.fountain`, `Rome.lacus`, `Rome.spring`, `Rome.jet`, `rome_map._street_basins`,
     `_waters`, `content/rome/green.json` "waters"): the water moves (a ripple shader on every sheet
     of it, the Tiber too) and falls (drops thrown from every running spout). A street basin, a
@@ -248,6 +325,18 @@ Decided with BB1 (2026-09-28):
   - foreigners have their own people's names: Greek, Syrian, Egyptian, Jewish, Gaulish, Spanish,
     African, German, and Gothic late on;
   - late and Christian Romans have saints' names.
+- **Voices** (people.json "voice", `citizen.greeting(p, ctx)`, `react(p, kind, rng, ctx)`; the
+  hall passes the hour, the weather, the festival, the market day and what the ledger says of
+  you): the first words are the hour's (up before the sun; noon, everyone with sense under a
+  roof; late, everyone honest in bed) or the weather's (the gutter over the kerb; the fish will
+  turn by noon), now and then Latin (Salve, Ave, Salvus sis); then a word on the festival or the
+  market, what they have heard of you ("You're the one who carried water for the baker? People
+  talk."), a grievance of their kind (the rent, the steward's stick, the clients at the door
+  before dawn, the centurion), or a name dropped in the age's way (Crassus's steward owns half
+  this block; the Emperor's barber has a cousin who says), each closed with the verbal habit of
+  their class or, for a regular, their own (the baker's "as my father used to say"). Walking into
+  someone earns an oath first (Mehercle! Edepol! Ecastor! from the women, Christe! from the
+  Church); farewells are Vale, Bene ambula, Di te servent.
 - **Trades:** 68 jobs walk the city, each in its own ages, dress and place:
   - at a stall, at a shop door, in the street, at the river, at a temple, or on patrol;
   - bakers, butchers, fishmongers, fullers, cobblers, smiths, potters, the watch, charioteers,
@@ -264,6 +353,42 @@ Decided with BB1 (2026-09-28):
 - **Reactions:** as you pass, people greet you in their own way; sellers cry their wares; walk
   into someone and they curse you. The words appear over their heads and fade.
 - Screenshots: `--talk` stops the nearest citizen and asks about their work.
+
+## Reading the city
+- **Inscriptions** (`Rome.inscription`: the game's own Lapidary capitals on a Label3D, red in the
+  cut): every temple's dedication runs along its frieze (city.json `"inscription"`: IOVI OPTIMO
+  MAXIMO, the Pantheon's M AGRIPPA L F COS TERTIVM FECIT, Saturn's SENATVS POPVLVSQVE ROMANVS
+  INCENDIO CONSVMPTVM RESTITVIT, DIVO ANTONINO ET DIVAE FAVSTINAE EX S C), the arches carry their
+  attic texts (Titus's, Severus's, Constantine's, abridged from the stones), the Golden Milestone
+  its name and the miles to Ostia, Capua, Ariminum and Brundisium, the street basins the water's
+  stamp on their lead pipe (AQ MARCIA, AQ CLAVDIA), and every road tomb its epitaph cut in Latin
+  (streets.json `epitaphs[].latin`: D M, VIX ANN, H S E, S T T L, the abbreviations of the
+  stones), with the English and the note still read on looking.
+
+## Adult Rome
+The city has what Rome had, in the ages it had it (city.json, town.json "events", kit_urbs.gd):
+- **The brothel of the Subura** (`lupanar`, from 200 BC to 455): a lamp over the door that burns
+  all night (and flickers), a curtain, the good-luck phallus on its board, HIC HABITAT FELICITAS,
+  the customers' boasts scratched by the door, a bench; the women at the door from dusk
+  (`night_trade`), two asses, the pimp in a mood. Looking at it tells of the cells, the register,
+  the toga the law made them wear, and Messalina's night.
+- **The arches** (`fornices`, the Circus's east end, from dusk): the women under the vaults,
+  where the word for a brothel comes from.
+- **The slave block** (`catasta`, by the Temple of Castor, market days 8 to 12): the dealer's
+  cries over the chalked feet and the placards (VENALIS), a Cappadocian strong as an ox, a girl
+  who sings, sold to the gentleman in the striped tunic; the buyers round it. Looking tells of
+  the placard's law, the million Gauls, the prices.
+- **The executioners' ground** (`gibbets`, outside the Esquiline gate, to Constantine): three
+  crosses by the road, two with what is left on them, the crows, the executioners' hut, where the
+  condemned man of the execution procession is walked to; posts alone after 335.
+- **The pauper pits** (`puticuli`, the Esquiline, to Maecenas's gardens in the 30s BC): the open
+  pits with bones at their lips, Priapus on his post, the crows; Horace's field.
+- **The nights** (`drunks` 21 to 24 by the Vicus Tuscus taverns: the tavern-keeper and his
+  drunks, dice and the Venus throw, someone being sick; `brawl` every other night at 22.5 in the
+  Subura: a knife, a thief, the cry for the watch, nobody saw anything).
+- **The walls' coarser Latin** (`textures.SCRATCHED_LATER`, the emperors' city): Restituta, take
+  off your tunic; Lucilla made money from her body; Serena can't stand Isidorus; Vibius Restitutus
+  slept here alone and longed for his Urbana.
 
 ## Tone: the fall from virtue
 Rome is a moral arc, and the descent is meant to be palpable, harsh and depressing (decided with BB1,
@@ -319,11 +444,36 @@ file to add life; no code is needed.
 - **Streets:**
   - Pigeons peck in the Forum and fly up when you run through them.
   - Dogs trot along the streets.
+  - **Small life** (`urbs_town._sleepers`, `_chickens`, `_lizards_on_walls`, `_dusk_flocks`,
+    `_children`, `_small_life`): dogs asleep in the sun against the house fronts; hens in the
+    lanes, pecking, scattering as you come and drifting back; lizards on the sunlit walls (only
+    in the sun, only by day) that dart off as you near and creep back; two flocks of swallows
+    wheeling low over the Forum and the Subura at dusk; children rolling hoops along the streets
+    with a stick.
+  - **The hours** (`urbs_town._hours`, `_watchman`, `_herds`; `rome_map._lamps`): at dawn the
+    shopkeepers sweep before their doors with brooms as the shutters come down; at dusk the lamps
+    by every house door light with the fountains' (one multimesh of flames, `out["flames"]`);
+    after dark the night carts rumble down the Argiletum and the Sacred Way (Caesar's law kept
+    them out by day; the Via Lata's cart comes in at any hour), and the watchman walks the Sacred
+    Way with a torch crying the hour of the night in Latin (HORA TERTIA NOCTIS: the night's
+    twelve hours run from dusk to dawn).
   - Smoke rises from the bakers' and smiths' roofs by day.
-  - Painted election notices and scratched words appear by the shop doors; the chi-rho appears in
-    the late city.
+  - Painted election notices and scratched words, real ones from Pompeii's walls, appear by the
+    shop doors; the chi-rho appears in the late city.
+  - The streets' names stand on the corners in Latin (city.json `"latin"`: VIA SACRA, VICVS
+    TVSCVS, ARGILETVM, CLIVVS SCAVRI...), red capitals on a whitewashed panel painted on a house
+    wall a few paces from each crossing, over the shop signs and under the first storey's windows
+    (`rome_map._corners`, the wall found from the houses' own boxes); where no house wall stands,
+    as in the Forum where the streets run between monuments, a cippus of travertine on the kerb
+    carries the name cut in two lines, as the boundary stones did. The Romans put no names up;
+    you need them.
 - **Sounds:** the three nearest trades are heard at their doors: the smith's forge, the weaver's
-  loom, the tavern's crowd at night, the bakery's fire, the fuller's water.
+  loom, the tavern's noise (cups knocked on the boards over the crowd), the mill's grind, the
+  bakery's fire, the fuller's water; the street basins trickle where the square fountains splash
+  (`trickle.wav`, `mill.wav`, `tavern.wav`, town.json "sounds"). Your own footfalls change with
+  what the feasibility map says is underfoot (`urbs_life._footsteps`): a knock on the basalt of
+  the streets, a slap on the travertine of the Forum, a thud on the earth of the lanes and the
+  open ground.
 - **People talk to each other:** two acquaintances passing stop and exchange a word or two, by name.
 - **Memory** (`rome_met` in the save):
   - Anyone you have talked to says "You again!" and greets you as you pass.

@@ -6,6 +6,7 @@ against where it should be; and every surface it is built from.
   docs/dev/ortho_forum_<age>.png   the same, close in on the Forum
   docs/dev/ortho_ages.png    all seven ages side by side
   docs/dev/materials.png     every material of the city as a labelled swatch
+  docs/dev/feasibility_<age>.png   the feasibility map the city was laid out on (python3 tools/dev_maps.py feasibility [ages])
 
 The captures come from the game itself (hall.gd's --ortho shot mode, under xvfb), so they show the
 real buildings, textures and ground. Run with an age list to do fewer:
@@ -166,7 +167,52 @@ def materials():
     print("materials:", len(files))
 
 
+KINDS = ["free", "water", "bank", "wall", "monument", "open", "grove", "road", "lane", "house", "furniture", "tree"]
+KIND_COLOURS = {
+    "free": (232, 220, 190), "water": (70, 120, 170), "bank": (150, 170, 150), "wall": (60, 45, 30), "monument": (170, 40, 30),
+    "open": (245, 238, 215), "grove": (120, 160, 90), "road": (255, 255, 255), "lane": (220, 205, 170), "house": (200, 110, 70),
+    "furniture": (60, 110, 180), "tree": (40, 100, 40), "void": (30, 30, 30),
+}
+
+
+def feasibility(ages):
+    """The feasibility map of each age (rome_map.gd's occupancy, one grey a kind), coloured, with a key."""
+    os.makedirs(OUT, exist_ok=True)
+    for age_i in ages:
+        raw = os.path.join(OUT, "_occ_%s.png" % AGES[age_i])
+        print("mapping", AGES[age_i], "...", flush=True)
+        subprocess.run(["godot", "--headless", "--path", ROOT, "--script", "res://tools/audit_rome.gd", "--", "--age=%d" % age_i,
+                        "--map=%s" % raw], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=1200)
+        if not os.path.exists(raw):
+            print("  no map for", AGES[age_i])
+            continue
+        grey = Image.open(raw).convert("L")
+        os.remove(raw)
+        palette = []
+        for v in range(256):
+            name = KINDS[v] if v < len(KINDS) else "void"
+            palette.extend(KIND_COLOURS[name])
+        pal = grey.copy()
+        pal.putpalette(palette)
+        out = pal.convert("RGB").transpose(Image.FLIP_TOP_BOTTOM)  # north up: the map's rows run with world z, which runs south
+        w, h = out.size
+        sheet = Image.new("RGB", (w, h + 40), (20, 20, 20))
+        sheet.paste(out, (0, 40))
+        d = ImageDraw.Draw(sheet)
+        f = font(16)
+        x = 8
+        for name in KINDS + ["void"]:
+            d.rectangle([x, 12, x + 16, 28], fill=KIND_COLOURS[name])
+            d.text((x + 20, 12), name, font=f, fill=(230, 230, 230))
+            x += 30 + 8 * len(name) + 10
+        sheet.save(os.path.join(OUT, "feasibility_%s.png" % AGES[age_i]))
+        print("  wrote", "feasibility_%s.png" % AGES[age_i])
+
+
 def main(argv):
+    if argv and argv[0] == "feasibility":
+        feasibility([int(a) for a in argv[1:]] if argv[1:] else list(range(len(AGES))))
+        return
     if argv and argv[0] == "materials":
         materials()
         return

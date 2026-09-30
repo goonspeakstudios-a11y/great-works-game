@@ -25,7 +25,7 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 	match str(m["kind"]):
 		"temple":
 			g.scale = Vector3.ONE * size
-			Rome.temple(g, Vector3.ZERO, 0.0, whole, temple_style(m, year), variant)
+			Rome.temple(g, Vector3.ZERO, 0.0, whole, temple_style(m, year), variant, str(m.get("inscription", "")))
 		"double_temple":
 			double_temple(g, size, whole)
 		"round_temple":
@@ -48,6 +48,14 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 			fig(g, whole)
 		"milliarium":
 			milliarium(g, whole)
+		"lupanar":
+			light = lupanar(g, whole)
+		"catasta":
+			catasta(g, whole)
+		"gibbets":
+			gibbets(g, whole)
+		"puticuli":
+			puticuli(g, whole)
 		"statues":
 			statues(g, whole, int(m.get("count", 5)))
 		"tomb":
@@ -73,7 +81,7 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 		"shrine":
 			shrine(g, whole)
 		"arch":
-			Rome.triumphal_arch(g, Vector3.ZERO, 0.0, true, whole)
+			Rome.triumphal_arch(g, Vector3.ZERO, 0.0, true, whole, str(m.get("inscription", "")))
 		"forum":
 			forum(g, float(m.get("w", 60.0)) * span, float(m.get("d", 100.0)) * span, whole)
 		"column":
@@ -280,6 +288,102 @@ static func milliarium(g: Node3D, whole: bool) -> void:
 	Kit.box(g, Vector3(0, 0.4, 0), Vector3(2.0, 0.8, 2.0), "marble")
 	Kit.cylinder(g, Vector3(0, 0.8, 0), 0.6, 2.6, "gold" if whole else "marble", true, 10)
 	Kit.cylinder(g, Vector3(0, 3.4, 0), 0.8, 0.3, "marble", false, 10)
+	if whole:  # its name, and the miles to the great cities cut below it
+		Rome.inscription(g, Vector3(0, 2.75, 0.63), ["MILLIARIVM", "AVREVM"], 18, "3a2a1a")
+		Rome.inscription(g, Vector3(0, 1.7, 0.63), ["OSTIA XVI", "CAPVA CXXXVI", "ARIMINVM CCXXII", "BRVNDISIVM CCCLX"], 12, "3a2a1a")
+
+
+## A brothel of the Subura: a two-storey house of plaster with a dark red dado, a curtain across
+## its door, the lamp over it that burns all night (returned, for the flicker), a painted board
+## with the good-luck phallus, a bench outside, and the customers' boasts scratched by the door.
+## Fallen: the shell, the curtain gone.
+static func lupanar(g: Node3D, whole: bool) -> OmniLight3D:
+	Kit.box(g, Vector3(0, 3.6, 0), Vector3(10.0, 7.2, 8.0), "h_plaster")
+	Kit.box(g, Vector3(0, 0.6, 0), Vector3(10.06, 1.2, 8.06), "#7a2a22", false)  # the dado
+	Kit.box(g, Vector3(0, 7.9, 0), Vector3(10.6, 1.4, 8.6), "h_roof", false)
+	Kit.box(g, Vector3(0, 1.4, 4.02), Vector3(1.6, 2.8, 0.06), "dark", false)  # the doorway
+	if whole:
+		Kit.box(g, Vector3(0.2, 1.5, 4.08), Vector3(1.3, 2.6, 0.04), "#a83a2a", false)  # the curtain across it
+		Kit.box(g, Vector3(-3.0, 0.3, 4.6), Vector3(2.2, 0.5, 0.6), "wood", false)  # the bench
+	Kit.box(g, Vector3(0, 3.5, 4.1), Vector3(0.1, 0.1, 1.0), "iron", false)  # the lamp's bracket
+	Kit.cylinder(g, Vector3(0, 3.1, 4.55), 0.14, 0.3, "bronze", false, 8)
+	var light: OmniLight3D = null
+	if whole:
+		Kit.blob(g, Vector3(0, 3.5, 4.55), 0.13, "fire", Vector3(1.0, 1.6, 1.0), 5)
+		light = OmniLight3D.new()
+		light.light_color = Color("ff9a48")
+		light.omni_range = 9.0
+		light.light_energy = 1.4
+		light.position = Vector3(0, 3.6, 4.7)
+		g.add_child(light)
+	Kit.box(g, Vector3(2.6, 4.6, 4.03), Vector3(1.6, 0.8, 0.05), "plaque", false)  # the painted board
+	Kit.box(g, Vector3(2.6, 4.6, 4.07), Vector3(0.7, 0.16, 0.04), "#c8503a", false)  # the good-luck phallus on it
+	Kit.blob(g, Vector3(2.95, 4.6, 4.08), 0.1, "#c8503a", Vector3(1.0, 1.0, 0.4), 6)
+	Rome.inscription(g, Vector3(-2.6, 4.6, 4.06), ["HIC HABITAT", "FELICITAS"], 22, "8a2a1a")
+	for k in 2:  # the boasts scratched by the door
+		Kit.box(g, Vector3(-1.7 + k * 3.6, 2.2 - k * 0.5, 4.04), Vector3(1.8, 0.8, 0.02), "graffiti_empire_%d" % [10 + k], false)
+	for x: float in [-3.2, 3.2]:  # the upper windows, shuttered
+		Kit.box(g, Vector3(x, 5.6, 4.03), Vector3(1.0, 1.2, 0.05), "h_shutter", false)
+	return light
+
+
+## The slave block by the Temple of Castor: a wooden platform with a post and its placards, the
+## steps up to it, chalk on the boards.
+static func catasta(g: Node3D, whole: bool) -> void:
+	Kit.box(g, Vector3(0, 0.45, 0), Vector3(4.0, 0.9, 2.4), "wood")
+	Kit.box(g, Vector3(0, 0.2, 1.6), Vector3(1.4, 0.4, 0.8), "wood")  # the step
+	Kit.box(g, Vector3(-1.6, 1.9, -0.9), Vector3(0.16, 2.0, 0.16), "wood", false)  # the post
+	if whole:
+		Kit.box(g, Vector3(-1.6, 2.4, -0.7), Vector3(0.6, 0.4, 0.03), "plaque", false)  # a placard hung on it
+		Rome.inscription(g, Vector3(-1.6, 2.4, -0.68), ["VENALIS"], 14, "3a3028")
+		for k in 5:
+			Kit.box(g, Vector3(-1.5 + k * 0.7, 0.905, 0.3), Vector3(0.3, 0.01, 0.2), "#e8e4dc", false)  # chalk on the boards
+
+
+## The executioners' ground outside the Esquiline gate: three crosses by the road, two with what
+## is left on them, the crows, the heap of stones, the executioners' hut. Fallen (after
+## Constantine): the posts alone.
+static func gibbets(g: Node3D, whole: bool) -> void:
+	for k in 3:
+		var x := -4.0 + k * 4.0
+		Kit.box(g, Vector3(x, 2.2, 0), Vector3(0.24, 4.4, 0.24), "deadwood")
+		if not whole:
+			continue
+		Kit.box(g, Vector3(x, 3.9, 0), Vector3(2.2, 0.2, 0.2), "deadwood", false)  # the crossbeam
+		if k < 2:  # what is left on it
+			Kit.blob(g, Vector3(x, 3.3, 0.2), 0.22, "bone", Vector3(1.0, 1.6, 0.6), 6)
+			for side: float in [-1.0, 1.0]:
+				Kit.box(g, Vector3(x + side * 0.55, 3.85, 0.2), Vector3(0.9, 0.08, 0.08), "bone", false)
+				Kit.box(g, Vector3(x + side * 0.12, 2.5, 0.2), Vector3(0.09, 1.1, 0.09), "bone", false)
+			Kit.blob(g, Vector3(x, 4.15, 0.2), 0.14, "bone")
+			Kit.blob(g, Vector3(x + 0.9, 4.05, 0), 0.09, "#2a2630", Vector3(1.0, 0.9, 1.6), 5)  # a crow on the beam
+	Kit.blob(g, Vector3(6.5, 0.3, -2.0), 0.9, "stone", Vector3(1.6, 0.6, 1.3), 7)  # the stones
+	Kit.box(g, Vector3(-7.5, 1.2, -3.0), Vector3(3.0, 2.4, 2.6), "h_timber")  # the executioners' hut
+	Kit.box(g, Vector3(-7.5, 2.7, -3.0), Vector3(3.6, 0.6, 3.2), "wicker", false)
+	for k in 3:
+		Kit.blob(g, Vector3(-2.0 + k * 1.5, 0.08, 3.0 + (k % 2)), 0.1, "#2a2630", Vector3(1.0, 0.8, 1.6), 5)  # crows on the ground
+
+
+## The pauper pits on the Esquiline: open pits in the field, bones at their lips, crows, the
+## Priapus of the gardens' edge on his post. Fallen (once Maecenas's gardens cover them): turf.
+static func puticuli(g: Node3D, whole: bool) -> void:
+	for k in 5:
+		var a := TAU * k / 5.0
+		var at := Vector3(cos(a) * 6.0, 0, sin(a) * 6.0)
+		if whole:
+			Kit.cylinder(g, at + Vector3(0, -0.02, 0), 2.7, 0.05, "earth", false, 12)  # its lip of thrown earth
+			Kit.cylinder(g, at + Vector3(0, -0.4, 0), 2.1, 0.46, "dark", false, 12)  # the pit, black, open above the lip
+			for j in 3:
+				var b := a + j * 1.7
+				Kit.box(g, at + Vector3(cos(b) * 2.2, 0.1, sin(b) * 2.2), Vector3(0.5, 0.06, 0.08), "bone", false, Vector3(0, b, 0))
+		else:
+			Kit.cylinder(g, at + Vector3(0, 0.02, 0), 2.4, 0.06, "grass", false, 12)
+	if whole:
+		Kit.box(g, Vector3(0, 0.9, 0), Vector3(0.3, 1.8, 0.3), "deadwood")  # Priapus on his post, a scarecrow of a god
+		Kit.blob(g, Vector3(0, 2.0, 0), 0.22, "wood")
+		Kit.box(g, Vector3(0, 1.1, 0.25), Vector3(0.12, 0.4, 0.12), "#c8503a", false, Vector3(-0.8, 0, 0))
+		for k in 4:
+			Kit.blob(g, Vector3(-3.0 + k * 2.0, 0.08, -1.0 + (k % 2) * 2.0), 0.1, "#2a2630", Vector3(1.0, 0.8, 1.6), 5)  # crows
 
 
 ## A row of honorific statues on columns along the Forum: bronzes of consuls and generals,

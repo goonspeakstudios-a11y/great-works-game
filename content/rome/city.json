@@ -319,7 +319,7 @@
   ],
   "roads": [
     {
-      "name": "the Sacred Way",
+      "name": "the Sacred Way", "latin": "VIA SACRA",
       "width": 6,
       "points": [
         [
@@ -349,7 +349,7 @@
       ]
     },
     {
-      "name": "the Vicus Tuscus",
+      "name": "the Vicus Tuscus", "latin": "VICVS TVSCVS",
       "width": 4,
       "points": [
         [
@@ -367,7 +367,7 @@
       ]
     },
     {
-      "name": "the Vicus Iugarius",
+      "name": "the Vicus Iugarius", "latin": "VICVS IVGARIVS",
       "width": 4,
       "points": [
         [
@@ -385,7 +385,7 @@
       ]
     },
     {
-      "name": "the Argiletum and the Clivus Suburanus",
+      "name": "the Argiletum and the Clivus Suburanus", "latin": "ARGILETVM",
       "width": 5,
       "points": [
         [
@@ -411,7 +411,7 @@
       ]
     },
     {
-      "name": "the Vicus Patricius",
+      "name": "the Vicus Patricius", "latin": "VICVS PATRICIVS",
       "width": 4,
       "points": [
         [
@@ -429,7 +429,7 @@
       ]
     },
     {
-      "name": "the Vicus Longus",
+      "name": "the Vicus Longus", "latin": "VICVS LONGVS",
       "width": 4,
       "points": [
         [
@@ -447,7 +447,7 @@
       ]
     },
     {
-      "name": "the Alta Semita",
+      "name": "the Alta Semita", "latin": "ALTA SEMITA",
       "width": 5,
       "points": [
         [
@@ -469,7 +469,7 @@
       ]
     },
     {
-      "name": "the Via Lata",
+      "name": "the Via Lata", "latin": "VIA LATA", "straight": true,
       "width": 7,
       "points": [
         [
@@ -495,7 +495,7 @@
       ]
     },
     {
-      "name": "the Via Appia",
+      "name": "the Via Appia", "latin": "VIA APPIA", "straight": true,
       "width": 6,
       "points": [
         [
@@ -517,7 +517,7 @@
       ]
     },
     {
-      "name": "the Via Labicana",
+      "name": "the Via Labicana", "latin": "VIA LABICANA",
       "width": 5,
       "points": [
         [
@@ -539,7 +539,7 @@
       ]
     },
     {
-      "name": "the Via Tiburtina",
+      "name": "the Via Tiburtina", "latin": "VIA TIBVRTINA",
       "width": 5,
       "points": [
         [
@@ -557,7 +557,7 @@
       ]
     },
     {
-      "name": "the road to the Janiculum",
+      "name": "the road to the Janiculum", "latin": "VIA AVRELIA",
       "width": 5,
       "points": [
         [
@@ -583,7 +583,7 @@
       ]
     },
     {
-      "name": "the Via Recta",
+      "name": "the Via Recta", "latin": "VIA RECTA", "straight": true,
       "width": 5,
       "points": [
         [
@@ -601,7 +601,7 @@
       ]
     },
     {
-      "name": "the Via Ostiensis",
+      "name": "the Via Ostiensis", "latin": "VIA OSTIENSIS",
       "width": 5,
       "points": [
         [
@@ -627,7 +627,7 @@
       ]
     },
     {
-      "name": "the Clivus Scauri",
+      "name": "the Clivus Scauri", "latin": "CLIVVS SCAVRI",
       "width": 4,
       "points": [
         [
@@ -649,7 +649,7 @@
       ]
     },
     {
-      "name": "the street of the Esquiline",
+      "name": "the street of the Esquiline", "latin": "VICVS ESQVILINVS",
       "width": 4,
       "points": [
         [
@@ -936,8 +936,12 @@
     }
   ],
   "monuments": [
+    {"id": "lupanar", "name": "the brothel of the Subura", "kind": "lupanar", "at": [640, 300], "face": 200, "from": -200, "ruin": 455, "note": "A lupanar, a wolf-den, one of the Subura's: a lamp over the door that burns all night, a curtain across it, a painted board with a good-luck phallus, and inside a passage of five cells each with a masonry bed and a mattress, the prices scratched on the wall by the door. Two asses, the price of a loaf. The women are slaves or freedwomen on the aediles' register, forbidden the stola, made to wear the toga like men. Messalina, the Emperor Claudius's wife, was said to have worked a night here under a false name for the sport of it. The graffiti on the cells' walls are the customers' boasts.", "fall": "A shell of brick where the brothel stood. The Church closed what the Goths did not."},
+    {"id": "catasta", "name": "the slave block", "kind": "catasta", "at": [70, -12], "face": 180, "from": -300, "ruin": 455, "note": "The catasta by the Temple of Castor: a wooden platform where slaves are stood for sale, their feet chalked white if they are fresh from overseas, a placard round the neck giving origin, skills and faults, for the dealer is liable for a slave sold with a hidden vice. Buyers make them jump, open their mouths, strip them. A million Gauls came through blocks like this after Caesar's wars; after Cannae the Republic bought slaves to arm them. A skilled Greek fetched a fortune; a field hand, the price of a mule.", "fall": "Nobody is bought here now. The Goths take what they want without a block."},
+    {"id": "gibbets", "name": "the executioners' ground", "kind": "gibbets", "at": [1400, 520], "face": 250, "from": -640, "ruin": 335, "note": "The Sessorium, outside the Esquiline gate: the place of execution for slaves and the low. The crosses stand by the road so that everyone coming in sees; the bodies are left for the crows, and the executioners, who may not live inside the walls, keep their hooks and their whips here. A slave who struck his master comes this way with his crossbeam on his shoulders, and the household, by the old law, with him if the master died. Constantine will forbid the cross, for its new meaning, and hang men instead.", "fall": "Posts in the grass, and the crows still here, from habit."},
+    {"id": "puticuli", "name": "the pauper pits", "kind": "puticuli", "at": [1380, 430], "face": 0, "from": -640, "ruin": -30, "note": "The puticuli on the Esquiline: pits into which the corpses of slaves and the destitute are thrown, and the refuse of the city, and the executed, without a name or a coin for the ferryman. The stench carries to the gate on a hot day; Horace's Priapus stands guard over the field and complains of the witches who come at night for bones. Maecenas will lay his gardens over the whole ground and the rich will walk where the poor rot.", "fall": "Gardens over the pits, and the gardens themselves gone to nettles."},
     {
-      "id": "jupiter",
+      "id": "jupiter", "inscription": "IOVI OPTIMO MAXIMO",
       "name": "the Temple of Jupiter Best and Greatest",
       "kind": "temple",
       "at": [
@@ -988,7 +992,7 @@
       "landmark": true
     },
     {
-      "id": "juno_moneta",
+      "id": "juno_moneta", "inscription": "IVNONI MONETAE",
       "name": "the Temple of Juno Moneta",
       "kind": "temple",
       "at": [
@@ -1016,7 +1020,7 @@
       "note": "The record office, 78 BC: the state's laws and treaties on bronze, behind a great arcade over the Forum."
     },
     {
-      "id": "saturn",
+      "id": "saturn", "inscription": "SENATVS POPVLVSQVE ROMANVS INCENDIO CONSVMPTVM RESTITVIT",
       "name": "the Temple of Saturn",
       "kind": "temple",
       "at": [
@@ -1062,34 +1066,34 @@
       }
     },
     {
-      "id": "concord",
+      "id": "concord", "inscription": "CONCORDIAE AVGVSTAE",
       "name": "the Temple of Concord",
       "kind": "temple",
       "at": [
-        -75,
-        92
+        -72,
+        96
       ],
       "face": "forum",
-      "size": 0.85,
+      "size": 0.75,
       "from": -121,
       "ruin": 450,
       "note": "Built in 121 BC after the killing of Gaius Gracchus, to celebrate a concord the murder had made."
     },
     {
-      "id": "vespasian",
+      "id": "vespasian", "inscription": "DIVO VESPASIANO AVGVSTO S P Q R",
       "name": "the Temple of Vespasian and Titus",
       "kind": "temple",
       "at": [
-        -94,
-        72
+        -108,
+        80
       ],
       "face": "forum",
-      "size": 0.6,
+      "size": 0.45,
       "from": 87,
       "ruin": 450
     },
     {
-      "id": "castor",
+      "id": "castor", "inscription": "CASTORI ET POLLVCI",
       "name": "the Temple of Castor and Pollux",
       "kind": "temple",
       "at": [
@@ -1154,8 +1158,8 @@
       "name": "the Regia",
       "kind": "hall",
       "at": [
-        104,
-        -76
+        112,
+        -84
       ],
       "face": 225,
       "size": 0.6,
@@ -1337,8 +1341,8 @@
       "name": "the Golden Milestone",
       "kind": "milliarium",
       "at": [
-        -74,
-        30
+        -58,
+        8
       ],
       "face": 0,
       "from": -20,
@@ -1365,8 +1369,8 @@
       "name": "the Prison (Carcer)",
       "kind": "hall",
       "at": [
-        -90,
-        90
+        -96,
+        124
       ],
       "face": 150,
       "size": 0.6,
@@ -1444,7 +1448,7 @@
       "fall": "A tomb cut in the rock by the old gate, its sarcophagi robbed. The letters on them are the oldest Latin verses that survive."
     },
     {
-      "id": "salus",
+      "id": "salus", "inscription": "SALVTI PVBLICAE",
       "name": "the Temple of Salus",
       "kind": "temple",
       "at": [
@@ -1458,21 +1462,21 @@
       "note": "The temple of Safety (Salus) on the Quirinal, vowed in the Samnite war and dedicated in 302 BC. Gaius Fabius Pictor painted its walls, the first Roman to paint, and his family was ashamed of it for a century; the paintings lasted until Claudius' fire."
     },
     {
-      "id": "jupiter_victor",
+      "id": "jupiter_victor", "inscription": "IOVI VICTORI",
       "name": "the Temple of Jupiter the Victor",
       "kind": "temple",
       "at": [
-        100,
-        -470
+        60,
+        -500
       ],
       "face": 300,
-      "size": 0.65,
+      "size": 0.6,
       "from": -295,
       "ruin": 400,
       "note": "Vowed by Quintus Fabius Rullianus at Sentinum in 295 BC, when the Samnites and Gauls together were beaten, and the consul Decius Mus devoted himself to death for the legions. On the Palatine's south brow, over the Circus."
     },
     {
-      "id": "venus_obsequens",
+      "id": "venus_obsequens", "inscription": "VENERI OBSEQVENTI",
       "name": "the Temple of Venus the Compliant",
       "kind": "temple",
       "at": [
@@ -1486,7 +1490,7 @@
       "note": "The first temple of Venus in Rome, by the Circus, built by Fabius Gurges out of the fines he collected from matrons convicted of adultery. It stands where the games of the Circus begin, and the girls of the city keep its festival in August."
     },
     {
-      "id": "tellus",
+      "id": "tellus", "inscription": "TELLVRI MATRI",
       "name": "the Temple of Tellus",
       "kind": "temple",
       "at": [
@@ -1500,7 +1504,7 @@
       "note": "The temple of the Earth (Tellus) on the Carinae, vowed in 268 BC in a battle with the Picentes during which the ground shook. It stands where the house of Spurius Cassius stood, pulled down when he was executed for aiming at kingship. A map of Italy is painted on its wall. The Senate met here on the day after Caesar's murder."
     },
     {
-      "id": "juno_lucina",
+      "id": "juno_lucina", "inscription": "IVNONI LVCINAE",
       "name": "the Temple of Juno Lucina",
       "kind": "temple",
       "at": [
@@ -1514,7 +1518,7 @@
       "note": "Juno who brings to light: the goddess of childbirth, on the Esquiline in her sacred grove, dedicated in 375 BC. On the first of March, the Matronalia, the married women of Rome climb here with their daughters and pray with their hair loose and every knot untied."
     },
     {
-      "id": "mars_capena",
+      "id": "mars_capena", "inscription": "MARTI",
       "name": "the Temple of Mars",
       "kind": "temple",
       "at": [
@@ -1576,8 +1580,8 @@
       "name": "the Senate House",
       "kind": "curia",
       "at": [
-        -41,
-        67
+        -44,
+        82
       ],
       "face": "forum",
       "from": -600,
@@ -1631,11 +1635,11 @@
       "name": "the Basilica Aemilia",
       "kind": "basilica",
       "at": [
-        41,
-        56
+        70,
+        50
       ],
       "face": 210,
-      "size": 0.7,
+      "size": 0.55,
       "from": -179,
       "ruin": 410,
       "note": "A great hall for the law and for business, with the money-changers' shops along its front.",
@@ -1646,11 +1650,11 @@
       "name": "the Basilica Sempronia",
       "kind": "basilica",
       "at": [
-        -33,
-        -45
+        -45,
+        -50
       ],
       "face": 30,
-      "size": 0.6,
+      "size": 0.5,
       "from": -170,
       "gone": -46
     },
@@ -1659,17 +1663,17 @@
       "name": "the Basilica Julia",
       "kind": "basilica",
       "at": [
-        -33,
-        -45
+        -45,
+        -50
       ],
       "face": 30,
-      "size": 0.7,
+      "size": 0.55,
       "from": -46,
       "ruin": 410,
       "note": "Caesar's basilica. The Centumviral court hears inheritance cases here; idlers scratch game boards into its steps."
     },
     {
-      "id": "divus_julius",
+      "id": "divus_julius", "inscription": "DIVO IVLIO",
       "name": "the Temple of the Deified Julius",
       "kind": "temple",
       "at": [
@@ -1677,21 +1681,21 @@
         0
       ],
       "face": 270,
-      "size": 0.7,
+      "size": 0.55,
       "from": -29,
       "ruin": 450,
       "note": "Built where Caesar's body was burned by the crowd in 44 BC. The first Roman to be made a god."
     },
     {
-      "id": "antoninus",
+      "id": "antoninus", "inscription": "DIVO ANTONINO ET DIVAE FAVSTINAE EX S C",
       "name": "the Temple of Antoninus and Faustina",
       "kind": "temple",
       "at": [
-        133,
-        33
+        126,
+        26
       ],
       "face": 210,
-      "size": 0.8,
+      "size": 0.65,
       "from": 141,
       "note": "Antoninus built it for his wife Faustina, dead in 141. When he dies the Senate will add his name.",
       "fall": "Its porch stands whole. In a few centuries it will be a church, and it still is."
@@ -1701,8 +1705,8 @@
       "name": "the Shrine of Janus",
       "kind": "shrine",
       "at": [
-        0,
-        70
+        36,
+        96
       ],
       "face": 180,
       "from": -700,
@@ -1710,7 +1714,7 @@
       "note": "The twin doors of Janus stand open while Rome is at war, and close only in peace. They are almost never closed."
     },
     {
-      "id": "sep_severus",
+      "id": "sep_severus", "inscription": "IMP CAES L SEPTIMIO M FIL SEVERO\nPIO PERTINACI AVG PATRI PATRIAE\nOB REM PVBLICAM RESTITVTAM",
       "name": "the Arch of Septimius Severus",
       "kind": "arch",
       "at": [
@@ -1722,7 +1726,7 @@
       "note": "Severus' arch, 203, for his wars in Parthia. The name of his son Geta was chiselled out after Caracalla killed him."
     },
     {
-      "id": "titus",
+      "id": "titus", "inscription": "SENATVS POPVLVSQVE ROMANVS\nDIVO TITO DIVI VESPASIANI F\nVESPASIANO AVGVSTO",
       "name": "the Arch of Titus",
       "kind": "arch",
       "at": [
@@ -1734,12 +1738,12 @@
       "note": "For the taking of Jerusalem in 70. Inside, the relief of the Temple's menorah carried in triumph."
     },
     {
-      "id": "constantine",
+      "id": "constantine", "inscription": "IMP CAES FL CONSTANTINO MAXIMO\nP F AVGVSTO S P Q R\nINSTINCTV DIVINITATIS",
       "name": "the Arch of Constantine",
       "kind": "arch",
       "at": [
-        447,
-        -266
+        420,
+        -285
       ],
       "face": 0,
       "from": 315,
@@ -1806,7 +1810,7 @@
       "note": "Caesar's square, paid for with Gallic gold."
     },
     {
-      "id": "venus_genetrix",
+      "id": "venus_genetrix", "inscription": "VENERI GENETRICI",
       "name": "the Temple of Venus the Mother",
       "kind": "temple",
       "at": [
@@ -1835,7 +1839,7 @@
       "note": "Augustus' square, with statues of the great men of Rome down its colonnades."
     },
     {
-      "id": "mars_ultor",
+      "id": "mars_ultor", "inscription": "MARTI VLTORI",
       "name": "the Temple of Mars the Avenger",
       "kind": "temple",
       "at": [
@@ -1865,15 +1869,15 @@
       "ruin": 500
     },
     {
-      "id": "minerva",
+      "id": "minerva", "inscription": "MINERVAE",
       "name": "the Temple of Minerva",
       "kind": "temple",
       "at": [
-        120,
-        170
+        96,
+        118
       ],
       "face": 225,
-      "size": 0.7,
+      "size": 0.55,
       "from": 97,
       "ruin": 500
     },
@@ -1901,7 +1905,7 @@
         350
       ],
       "face": 150,
-      "size": 1.2,
+      "size": 0.8,
       "from": 112,
       "ruin": 550
     },
@@ -1982,8 +1986,8 @@
       "name": "the Meta Sudans",
       "kind": "fountain_cone",
       "at": [
-        500,
-        -240
+        455,
+        -222
       ],
       "from": 90,
       "ruin": 537,
@@ -1994,8 +1998,8 @@
       "name": "the Great Gladiator School",
       "kind": "ludus",
       "at": [
-        690,
-        -150
+        730,
+        -170
       ],
       "from": 90,
       "ruin": 450
@@ -2006,7 +2010,7 @@
       "kind": "baths",
       "at": [
         700,
-        -50
+        -20
       ],
       "face": 200,
       "size": 0.45,
@@ -2065,7 +2069,7 @@
         -410
       ],
       "face": 330,
-      "size": 1.0,
+      "size": 0.7,
       "from": 92,
       "ruin": 600,
       "note": "Domitian's palace, the Domus Augustana: the word palace comes from this hill, the Palatium.",
@@ -2084,7 +2088,7 @@
       "note": "The hill of the rich: Cicero, Crassus, Clodius and Hortensius all have houses here."
     },
     {
-      "id": "magna_mater",
+      "id": "magna_mater", "inscription": "MATRI DEVM MAGNAE IDAEAE",
       "name": "the Temple of the Great Mother",
       "kind": "temple",
       "at": [
@@ -2098,12 +2102,12 @@
       "note": "Cybele, brought from Phrygia in 204 BC as a black stone, to win the war against Hannibal."
     },
     {
-      "id": "apollo_palatinus",
+      "id": "apollo_palatinus", "inscription": "APOLLINI PALATINO",
       "name": "the Temple of Apollo on the Palatine",
       "kind": "temple",
       "at": [
-        33,
-        -433
+        40,
+        -430
       ],
       "face": 210,
       "size": 0.9,
@@ -2170,7 +2174,7 @@
       "landmark": true
     },
     {
-      "id": "ceres",
+      "id": "ceres", "inscription": "CERERI LIBERO LIBERAEQVE",
       "name": "the Temple of Ceres, Liber and Libera",
       "kind": "temple",
       "at": [
@@ -2184,7 +2188,7 @@
       "note": "The plebs' own temple, and the office of their aediles. The grain goddess."
     },
     {
-      "id": "diana",
+      "id": "diana", "inscription": "DIANAE AVENTINAE",
       "name": "the Temple of Diana on the Aventine",
       "kind": "temple",
       "at": [
@@ -2198,7 +2202,7 @@
       "landmark": true
     },
     {
-      "id": "juno_regina",
+      "id": "juno_regina", "inscription": "IVNONI REGINAE",
       "name": "the Temple of Juno the Queen",
       "kind": "temple",
       "at": [
@@ -2224,7 +2228,7 @@
       "note": "The round marble temple of the cattle market, the oldest marble building in Rome. It still stands."
     },
     {
-      "id": "portunus",
+      "id": "portunus", "inscription": "PORTVNO",
       "name": "the Temple of Portunus",
       "kind": "temple",
       "at": [
@@ -2237,7 +2241,7 @@
       "note": "The god of harbours, by the river port. It still stands, because it became a church."
     },
     {
-      "id": "sant_omobono",
+      "id": "sant_omobono", "inscription": "FORTVNAE ET MATRI MATVTAE",
       "name": "the Temples of Fortune and Mother Dawn",
       "kind": "temple",
       "at": [
@@ -2250,7 +2254,7 @@
       "ruin": 400
     },
     {
-      "id": "aesculapius",
+      "id": "aesculapius", "inscription": "AESCVLAPIO",
       "name": "the Temple of Aesculapius",
       "kind": "temple",
       "at": [
@@ -2278,7 +2282,7 @@
       "fall": "A fortress in waiting: in centuries to come families will live in its arches, and still do."
     },
     {
-      "id": "bellona",
+      "id": "bellona", "inscription": "BELLONAE",
       "name": "the Temple of Bellona",
       "kind": "temple",
       "at": [
@@ -2292,12 +2296,12 @@
       "note": "The Senate meets here, outside the sacred boundary, to receive generals who may not yet enter the city."
     },
     {
-      "id": "apollo_sosianus",
+      "id": "apollo_sosianus", "inscription": "APOLLINI MEDICO",
       "name": "the Temple of Apollo the Healer",
       "kind": "temple",
       "at": [
-        -470,
-        0
+        -520,
+        -8
       ],
       "face": 180,
       "size": 0.6,
@@ -2318,7 +2322,7 @@
       "note": "An open field for the Plebeian Games and for triumphs gathering before they march."
     },
     {
-      "id": "mars_in_circo",
+      "id": "mars_in_circo", "inscription": "MARTI IN CIRCO",
       "name": "the Temple of Mars in the Circus",
       "kind": "temple",
       "at": [
@@ -2346,7 +2350,7 @@
       "note": "The first stone theatre in Rome, 55 BC. To get round the ban on permanent theatres, Pompey set a temple of Venus on top of the seats."
     },
     {
-      "id": "venus_victrix",
+      "id": "venus_victrix", "inscription": "VENERI VICTRICI",
       "name": "the Temple of Venus the Victor",
       "kind": "temple",
       "at": [
@@ -2420,7 +2424,7 @@
       "landmark": true
     },
     {
-      "id": "agrippa_pantheon",
+      "id": "agrippa_pantheon", "inscription": "M AGRIPPA L F COS TERTIVM FECIT",
       "name": "Agrippa's Pantheon",
       "kind": "temple",
       "at": [
@@ -2437,8 +2441,8 @@
       "name": "the Temple of Isis",
       "kind": "forum",
       "at": [
-        -555,
-        678
+        -535,
+        730
       ],
       "face": 0,
       "w": 50,
@@ -2464,8 +2468,8 @@
       "name": "the Baths of Agrippa",
       "kind": "baths",
       "at": [
-        -760,
-        660
+        -790,
+        640
       ],
       "face": 0,
       "size": 0.45,
@@ -2486,7 +2490,7 @@
       "note": "A Greek stadium for athletics, 30,000 seats. Its oval is still the shape of the Piazza Navona."
     },
     {
-      "id": "hadrian_temple",
+      "id": "hadrian_temple", "inscription": "DIVO HADRIANO",
       "name": "the Temple of the Deified Hadrian",
       "kind": "temple",
       "at": [
@@ -2568,7 +2572,7 @@
       "landmark": true
     },
     {
-      "id": "quirinus",
+      "id": "quirinus", "inscription": "QVIRINO",
       "name": "the Temple of Quirinus",
       "kind": "temple",
       "at": [
@@ -2583,7 +2587,7 @@
       "landmark": true
     },
     {
-      "id": "serapis",
+      "id": "serapis", "inscription": "SERAPIDI",
       "name": "the Temple of Serapis",
       "kind": "temple",
       "at": [
@@ -2610,7 +2614,7 @@
       "ruin": 450
     },
     {
-      "id": "jupiter_stator",
+      "id": "jupiter_stator", "inscription": "IOVI STATORI",
       "name": "the Temple of Jupiter the Stayer",
       "kind": "temple",
       "at": [

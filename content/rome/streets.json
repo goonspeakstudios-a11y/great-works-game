@@ -3,47 +3,58 @@
   "epitaphs": [
     {
       "text": "TO THE SPIRITS OF THE DEAD. GAIUS VETTIUS, FREEDMAN OF GAIUS, BAKER, LIVED 61 YEARS. ANTONIA HIS WIFE MADE THIS FOR HIM AND FOR HERSELF WHILE SHE LIVED.",
-      "note": "A freedman's tomb: the trade named with pride, the wife's name after. D M at the top, to the spirits of the dead, on nearly every stone from the emperors on."
+      "note": "A freedman's tomb: the trade named with pride, the wife's name after. D M at the top, to the spirits of the dead, on nearly every stone from the emperors on.",
+      "latin": "D M\nC VETTIVS C L\nPISTOR\nVIX ANN LXI\nANTONIA VXOR\nFEC SIBI ET VIVA"
     },
     {
       "text": "STOP, TRAVELLER, AND LOOK TO YOUR LEFT. I WAS A CHILD OF NINE YEARS, THREE MONTHS AND FOUR DAYS. MY FATHER AND MOTHER SET THIS UP AND WEEP.",
-      "note": "The Romans counted the days of a child's life on its stone. Half of all children died before ten, and the roads out of every city are lined with them."
+      "note": "The Romans counted the days of a child's life on its stone. Half of all children died before ten, and the roads out of every city are lined with them.",
+      "latin": "SISTE VIATOR\nET AD LAEVAM\nASPICE\nVIX ANN IX M III D IIII\nPATER ET MATER\nPOSVERVNT ET FLENT"
     },
     {
       "text": "I WAS NOT. I WAS. I AM NOT. I DO NOT CARE.",
-      "note": "Non fui, fui, non sum, non curo: the Epicurean's epitaph, cut on hundreds of stones, sometimes shortened to its initials, N F F N S N C."
+      "note": "Non fui, fui, non sum, non curo: the Epicurean's epitaph, cut on hundreds of stones, sometimes shortened to its initials, N F F N S N C.",
+      "latin": "NON FVI\nFVI\nNON SVM\nNON CVRO"
     },
     {
       "text": "HERE LIES TITUS FLAVIUS HERMES, SOLDIER OF THE TENTH URBAN COHORT, SERVED 18 YEARS, LIVED 40. HIS HEIR SET THIS UP AS HE WISHED.",
-      "note": "A soldier's stone gives his unit and his years of service before his years of life. His heir, not his family: soldiers could not marry while they served."
+      "note": "A soldier's stone gives his unit and his years of service before his years of life. His heir, not his family: soldiers could not marry while they served.",
+      "latin": "H S E\nT FLAVIVS HERMES\nMIL COH X VRB\nSTIP XVIII VIX ANN XL\nHERES EX\nTESTAMENTO FECIT"
     },
     {
       "text": "BATHS, WINE AND LOVE RUIN OUR BODIES, BUT BATHS, WINE AND LOVE MAKE LIFE.",
-      "note": "Balnea vina Venus corrumpunt corpora nostra, sed vitam faciunt: a joke for the road, on the tomb of a man who evidently had all three."
+      "note": "Balnea vina Venus corrumpunt corpora nostra, sed vitam faciunt: a joke for the road, on the tomb of a man who evidently had all three.",
+      "latin": "BALNEA VINA VENVS\nCORRVMPVNT CORPORA\nNOSTRA SED VITAM\nFACIVNT"
     },
     {
       "text": "TO AULUS GRANIUS, AUCTIONEER, A MAN OF CONSEQUENCE, WORTHY AND TRUSTED. HE WHO WAS SHOUTING FROM THE PLATFORM IS SILENT NOW. FAREWELL.",
-      "note": "An auctioneer's, on the road: his trade was to shout, and his stone says so. The dead speak, the passer-by answers: farewell."
+      "note": "An auctioneer's, on the road: his trade was to shout, and his stone says so. The dead speak, the passer-by answers: farewell.",
+      "latin": "A GRANIO PRAECONI\nHOMINI MAGNO\nPROBO FIDO\nQVI DE TRIBVNALI\nCLAMABAT TACET\nVALE"
     },
     {
       "text": "MAY THE EARTH LIE LIGHT ON YOU. HERE RESTS CLAUDIA PRIMA, AGED 27. SHE WORKED THE WOOL, SHE KEPT THE HOUSE, SHE WAS CHASTE, SHE WAS MERRY.",
-      "note": "Sit tibi terra levis, S T T L: may the earth lie light. The wife's virtues are the same on every stone for four centuries: wool, the house, chastity, and once in a while, merry."
+      "note": "Sit tibi terra levis, S T T L: may the earth lie light. The wife's virtues are the same on every stone for four centuries: wool, the house, chastity, and once in a while, merry.",
+      "latin": "S T T L\nCLAVDIA PRIMA\nVIX ANN XXVII\nLANAM FECIT\nDOMVM SERVAVIT\nCASTA FVIT HILARA"
     },
     {
       "text": "THIS TOMB IS NOT TO PASS TO THE HEIR. WHOEVER DEFILES IT SHALL PAY TWENTY THOUSAND SESTERCES TO THE TREASURY OF THE VESTALS.",
-      "note": "H M H N S: hoc monumentum heredem non sequitur. A tomb was property, and the dead protected it with a fine, since no one else would."
+      "note": "H M H N S: hoc monumentum heredem non sequitur. A tomb was property, and the dead protected it with a fine, since no one else would.",
+      "latin": "H M H N S\nQVI VIOLAVERIT\nDABIT AERARIO\nVIRGINVM VESTALIVM\nHS XX M"
     },
     {
       "text": "GAIUS, FLUTE-PLAYER, PLAYED FOR THE SACRIFICES ON THE CAPITOL. HE LIES HERE. HIS FRIENDS OF THE GUILD OF FLUTE-PLAYERS MADE THIS.",
-      "note": "A guild's stone: the poor were buried by their clubs, which met once a month for dinner and once for each funeral. The flute-players' guild was as old as the kings."
+      "note": "A guild's stone: the poor were buried by their clubs, which met once a month for dinner and once for each funeral. The flute-players' guild was as old as the kings.",
+      "latin": "C TIBICEN\nSACRIS PVBLICIS\nIN CAPITOLIO\nH S E\nCOLLEGIVM\nTIBICINVM FECIT"
     },
     {
       "text": "IN PEACE. AURELIA, WHO LIVED 34 YEARS, A CHRISTIAN, SLEEPS HERE. SHE DEPOSITED ON THE THIRD DAY BEFORE THE IDES OF MAY. IN THE LORD.",
-      "note": "The Christian stone: no D M, no office, no years counted from birth but the day of burial, the day she was born to the other life, and the dead 'sleeping'."
+      "note": "The Christian stone: no D M, no office, no years counted from birth but the day of burial, the day she was born to the other life, and the dead 'sleeping'.",
+      "latin": "IN PACE\nAVRELIA QVAE\nVIX ANN XXXIV\nCHRISTIANA HIC\nDORMIT DEP III ID MAI\nIN DOMINO"
     },
     {
       "text": "I, WHO LIE HERE, WAS ONCE WHAT YOU ARE. YOU WHO READ WILL BE WHAT I AM.",
-      "note": "The stone speaks to whoever reads it, and there is no answer. Every road out of Rome says it a hundred times before the second milestone."
+      "note": "The stone speaks to whoever reads it, and there is no answer. Every road out of Rome says it a hundred times before the second milestone.",
+      "latin": "QVOD ES FVI\nQVOD SVM ERIS\nQVI LEGIS"
     }
   ],
   "signs": {
@@ -115,7 +126,7 @@
     "the street of the Esquiline": "earth"
   },
   "corners": {
-    "note": "The Romans put no names on their streets: you asked. The painted names on the corner shops are for you, in the letters the shops' notices used.",
+    "note": "The Romans put no names on their streets: you asked. The names painted on the house walls at the corners are for you, in Latin as the Romans would have cut them (city.json latin), in the red capitals the shops' notices used.",
     "letters": "red"
   },
   "gates": {

@@ -3330,5 +3330,218 @@
   "the Sempronii",
   "the Fabii",
   "the Domitii"
- ]
+ ],
+ "voice": {
+  "about": "How a citizen sounds beyond the topics (citizen.gd): a greeting by the hour and the weather, a word on the day (festival, market), what they have heard of you (the ledger), a verbal habit by class, a grievance, a name dropped, and the Latin that falls into their talk.",
+  "hours": {
+   "dawn": [
+    "Up before the sun, stranger? So am I.",
+    "The shutters are barely down. Give me a moment.",
+    "Cold at this hour. The bread's not out yet."
+   ],
+   "morning": [
+    "Morning. The Forum's filling.",
+    "A fine morning for it, whatever it is.",
+    "Morning. You've the look of someone with an errand."
+   ],
+   "noon": [
+    "Hot. Everyone with sense is under a roof.",
+    "Noon. I close for an hour after this.",
+    "Midday. Don't stand in the sun, you'll cook."
+   ],
+   "afternoon": [
+    "The afternoon drags. Ask quick.",
+    "Baths for me soon. What is it?",
+    "The light's going gold. Say what you want."
+   ],
+   "evening": [
+    "Dusk. Get where you're going before the lamps go out.",
+    "Evening. I'm putting the shutters up.",
+    "Evening, stranger. The taverns are open if the shops aren't."
+   ],
+   "night": [
+    "What are you doing out? The watch will take you for a thief.",
+    "Night. Speak low.",
+    "Late. Everyone honest is in bed, and here we both are."
+   ]
+  },
+  "weather": {
+   "rain": [
+    "This rain. The gutter's over the kerb already.",
+    "Wet through. Come under the awning.",
+    "Rain on the Kalends means rain for a month, my mother said."
+   ],
+   "heat": [
+    "This heat. The fish will turn by noon.",
+    "Hot as a bakehouse today."
+   ]
+  },
+  "festival": [
+   "It's {festival} today. Half the city's gone to it.",
+   "{festival}. You'll get no work done in Rome today.",
+   "Did you come for {festival}? Everyone else has."
+  ],
+  "market": [
+   "Market day. The country people are everywhere with their carts and their mud.",
+   "Nundinae. Prices are down, tempers are up."
+  ],
+  "memory": [
+   "I heard about you. They say you {deed}.",
+   "You're the one who {deed}? People talk.",
+   "They say in this street that you {deed}."
+  ],
+  "habits": {
+   "pleb": [
+    "as I always say",
+    "you know how it is",
+    "mark me",
+    "that's the truth of it",
+    "and that's Rome"
+   ],
+   "slave": [
+    "if the master allows",
+    "quietly, now",
+    "not that I'm asked",
+    "as they say in the kitchen"
+   ],
+   "freed": [
+    "I was a slave once, mind",
+    "a free man now, and my own",
+    "as my old master used to say"
+   ],
+   "rich": [
+    "naturally",
+    "as anyone of standing knows",
+    "one needn't say",
+    "ahem"
+   ],
+   "foreign": [
+    "in my country we say",
+    "by the gods of my city",
+    "you Romans"
+   ],
+   "state": [
+    "by order",
+    "in the Emperor's name",
+    "regulations",
+    "move along"
+   ],
+   "church": [
+    "God willing",
+    "the Lord keep you",
+    "as the presbyter says",
+    "in this life or the next"
+   ]
+  },
+  "grievances": {
+   "pleb": [
+    "The rent went up again.",
+    "The landlord's man was round twice this week.",
+    "The water's off in our street since the aqueduct was cut for the baths.",
+    "Nobody pays on time. Nobody."
+   ],
+   "slave": [
+    "The steward keeps a stick.",
+    "They sold my sister to a man in Ostia.",
+    "One day I'll have the price of myself."
+   ],
+   "freed": [
+    "My old master's son still calls me boy.",
+    "I paid for my freedom twice over, with interest."
+   ],
+   "rich": [
+    "The clients are at the door before dawn. Every one of them wants something.",
+    "One's steward robs one, naturally.",
+    "The Senate is not what it was."
+   ],
+   "foreign": [
+    "They call us all Greeklings, whatever we are.",
+    "The customs men at the port took half my load."
+   ],
+   "state": [
+    "Twelve hours on and four off, and the pay three months late.",
+    "The centurion has it in for me."
+   ],
+   "church": [
+    "The pagans still light their lamps at the crossings.",
+    "The bishop wants more for the poor and the poor want more than there is."
+   ]
+  },
+  "drops": {
+   "heroic": [
+    "Old Curius, him with the turnips, told my father",
+    "Fabricius himself once said to my uncle"
+   ],
+   "early": [
+    "Scipio's freedman drinks at the same tavern as my brother",
+    "Cato was in the market yesterday counting the price of fish"
+   ],
+   "republic": [
+    "Clodius's people were in the street last night",
+    "Crassus's steward owns half this block",
+    "Cicero's litter went by this morning"
+   ],
+   "empire": [
+    "The Emperor's barber has a cousin who says",
+    "Someone from the prefect's office was asking",
+    "Pliny's freedman told the fuller"
+   ],
+   "late": [
+    "The prefect's men were counting doors",
+    "Praetextatus's household still keeps the old rites, they say",
+    "The bishop's deacon was here about the alms"
+   ],
+   "collapse": [
+    "Ricimer's Goths were drinking at the corner",
+    "Someone paid gold for a splinter of the True Cross yesterday"
+   ],
+   "fall": [
+    "The Goths took the last mule from the next street",
+    "Belisarius's men, or was it the others, took the grain"
+   ]
+  },
+  "latin": {
+   "greet": [
+    "Salve.",
+    "Ave.",
+    "Salve, hospes.",
+    "Salvus sis."
+   ],
+   "greet_f": [
+    "Salve.",
+    "Ave.",
+    "Salva sis."
+   ],
+   "bye": [
+    "Vale.",
+    "Bene ambula.",
+    "Vale, hospes.",
+    "Di te servent."
+   ],
+   "oaths": [
+    "Mehercle!",
+    "Edepol!",
+    "Per Iovem!",
+    "Di immortales!",
+    "Pro pudor!"
+   ],
+   "oaths_f": [
+    "Ecastor!",
+    "Edepol!",
+    "Di boni!"
+   ],
+   "christian_oaths": [
+    "Deus bone!",
+    "Christe!"
+   ],
+   "prices": [
+    "two asses",
+    "an as",
+    "a sestertius",
+    "HS X",
+    "a denarius",
+    "four asses"
+   ]
+  }
+ }
 }

@@ -68,6 +68,14 @@ giallo antico, stone pine, toga wool, iron, rust, scutum (and faded). Greece: ho
 (lambda) / Athens (owl) / dead, Persian rosette cloth, wicker, black-figure pottery, papyrus,
 sand, grass, ploughed furrows, cave rock, cast shadow.
 
+### Writing on the walls (scripts/hall/pixel_caps.gd, `Textures.material("graffiti_<age>_<n>")`)
+Capitals five pixels wide and seven tall, Latin's alphabet with an interpunct between words,
+stamped into the wall notices: `textures.notices(age)` gives each age its texts (the painted
+election notices of CIL IV in red on a whitewashed field, the scratched words in grey, the
+chi-rho beside a Christian's wish in 384); `_graffiti(age, n)` sets one on a 108 by 48 texture for
+a quad 1.8 by 0.8 m. Rendered in `docs/dev/notices_set.png`. The streets' corner names are the
+game's own Lapidary capitals on a Label3D (`rome_map._corners`).
+
 ### The house set (scripts/hall/textures_houses.gd, `Textures.material("h_<name>")`)
 The textures of Rome's houses, 64 pixels to a 4 m tile in the hall's pixel style, the pale ones
 tinted per house (`rome_map.tinted`); shown together in `docs/dev/materials.png`. Walls, tiled
@@ -79,7 +87,7 @@ Fronts, one image to one quad: `h_shop` (the arched bay, shutters folded back, t
 pots) and `h_shop_shut` (the shutters up, urbs_life.gd swaps them at dusk), `h_door` and its
 painted `h_door_red`, `h_door_green`, `h_window` (frame and sill, clear in the middle for the
 lit pane), `h_window_small` (barred), `h_shutter` (one leaf), `h_cloth` (washing, tinted the
-tunics' colours), `h_vine`, `h_sign`. Storey-aligned things (the damp at the foot, the painted
+tunics' colours), `h_vine`, `h_sign` and `h_sign_<trade>` (the shop's board with its trade painted: wine, bread, knife, shoe, cloth, pot, fish), rendered in `docs/dev/signs_set.png`). Storey-aligned things (the damp at the foot, the painted
 dado) are geometry, since a world-tiled texture repeats up the wall.
 
 ### The people set (scripts/hall/textures_people.gd, `Textures.material("c_<name>#rrggbb")`)
@@ -111,9 +119,21 @@ taller than wide), `g_olive` (grey, the sky through it), `g_bush` (box, myrtle),
 between the leaves), `g_turf` (a lawn with daisies), `g_bark`. `rome_map._trees` draws every
 tree as a bark trunk and two or three crossed quads. Rendered in `docs/dev/green_set.png`.
 
+### Letters cut in stone (kit_rome.gd `Rome.inscription`)
+The game's Lapidary capitals on a Label3D set on a face: the temples' dedications along their
+friezes, the arches' attic texts, the Golden Milestone's miles, the pipe stamps at the basins, the
+epitaphs on the road tombs, the corner names on their panels and cippi. The shop signs' pictures
+now number twelve (`textures_houses.SIGNS`: wine, bread, knife, shoe, cloth, pot, fish, hammer,
+shears, scales, cup, roll), one per trade (`rome_map.TRADES`).
+
 ## Music (assets/music, from tools/make_music.py)
 Every place track is 48 s, in layers that loop in step, with a ghost (the faint echo heard while
 the place is lost). Zones are listed in `scripts/pixel/music.gd`.
+
+The streets' sounds besides the tracks: `forge`, `loom`, `crowd`, `fire`, `fountain` and, new,
+`mill` (a donkey mill's grind), `tavern` (the crowd with cups knocked on the boards), `trickle` (a
+basin's spout), and the footfalls `step_stone`, `step_earth`, `step_slab` played by
+`urbs_life._footsteps` by what the feasibility map says is underfoot.
 
 | Zone | Mode and instruments | Layers |
 |---|---|---|

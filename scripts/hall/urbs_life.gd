@@ -8,6 +8,7 @@ extends RefCounted
 ## The Hall calls step() every frame; it returns "day" or "night" when the music should change.
 
 const Citizen := preload("res://scripts/hall/citizen.gd")
+const RomeMap := preload("res://scripts/hall/rome_map.gd")
 
 const DAY_SECONDS := 900.0  # a whole day and night: fifteen minutes
 const DAWN := 5.5
@@ -51,6 +52,9 @@ var _scan := 0.0
 var _last_at := Vector3.ZERO
 var _speed := 0.0
 var _later: Array = []  # [when, root, line]: a reply a moment after
+var _steps: AudioStreamPlayer  # your footfalls, by what is underfoot
+var _stride := 0.0
+var _step_files := {}
 
 
 func setup(world: Node3D, start_hour: float, age_gloom: float) -> void:
@@ -116,6 +120,7 @@ func step(delta: float, at: Vector3) -> String:
 		_speed = (at - _last_at).length() / 0.2
 		_voices(at, _speed)
 		_last_at = at
+	_footsteps(delta, at)
 	if town:
 		var wet: bool = town.raining
 		town.step(delta, at, hour, _speed > 1.5)
@@ -238,7 +243,7 @@ func _voices(at: Vector3, speed: float) -> void:
 			line = ["Salve again, stranger!", "Ah, you! Still in Rome?", "Hello again, friend.", "You again! Good."][rng.randi() % 4]
 			_heard[i] = _t + 40.0
 		elif d < 4.0 and rng.randf() < 0.35:
-			line = Citizen.react(c, "night" if phase() == "night" else "greet", rng)
+			line = Citizen.react(c, "night" if phase() == "night" else "greet", rng, {"hour": hour, "raining": town.raining if town else false})
 			_heard[i] = _t + 25.0
 		elif d < 14.0 and d > 3.0 and rng.randf() < 0.03 and _chat(root, c):
 			_heard[i] = _t + 30.0
@@ -269,6 +274,38 @@ func _chat(root: Node3D, c: Dictionary) -> bool:
 			_heard[other.get_instance_id()] = _t + 30.0
 			return true
 	return false
+
+
+## Your footfalls as you walk: a knock on the basalt of the streets, a slap on the travertine of
+## the Forum, a soft thud on the earth of the lanes and the open ground, read off the feasibility
+## map underfoot (rome_map._occ), one every stride.
+func _footsteps(delta: float, at: Vector3) -> void:
+	if _speed < 0.6 or town == null or not town.sound or stars == null:
+		_stride = 0.0
+		return
+	_stride += delta * _speed
+	if _stride < 1.6:
+		return
+	_stride = 0.0
+	var kind: int = RomeMap._occ.kind_at(at) if RomeMap._occ != null else -1
+	var file := "step_earth"
+	if kind == RomeMap.Occupancy.ROAD:
+		file = "step_stone"
+	elif kind == RomeMap.Occupancy.OPEN or kind == RomeMap.Occupancy.MONUMENT:
+		file = "step_slab"
+	if not _step_files.has(file):
+		var path := "res://assets/music/%s.wav" % file
+		_step_files[file] = load(path) if ResourceLoader.exists(path) else null
+	if _step_files[file] == null:
+		return
+	if _steps == null:
+		_steps = AudioStreamPlayer.new()
+		_steps.bus = "Master"
+		_steps.volume_db = -14.0
+		stars.get_parent().add_child(_steps)
+	_steps.stream = _step_files[file]
+	_steps.pitch_scale = rng.randf_range(0.9, 1.12)
+	_steps.play()
 
 
 ## A line of speech over someone's head, fading after a few seconds (after `delay`, if given).
