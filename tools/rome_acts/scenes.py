@@ -242,7 +242,7 @@ SPOTS = [
     {"scene": "baths", "text": "Go into the baths", "monument": "diocletian_baths", "at": [1000, 1150],
      "ages": ["late", "collapse", "fall"], "from": 12.0, "to": 20.0},
     {"scene": "baths", "text": "Go into the bathhouse", "at": [560, 330], "ages": ["republic"], "from": 12.0, "to": 20.0},
-    {"scene": "fire", "text": "Help with the fire", "at": [520, 420], "ages": ["heroic", "early", "republic", "empire", "late", "collapse", "fall"],
+    {"scene": "fire", "text": "Help with the fire", "at": [640, 300], "ages": ["heroic", "early", "republic", "empire", "late", "collapse", "fall"],
      "every": 3, "offset": 2, "from": 14.0, "to": 18.0},
     {"scene": "night", "text": "Walk home through the Subura", "at": [150, 170], "ages": ["republic", "empire", "late", "collapse", "fall"],
      "from": 20.5, "to": 4.5},

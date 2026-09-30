@@ -340,10 +340,10 @@ Q["fishwife_early"] = {"regular": "fishwife", "age": "early", "title": "Her son 
 ], "reward": {"fides": 1}, "voice": "Fabia: the cloak for the fleet."}
 
 Q["fishwife_republic"] = {"regular": "fishwife", "age": "republic", "title": "The moneylender", "steps": [
-    talk("The lender's coming at dusk with his men, and it's not the money he wants now, it's my girl. Take her to your room, keep her there tonight. Please.",
-         "Take Fabia's daughter to your room in the Subura, and keep her safe."),
-    walk("room", "your room", "The girl sits on your bed with her knees up, not crying.", "Your room in the Subura."),
-    play_scene("The knock", "Your room, about 50 BC",
+    talk("The lender's coming at dusk with his men, and it's not the money he wants now, it's my girl. Take her to your house, keep her there tonight. Please.",
+         "Take Fabia's daughter to your house in the Subura, and keep her safe."),
+    walk("room", "your house", "The girl sits in the kitchen with her knees up, not crying. Chrysis gives her bread.", "Your house in the Subura, on the Argiletum."),
+    play_scene("The knock", "Your house, about 50 BC",
                still("Men on the stairs. A knock. Keep still, both of you.", secs=8, broke="The girl gasps. You hold your breath.",
                      done="The steps go away down the stairs."),
                ask("In the morning the girl asks what she should do.",

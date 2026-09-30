@@ -13,32 +13,63 @@ const Egypt := preload("res://scripts/hall/kit_egypt.gd")
 
 
 ## Builds one monument of `kind`. `span` turns real metres of the map into the world's (for the
-## fora, whose size is their place in the city). Returns a light to flicker, or null.
-static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole: bool, span: float) -> OmniLight3D:
+## fora, whose size is their place in the city). `year` picks a temple's style (temple_style) when
+## the monument's "variant" (a scripted site's state in this age, rome_map.staged) does not. Returns
+## a light to flicker, or null.
+static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole: bool, span: float, year: int = 150) -> OmniLight3D:
 	var size := float(m.get("size", 1.0))
+	var variant := str(m.get("variant", ""))
 	var g := Kit.group(parent, at + Vector3(0, float(m.get("raised", 0.0)), 0), yaw)
 	g.name = str(m.get("id", "monument"))
 	var light: OmniLight3D = null
 	match str(m["kind"]):
 		"temple":
 			g.scale = Vector3.ONE * size
-			Rome.temple(g, Vector3.ZERO, 0.0, whole)
+			Rome.temple(g, Vector3.ZERO, 0.0, whole, temple_style(m, year), variant)
 		"double_temple":
 			double_temple(g, size, whole)
 		"round_temple":
-			light = round_temple(g, size, whole, bool(m.get("fire", false)) and whole)
+			light = round_temple(g, size, whole, bool(m.get("fire", false)) and whole and variant != "cold", variant)
 		"hall":
 			hall(g, size, whole)
 		"tabularium":
 			tabularium(g, whole)
 		"curia":
-			curia(g, whole)
+			curia(g, whole, variant, year < -100)
+		"comitium":
+			comitium(g, whole, variant)
+		"cloaca":
+			cloaca(g, variant)
+		"beak_column":
+			beak_column(g, whole)
+		"lacus":
+			lacus(g, whole)
+		"fig":
+			fig(g, whole)
+		"milliarium":
+			milliarium(g, whole)
+		"statues":
+			statues(g, whole, int(m.get("count", 5)))
+		"tomb":
+			Rome.tomb(g, Vector3.ZERO, 0.0, str(m.get("tomb", "altar")), whole)
+		"altar_open":
+			altar_open(g, whole)
+		"hut":
+			hut(g, whole)
+		"cave":
+			cave(g)
+		"rock":
+			rock(g, size)
+		"tower":
+			tower(g, whole)
+		"portico":
+			portico(g, size, whole)
 		"basilica":
 			basilica(g, size, whole)
 		"vaulted_hall":
 			vaulted_hall(g, size, whole)
 		"rostra":
-			Rome.rostra(g, Vector3.ZERO, 0.0, whole)
+			Rome.rostra(g, Vector3.ZERO, 0.0, whole, variant)
 		"shrine":
 			shrine(g, whole)
 		"arch":
@@ -51,6 +82,7 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 			markets(g, whole)
 		"amphitheatre":
 			Rome.colosseum(g, Vector3.ZERO, size, whole)
+			amphitheatre_state(g, size, variant)
 		"colossus":
 			colossus(g)
 		"fountain_cone":
@@ -64,7 +96,7 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 		"houses":
 			houses(g)
 		"circus":
-			circus(g, span, whole)
+			circus(g, span, whole, variant)
 		"obelisk":
 			Egypt.obelisk(g, Vector3.ZERO, 16.0 * size, true)
 		"open_circus":
@@ -86,6 +118,287 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 	return light
 
 
+## The style a temple is built in, in `year` (docs/rome-city-notes.md 2.1): the Etruscan temple
+## (a high podium, a deep porch of widely spaced wooden columns, a painted terracotta roof) in the
+## age of heroes and the early Republic; the Greek marble temple from the last century of the
+## Republic; the Corinthian imperial temple for one built under the emperors. A scripted site's
+## "variant" names its own.
+static func temple_style(m: Dictionary, year: int) -> String:
+	var v := str(m.get("style", m.get("variant", "")))
+	if v in ["etruscan", "greek", "imperial"]:
+		return v
+	if year < -200:
+		return "etruscan"
+	if year < 0:
+		return "greek"
+	return "imperial" if int(m.get("from", -500)) >= -50 else "greek"
+
+
+## The Comitium before the Senate House. "assembly" (the Republic): a round hollow of tufa steps,
+## the people's place, with the Black Stone in its floor. "paved" (the emperors): a square of
+## travertine with the slab of black marble over the stone and statues on columns. "broken": the
+## pavement cracked and the statues down. "grass": grass in the cracks and a goat's post.
+static func comitium(g: Node3D, whole: bool, variant: String) -> void:
+	if variant in ["assembly", ""]:
+		for k in 4:  # the steps, rising outward
+			var r := 10.0 - k * 2.0
+			var h := 2.0 - k * 0.5
+			Kit.cylinder(g, Vector3.ZERO, r, h, "tufa", k == 0, 18)
+		Kit.cylinder(g, Vector3(0, 0.02, 0), 2.2, 0.1, "travertine", false, 14)  # the floor
+		Kit.box(g, Vector3(1.2, 0.12, 1.0), Vector3(1.4, 0.12, 1.8), "dark", false)  # the Black Stone
+		Kit.box(g, Vector3(0, 0.6, -6.0), Vector3(3.0, 1.2, 1.2), "travertine")  # the praetor's tribunal, on the step
+		Kit.box(g, Vector3(0, 1.5, -6.0), Vector3(0.8, 0.6, 0.8), "wood", false)  # his chair
+		return
+	Kit.box(g, Vector3(0, 0.06, 0), Vector3(22.0, 0.12, 18.0), "travertine" if variant != "grass" else "grass", false)
+	Kit.box(g, Vector3(2.0, 0.14, 1.0), Vector3(2.2, 0.06, 2.8), "dark", false)  # the slab over the Black Stone
+	if variant == "paved":
+		for x: float in [-7.0, 0.0, 7.0]:  # honorific columns, a bronze on each
+			Kit.box(g, Vector3(x, 0.5, -6.0), Vector3(1.2, 0.8, 1.2), "marble")
+			Kit.cylinder(g, Vector3(x, 0.9, -6.0), 0.3, 3.2, "marble", true, 8)
+			Kit.cylinder(g, Vector3(x, 4.1, -6.0), 0.24, 1.5, "bronze", false, 8, 0.2)
+			Kit.blob(g, Vector3(x, 5.8, -6.0), 0.22, "bronze")
+		return
+	for x: float in [-7.0, 7.0]:  # the columns down, a base left standing
+		Kit.box(g, Vector3(x, 0.5, -6.0), Vector3(1.2, 0.8, 1.2), "marble")
+		Kit.fallen_column(g, Vector3(x + 1.5, 0.12, -3.5), 0.9, 3.0)
+	if variant == "broken":
+		for k in 5:
+			Kit.box(g, Vector3(-8.0 + k * 4.0, 0.15, 2.0 + (k % 2) * 3.0), Vector3(1.6, 0.14, 0.4), "rubble", false, Vector3(0, 0.4 * k, 0))
+		Kit.blob(g, Vector3(0.0, 0.4, -6.0), 0.5, "bronze", Vector3(1.0, 0.5, 2.6), 6)  # a statue face down
+		return
+	Kit.box(g, Vector3(4.0, 0.6, 4.0), Vector3(0.14, 1.2, 0.14), "wood", false)  # the goats' post
+	for k in 6:
+		Kit.blob(g, Vector3(-9.0 + k * 3.6, 0.2, -2.0 + (k % 3) * 2.5), 0.9, "grass", Vector3(1.0, 0.3, 1.0), 5)
+
+
+## The mouth of the Great Drain in the river's bank, facing +Z (the water): a wall of tufa with
+## three rings of dressed stone round the arch. "running": the water pouring out of it into the
+## Tiber. "choked": rubble and mud in the mouth, the water backed up behind it.
+static func cloaca(g: Node3D, variant: String) -> void:
+	Kit.box(g, Vector3(0, -0.6, -1.2), Vector3(10.0, 4.8, 2.4), "tufa")  # the bank's wall, set into the bank, down into the water
+	Kit.box(g, Vector3(0, 1.85, -1.2), Vector3(10.4, 0.3, 2.8), "travertine", false)  # its coping, at the bank's level
+	for k in 3:
+		var r := 1.7 + k * 0.7
+		Kit.arch(g, Vector3(0, -0.6, 0.02 + k * 0.02), r, 0.0, 180.0, 7 + k * 2, Vector3(0.75, 0.68, 0.5), ["travertine", "tufa"])
+	Kit.box(g, Vector3(0, 0.2, 0.05), Vector3(3.3, 1.6, 0.1), "dark", false)  # the dark inside
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * 1.9, -0.6, 0.6), Vector3(0.5, 1.4, 1.4), "travertine", false)  # the jambs' footing
+	if variant == "choked":
+		Kit.box(g, Vector3(0, -0.6, 0.8), Vector3(3.4, 1.4, 2.0), "rubble", false)
+		Kit.box(g, Vector3(0, -1.0, 2.6), Vector3(4.4, 0.4, 3.0), "earth", false)  # the mud fan
+		for k in 5:
+			Kit.box(g, Vector3(-1.6 + k * 0.8, -0.2, 2.2 + (k % 2) * 0.8), Vector3(0.1, 1.4, 0.1), "#8a8a5a", false)  # reeds
+		return
+	var stream := Kit.box(g, Vector3(0, -1.05, 3.6), Vector3(3.0, 0.14, 6.4), "water", false, Vector3(0.08, 0, 0))
+	stream.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for k in 3:
+		Kit.blob(g, Vector3(-1.0 + k * 1.0, -0.86, 0.9), 0.3, "#e8eef0", Vector3(1.4, 0.3, 1.0), 5)  # the foam at the lip
+
+
+## A crossroads shrine (compitum) at the side of a street, facing +Z: an aedicula on a base with
+## its painted Lares (two dancing youths) and the snake below them, an altar before it and a
+## garland over it. `style`: "lares"; "christian" (a niche with a cross and a lamp); "broken" (the
+## niche smashed, the altar's top off); "base" (the block alone). Not solid.
+static func compitum(g: Node3D, style: String) -> void:
+	Kit.box(g, Vector3(0, 0.5, -0.4), Vector3(2.0, 1.0, 1.2), "travertine", false)
+	if style == "base":
+		Kit.cylinder(g, Vector3(0, 1.0, -0.4), 0.3, 0.06, "dark", false, 8)  # the hollow worn in its top
+		return
+	Kit.box(g, Vector3(0, 0.35, 0.6), Vector3(0.7, 0.7, 0.7), "marble", false)  # the altar
+	if style == "broken":
+		Kit.box(g, Vector3(0, 1.4, -0.4), Vector3(1.8, 0.8, 1.0), "rubble", false)
+		Kit.box(g, Vector3(0.4, 0.75, 0.6), Vector3(0.6, 0.1, 0.5), "marble", false, Vector3(0.2, 0, 0.3))
+		Kit.cylinder(g, Vector3(-0.6, 0.0, 0.9), 0.12, 0.3, "terracotta", false, 6)  # someone's jar of flowers
+		Kit.blob(g, Vector3(-0.6, 0.4, 0.9), 0.14, "#c84a4a")
+		return
+	Kit.box(g, Vector3(0, 2.0, -0.6), Vector3(1.8, 2.0, 0.8), "plaster", false)  # the aedicula
+	Kit.box(g, Vector3(0, 3.15, -0.6), Vector3(2.2, 0.3, 1.2), "roof", false)
+	Kit.box(g, Vector3(0, 2.0, -0.19), Vector3(1.4, 1.5, 0.02), "#e8d8b8", false)  # the painted panel
+	if style == "christian":
+		Kit.box(g, Vector3(0, 2.1, -0.17), Vector3(0.08, 0.7, 0.02), "#4a3a2a", false)
+		Kit.box(g, Vector3(0, 2.25, -0.17), Vector3(0.45, 0.08, 0.02), "#4a3a2a", false)
+		Kit.blob(g, Vector3(0.5, 1.35, -0.2), 0.08, "terracotta")  # the lamp
+		return
+	for x: float in [-0.35, 0.35]:  # the Lares, painted, dancing
+		Kit.blob(g, Vector3(x, 2.25, -0.17), 0.1, "#c84a2a", Vector3(1.0, 1.0, 0.2), 5)
+		Kit.box(g, Vector3(x, 1.85, -0.17), Vector3(0.22, 0.6, 0.02), "#c84a2a", false, Vector3(0, 0, -x * 0.5))
+	Kit.box(g, Vector3(0, 1.4, -0.17), Vector3(1.0, 0.06, 0.02), "#4a6a3a", false, Vector3(0, 0, 0.15))  # the snake
+	for k in 5:  # the garland
+		Kit.blob(g, Vector3(-0.6 + k * 0.3, 2.95 - 0.12 * absf(k - 2), -0.18), 0.09, "leaves")
+
+
+## The column of Gaius Duilius by the Rostra: a column hung with the bronze beaks of the Carthaginian
+## ships taken at Mylae in 260 BC, the first sea victory, with its inscription on the base.
+static func beak_column(g: Node3D, whole: bool) -> void:
+	Kit.box(g, Vector3(0, 0.8, 0), Vector3(2.4, 1.6, 2.4), "travertine")
+	Kit.box(g, Vector3(0, 0.9, 1.21), Vector3(1.6, 0.9, 0.04), "plaque" if whole else "dark", false)
+	Kit.cylinder(g, Vector3(0, 1.6, 0), 0.5, 7.0 if whole else 3.0, "marble", true, 10, 0.42)
+	if not whole:
+		Kit.fallen_column(g, Vector3(2.0, 0.0, 1.5), 0.7, 3.5)
+		return
+	for k in 6:  # the beaks, three each side, up the shaft
+		var a := PI * (k % 2) + 0.6
+		var y := 3.0 + k * 0.9
+		var beak := Kit.group(g, Vector3(cos(a) * 0.5, y, sin(a) * 0.5), a - PI / 2.0)
+		Kit.box(beak, Vector3(0, 0, 0.45), Vector3(0.4, 0.3, 0.9), "bronze", false)
+		Kit.box(beak, Vector3(0, 0, 0.9), Vector3(0.6, 0.08, 0.2), "bronze", false)
+	Kit.cylinder(g, Vector3(0, 8.6, 0), 0.25, 1.4, "bronze", false, 8, 0.2)  # Duilius on top
+	Kit.blob(g, Vector3(0, 10.2, 0), 0.22, "bronze")
+
+
+## The Lacus Curtius in the middle of the Forum: the pit into which Marcus Curtius rode, fenced
+## with a low wall, a puteal (well-head) and an altar, an olive and a fig and a vine beside it.
+static func lacus(g: Node3D, whole: bool) -> void:
+	Kit.cylinder(g, Vector3.ZERO, 3.2, 0.6, "travertine", true, 12)
+	Kit.cylinder(g, Vector3(0, 0.6, 0), 2.6, 0.05, "dark" if whole else "earth", false, 12)  # the pit
+	Kit.cylinder(g, Vector3(1.6, 0.6, 1.6), 0.5, 0.9, "marble", false, 10)  # the puteal
+	Kit.box(g, Vector3(-1.8, 0.95, -1.4), Vector3(0.7, 0.7, 0.7), "marble", false)  # the altar
+	if whole:
+		Kit.box(g, Vector3(-3.0, 0.5, 2.0), Vector3(0.18, 1.0, 0.18), "wood", false)  # the vine's post
+		Kit.blob(g, Vector3(-3.0, 1.3, 2.0), 0.7, "leaves", Vector3(1.0, 0.7, 1.0), 6)
+		Kit.leaves(g, "g_olive", Vector3(3.6, 2.5, -1.4), 3.0, 2.4)
+		Kit.cylinder(g, Vector3(3.6, 0.0, -1.4), 0.15, 1.8, "trunk", false, 6)
+
+
+## The Ficus Ruminalis: the fig under which the wolf suckled the twins, replanted in the Comitium
+## and kept alive, with the bronze wolf and twins under it. In ruin, a dead stump.
+static func fig(g: Node3D, whole: bool) -> void:
+	Kit.cylinder(g, Vector3.ZERO, 0.35, 2.4 if whole else 1.0, "trunk", true, 7, 0.28)
+	if not whole:
+		Rome.she_wolf(g, Vector3(0, 0, 2.4), 0.3, false)
+		return
+	for a: float in [0.4, 2.3, 4.2]:
+		var d := Vector3(cos(a) * 1.4, 1.2, sin(a) * 1.4)
+		Kit.mesh(g, Kit._cyl(0.1, d.length()), "trunk", Vector3(0, 2.4, 0) + d / 2.0, Quaternion(Vector3.UP, d.normalized()).get_euler())
+	Kit.leaves(g, "g_crown", Vector3(0, 4.6, 0), 7.5, 5.2)
+	Rome.she_wolf(g, Vector3(0, 0, 2.4), 0.3, whole)  # the bronze wolf and the twins under the fig (kit_rome)
+
+
+## The Golden Milestone (Milliarium Aureum) of Augustus by the Rostra: a marble column plated with
+## gilt bronze, the distances to the cities of the Empire on it; the roads are measured from here.
+static func milliarium(g: Node3D, whole: bool) -> void:
+	Kit.box(g, Vector3(0, 0.4, 0), Vector3(2.0, 0.8, 2.0), "marble")
+	Kit.cylinder(g, Vector3(0, 0.8, 0), 0.6, 2.6, "gold" if whole else "marble", true, 10)
+	Kit.cylinder(g, Vector3(0, 3.4, 0), 0.8, 0.3, "marble", false, 10)
+
+
+## A row of honorific statues on columns along the Forum: bronzes of consuls and generals,
+## `count` of them, that multiplied until the censors cleared them.
+static func statues(g: Node3D, whole: bool, count: int) -> void:
+	for k in count:
+		var x := (k - (count - 1) / 2.0) * 3.5
+		Kit.box(g, Vector3(x, 0.45, 0), Vector3(1.2, 0.9, 1.2), "travertine")
+		if not whole and k % 2 == 1:
+			continue
+		Kit.cylinder(g, Vector3(x, 0.9, 0), 0.28, 2.8, "marble", true, 8)
+		if whole or k % 4 == 0:
+			Kit.cylinder(g, Vector3(x, 3.7, 0), 0.22, 1.5, "bronze", false, 8, 0.18)
+			Kit.blob(g, Vector3(x, 5.4, 0), 0.2, "bronze")
+			Kit.box(g, Vector3(x + 0.3, 4.5, 0.2), Vector3(0.12, 0.9, 0.12), "bronze", false, Vector3(0, 0, -0.5))  # the arm out
+
+
+## An open-air altar in its precinct (the Ara Maxima of Hercules, the altar of Consus dug out for
+## its games): a great altar of tufa on steps inside a low wall, ash on it.
+static func altar_open(g: Node3D, whole: bool) -> void:
+	Kit.box(g, Vector3(0, 0.25, 0), Vector3(12.0, 0.5, 12.0), "tufa", false)
+	for k in 2:
+		Kit.box(g, Vector3(0, 0.7 + k * 0.4, 0), Vector3(6.0 - k * 0.8, 0.4, 5.0 - k * 0.8), "tufa")
+	Kit.box(g, Vector3(0, 2.3, 0), Vector3(4.0, 1.8, 3.0), "tufa" if whole else "rubble")
+	Kit.box(g, Vector3(0, 3.3, 0), Vector3(4.4, 0.25, 3.4), "travertine", false)
+	Kit.cylinder(g, Vector3(0, 3.42, 0), 0.9, 0.18, "ash", false, 10)
+	for side: float in [-1.0, 1.0]:
+		Kit.box(g, Vector3(side * 6.0, 0.9, 0), Vector3(0.5, 0.8, 12.0), "tufa", false)
+		Kit.box(g, Vector3(0, 0.9, side * 6.0), Vector3(12.0, 0.8, 0.5) if side < 0 else Vector3(4.0, 0.8, 0.5), "tufa", false)
+
+
+## The Hut of Romulus on the Palatine: a round hut of wattle on a stone footing under a steep cone
+## of thatch, kept by the priests and rebuilt whenever it burned.
+static func hut(g: Node3D, whole: bool) -> void:
+	Kit.cylinder(g, Vector3.ZERO, 3.2, 0.5, "tufa", true, 12)
+	Kit.cylinder(g, Vector3(0, 0.5, 0), 2.8, 2.2, "wicker" if whole else "deadwood", true, 12)
+	Kit.box(g, Vector3(0, 1.4, 2.7), Vector3(1.0, 1.8, 0.2), "dark", false)  # the door
+	if whole:
+		Kit.cylinder(g, Vector3(0, 2.7, 0), 3.6, 3.4, "#a08850", false, 12, 0.2)
+	for k in 4:  # the fence of the precinct
+		var a := TAU * k / 4.0 + 0.4
+		Kit.box(g, Vector3(cos(a) * 6.0, 0.6, sin(a) * 6.0), Vector3(0.15, 1.2, 0.15), "wood", false)
+
+
+## The Lupercal: the wolf's cave under the Palatine, a dark mouth in the rock with a fig before it.
+static func cave(g: Node3D) -> void:
+	Kit.blob(g, Vector3(0, 1.0, -3.0), 5.0, "rock", Vector3(1.4, 0.8, 1.0), 8)
+	Kit.box(g, Vector3(0, 1.3, 1.0), Vector3(2.4, 2.6, 0.5), "dark", false)  # the mouth
+	Kit.cylinder(g, Vector3(3.5, 0, 2.0), 0.2, 2.0, "trunk", false, 6)
+	Kit.blob(g, Vector3(3.5, 3.0, 2.0), 1.6, "leaves", Vector3(1.0, 0.7, 1.0), 6)
+
+
+## A rock (the Tarpeian, the Capitol's cliff toward the Forum): a face of bare rock, `size` high.
+static func rock(g: Node3D, size: float) -> void:
+	Kit.blob(g, Vector3(0, 3.0 * size, 0), 6.0 * size, "rock", Vector3(1.3, 0.9, 0.7), 7)
+	Kit.blob(g, Vector3(4.0 * size, 1.5 * size, 1.0), 3.5 * size, "rock", Vector3(1.0, 0.7, 0.8), 6)
+	Kit.blob(g, Vector3(-5.0 * size, 1.0 * size, 0.5), 3.0 * size, "rock", Vector3(1.0, 0.6, 0.9), 6)
+
+
+## A tower of the Servian wall by a gate: square, of tufa, with a walk along its top.
+static func tower(g: Node3D, whole: bool) -> void:
+	var h := 12.0 if whole else 6.0
+	Kit.box(g, Vector3(0, h / 2.0 - 1.0, 0), Vector3(6.0, h + 2.0, 6.0), "tufa")
+	if whole:
+		for k in 4:
+			var a := TAU * k / 4.0
+			Kit.box(g, Vector3(cos(a) * 2.7, h + 0.4, sin(a) * 2.7), Vector3(1.0, 0.8, 1.0) if k % 2 == 0 else Vector3(6.0, 0.8, 0.6), "tufa", false, Vector3(0, -a, 0))
+	Kit.box(g, Vector3(0, 1.8, 3.02), Vector3(1.2, 2.4, 0.1), "dark", false)
+
+
+## A portico: a long colonnade of tufa piers under a tiled roof (the Porticus Aemilia by the river
+## port, of concrete vaults; the porticoes of the Campus). `size` scales its length. Faces +Z.
+static func portico(g: Node3D, size: float, whole: bool) -> void:
+	var l := 60.0 * size
+	Kit.box(g, Vector3(0, 0.3, 0), Vector3(l, 0.6, 12.0), "travertine", false)
+	var n := int(l / 5.0)
+	for k in n + 1:
+		var x := -l / 2.0 + l * k / n
+		if not whole and k % 3 == 1:
+			continue
+		Kit.box(g, Vector3(x, 3.6, 5.0), Vector3(1.2, 6.0, 1.2), "tufa")
+		if whole or k % 3 == 0:
+			Kit.box(g, Vector3(x, 3.6, -5.0), Vector3(1.2, 6.0, 1.2), "tufa")
+	if whole:
+		Kit.box(g, Vector3(0, 6.9, 0), Vector3(l + 1.0, 0.6, 12.0), "tufa", false)
+		_roof(g, Vector3(0, 7.2, 0), Vector3(l + 1.4, 2.4, 12.6))
+	else:
+		Kit.box(g, Vector3(-l / 4.0, 6.9, 0), Vector3(l / 3.0, 0.6, 12.0), "tufa", false)
+
+
+## What the years have done to the amphitheatre: "cracked" (the earthquake of 443: a heap of
+## fallen blocks under the south side, the prefect's props), "houses" (huts of wood and thatch in
+## the outer arches, beans in the arena).
+static func amphitheatre_state(g: Node3D, size: float, variant: String) -> void:
+	var a := 94.0 * size
+	var b := 78.0 * size
+	if variant == "cracked":
+		for k in 6:
+			var t := -PI / 2.0 + (k - 2.5) * 0.12
+			var p := Vector3(cos(t) * (a + 5.0), 0, sin(t) * (b + 5.0))
+			Kit.box(g, p + Vector3(0, 0.8, 0), Vector3(3.0, 1.6, 2.4), "travertine", false, Vector3(0.3, t, 0.2))
+			Kit.box(g, p + Vector3(0, 6.0, -3.0), Vector3(0.4, 12.0, 0.4), "wood", false, Vector3(0.2, 0, 0))  # the props
+		return
+	if variant != "houses":
+		return
+	for k in 9:
+		var t := PI * 0.15 + k * 0.22
+		var p := Vector3(cos(t) * (a - 6.0), 0, sin(t) * (b - 6.0))
+		var hut := Kit.group(g, p, atan2(-p.x, -p.z))
+		Kit.box(hut, Vector3(0, 1.4, 0), Vector3(4.0, 2.8, 3.4), "wood")
+		var roof := PrismMesh.new()
+		roof.size = Vector3(4.6, 1.4, 4.0)
+		Kit.mesh(hut, roof, "#a08850", Vector3(0, 3.5, 0))
+		Kit.box(hut, Vector3(0, 0.9, 1.72), Vector3(1.0, 1.8, 0.1), "dark", false)
+		Kit.box(hut, Vector3(2.6, 0.4, 0), Vector3(0.6, 0.8, 0.6), "wicker", false)
+	for k in 12:  # the beans
+		Kit.box(g, Vector3(-30.0 + (k % 4) * 20.0, 0.5, -20.0 + (k / 4) * 20.0), Vector3(14.0, 0.8, 1.2), "leaves", false)
+
+
 ## Venus and Rome: two temples back to back on one platform in a colonnaded court (Hadrian's).
 static func double_temple(g: Node3D, size: float, whole: bool) -> void:
 	Kit.box(g, Vector3(0, 0.6, 0), Vector3(40.0 * size, 1.2, 70.0 * size), "marble" if whole else "tufa")
@@ -103,17 +416,28 @@ static func double_temple(g: Node3D, size: float, whole: bool) -> void:
 
 ## A round temple (Vesta's, Hercules'): a ring of columns round a drum on a round podium, under a
 ## low cone of roof. `fire`: the sacred fire's glow inside. Returns the fire's light, or null.
-static func round_temple(g: Node3D, size: float, whole: bool, fire: bool) -> OmniLight3D:
+## `variant` (Vesta's through the ages): "thatch" (the first house of the hearth: wooden posts, a
+## drum of tufa, a cone of thatch), "stone" (tufa posts under a bronze roof), "marble" or "" (the
+## marble ring of the emperors), "cold" (the fire out).
+static func round_temple(g: Node3D, size: float, whole: bool, fire: bool, variant: String = "") -> OmniLight3D:
 	var r := 4.5 * size
-	Kit.cylinder(g, Vector3.ZERO, r + 0.6, 1.2, "marble" if whole else "tufa", true, 18)
-	Kit.cylinder(g, Vector3(0, 1.2, 0), r * 0.62, 6.0 * size, "marble", true, 16)
+	var old := variant in ["thatch", "stone"]
+	var stone := "tufa" if old or not whole else "marble"
+	Kit.cylinder(g, Vector3.ZERO, r + 0.6, 1.2, stone, true, 18)
+	Kit.cylinder(g, Vector3(0, 1.2, 0), r * 0.62, 6.0 * size, "plaster" if old else "marble", true, 16)
 	var n := 16 if whole else 7
 	for k in n:
 		var a := TAU * k / 16.0
-		Rome.column(g, Vector3(cos(a) * r, 1.2, sin(a) * r), 7.0 * size, 0.28 * size)
+		if variant == "thatch":
+			Kit.cylinder(g, Vector3(cos(a) * r, 1.2, sin(a) * r), 0.22 * size, 6.4 * size, "wood", true, 8)
+		else:
+			Rome.column(g, Vector3(cos(a) * r, 1.2, sin(a) * r), 7.0 * size, 0.28 * size, stone if old else "marble")
 	if whole:
-		Kit.cylinder(g, Vector3(0, 1.2 + 7.0 * size, 0), r + 0.4, 0.6, "marble", false, 18)
-		Kit.cylinder(g, Vector3(0, 1.8 + 7.0 * size, 0), r + 0.6, 2.4 * size, "bronze", false, 18, 0.5)
+		Kit.cylinder(g, Vector3(0, 1.2 + 7.0 * size, 0), r + 0.4, 0.6, "wood" if old else "marble", false, 18)
+		Kit.cylinder(g, Vector3(0, 1.8 + 7.0 * size, 0), r + 0.6, 2.4 * size if variant != "thatch" else 3.6 * size,
+			"#a08850" if variant == "thatch" else "bronze", false, 18, 0.5)
+	elif variant == "cold":
+		Kit.cylinder(g, Vector3(0, 1.2, 0), 0.8, 0.3, "ash", false, 10)  # the hearth, cold
 	if not fire:
 		return null
 	var light := OmniLight3D.new()
@@ -159,12 +483,27 @@ static func _roof(g: Node3D, top: Vector3, size: Vector3, mat: String = "roof") 
 
 
 ## The Senate House: a tall plain brick hall with a pediment over its bronze doors, up a few steps.
-static func curia(g: Node3D, whole: bool) -> void:
-	Kit.box(g, Vector3(0, 0.5, 1.0), Vector3(12.0, 1.0, 20.0), "travertine" if whole else "rubble")
-	Kit.box(g, Vector3(0, 8.0, 0), Vector3(11.0, 14.0, 18.0), "brick")
-	Kit.box(g, Vector3(0, 4.0, 9.02), Vector3(2.6, 5.4, 0.1), "bronze" if whole else "dark", false)
+## `variant` "burnt": the walls blackened, no roof, the scaffolding of a rebuilding up its front.
+## `old`: the kings' hall of tufa, before brick.
+static func curia(g: Node3D, whole: bool, variant: String = "", old: bool = false) -> void:
+	var burnt := variant == "burnt"
+	Kit.box(g, Vector3(0, 0.5, 1.0), Vector3(12.0, 1.0, 20.0), ("travertine" if not old else "tufa") if whole else "rubble")
+	var wall := "brick" if not old else "tufa"
+	Kit.box(g, Vector3(0, 8.0 if not old else 6.0, 0), Vector3(11.0, 14.0 if not old else 10.0, 18.0), wall if not burnt else "#3a3230")
+	if old and not burnt:
+		_roof(g, Vector3(0, 11.0, 0), Vector3(11.6, 2.6, 18.6))
+		Kit.box(g, Vector3(0, 3.0, 9.02), Vector3(2.4, 4.8, 0.1), "wood", false)
+		return
+	Kit.box(g, Vector3(0, 4.0, 9.02), Vector3(2.6, 5.4, 0.1), "bronze" if whole and not burnt else "dark", false)
 	for k in 3:
 		Kit.box(g, Vector3(0, 11.5, 9.02), Vector3(1.4 + k * 0.0, 2.6, 0.1), "dark", false)
+	if burnt:
+		for x: float in [-4.5, -1.5, 1.5, 4.5]:  # the scaffold poles and their ledgers
+			Kit.box(g, Vector3(x, 8.0, 10.2), Vector3(0.2, 16.0, 0.2), "wood", false)
+		for y: float in [5.0, 10.0, 15.0]:
+			Kit.box(g, Vector3(0, y, 9.7), Vector3(9.6, 0.16, 1.4), "wood", false)
+		Kit.box(g, Vector3(0, 15.4, 0), Vector3(11.4, 0.8, 18.4), "wood", false)  # the new roof-beams, no tiles yet
+		return
 	if whole:
 		Rome._pediment(g, Vector3(0, 15.0, 8.6), 11.4, 2.6, 0.8)
 		_roof(g, Vector3(0, 15.0, 0), Vector3(11.4, 2.6, 18.4))
@@ -381,35 +720,76 @@ static func houses(g: Node3D) -> void:
 ## The Circus Maximus: the sand track, the spina down its middle with its turning posts, the stands
 ## on three sides of brick and marble, the starting gates at the west end (-Z). In ruin, the stands
 ## are broken into stretches and the spina's statues gone.
-static func circus(g: Node3D, span: float, whole: bool) -> void:
+## `variant` through the ages: "wood" (timber stands on the slopes, an earth track and a low barrier
+## of earth), "stone" (tufa stands, timber above), "marble" or "" (the emperors' circus), "cracked"
+## (a stretch of the upper stands fallen and fenced), "grass" (grass over the track, the stands
+## quarried).
+static func circus(g: Node3D, span: float, whole: bool, variant: String = "") -> void:
 	var length := 600.0 * span
 	var width := 140.0 * span
-	Kit.box(g, Vector3(0, 0.05, 0), Vector3(width, 0.1, length), "sand", false)
-	Kit.box(g, Vector3(0, 0.8, 0), Vector3(3.0, 1.6, length * 0.62), "marble")  # the spina
+	var wood := variant == "wood"
+	var track := "sand"
+	if wood:
+		track = "earth"
+	elif variant == "grass":
+		track = "grass"
+	Kit.box(g, Vector3(0, 0.05, 0), Vector3(width, 0.1, length), track, false)
+	Kit.box(g, Vector3(0, 0.8, 0), Vector3(3.0, 1.6, length * 0.62), "earth" if wood else ("tufa" if variant == "stone" else "marble"))  # the spina
 	for z: float in [-length * 0.31, length * 0.31]:  # the turning posts, three cones each
 		for k in 3:
-			Kit.cylinder(g, Vector3(-0.8 + k * 0.8, 1.6, z), 0.4, 3.0, "gold" if whole else "bronze", false, 8, 0.05)
+			Kit.cylinder(g, Vector3(-0.8 + k * 0.8, 1.6, z), 0.4, 3.0, "wood" if wood else ("gold" if whole else "bronze"), false, 8, 0.05)
 	var sections := 16
+	var stand := "brick"
+	if wood:
+		stand = "wood"
+	elif variant == "stone":
+		stand = "tufa"
 	for side: float in [-1.0, 1.0]:
 		for k in sections:
 			if not whole and k % 3 == 1:
 				continue
+			if variant == "cracked" and side < 0.0 and k in [9, 10]:  # the stretch fallen in 443
+				var fz := -length / 2.0 + length * (k + 0.5) / sections
+				Kit.box(g, Vector3(side * (width / 2.0 + 6.0), 2.0, fz), Vector3(12.0, 4.0, length / sections), "rubble")
+				for j in 4:
+					Kit.box(g, Vector3(side * (width / 2.0 + 1.0), 0.6, fz - 8.0 + j * 5.0), Vector3(0.15, 1.2, 0.15), "wood", false)  # the fence
+				continue
 			var z := -length / 2.0 + length * (k + 0.5) / sections
 			var h := 12.0 if whole else 4.0 + 3.0 * float(k % 2)
+			if wood:
+				h = 6.0
+			elif variant == "stone":
+				h = 9.0
 			var sg := Kit.group(g, Vector3(side * (width / 2.0 + 6.0), 0, z), 0.0)
-			Kit.box(sg, Vector3(0, h / 2.0, 0), Vector3(12.0, h, length / sections + 0.1), "brick")
+			if wood:  # timber tiers on posts
+				for t in 3:
+					Kit.box(sg, Vector3(-side * (4.0 - t * 2.0), 1.5 + t * 2.0, 0), Vector3(3.0, 0.3, length / sections + 0.1), "wood", t == 0)
+					for j in 3:
+						Kit.box(sg, Vector3(-side * (4.0 - t * 2.0), 0.8 + t * 1.0, -length / sections / 2.0 + 2.0 + j * (length / sections - 4.0) / 2.0),
+							Vector3(0.2, 1.6 + t * 2.0, 0.2), "wood", false)
+				continue
+			Kit.box(sg, Vector3(0, h / 2.0, 0), Vector3(12.0, h, length / sections + 0.1), stand)
 			if whole:
-				Kit.box(sg, Vector3(-side * 3.0, h + 0.2, 0), Vector3(6.0, 0.4, length / sections + 0.1), "marble", false)
+				Kit.box(sg, Vector3(-side * 3.0, h + 0.2, 0), Vector3(6.0, 0.4, length / sections + 0.1), "wood" if variant == "stone" else "marble", false)
 				Kit.box(sg, Vector3(side * 6.02, h * 0.5, 0), Vector3(0.1, 3.0, 2.4), "dark", false)
 	var end := Kit.group(g, Vector3(0, 0, length / 2.0 + 6.0), 0.0)  # the curved east end
 	for k in 9:
 		var a := PI * (k + 0.5) / 9.0
 		var p := Vector3(cos(a) * (width / 2.0 + 6.0), 0, sin(a) * width * 0.4)
-		if whole or k % 2 == 0:
-			Kit.box(end, p + Vector3(0, 5.0, 0), Vector3(12.0, 10.0, 8.0), "brick", true, Vector3(0, -a, 0))
+		if wood:
+			Kit.box(end, p + Vector3(0, 1.5, 0), Vector3(8.0, 3.0, 6.0), "wood", true, Vector3(0, -a, 0))
+		elif whole or k % 2 == 0:
+			Kit.box(end, p + Vector3(0, 5.0, 0), Vector3(12.0, 10.0, 8.0), stand, true, Vector3(0, -a, 0))
 	for k in 12:  # the starting gates
-		Kit.box(g, Vector3(-width / 2.0 + width * (k + 0.5) / 12.0, 3.0, -length / 2.0 - 2.0), Vector3(width / 12.0 - 1.0, 6.0, 3.0),
-			"marble" if whole else "rubble", k % 3 == 0)
+		var gate := "marble"
+		if wood:
+			gate = "wood"
+		elif variant == "stone":
+			gate = "tufa"
+		elif not whole:
+			gate = "rubble"
+		Kit.box(g, Vector3(-width / 2.0 + width * (k + 0.5) / 12.0, 3.0 if not wood else 1.8, -length / 2.0 - 2.0),
+			Vector3(width / 12.0 - 1.0, 6.0 if not wood else 3.6, 3.0), gate, k % 3 == 0)
 
 
 ## The Flaminian Circus: an open field with a low wall round it, for games and gathering triumphs.

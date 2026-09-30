@@ -1256,19 +1256,19 @@
    "title": "The moneylender",
    "steps": [
     {
-     "talk": "The lender's coming at dusk with his men, and it's not the money he wants now, it's my girl. Take her to your room, keep her there tonight. Please.",
-     "hint": "Take Fabia's daughter to your room in the Subura, and keep her safe."
+     "talk": "The lender's coming at dusk with his men, and it's not the money he wants now, it's my girl. Take her to your house, keep her there tonight. Please.",
+     "hint": "Take Fabia's daughter to your house in the Subura, and keep her safe."
     },
     {
      "go": "room",
-     "name": "your room",
-     "line": "The girl sits on your bed with her knees up, not crying.",
-     "hint": "Your room in the Subura."
+     "name": "your house",
+     "line": "The girl sits in the kitchen with her knees up, not crying. Chrysis gives her bread.",
+     "hint": "Your house in the Subura, on the Argiletum."
     },
     {
      "scene": {
       "title": "The knock",
-      "where": "Your room, about 50 BC",
+      "where": "Your house, about 50 BC",
       "steps": [
        {
         "still": "Men on the stairs. A knock. Keep still, both of you.",

@@ -628,7 +628,7 @@ S["court_fall"] = scene(
 # ---------- the bread ----------
 
 S["bread_heroic"] = scene(
-    "Your bread", "Your room in the Subura, 280 BC",
+    "Your bread", "Your house in the Subura, 280 BC",
     say("There are no bakers in Rome yet. Every house grinds its own grain and bakes its own bread. The Roman farmer lives on porridge and bread."),
     timing("Turn the quern: push the handle round as the stone comes to you.", hits=3, speed=0.9, zone=0.22,
            miss="The stone sticks.", good=["The flour comes.", "Coarse, but it comes.", "Enough for a loaf."]),

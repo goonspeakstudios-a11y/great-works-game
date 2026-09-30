@@ -85,7 +85,7 @@ for iid, ins in INSCRIPTIONS.items():
         collect=["inscriptions", iid],
     )
 for age, text in COINS.items():
-    S["purse_" + age] = scene("The coin in your purse", "Your room", say(text), end("You put it back."), collect=["coins", age])
+    S["purse_" + age] = scene("The coin in your purse", "Your house", say(text), end("You put it back."), collect=["coins", age])
 
 SCENES = S
 

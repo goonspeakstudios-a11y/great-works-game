@@ -10,6 +10,7 @@ extends RefCounted
 ## the rest (places_rome.gd's `spawn`), and go again when their time is over.
 
 const Kit := preload("res://scripts/hall/kit.gd")
+const Greek := preload("res://scripts/hall/kit_greek.gd")
 const RomeMap := preload("res://scripts/hall/rome_map.gd")
 const FILE := "res://content/rome/town.json"
 
@@ -31,8 +32,23 @@ var _events := {}  # event id -> {people: [], ends, path?}
 var _pigeons: Array = []  # {node, home, flying}
 var _smoke: Array = []
 var _players: Array = []  # AudioStreamPlayer3D, each on one sound at a time
+var waters: Array = []  # [pos, "fountain" or "stream"]: where water runs, for the sound of it (rome_map out["waters"])
+var _water_pl: AudioStreamPlayer3D
+var _water_file := ""
 var _emitters: Array = []  # [person, sound file]
 var _sound_scan := 0.0
+var region := ""  # the part of the city you are in (hall.gd's corner name), for its sound bed
+var burnt: Array = []  # where the quarters burnt (rome_map.gd), for the smoke over them in 455
+var _beds: Array = []  # two AudioStreamPlayers, the region's bed crossfading between them
+var _bed_on := 0
+var _bed_file := ""
+
+## The sound under each part of the city (docs/rome-city-notes.md 2.2): the Forum's crowd, the
+## Subura's hammering, the Palatine's birds, the river port's gulls, the Campus's wind. By a word of
+## the region's name; the emptied city has only wind and crickets.
+const BEDS := {"forum": "crowd", "subura": "forge", "palat": "birds", "boarium": "gulls", "port": "gulls", "emporium": "gulls",
+	"tiber": "gulls", "river": "gulls", "campus": "wind", "capitol": "wind", "aventin": "sheep", "esquil": "loom", "caeli": "birds",
+	"quirinal": "birds", "viminal": "loom", "lateran": "birds", "vatican": "gulls", "circus": "crowd", "velabr": "crowd"}
 var _cry := 0.0
 var rng := RandomNumberGenerator.new()
 
@@ -52,6 +68,8 @@ func setup(the_world: Node3D, the_age: String, the_day: int, people: Array) -> v
 	_plan_rain()
 	_pigeons_in_forum()
 	_dogs(people)
+	_herds(people)
+	_cats()
 	for p: Dictionary in people:
 		if p.has("citizen"):
 			var sfx: String = data().get("sounds", {}).get(p["citizen"]["job"], "")
@@ -59,6 +77,26 @@ func setup(the_world: Node3D, the_age: String, the_day: int, people: Array) -> v
 				_emitters.append([p, sfx])
 				if sfx in ["fire", "forge"] and _smoke.size() < 12 and age != "fall":
 					_smoke.append(_plume((p["root"] as Node3D).position + Vector3(0, 13.0, 0)))
+	if age == "collapse":  # the smoke still going up from the burnt quarters, seen across the city
+		for k in mini(16, burnt.size()):
+			var at: Vector3 = burnt[k * burnt.size() / mini(16, burnt.size())]
+			_smoke.append(_plume(at + Vector3(0, 9.0, 0), 3.0))
+
+
+## The sound bed of the region you are in (BEDS), by a word of its name; "" for none.
+static func bed_for(region_name: String, the_age: String, hour: float) -> String:
+	var n := region_name.to_lower()
+	if the_age == "fall":
+		return "wind" if hour >= 6.0 and hour < 20.0 else "crickets"
+	if hour < 6.0 or hour >= 21.0:
+		return "crickets"
+	for word: String in BEDS:
+		if n.contains(word):
+			var bed: String = BEDS[word]
+			if bed == "crowd" and (hour < 7.0 or the_age == "collapse"):
+				return "wind"
+			return bed
+	return "birds"
 
 
 ## Today: a market day, a festival, or an ordinary day.
@@ -122,6 +160,14 @@ func step(delta: float, at: Vector3, hour: float, moving: bool) -> void:
 		if _sound_scan <= 0.0:
 			_sound_scan = 0.5
 			_sounds(at, hour)
+			_bed(hour)
+			_water(at)
+		for k in _beds.size():  # the beds crossfade over a few seconds
+			var pl: AudioStreamPlayer = _beds[k]
+			var want := -16.0 if k == _bed_on and pl.playing else -60.0
+			pl.volume_db = move_toward(pl.volume_db, want, delta * 12.0)
+			if pl.volume_db <= -59.0 and pl.playing and k != _bed_on:
+				pl.stop()
 
 
 # ---------- the day's events ----------
@@ -333,6 +379,110 @@ func _dogs(people: Array) -> void:
 		people.append(dog)
 
 
+## Cats on the doorsteps and the counters, sitting, as cats do (kit_greek's dog, small, in a
+## cat's colours). They do not move; the dogs do.
+func _cats() -> void:
+	if streets.is_empty():
+		return
+	var coats := ["#8a8078", "#c88a4a", "#2a2624", "#d8d0c0", "#6a5a4a"]
+	for k in (30 if age != "fall" else 8):
+		var road: Array = streets[rng.randi() % streets.size()]
+		var i := rng.randi_range(0, road.size() - 2)
+		var a: Vector3 = road[i]
+		var b: Vector3 = road[i + 1]
+		var p := a.lerp(b, rng.randf())
+		var dir := (b - a).normalized()
+		var side := Vector3(dir.z, 0, -dir.x) * (rng.randf_range(3.5, 5.0) * (1.0 if rng.randf() < 0.5 else -1.0))  # by the house fronts
+		p += side
+		p.y = RomeMap.ground(p)
+		var cat: Dictionary = Greek.beast(world, p, rng.randf() * TAU, "dog", coats[rng.randi() % coats.size()], 0.32)
+		Kit.unsolid(cat["root"])
+		(cat["root"] as Node3D).scale.y *= 0.9
+		for leg: Node3D in cat["legs"]:
+			leg.rotation.x = -1.1 if leg.position.z < 0.0 else 0.0  # sitting on its haunches
+
+
+## Livestock and carts in the streets (docs/rome-city-notes.md 2.3): a flock of sheep driven down
+## the Vicus Tuscus to the cattle market and back by a shepherd, while Rome still has a cattle
+## market; and a muleteer's cart with its two mules going up and down the Via Lata.
+func _herds(people: Array) -> void:
+	if streets.is_empty() or not spawn.is_valid():
+		return
+	var roads: Array = RomeMap.city_data().get("roads", [])
+	var index := func(name: String) -> int:
+		for i in roads.size():
+			if str(roads[i]["name"]) == name:
+				return i
+		return -1
+	var ground := func(q: Vector3) -> float: return RomeMap.ground(q)
+	var loop_of := func(i: int) -> Array:
+		var path: Array = (streets[i] as Array).duplicate()
+		var back := path.duplicate()
+		back.reverse()
+		return path + back.slice(1, back.size() - 1)
+	var tuscus: int = index.call("the Vicus Tuscus")
+	if age in ["heroic", "early", "republic", "empire"] and tuscus >= 0 and tuscus < streets.size():
+		var loop: Array = loop_of.call(tuscus)
+		var shepherd: Dictionary = spawn.call("proletarius", loop[0], 0.0)
+		shepherd["path"] = loop
+		shepherd["speed"] = 0.7
+		shepherd["shift"] = "day"
+		shepherd["ground"] = ground
+		shepherd.erase("leg")
+		(shepherd["citizen"] as Dictionary)["title"] = "shepherd"
+		Kit.box(shepherd["hand"], Vector3(0.3, 0.9, 0.3), Vector3(0.05, 1.8, 0.05), "wood", false)  # the crook
+		for k in 6:
+			var off := Vector3(rng.randf_range(-1.6, 1.6), 0, -1.5 - k * 0.7)
+			var sheep := _sheep((loop[0] as Vector3) + off)
+			sheep["path"] = loop.map(func(q: Vector3) -> Vector3: return q + off)
+			sheep["speed"] = 0.7
+			sheep["shift"] = "day"
+			sheep["ground"] = ground
+			people.append(sheep)
+	var lata: int = index.call("the Via Lata")
+	if age != "fall" and lata >= 0 and lata < streets.size():
+		var loop: Array = loop_of.call(lata)
+		var cart := _cart(loop[0])
+		cart["path"] = loop
+		cart["speed"] = 1.1
+		cart["shift"] = "always"
+		cart["ground"] = ground
+		people.append(cart)
+		var driver: Dictionary = spawn.call("mulio", (loop[0] as Vector3) + Vector3(1.4, 0, 0), 0.0)
+		driver["path"] = loop.map(func(q: Vector3) -> Vector3: return q + Vector3(1.4, 0, 0))
+		driver["speed"] = 1.1
+		driver["shift"] = "always"
+		driver["ground"] = ground
+
+
+## A sheep (kit_greek's beast), walking like a person (legs, head).
+func _sheep(at: Vector3) -> Dictionary:
+	var b: Dictionary = Greek.beast(world, at, 0.0, "sheep", "", 0.8)
+	Kit.unsolid(b["root"])
+	b["hand"] = Kit.group(b["root"], Vector3.ZERO)
+	return b
+
+
+## A mule cart: two mules (kit_greek's horse, small and brown) in the traces, a two-wheeled cart
+## with its load under a cloth behind them. Walks like a person (the mules' legs swing).
+func _cart(at: Vector3) -> Dictionary:
+	var root := Kit.group(world, at)
+	var legs: Array = []
+	for x: float in [-0.55, 0.55]:  # the mules
+		var mule: Dictionary = Greek.beast(root, Vector3(x, 0, 1.7), 0.0, "horse", "#6a5040", 0.8)
+		Kit.unsolid(mule["root"])
+		legs.append_array(mule["legs"])
+	Kit.box(root, Vector3(0, 0.95, 0.6), Vector3(1.4, 0.08, 1.4), "wood", false)  # the shafts
+	Kit.box(root, Vector3(0, 1.1, -0.6), Vector3(1.6, 0.6, 1.8), "wood", false)  # the cart's body
+	Kit.blob(root, Vector3(0, 1.6, -0.6), 0.7, "#c8b890", Vector3(1.1, 0.5, 1.2), 6)  # the load under its cloth
+	for x: float in [-0.95, 0.95]:
+		var wheel := Kit.cylinder(root, Vector3(x, 0.0, -0.6), 0.6, 0.12, "wood", false, 10)
+		wheel.rotation = Vector3(0, 0, PI / 2.0)
+		wheel.position = Vector3(x, 0.6, -0.6)
+	var head := Kit.group(root, Vector3(0, 1.35, 2.5))
+	return {"root": root, "head": head, "hand": Kit.group(root, Vector3.ZERO), "legs": legs, "cart": true}
+
+
 # ---------- sounds and smoke ----------
 
 ## The trades heard at their doors: the three nearest, each on a player of its own, loud as you near.
@@ -375,18 +525,83 @@ func _sounds(at: Vector3, hour: float) -> void:
 		pl.global_position = near[k][1] + Vector3(0, 1.5, 0)
 
 
-## A thin plume of smoke over an oven or a forge.
-func _plume(at: Vector3) -> CPUParticles3D:
+## The sound of the nearest water, when one runs within earshot: a fountain's splash or a stream's
+## run, one player moved to it.
+func _water(at: Vector3) -> void:
+	var best_d := 22.0
+	var best: Array = []
+	for w: Array in waters:
+		var d := (w[0] as Vector3).distance_to(at)
+		if d < best_d:
+			best_d = d
+			best = w
+	if _water_pl == null:
+		_water_pl = AudioStreamPlayer3D.new()
+		_water_pl.max_distance = 24.0
+		_water_pl.unit_size = 4.0
+		_water_pl.volume_db = -6.0
+		_water_pl.bus = "Master"
+		world.add_child(_water_pl)
+	if best.is_empty():
+		if _water_pl.playing:
+			_water_pl.stop()
+		_water_file = ""
+		return
+	var file := "res://assets/music/%s.wav" % str(best[1])
+	if file != _water_file:
+		_water_file = file
+		var s: Variant = load(file) if ResourceLoader.exists(file) else null
+		if s is AudioStreamWAV:
+			var w: AudioStreamWAV = (s as AudioStreamWAV).duplicate()
+			w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			w.loop_end = int(w.get_length() * w.mix_rate)
+			_water_pl.stream = w
+			_water_pl.play()
+	_water_pl.global_position = (best[0] as Vector3) + Vector3(0, 0.8, 0)
+
+
+## The region's sound bed, under the trades' sounds: started when the region (or the hour) changes,
+## the old one fading as the new comes up.
+func _bed(hour: float) -> void:
+	var file := bed_for(region, age, hour)
+	if file == _bed_file:
+		return
+	_bed_file = file
+	if _beds.is_empty():
+		for k in 2:
+			var pl := AudioStreamPlayer.new()
+			pl.volume_db = -60.0
+			pl.bus = "Master"
+			world.add_child(pl)
+			_beds.append(pl)
+	_bed_on = 1 - _bed_on
+	var pl: AudioStreamPlayer = _beds[_bed_on]
+	pl.stop()
+	if file == "":
+		return
+	var path := "res://assets/music/%s.wav" % file
+	var s: Variant = load(path) if ResourceLoader.exists(path) else null
+	if s is AudioStreamWAV:
+		var w: AudioStreamWAV = (s as AudioStreamWAV).duplicate()
+		w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		w.loop_end = int(w.get_length() * w.mix_rate)
+		pl.stream = w
+		pl.volume_db = -60.0
+		pl.play()
+
+
+## A thin plume of smoke over an oven or a forge; `size` above 1 for the smoke of a burnt quarter.
+func _plume(at: Vector3, size: float = 1.0) -> CPUParticles3D:
 	var p := CPUParticles3D.new()
-	p.amount = 14
-	p.lifetime = 6.0
+	p.amount = int(14 * size)
+	p.lifetime = 6.0 * size
 	p.direction = Vector3(0.2, 1, 0)
 	p.spread = 12.0
 	p.initial_velocity_min = 0.8
-	p.initial_velocity_max = 1.4
+	p.initial_velocity_max = 1.4 * size
 	p.gravity = Vector3(0.15, 0.05, 0)
-	p.scale_amount_min = 1.0
-	p.scale_amount_max = 2.6
+	p.scale_amount_min = 1.0 * size
+	p.scale_amount_max = 2.6 * size
 	var puff := SphereMesh.new()
 	puff.radius = 0.6
 	puff.height = 1.2

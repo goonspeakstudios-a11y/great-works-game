@@ -43,8 +43,16 @@
    "work_fish"
   ],
   "nauta": [
-   "Offer to pole the ferry",
-   "work_boat"
+   "Take the boat somewhere",
+   "ride_boat"
+  ],
+  "lecticarius": [
+   "Hire the litter",
+   "ride_litter"
+  ],
+  "mulio": [
+   "Ask for a ride on the cart",
+   "ride_cart"
   ],
   "caupo": [
    "Play at knucklebones",
@@ -853,6 +861,249 @@
     },
     {
      "end": "The Tiber floods every few years, and every year takes someone."
+    }
+   ]
+  },
+  "ride_litter": {
+   "title": "The litter",
+   "where": "The street",
+   "steps": [
+    {
+     "say": "Four bearers and a covered litter for hire by the hour, the poles on their shoulders, the curtains drawn. The rich are carried everywhere; a man on foot in a litter street is a man without a litter. Where to? {a}, {b} or {c} are a long way on foot."
+    },
+    {
+     "ask": "Where to?",
+     "options": [
+      {
+       "text": "To {a}",
+       "then": "a"
+      },
+      {
+       "text": "To {b}",
+       "then": "b"
+      },
+      {
+       "text": "To {c}",
+       "then": "c"
+      },
+      {
+       "text": "Nowhere. I'll walk.",
+       "then": "no"
+      }
+     ]
+    },
+    {
+     "label": "a"
+    },
+    {
+     "pay": 3,
+     "else": "poor"
+    },
+    {
+     "ride": "a"
+    },
+    {
+     "end": "You lie back on the cushions; the street goes by in the gap of the curtain, at the bearers' trot, an hour of it. They set you down and hold out a hand for the tip."
+    },
+    {
+     "label": "b"
+    },
+    {
+     "pay": 3,
+     "else": "poor"
+    },
+    {
+     "ride": "b"
+    },
+    {
+     "end": "You lie back on the cushions; the street goes by in the gap of the curtain, at the bearers' trot, an hour of it. They set you down and hold out a hand for the tip."
+    },
+    {
+     "label": "c"
+    },
+    {
+     "pay": 3,
+     "else": "poor"
+    },
+    {
+     "ride": "c"
+    },
+    {
+     "end": "You lie back on the cushions; the street goes by in the gap of the curtain, at the bearers' trot, an hour of it. They set you down and hold out a hand for the tip."
+    },
+    {
+     "label": "no"
+    },
+    {
+     "end": "The bearers settle back in the shade of the wall."
+    },
+    {
+     "label": "poor"
+    },
+    {
+     "end": "Not for what's in your purse. The bearers settle back in the shade of the wall."
+    }
+   ]
+  },
+  "ride_cart": {
+   "title": "The mule cart",
+   "where": "The street",
+   "steps": [
+    {
+     "say": "A muleteer with an empty cart, going back for another load. Carts may not use the streets by day; his may, he says, because it carries for the temples, and he winks. For a coin he will take a passenger. Where to? {a}, {b} or {c}."
+    },
+    {
+     "ask": "Where to?",
+     "options": [
+      {
+       "text": "To {a}",
+       "then": "a"
+      },
+      {
+       "text": "To {b}",
+       "then": "b"
+      },
+      {
+       "text": "To {c}",
+       "then": "c"
+      },
+      {
+       "text": "Nowhere. I'll walk.",
+       "then": "no"
+      }
+     ]
+    },
+    {
+     "label": "a"
+    },
+    {
+     "pay": 1,
+     "else": "poor"
+    },
+    {
+     "ride": "a"
+    },
+    {
+     "end": "You sit on the tailboard with your legs hanging over the basalt, the mules' bells going, the wheels finding every rut for an hour. He stops and points with his whip: there."
+    },
+    {
+     "label": "b"
+    },
+    {
+     "pay": 1,
+     "else": "poor"
+    },
+    {
+     "ride": "b"
+    },
+    {
+     "end": "You sit on the tailboard with your legs hanging over the basalt, the mules' bells going, the wheels finding every rut for an hour. He stops and points with his whip: there."
+    },
+    {
+     "label": "c"
+    },
+    {
+     "pay": 1,
+     "else": "poor"
+    },
+    {
+     "ride": "c"
+    },
+    {
+     "end": "You sit on the tailboard with your legs hanging over the basalt, the mules' bells going, the wheels finding every rut for an hour. He stops and points with his whip: there."
+    },
+    {
+     "label": "no"
+    },
+    {
+     "end": "He shrugs and clicks to the mules."
+    },
+    {
+     "label": "poor"
+    },
+    {
+     "end": "Not for what's in your purse. He shrugs and clicks to the mules."
+    }
+   ]
+  },
+  "ride_boat": {
+   "title": "The boat",
+   "where": "The river bank",
+   "steps": [
+    {
+     "say": "A boatman with a flat skiff, a pole and a sail he never uses. The river is the quickest road in Rome for anywhere on it or across it: the port, the island, the Campus, the far bank. Where to? {a}, {b} or {c}."
+    },
+    {
+     "ask": "Where to?",
+     "options": [
+      {
+       "text": "To {a}",
+       "then": "a"
+      },
+      {
+       "text": "To {b}",
+       "then": "b"
+      },
+      {
+       "text": "To {c}",
+       "then": "c"
+      },
+      {
+       "text": "Nowhere. I'll walk.",
+       "then": "no"
+      }
+     ]
+    },
+    {
+     "label": "a"
+    },
+    {
+     "pay": 2,
+     "else": "poor"
+    },
+    {
+     "ride": "a"
+    },
+    {
+     "end": "He poles out into the stream and lets the Tiber do the work, brown and quick and smelling of the drain, under the bridges, an hour of it. He runs her in at the steps and holds her steady with the pole."
+    },
+    {
+     "label": "b"
+    },
+    {
+     "pay": 2,
+     "else": "poor"
+    },
+    {
+     "ride": "b"
+    },
+    {
+     "end": "He poles out into the stream and lets the Tiber do the work, brown and quick and smelling of the drain, under the bridges, an hour of it. He runs her in at the steps and holds her steady with the pole."
+    },
+    {
+     "label": "c"
+    },
+    {
+     "pay": 2,
+     "else": "poor"
+    },
+    {
+     "ride": "c"
+    },
+    {
+     "end": "He poles out into the stream and lets the Tiber do the work, brown and quick and smelling of the drain, under the bridges, an hour of it. He runs her in at the steps and holds her steady with the pole."
+    },
+    {
+     "label": "no"
+    },
+    {
+     "end": "He sits down again on his thwart and looks at the water."
+    },
+    {
+     "label": "poor"
+    },
+    {
+     "end": "Not for what's in your purse. He sits down again on his thwart and looks at the water."
     }
    ]
   },

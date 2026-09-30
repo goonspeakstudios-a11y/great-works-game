@@ -1,6 +1,6 @@
-"""Rites done exactly (religio): the lararium in your room every morning, the augurs on the Arx, the
+"""Rites done exactly (religio): the lararium in your house every morning, the augurs on the Arx, the
 haruspex's liver, the curse tablet at the fountain, and small offerings at any temple still standing
-(docs/rome-activities-plan.md, 3.5). Also sleeping in your room.
+(docs/rome-activities-plan.md, 3.5). Also sleeping in your house.
 """
 
 from .common import (say, ask, opt, end, label, go, rite, hold, still, timing, typing, pick, gain, pay, iff, scene,
@@ -13,18 +13,18 @@ _LAR = ["Wash your hands", "Lay a garland on the shrine", "Drop salted meal into
 _LAR_WRONG = ["Spit on the hearth", "Say: give me money", "Turn your back on the shrine"]
 
 S["lararium_heroic"] = scene(
-    "The household gods", "Your room, 280 BC",
+    "The household gods", "Your house, 280 BC",
     say("A niche by the hearth: the Lar of the family, dancing with his drinking horn; the Penates who keep the store cupboard; the snake of the house's Genius painted below."),
     rite("Every morning, before anything else, the small rite.", _LAR, _LAR_WRONG,
-         restart="You stop, and begin again. Your landlady's grandmother is watching from the door.",
+         restart="You stop, and begin again. Postumia is watching from the loom, and says the words with you.",
          done="The flame takes the meal with a small crackle. The house is kept."),
     gain(once="lararium"),
-    end("It is small and it is daily, and it ties this room to every Roman room since the kings."),
+    end("It is small and it is daily, and it ties this house to every Roman house since the kings."),
 )
 
 S["lararium_early"] = scene(
-    "The household gods", "Your room, 201 BC",
-    say("Every house in Rome prayed harder after Cannae. Your landlady has a son who didn't come back. She keeps his portrait by the shrine."),
+    "The household gods", "Your house, 201 BC",
+    say("Every house in Rome prayed harder after Cannae. Sulpicia lost two brothers there. She stands behind you and makes sure you do it exactly."),
     rite("The morning rite.", _LAR, _LAR_WRONG, restart="You begin again. It must be right.",
          done="The Lar dances in the lamplight. The house is kept."),
     gain(once="lararium"),
@@ -32,27 +32,27 @@ S["lararium_early"] = scene(
 )
 
 S["lararium_republic"] = scene(
-    "The household gods", "Your room on the fifth floor, about 50 BC",
-    say("The shrine is a painted niche now, on a wall that sweats. Through it you can hear the neighbours fighting over rent."),
+    "The household gods", "Your house, about 50 BC",
+    say("The shrine is painted now, like everything Valeria paid for. She doesn't come to it. The boy's nurse does, for luck."),
     rite("The morning rite.", _LAR, _LAR_WRONG, strict=False, slack="You slip, and go on anyway. Who's to know?",
-         done="The flame takes the meal. Next door someone throws a pot."),
+         done="The flame takes the meal. From Valeria's room, laughter."),
     gain(once="lararium"),
-    end("Your landlord's agent says the building is sound. Everyone's landlord's agent says so."),
+    end("Valeria's Egyptian has his own gods. She keeps them in her bedroom."),
 )
 
 S["lararium_empire"] = scene(
-    "The household gods", "Your room in the block, about AD 150",
-    say("Beside the Lares there is a little clay bust of the Emperor. Everyone has one. It seems wise."),
+    "The household gods", "Your house, about AD 150",
+    say("Beside the Lares Flavia has put a silver bust of the Emperor. Everyone has one. It seems wise."),
     rite("The morning rite.", _LAR, _LAR_WRONG, strict=False, slack="You slip and go on.",
          done="The flame takes the meal. The Emperor's bust looks on."),
     gain(once="lararium"),
-    end("The block has six storeys, the stairs are wooden, and fires start every week somewhere in Rome."),
+    end("Flavia has not come to the household gods in years. The slaves do, for luck, when she isn't looking."),
 )
 
 S["lararium_late"] = scene(
-    "The household gods", "Your room, AD 384",
+    "The household gods", "Your house, AD 384",
     say("The Emperor's laws are against sacrifice. They don't yet name the little household gods; in a few years they will, down to a pinch of incense in a shrine."),
-    say("Your neighbour is a Christian. She has seen your shrine."),
+    say("Rufina is a Christian, and pays the bishop. She has seen your shrine."),
     ask("She says nothing. She looks at the Lar, and at you.",
         opt("Keep it, and do the rite", then="rite"),
         opt("Put it away in the chest", say="You wrap the Lar in a cloth and put him away. The niche is empty.",
@@ -60,27 +60,36 @@ S["lararium_late"] = scene(
     ),
     label("rite"),
     rite("The morning rite, quietly.", _LAR, _LAR_WRONG, restart="You begin again, more quietly.",
-         done="The flame takes the meal. Your neighbour has shut her door."),
-    gain(once="lararium", ledger="Kept the household gods when the neighbours turned away.", ledger_key="lararium_kept"),
+         done="The flame takes the meal. Rufina has shut her door."),
+    gain(once="lararium", ledger="Kept the household gods when your wife turned away.", ledger_key="lararium_kept"),
     label("end"),
     end("Everything is changing in Rome. Some things you choose to keep."),
 )
 
 S["lararium_collapse"] = scene(
-    "The household gods", "Your room, AD 455",
+    "The household gods", "Your house, AD 455",
+    iff({"done": "lar_sold"}, "sold"),
     say("The Lar is behind a curtain. The Vandals didn't want him: bronze too little to bother with."),
     rite("The morning rite, behind the curtain.", _LAR, _LAR_WRONG, strict=False,
          slack="You slip, and go on. There's no one left to be exact for.", done="The flame takes the meal."),
     gain(once="lararium"),
-    end("Your landlady is gone to her sister in Ravenna. You have not paid rent in a month. No one has come for it."),
+    end("The house is half empty. Nobody has come to mend the door. Nobody will."),
+    label("sold"),
+    say("The niche is empty. Galla sold him with the candlesticks."),
+    end("You leave a pinch of meal in the empty niche anyway."),
 )
 
 S["lararium_fall"] = scene(
-    "The household gods", "What is left of your room, AD 552",
+    "The household gods", "What is left of your house, AD 552",
+    iff({"done": "lar_sold"}, "sold"),
     say("The roof fell in the second siege. The niche is still there, and the painted snake, and the Lar in his cloth at the bottom of the chest."),
     hold("Set him in the niche and pour the last of the water for him.", secs=3.0, done="He dances, as he always did, in the rubble."),
     gain(once="lararium", ledger="Kept the household gods in the ruined city.", ledger_key="lararium_last"),
     end("A thousand years of mornings, and this one."),
+    label("sold"),
+    say("The niche is there, and the painted snake. The Lar is not: your wife sold him a hundred years ago, in another life."),
+    still("Stand before the empty niche.", secs=5, done="There is nothing to keep."),
+    end("A thousand years of mornings, and none left."),
 )
 
 _SLEEP = {"heroic": "You sleep on a straw mattress. At first light the cocks crow all over the seven hills.",
@@ -91,7 +100,7 @@ _SLEEP = {"heroic": "You sleep on a straw mattress. At first light the cocks cro
           "collapse": "You sleep with a knife under the mattress, like everyone.",
           "fall": "You sleep in the corner where the roof still holds. Owls in the Forum."}
 for age, line in _SLEEP.items():
-    S["sleep_" + age] = scene("Sleep", "Your room", say(line), hour(6.0), end("Morning."))
+    S["sleep_" + age] = scene("Sleep", "Your house", say(line), hour(6.0), end("Morning."))
 
 # ---------- the augurs ----------
 

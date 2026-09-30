@@ -3,7 +3,7 @@
  "scenes": {
   "lararium_heroic": {
    "title": "The household gods",
-   "where": "Your room, 280 BC",
+   "where": "Your house, 280 BC",
    "steps": [
     {
      "say": "A niche by the hearth: the Lar of the family, dancing with his drinking horn; the Penates who keep the store cupboard; the snake of the house's Genius painted below."
@@ -23,7 +23,7 @@
       "Turn your back on the shrine"
      ],
      "strict": true,
-     "restart": "You stop, and begin again. Your landlady's grandmother is watching from the door.",
+     "restart": "You stop, and begin again. Postumia is watching from the loom, and says the words with you.",
      "done": "The flame takes the meal with a small crackle. The house is kept."
     },
     {
@@ -32,16 +32,16 @@
      }
     },
     {
-     "end": "It is small and it is daily, and it ties this room to every Roman room since the kings."
+     "end": "It is small and it is daily, and it ties this house to every Roman house since the kings."
     }
    ]
   },
   "lararium_early": {
    "title": "The household gods",
-   "where": "Your room, 201 BC",
+   "where": "Your house, 201 BC",
    "steps": [
     {
-     "say": "Every house in Rome prayed harder after Cannae. Your landlady has a son who didn't come back. She keeps his portrait by the shrine."
+     "say": "Every house in Rome prayed harder after Cannae. Sulpicia lost two brothers there. She stands behind you and makes sure you do it exactly."
     },
     {
      "rite": "The morning rite.",
@@ -73,10 +73,10 @@
   },
   "lararium_republic": {
    "title": "The household gods",
-   "where": "Your room on the fifth floor, about 50 BC",
+   "where": "Your house, about 50 BC",
    "steps": [
     {
-     "say": "The shrine is a painted niche now, on a wall that sweats. Through it you can hear the neighbours fighting over rent."
+     "say": "The shrine is painted now, like everything Valeria paid for. She doesn't come to it. The boy's nurse does, for luck."
     },
     {
      "rite": "The morning rite.",
@@ -94,7 +94,7 @@
      ],
      "strict": false,
      "slack": "You slip, and go on anyway. Who's to know?",
-     "done": "The flame takes the meal. Next door someone throws a pot."
+     "done": "The flame takes the meal. From Valeria's room, laughter."
     },
     {
      "gain": {
@@ -102,16 +102,16 @@
      }
     },
     {
-     "end": "Your landlord's agent says the building is sound. Everyone's landlord's agent says so."
+     "end": "Valeria's Egyptian has his own gods. She keeps them in her bedroom."
     }
    ]
   },
   "lararium_empire": {
    "title": "The household gods",
-   "where": "Your room in the block, about AD 150",
+   "where": "Your house, about AD 150",
    "steps": [
     {
-     "say": "Beside the Lares there is a little clay bust of the Emperor. Everyone has one. It seems wise."
+     "say": "Beside the Lares Flavia has put a silver bust of the Emperor. Everyone has one. It seems wise."
     },
     {
      "rite": "The morning rite.",
@@ -137,19 +137,19 @@
      }
     },
     {
-     "end": "The block has six storeys, the stairs are wooden, and fires start every week somewhere in Rome."
+     "end": "Flavia has not come to the household gods in years. The slaves do, for luck, when she isn't looking."
     }
    ]
   },
   "lararium_late": {
    "title": "The household gods",
-   "where": "Your room, AD 384",
+   "where": "Your house, AD 384",
    "steps": [
     {
      "say": "The Emperor's laws are against sacrifice. They don't yet name the little household gods; in a few years they will, down to a pinch of incense in a shrine."
     },
     {
-     "say": "Your neighbour is a Christian. She has seen your shrine."
+     "say": "Rufina is a Christian, and pays the bishop. She has seen your shrine."
     },
     {
      "ask": "She says nothing. She looks at the Lar, and at you.",
@@ -186,12 +186,12 @@
      ],
      "strict": true,
      "restart": "You begin again, more quietly.",
-     "done": "The flame takes the meal. Your neighbour has shut her door."
+     "done": "The flame takes the meal. Rufina has shut her door."
     },
     {
      "gain": {
       "once": "lararium",
-      "ledger": "Kept the household gods when the neighbours turned away.",
+      "ledger": "Kept the household gods when your wife turned away.",
       "ledger_key": "lararium_kept"
      }
     },
@@ -205,8 +205,14 @@
   },
   "lararium_collapse": {
    "title": "The household gods",
-   "where": "Your room, AD 455",
+   "where": "Your house, AD 455",
    "steps": [
+    {
+     "if": {
+      "done": "lar_sold"
+     },
+     "to": "sold"
+    },
     {
      "say": "The Lar is behind a curtain. The Vandals didn't want him: bronze too little to bother with."
     },
@@ -234,14 +240,29 @@
      }
     },
     {
-     "end": "Your landlady is gone to her sister in Ravenna. You have not paid rent in a month. No one has come for it."
+     "end": "The house is half empty. Nobody has come to mend the door. Nobody will."
+    },
+    {
+     "label": "sold"
+    },
+    {
+     "say": "The niche is empty. Galla sold him with the candlesticks."
+    },
+    {
+     "end": "You leave a pinch of meal in the empty niche anyway."
     }
    ]
   },
   "lararium_fall": {
    "title": "The household gods",
-   "where": "What is left of your room, AD 552",
+   "where": "What is left of your house, AD 552",
    "steps": [
+    {
+     "if": {
+      "done": "lar_sold"
+     },
+     "to": "sold"
+    },
     {
      "say": "The roof fell in the second siege. The niche is still there, and the painted snake, and the Lar in his cloth at the bottom of the chest."
     },
@@ -259,12 +280,26 @@
     },
     {
      "end": "A thousand years of mornings, and this one."
+    },
+    {
+     "label": "sold"
+    },
+    {
+     "say": "The niche is there, and the painted snake. The Lar is not: your wife sold him a hundred years ago, in another life."
+    },
+    {
+     "still": "Stand before the empty niche.",
+     "secs": 5,
+     "done": "There is nothing to keep."
+    },
+    {
+     "end": "A thousand years of mornings, and none left."
     }
    ]
   },
   "sleep_heroic": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep on a straw mattress. At first light the cocks crow all over the seven hills."
@@ -279,7 +314,7 @@
   },
   "sleep_early": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep. At first light the carts are already on the Sacred Way."
@@ -294,7 +329,7 @@
   },
   "sleep_republic": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep, as much as anyone sleeps in the Subura: the drunks, the dogs, a fight on the stairs."
@@ -309,7 +344,7 @@
   },
   "sleep_empire": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep, badly. Carts are only allowed in the city at night, and they are all under your window."
@@ -324,7 +359,7 @@
   },
   "sleep_late": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep. Before dawn you hear the psalms from the church at the end of the street."
@@ -339,7 +374,7 @@
   },
   "sleep_collapse": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep with a knife under the mattress, like everyone."
@@ -354,7 +389,7 @@
   },
   "sleep_fall": {
    "title": "Sleep",
-   "where": "Your room",
+   "where": "Your house",
    "steps": [
     {
      "say": "You sleep in the corner where the roof still holds. Owls in the Forum."

@@ -32,9 +32,7 @@ static func stone_pine(parent: Node3D, at: Vector3, size: float = 1.0, alive: bo
 			var d := Vector3(cos(a) * 3.6, 1.6, sin(a) * 3.6) * size
 			Kit.mesh(crown, Kit._cyl(0.05 * size, d.length()), "deadwood", d / 2.0, Quaternion(Vector3.UP, d.normalized()).get_euler())
 		return crown
-	Kit.blob(crown, Vector3(0, 1.9 * size, 0), 3.6 * size, "pine", Vector3(1.25, 0.32, 1.2), 9)
-	Kit.blob(crown, Vector3(0.9 * size, 2.3 * size, 0.4 * size), 2.4 * size, "pine", Vector3(1.2, 0.35, 1.1), 8)
-	Kit.blob(crown, Vector3(-1.1 * size, 2.2 * size, -0.6 * size), 2.2 * size, "pine", Vector3(1.1, 0.35, 1.2), 8)
+	Kit.leaves(crown, "g_pine", Vector3(0, 2.2 * size, 0), 9.0 * size, 4.4 * size)
 	return crown
 
 
@@ -48,41 +46,122 @@ static func column(parent: Node3D, base: Vector3, height: float, radius: float, 
 	Kit.box(parent, base + Vector3(0, height - radius * 0.2, 0), Vector3(radius * 3.0, radius * 0.4, radius * 3.0), mat, false)
 
 
-## A Roman temple: a high podium with a stair only at the front, six columns across the porch and
-## two deep, a pediment, and the cella (the god's room) behind with its tall bronze door. In ruin
-## only three columns stand, carrying a piece of their beam, on a podium stripped of its marble.
-## Faces +Z. Returns where you stand at the top of the stair.
-static func temple(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
+## A Roman temple: a high podium with a stair only at the front, the porch of columns, a pediment,
+## and the cella (the god's room) behind with its tall door. Three styles carry the city's descent
+## (docs/rome-city-notes.md 2.1):
+##   "etruscan": the old Italic temple of the kings and the early Republic: a podium of tufa, a deep
+##     porch of four widely spaced wooden columns with plain Tuscan capitals, stuccoed walls, a
+##     painted terracotta roof with wide eaves, terracotta gods along the ridge and a chariot at the
+##     peak; in ruin only the tufa podium and the stumps of the posts.
+##   "greek": the marble temple of the late Republic: columns all round (peripteral), close-set,
+##     sculpture in the pediment.
+##   "imperial" (the default): Corinthian, six across and two deep on a tall marble podium.
+## `variant`: "gilded" (the roof of gilt bronze tiles), "stripped" (half of them torn off, the
+## rafters bare), "odd_columns" (a porch re-columned with columns of different stones and heights),
+## "kiln" (a lime kiln beside the podium, burning the temple's marble).
+## In ruin only three columns stand, carrying a piece of their beam, on a podium stripped of its
+## marble. Faces +Z. Returns where you stand at the top of the stair.
+static func temple(parent: Node3D, at: Vector3, yaw: float, whole: bool = true, style: String = "imperial", variant: String = "") -> Vector3:
 	var g := Kit.group(parent, at, yaw)
 	const W := 14.0
 	const D := 24.0
 	const H := 3.5  # the podium
-	Kit.box(g, Vector3(0, H / 2.0, -2.0), Vector3(W, H, D - 4.0), "marble" if whole else "tufa")
+	var etruscan := style == "etruscan"
+	var stone := "tufa" if etruscan or not whole else "marble"
+	Kit.box(g, Vector3(0, H / 2.0, -2.0), Vector3(W, H, D - 4.0), stone)
 	for k in 12:  # the stair up the front
 		var h := H * (k + 1) / 12.0
-		Kit.box(g, Vector3(0, h / 2.0, D / 2.0 - 4.0 + 4.0 - k * 0.33), Vector3(W - 3.0, h, 0.34), "marble" if whole else "tufa")
+		Kit.box(g, Vector3(0, h / 2.0, D / 2.0 - 4.0 + 4.0 - k * 0.33), Vector3(W - 3.0, h, 0.34), stone)
 	var top := H
-	var col_h := 11.0
+	var col_h := 11.0 if not etruscan else 8.5
 	var r := 0.6
+	if variant == "kiln":
+		Kit.cylinder(g, Vector3(10.5, 0, 0), 2.2, 3.4, "brick", true, 10, 1.4)
+		Kit.box(g, Vector3(10.5, 0.8, 2.15), Vector3(1.0, 1.4, 0.2), "dark", false)  # its mouth
+		for k in 5:  # the marble waiting to be burnt
+			Kit.box(g, Vector3(9.0 + (k % 3) * 1.4, 0.35, 4.0 + (k / 3) * 1.2), Vector3(1.2, 0.7, 0.8), "marble", false, Vector3(0, 0.3 * k, 0))
 	if not whole:
+		if etruscan:
+			for x: float in [-5.25, -1.75, 1.75]:
+				Kit.cylinder(g, Vector3(x, top, 5.5), 0.5, 1.2, "deadwood", false, 8)
+			Kit.box(g, Vector3(0, top + 0.6, -5.0), Vector3(W - 1.4, 1.2, 12.0), "rubble", false)
+			return g.to_global(Vector3(0, top, 7.0)) if g.is_inside_tree() else at + Vector3(0, top, 0)
 		for x: float in [-5.0, -2.5, 0.0]:
 			column(g, Vector3(x, top, 5.5), col_h, r)
 		Kit.box(g, Vector3(-2.5, top + col_h + 0.7, 5.5), Vector3(7.0, 1.4, 1.8), "marble", false)
 		Kit.fallen_column(g, Vector3(4.0, top, 2.0), 1.1, 5.0)
 		return g.to_global(Vector3(0, top, 7.0)) if g.is_inside_tree() else at + Vector3(0, top, 0)
-	for x: float in [-5.5, -3.3, -1.1, 1.1, 3.3, 5.5]:
-		column(g, Vector3(x, top, 6.0), col_h, r)
-	for x: float in [-5.5, 5.5]:
-		column(g, Vector3(x, top, 3.2), col_h, r)
-	Kit.box(g, Vector3(0, top + col_h / 2.0, -5.0), Vector3(W - 1.4, col_h, 12.0), "marble")  # the cella
+	if etruscan:
+		for x: float in [-5.25, -1.75, 1.75, 5.25]:  # four wooden posts across, two rows deep
+			for z: float in [6.0, 2.6]:
+				_tuscan(g, Vector3(x, top, z), col_h, 0.5)
+		Kit.box(g, Vector3(0, top + col_h / 2.0, -5.0), Vector3(W - 1.4, col_h, 12.0), "plaster")  # the stuccoed cella
+		Kit.box(g, Vector3(0, top + 1.0, -5.0), Vector3(W - 1.3, 2.0, 12.1), "#8a2a22", false)  # its painted dado
+		Kit.box(g, Vector3(0, top + 3.0, 1.06), Vector3(2.6, 6.0, 0.1), "wood", false)  # the door
+		var eave := top + col_h
+		Kit.box(g, Vector3(0, eave + 0.5, -2.0), Vector3(W + 0.4, 1.0, D - 3.0), "wood", false)  # the beams
+		Kit.box(g, Vector3(0, eave + 0.5, 8.55), Vector3(W + 0.4, 0.9, 0.1), "#c8603a", false)  # the painted terracotta plaques
+		_pediment(g, Vector3(0, eave + 1.0, 8.2), W + 0.4, 2.2, 0.8)
+		for side: float in [-1.0, 1.0]:  # the roof, wide-eaved, terracotta
+			Kit.box(g, Vector3(side * 4.4, eave + 2.3, -2.0), Vector3(9.6, 0.35, D + 1.0), "terracotta", false, Vector3(0, 0, -side * 0.3))
+		for k in 5:  # the gods along the ridge, and the chariot at the peak
+			Kit.blob(g, Vector3(0, eave + 4.0, -9.0 + k * 3.5), 0.45, "#c8603a", Vector3(0.8, 1.6, 0.8), 6)
+		Kit.box(g, Vector3(0, eave + 4.2, 7.4), Vector3(1.8, 0.8, 1.4), "#c8603a", false)
+		for x: float in [-1.0, -0.33, 0.33, 1.0]:
+			Kit.blob(g, Vector3(x, eave + 4.6, 8.4), 0.35, "#c8603a", Vector3(0.6, 1.0, 1.6), 5)
+		return g.to_global(Vector3(0, top, 7.0)) if g.is_inside_tree() else at + Vector3(0, top, 0)
+	var greek := style == "greek"
+	var odd := variant == "odd_columns"
+	var fronts: Array = [-5.5, -3.3, -1.1, 1.1, 3.3, 5.5]
+	if odd:
+		fronts = [-5.6, -4.0, -2.4, -0.8, 0.8, 2.4, 4.0, 5.6]
+	for k in fronts.size():
+		var x: float = fronts[k]
+		var mat := "marble"
+		var h := col_h
+		if odd:
+			mat = ["#8a8a8a", "#b89090", "marble", "#7a7a80"][k % 4]
+			h = col_h - 0.7 + 0.35 * (k % 3)
+		column(g, Vector3(x, top, 6.0), h, r if not odd else r * 0.9, mat)
+		if odd and h < col_h:
+			Kit.box(g, Vector3(x, top + h + (col_h - h) / 2.0, 6.0), Vector3(1.4, col_h - h, 1.4), "brick", false)  # the shim under the beam
+	if greek:
+		for x: float in [-5.5, 5.5]:  # the colonnade down both sides and across the back
+			for z: float in [3.8, 1.6, -0.6, -2.8, -5.0, -7.2, -9.4]:
+				column(g, Vector3(x, top, z), col_h, r)
+		for x: float in [-3.3, -1.1, 1.1, 3.3]:
+			column(g, Vector3(x, top, -9.4), col_h, r)
+	else:
+		for x: float in [-5.5, 5.5]:
+			column(g, Vector3(x, top, 3.2), col_h, r)
+	Kit.box(g, Vector3(0, top + col_h / 2.0, -5.0), Vector3(W - 1.4 if not greek else W - 4.0, col_h, 12.0), "marble")  # the cella
 	Kit.box(g, Vector3(0, top + 3.5, 1.06), Vector3(3.0, 7.0, 0.1), "bronze", false)  # its door
 	var eave := top + col_h
 	Kit.box(g, Vector3(0, eave + 0.6, -2.0), Vector3(W + 0.4, 1.2, D - 3.0), "marble", false)  # the entablature
-	Kit.box(g, Vector3(0, eave + 0.8, 8.55), Vector3(W + 0.4, 0.5, 0.1), "#b8a888", false)  # its frieze band
+	Kit.box(g, Vector3(0, eave + 0.8, 8.55), Vector3(W + 0.4, 0.5, 0.1), "#b8a888" if not odd else "plaque", false)  # its frieze band, or the inscription
 	_pediment(g, Vector3(0, eave + 1.2, 8.1), W + 0.4, 2.55, 0.8)
+	if greek:  # the sculpture in the pediment
+		for k in 5:
+			Kit.blob(g, Vector3(-4.0 + k * 2.0, eave + 1.7 + 0.5 * (1.0 - absf(k - 2.0) / 2.0), 8.6), 0.4, "#d8d0c0", Vector3(0.7, 1.0 + 0.6 * (1.0 - absf(k - 2.0) / 2.0), 0.4), 5)
+	var tiles := "roof"
+	if variant == "gilded" or variant == "stripped":
+		tiles = "gold"
 	for side: float in [-1.0, 1.0]:  # the roof, low-pitched
-		Kit.box(g, Vector3(side * 3.6, eave + 2.6, -2.0), Vector3(7.6, 0.35, D - 2.4), "roof", false, Vector3(0, 0, -side * 0.34))
+		if variant == "stripped" and side > 0.0:
+			for k in 6:  # the rafters bare where the tiles were taken
+				Kit.box(g, Vector3(side * 3.6, eave + 2.5, -10.0 + k * 3.4), Vector3(7.6, 0.25, 0.3), "wood", false, Vector3(0, 0, -side * 0.34))
+			continue
+		Kit.box(g, Vector3(side * 3.6, eave + 2.6, -2.0), Vector3(7.6, 0.35, D - 2.4), tiles, false, Vector3(0, 0, -side * 0.34))
 	return g.to_global(Vector3(0, top, 7.0)) if g.is_inside_tree() else at + Vector3(0, top, 0)
+
+
+## A Tuscan column of the old temples: a wooden shaft on a stone base under a plain round capital
+## and a square abacus.
+static func _tuscan(parent: Node3D, base: Vector3, height: float, radius: float) -> void:
+	Kit.cylinder(parent, base, radius * 1.3, radius * 0.5, "tufa", true, 8)
+	Kit.cylinder(parent, base + Vector3(0, radius * 0.5, 0), radius, height - radius * 1.7, "wood", true, 8, radius * 0.85)
+	Kit.cylinder(parent, base + Vector3(0, height - radius * 1.2, 0), radius * 0.85, radius * 0.7, "wood", false, 8, radius * 1.2)
+	Kit.box(parent, base + Vector3(0, height - radius * 0.25, 0), Vector3(radius * 2.8, radius * 0.5, radius * 2.8), "wood", false)
 
 
 ## A triumphal arch like Titus's: one tall bay between piers faced with columns, the attic above
@@ -156,26 +235,47 @@ static func aqueduct(parent: Node3D, from: Vector3, to: Vector3, tiers: int = 1,
 
 ## The Rostra in the Forum: a high platform faced with the bronze beaks of captured warships,
 ## with a balustrade, and steps up its back (-Z). Faces +Z. Lost: the beaks torn off (their green
-## stumps left), the balustrade broken. Returns where a speaker stands.
-static func rostra(parent: Node3D, at: Vector3, yaw: float, whole: bool = true) -> Vector3:
+## stumps left), the balustrade broken. `variant` (the site through its ages): "beaks" or "" (the
+## Republic's, of tufa and travertine), "caesar" (Caesar's and Augustus's: longer, faced with
+## marble, columns with the emperors' statues on its back), "stripped" (the beaks prised off, their
+## sockets empty), "pulpit" (a stump with a wooden pulpit on it). Returns where a speaker stands.
+static func rostra(parent: Node3D, at: Vector3, yaw: float, whole: bool = true, variant: String = "") -> Vector3:
 	var g := Kit.group(parent, at, yaw)
-	Kit.box(g, Vector3(0, 1.6, 0), Vector3(20.0, 3.2, 8.0), "travertine")
-	Kit.box(g, Vector3(0, 0.25, 4.1), Vector3(20.4, 0.5, 0.3), "marble", false)
-	for k in 7:  # the beaks
-		var x := -8.1 + k * 2.7
+	var caesar := variant == "caesar"
+	var pulpit := variant == "pulpit"
+	var w := 24.0 if caesar else 20.0
+	var beaks := whole and variant in ["", "beaks", "caesar"]
+	Kit.box(g, Vector3(0, 1.6, 0), Vector3(w, 3.2, 8.0), "marble" if caesar else ("travertine" if not pulpit else "brick"))
+	Kit.box(g, Vector3(0, 0.25, 4.1), Vector3(w + 0.4, 0.5, 0.3), "marble", false)
+	if pulpit:
+		Kit.box(g, Vector3(0, 3.35, 0), Vector3(w, 0.3, 8.0), "rubble", false)
+		Kit.box(g, Vector3(0, 4.0, 2.4), Vector3(1.6, 1.6, 1.2), "wood")
+		Kit.box(g, Vector3(0, 4.9, 3.0), Vector3(1.8, 0.1, 0.5), "wood", false, Vector3(0.4, 0, 0))  # the lectern
+	var n := 9 if caesar else 7
+	for k in n:  # the beaks
+		var x := -(n - 1) * 1.35 + k * 2.7
 		var beak := Kit.group(g, Vector3(x, 1.6, 4.0))
-		if not whole:
-			Kit.box(beak, Vector3(0, 0, 0.1), Vector3(0.5, 0.4, 0.2), "verdigris", false)
+		if not beaks:
+			if variant == "stripped":
+				Kit.box(beak, Vector3(0, 0, 0.02), Vector3(0.6, 0.5, 0.1), "dark", false)  # the socket
+			else:
+				Kit.box(beak, Vector3(0, 0, 0.1), Vector3(0.5, 0.4, 0.2), "verdigris", false)
 			continue
 		Kit.box(beak, Vector3(0, 0, 0.5), Vector3(0.7, 0.5, 1.0), "bronze", false)
 		Kit.box(beak, Vector3(0, 0.4, 0.35), Vector3(0.5, 0.3, 0.7), "bronze", false, Vector3(-0.3, 0, 0))
 		for fin: float in [-0.18, 0.18]:
 			Kit.box(beak, Vector3(0, fin, 1.05), Vector3(0.9, 0.1, 0.25), "bronze", false)  # the ram's blades
-	for k in 20:  # the balustrade
-		if whole or k % 3 == 0:
-			Kit.box(g, Vector3(-9.5 + k, 3.7, 3.8), Vector3(0.15, 1.0, 0.15), "marble", false)
-	if whole:
-		Kit.box(g, Vector3(0, 4.25, 3.8), Vector3(20.0, 0.12, 0.3), "marble", false)
+	for k in int(w):  # the balustrade
+		if (whole and not pulpit) or k % 3 == 0:
+			Kit.box(g, Vector3(-w / 2.0 + 0.5 + k, 3.7, 3.8), Vector3(0.15, 1.0, 0.15), "marble", false)
+	if whole and not pulpit:
+		Kit.box(g, Vector3(0, 4.25, 3.8), Vector3(w, 0.12, 0.3), "marble", false)
+	if caesar:  # the emperors on their columns along the back
+		for x: float in [-9.0, -4.5, 0.0, 4.5, 9.0]:
+			Kit.box(g, Vector3(x, 3.6, -3.0), Vector3(1.0, 0.8, 1.0), "marble", false)
+			Kit.cylinder(g, Vector3(x, 4.0, -3.0), 0.25, 2.6, "marble", false, 8)
+			Kit.cylinder(g, Vector3(x, 6.6, -3.0), 0.2, 1.4, "bronze" if whole else "verdigris", false, 8, 0.16)
+			Kit.blob(g, Vector3(x, 8.2, -3.0), 0.2, "bronze" if whole else "verdigris")
 	for k in 8:
 		Kit.box(g, Vector3(0, 0.2 + k * 0.4, -4.2 - (7 - k) * 0.35), Vector3(4.0, 0.4 + k * 0.4, 0.35), "travertine")
 	return g.to_global(Vector3(0, 3.2, 2.5)) if g.is_inside_tree() else at + Vector3(0, 3.2, 0)
@@ -315,6 +415,7 @@ static func century(parent: Node3D, at: Vector3, rows: int = 10, files: int = 8,
 static func togatus(parent: Node3D, at: Vector3, yaw: float, look: Dictionary, undead: bool = false) -> Dictionary:
 	var shaped := look.duplicate()
 	shaped["robe"] = "e8e2d2"
+	shaped["cloth"] = "toga"
 	var w := Kit.walker(parent, at, yaw, shaped)
 	var root: Node3D = w["root"]
 	var fold := Kit.group(root, Vector3.ZERO)
@@ -519,6 +620,77 @@ static func fountain(parent: Node3D, at: Vector3, yaw: float, flowing: bool = tr
 	Kit.box(g, Vector3(0, 1.22, -0.64), Vector3(0.05, 0.03, 0.05), "bronze", false)  # the spout
 	if flowing:
 		Kit.box(g, Vector3(0, 0.92, -0.58), Vector3(0.04, 0.6, 0.04), "water", false, Vector3(-0.15, 0, 0))  # the stream
+		jet(g, Vector3(0, 1.2, -0.6), Vector3(0, 0.2, 1.0), 1.4)
+		Kit.box(g, Vector3(0, 0.02, 1.1), Vector3(2.4, 0.02, 1.0), "wet", false)  # the pavement wet where it overflows
+
+
+static var _jet_mesh: QuadMesh
+static var _jet_process: ParticleProcessMaterial
+
+
+## The water itself, falling: drops thrown from `from` along `dir` at `speed`, arcing down into
+## the basin. One shared mesh and one shared process, so a city of fountains costs little.
+static func jet(parent: Node3D, from: Vector3, dir: Vector3, speed: float, amount: int = 16) -> GPUParticles3D:
+	if _jet_mesh == null:
+		_jet_mesh = QuadMesh.new()
+		_jet_mesh.size = Vector2(0.07, 0.1)
+		var m := StandardMaterial3D.new()
+		m.albedo_color = Color(0.86, 0.93, 1.0, 0.85)
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		_jet_mesh.material = m
+		_jet_process = ParticleProcessMaterial.new()
+		_jet_process.spread = 7.0
+		_jet_process.gravity = Vector3(0, -7.0, 0)
+		_jet_process.scale_min = 0.6
+		_jet_process.scale_max = 1.1
+	var p := GPUParticles3D.new()
+	p.amount = amount
+	p.lifetime = 0.9
+	p.local_coords = true
+	p.draw_pass_1 = _jet_mesh
+	var pm: ParticleProcessMaterial = _jet_process.duplicate()
+	pm.direction = dir.normalized()
+	pm.initial_velocity_min = speed * 0.85
+	pm.initial_velocity_max = speed * 1.1
+	p.process_material = pm
+	p.position = from
+	p.visibility_aabb = AABB(Vector3(-2, -3, -2), Vector3(4, 5, 4))
+	parent.add_child(p)
+	return p
+
+
+## A street basin (lacus), of which the city had hundreds: a trough of travertine on the pavement
+## against a house front, a pillar behind it with a bronze lion's head that never stops, the
+## overflow running out over the kerb into the gutter. Faces +Z (the street). Dry: the trough
+## empty, a stain where the water was.
+static func lacus(parent: Node3D, at: Vector3, yaw: float, flowing: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.4, 0), Vector3(2.0, 0.8, 1.0), "travertine")
+	Kit.box(g, Vector3(0, 0.62 if flowing else 0.35, 0), Vector3(1.7, 0.05, 0.7), "water" if flowing else "drybed", false)
+	Kit.box(g, Vector3(0, 0.85, -0.65), Vector3(0.5, 1.7, 0.3), "travertine")  # the pillar
+	Kit.blob(g, Vector3(0, 1.35, -0.48), 0.12, "bronze", Vector3(1.0, 1.0, 0.7), 6)  # the lion's head
+	if flowing:
+		Kit.box(g, Vector3(0, 1.0, -0.4), Vector3(0.035, 0.7, 0.035), "water", false, Vector3(-0.1, 0, 0))
+		jet(g, Vector3(0, 1.3, -0.4), Vector3(0, 0.1, 1.0), 1.1, 10)
+		Kit.box(g, Vector3(0, 0.4, 0.51), Vector3(0.5, 0.8, 0.02), "water", false)  # the overflow down the front
+		Kit.box(g, Vector3(0, 0.02, 0.9), Vector3(2.4, 0.02, 0.8), "wet", false)
+	else:
+		Kit.box(g, Vector3(0, 0.02, 0.9), Vector3(2.0, 0.02, 0.6), "#7a7468", false)
+
+
+## A spring in a grove: a round basin of travertine the water wells up in (no jet: it rises, it
+## does not fall), a stone by it with a nymph's name, the overflow running off into the grass in
+## a rill. Springs run on when the aqueducts are cut; dry only in the lost world.
+static func spring(parent: Node3D, at: Vector3, flowing: bool = true) -> void:
+	var g := Kit.group(parent, at, at.x + at.z)
+	Kit.cylinder(g, Vector3.ZERO, 1.7, 0.5, "travertine", true, 12)
+	Kit.cylinder(g, Vector3(0, 0.3 if flowing else 0.12, 0), 1.45, 0.08, "water" if flowing else "drybed", false, 12)
+	Kit.box(g, Vector3(-1.2, 0.85, -1.4), Vector3(0.5, 1.1, 0.2), "marble", false)  # the nymph's stone
+	if flowing:
+		Kit.box(g, Vector3(0, 0.03, 2.4), Vector3(0.5, 0.03, 1.6), "water", false)  # the rill running off
+		Kit.box(g, Vector3(0, 0.02, 2.6), Vector3(1.2, 0.02, 2.2), "wet", false)
 
 
 ## A vine pergola: two rows of posts along X, beams across, the vine's leaves over the top and

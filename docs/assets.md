@@ -68,6 +68,49 @@ giallo antico, stone pine, toga wool, iron, rust, scutum (and faded). Greece: ho
 (lambda) / Athens (owl) / dead, Persian rosette cloth, wicker, black-figure pottery, papyrus,
 sand, grass, ploughed furrows, cave rock, cast shadow.
 
+### The house set (scripts/hall/textures_houses.gd, `Textures.material("h_<name>")`)
+The textures of Rome's houses, 64 pixels to a 4 m tile in the hall's pixel style, the pale ones
+tinted per house (`rome_map.tinted`); shown together in `docs/dev/materials.png`. Walls, tiled
+over the world: `h_plaster` (lime plaster, a crack, a chip), `h_plaster_worn` (patched, the brick
+showing, grime under the sills), `h_brick` (each brick its own red, a yellow bonding course),
+`h_tufa` (opus quadratum), `h_timber` (opus craticium: plaster panels in a timber frame),
+`h_stucco` (drafted blocks of the good houses). Roofs: `h_roof`, `h_roof_moss`, `h_roof_broken`.
+Fronts, one image to one quad: `h_shop` (the arched bay, shutters folded back, the counter and its
+pots) and `h_shop_shut` (the shutters up, urbs_life.gd swaps them at dusk), `h_door` and its
+painted `h_door_red`, `h_door_green`, `h_window` (frame and sill, clear in the middle for the
+lit pane), `h_window_small` (barred), `h_shutter` (one leaf), `h_cloth` (washing, tinted the
+tunics' colours), `h_vine`, `h_sign`. Storey-aligned things (the damp at the foot, the painted
+dado) are geometry, since a world-tiled texture repeats up the wall.
+
+### The people set (scripts/hall/textures_people.gd, `Textures.material("c_<name>#rrggbb")`)
+The textures of everyone built on kit.gd's walker (Rome's citizens and togati, Homer's people,
+the teachers), each made in the person's own colour, rounded to sixteen steps a channel so a crowd
+shares a few dozen textures (`key()`). Cloth, one image round a cylinder: `c_tunic` (the weave,
+four soft folds, the belt), `c_skirt` (the tunic below the belt, an embroidered hem), `c_toga`
+(undyed wool, the folds slantwise), `c_dress` (the women's pleats and deep hem), `c_cloak`. Skin
+and hair: `c_skin`, `c_face` (eyes, brows, mouth, cheeks and the chin's shadow, drawn across the
+sphere's front seam), `c_hair` (strands). Tiled: `c_leather` (stitched), `c_linen`. The walker
+itself changed with them: the tunic ends at the knee and the leg is bare below it, the sleeves
+end above bare forearms, the arms hang from the shoulders (the right bent at the elbow to hold
+things), the sandals have straps; `cloth: "toga"` or `"dress"` (and `long: true`) fall to the
+ankle. Rendered in `docs/dev/people_set.png`.
+
+### Water (scripts/hall/textures.gd `water()`, kit_rome.gd)
+`water` and `sea` are a shader: two sheets of ripple drifting over each other in world space, a
+wet surface, so every basin, gutter, pond, stream and the Tiber move without a script. `wet` is
+paving darkened where water runs over it. Pieces: `Rome.jet` (drops thrown from a spout, one
+shared mesh and process), `Rome.lacus` (the street basin: a travertine trough, a pillar with a
+bronze lion's head, the overflow down the front), `Rome.spring` (a round basin in a grove with a
+nymph's stone and a rill), `Rome.fountain` now with its jet and a wet pavement.
+
+### The green set (scripts/hall/textures_green.gd, `Textures.material("g_<name>")`)
+What grows in Rome. Crowns and clumps, clear round the leaves, on crossed quads: `g_crown` (plane,
+fig, oak, laurel), `g_pine` (the stone pine's umbrella), `g_cypress` (a spire, on a quad five times
+taller than wide), `g_olive` (grey, the sky through it), `g_bush` (box, myrtle), `g_reeds`,
+`g_grass`, `g_flowers` (poppies, oleander, daisies). Tiled: `g_canopy` (a vine over a pergola, cut
+between the leaves), `g_turf` (a lawn with daisies), `g_bark`. `rome_map._trees` draws every
+tree as a bark trunk and two or three crossed quads. Rendered in `docs/dev/green_set.png`.
+
 ## Music (assets/music, from tools/make_music.py)
 Every place track is 48 s, in layers that loop in step, with a ghost (the faint echo heard while
 the place is lost). Zones are listed in `scripts/pixel/music.gd`.

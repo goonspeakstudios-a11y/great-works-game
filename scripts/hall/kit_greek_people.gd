@@ -219,7 +219,11 @@ const WHO := {
 static func figure(parent: Node3D, at: Vector3, yaw: float, who: String, undead: bool = false, pose: String = "",
 		robe: String = "") -> Dictionary:
 	var w_def: Dictionary = WHO.get(who, WHO["elpenor"])
-	var look := {"robe": robe if robe != "" else w_def["robe"], "skin": w_def["skin"], "hair_color": w_def["hair_color"], "beard": w_def.get("beard", "none")}
+	var props: Array = w_def["props"]
+	# the women, the old and the gods in robes to the ankle; the young men and the workers in tunics to the knee
+	var long_robe: bool = props.has("veil") or w_def.get("beard", "none") == "long" or float(w_def.get("size", 1.0)) > 1.1 or props.has("distaff")
+	var look := {"robe": robe if robe != "" else w_def["robe"], "skin": w_def["skin"], "hair_color": w_def["hair_color"], "beard": w_def.get("beard", "none"),
+		"cloth": "dress" if props.has("veil") else "tunic", "long": long_robe}
 	var w := Kit.walker(parent, at, yaw, look)
 	var root: Node3D = w["root"]
 	var head: Node3D = w["head"]

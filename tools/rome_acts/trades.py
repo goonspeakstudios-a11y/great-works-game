@@ -206,6 +206,38 @@ S["work_boat"] = scene(
     end("The Tiber floods every few years, and every year takes someone."),
 )
 
+# ---------- rides: the litter, the cart and the boat, for the long walks ----------
+
+from .common import ride
+
+
+def _ride(sid, title, where, opening, fare, carried, waits):
+    """A ride to one of three far places ({a}, {b}, {c}, filled by the hall from where you stand):
+    a fare in each age's coin, an hour of the day, and the walk done in a fade."""
+    steps = [say(opening), ask("Where to?", opt("To {a}", then="a"), opt("To {b}", then="b"), opt("To {c}", then="c"),
+                                opt("Nowhere. I'll walk.", then="no"))]
+    for key in "abc":
+        steps += [label(key), pay(fare, els="poor"), ride(key), end(carried)]
+    steps += [label("no"), end(waits), label("poor"), end("Not for what's in your purse. " + waits)]
+    return scene(title, where, *steps)
+
+
+S["ride_litter"] = _ride(
+    "ride_litter", "The litter", "The street",
+    "Four bearers and a covered litter for hire by the hour, the poles on their shoulders, the curtains drawn. The rich are carried everywhere; a man on foot in a litter street is a man without a litter. Where to? {a}, {b} or {c} are a long way on foot.",
+    3, "You lie back on the cushions; the street goes by in the gap of the curtain, at the bearers' trot, an hour of it. They set you down and hold out a hand for the tip.",
+    "The bearers settle back in the shade of the wall.")
+S["ride_cart"] = _ride(
+    "ride_cart", "The mule cart", "The street",
+    "A muleteer with an empty cart, going back for another load. Carts may not use the streets by day; his may, he says, because it carries for the temples, and he winks. For a coin he will take a passenger. Where to? {a}, {b} or {c}.",
+    1, "You sit on the tailboard with your legs hanging over the basalt, the mules' bells going, the wheels finding every rut for an hour. He stops and points with his whip: there.",
+    "He shrugs and clicks to the mules.")
+S["ride_boat"] = _ride(
+    "ride_boat", "The boat", "The river bank",
+    "A boatman with a flat skiff, a pole and a sail he never uses. The river is the quickest road in Rome for anywhere on it or across it: the port, the island, the Campus, the far bank. Where to? {a}, {b} or {c}.",
+    2, "He poles out into the stream and lets the Tiber do the work, brown and quick and smelling of the drain, under the bridges, an hour of it. He runs her in at the steps and holds her steady with the pole.",
+    "He sits down again on his thwart and looks at the water.")
+
 # ---------- the market ----------
 
 BUY = {
@@ -376,7 +408,9 @@ JOBS = {
     "librarius": ["Buy a book", "buy_librarius"],
     "marmorarius": ["Ask for work in the yard", "work_cutter"],
     "cetarius": ["Offer to sell her fish", "work_fish"],
-    "nauta": ["Offer to pole the ferry", "work_boat"],
+    "nauta": ["Take the boat somewhere", "ride_boat"],
+    "lecticarius": ["Hire the litter", "ride_litter"],
+    "mulio": ["Ask for a ride on the cart", "ride_cart"],
     "caupo": ["Play at knucklebones", "dice_tali"],
     "popinarius": ["Buy something", "buy_popinarius"],
     "veteranus": ["Play the soldiers' game", "board_latrunculi"],

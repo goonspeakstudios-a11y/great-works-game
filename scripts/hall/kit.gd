@@ -6,6 +6,7 @@ extends RefCounted
 ## so yaw = atan2(dx, dz) turns it to face a point (dx, dz) away.
 
 const Tex := preload("res://scripts/hall/textures.gd")
+const People := preload("res://scripts/hall/textures_people.gd")
 
 ## How round curved shapes are: 1 in Greece (chunky), higher in later, sharper worlds.
 static var detail := 1
@@ -355,6 +356,16 @@ static func tower_site(parent: Node3D, at: Vector3) -> void:
 	beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
+## A crown of leaves: `n` quads of the green set's `tex` (textures_green.gd) crossed at the same
+## spot, `w` wide and `h` tall, so the mass of leaves stands against the sky from every side.
+static func leaves(parent: Node3D, tex: String, at: Vector3, w: float, h: float, n: int = 3) -> void:
+	var q := QuadMesh.new()
+	q.size = Vector2.ONE
+	var yaw := at.x * 0.7 + at.z * 1.3
+	for k in n:
+		mesh(parent, q, tex, at, Vector3(0, yaw + PI * k / n, 0), Vector3(w, h, 1.0))
+
+
 ## An olive tree; returns its crown (branches and leaves), which the breeze can stir.
 static func olive(parent: Node3D, at: Vector3, size: float = 1.0, alive: bool = true) -> Node3D:
 	var g := group(parent, at, at.x * 1.7 + at.z)
@@ -365,8 +376,7 @@ static func olive(parent: Node3D, at: Vector3, size: float = 1.0, alive: bool = 
 	if not alive:
 		_bare(crown, size, [Vector3(0.5, 1.1, 0.1), Vector3(-0.4, 0.9, 0.3), Vector3(0.1, 1.4, -0.4), Vector3(0.6, 0.8, -0.5)])
 		return crown
-	for p in [Vector3(0.5, 1.3, 0.1), Vector3(-0.4, 1.1, 0.3), Vector3(0.1, 1.6, -0.4), Vector3(0.7, 0.9, -0.5)]:
-		blob(crown, p * size, 0.85 * size, "olive", Vector3(1.2, 0.75, 1.1))
+	leaves(crown, "g_olive", Vector3(0.1, 1.4, 0) * size, 3.6 * size, 2.6 * size)
 	return crown
 
 
@@ -384,7 +394,7 @@ static func cypress(parent: Node3D, at: Vector3, height: float = 7.0, alive: boo
 	cylinder(parent, at, 0.16, 0.8, "trunk" if alive else "deadwood", true, 5)
 	var spire := group(parent, at + Vector3(0, 0.6, 0))
 	if alive:
-		cylinder(spire, Vector3.ZERO, 0.8, height, "cypress", false, 6, 0.05)
+		leaves(spire, "g_cypress", Vector3(0, height / 2.0 - 0.2, 0), height * 0.24, height, 2)
 	else:
 		cylinder(spire, Vector3.ZERO, 0.45, height * 0.8, "withered", false, 5, 0.03)
 	return spire
@@ -685,10 +695,7 @@ static func plane_tree(parent: Node3D, at: Vector3, size: float = 1.0, alive: bo
 	if not alive:
 		_bare(crown, size, [Vector3(2.2, 1.6, 0.4), Vector3(-1.8, 1.9, -0.9), Vector3(0.3, 2.6, 1.6), Vector3(-0.6, 1.2, 2.2), Vector3(1.2, 2.2, -1.9)])
 		return crown
-	blob(crown, Vector3.ZERO, 2.6 * size, "plane", Vector3(1.25, 0.8, 1.15), 7)
-	blob(crown, Vector3(1.4 * size, 0.7 * size, 0.6 * size), 1.7 * size, "plane", Vector3(1.1, 0.8, 1.0), 6)
-	blob(crown, Vector3(-1.3 * size, 0.5 * size, -0.9 * size), 1.6 * size, "plane", Vector3(1.0, 0.75, 1.1), 6)
-	blob(crown, Vector3(0.2 * size, 1.4 * size, 0.0), 1.5 * size, "plane", Vector3(1.1, 0.7, 1.1), 6)
+	leaves(crown, "g_crown", Vector3(0, 0.8 * size, 0), 7.0 * size, 5.6 * size)
 	return crown
 
 
@@ -808,26 +815,49 @@ static func acropolis(parent: Node3D, at: Vector3) -> void:
 ## A standing teacher who can walk: legs that swing, a cloak, a hand raised to make a point,
 ## a head that turns. Faces +Z of its group. Returns {"root", "head", "hand", "legs"}.
 static func walker(parent: Node3D, at: Vector3, yaw: float, look: Dictionary) -> Dictionary:
-	var robe := "#" + str(look.get("robe", "8a6a4a"))
-	var skin := "#" + str(look.get("skin", "c8a078"))
-	var hair := "#" + str(look.get("beard_color", look.get("hair_color", "5a4a3a")))
+	var dye := str(look.get("robe", "8a6a4a"))
+	var cloth := str(look.get("cloth", "tunic"))  # "tunic" (to the knee, belted), "toga" or "dress" (to the ankle)
+	var long_robe: bool = look.get("long", cloth != "tunic")
+	var robe := People.key("toga" if cloth == "toga" else ("dress" if cloth == "dress" else "tunic"), dye)
+	var skirt := People.key("toga" if cloth == "toga" else ("dress" if cloth == "dress" else "skirt"), dye)
+	var skin := People.key("skin", str(look.get("skin", "c8a078")))
+	var face := People.key("face", str(look.get("skin", "c8a078")))
+	var hair := People.key("hair", str(look.get("beard_color", look.get("hair_color", "5a4a3a"))))
 	var root := group(parent, at, yaw)
 	var legs: Array = []
 	for side in [-1.0, 1.0]:
 		var hip := group(root, Vector3(0.11 * side, 0.86, 0))
-		mesh(hip, _cyl(0.085, 0.8), robe, Vector3(0, -0.4, 0))
-		box(hip, Vector3(0, -0.83, 0.06), Vector3(0.14, 0.06, 0.26), "#6a4a34", false)  # sandal
+		if long_robe:
+			mesh(hip, _cyl(0.085, 0.8), skirt, Vector3(0, -0.4, 0))
+		else:  # the tunic to the knee, the leg bare below it
+			mesh(hip, _cyl(0.09, 0.44), skirt, Vector3(0, -0.22, 0))
+			mesh(hip, _cyl(0.068, 0.4), skin, Vector3(0, -0.6, 0))
+		box(hip, Vector3(0, -0.83, 0.06), Vector3(0.14, 0.06, 0.26), "c_leather", false)  # sandal
+		for s: float in [-0.05, 0.05]:
+			box(hip, Vector3(s, -0.74, 0.02), Vector3(0.02, 0.14, 0.15), "c_leather", false, Vector3(0.9 * signf(s), 0, 0))  # its straps
 		legs.append(hip)
 	cylinder(root, Vector3(0, 0.8, 0), 0.25, 0.78, robe, false, 8, 0.2)
 	blob(root, Vector3(0, 1.56, 0), 0.26, robe, Vector3(1.3, 0.55, 0.85), 8)
 	box(root, Vector3(0.05, 1.3, 0.2), Vector3(0.44, 0.08, 0.12), robe, false, Vector3(0, 0, 0.55))  # the fold of the cloak
-	mesh(root, _cyl(0.065, 0.55), robe, Vector3(-0.3, 1.2, 0), Vector3(0.15, 0, 0))
-	blob(root, Vector3(-0.3, 0.9, 0.04), 0.06, skin)
+	# the arms hang from the shoulders: the left down at the side, the right bent at the elbow to
+	# hold whatever the hand holds (its things sit about (0.3, 1.38, 0.4) in the hand's space)
+	var left := group(root, Vector3(-0.29, 1.5, 0))
+	left.rotation.x = -0.1
+	mesh(left, _cyl(0.07, 0.3), robe, Vector3(0, -0.14, 0))  # the sleeve
+	blob(left, Vector3(0, -0.29, 0), 0.062, skin)  # the elbow
+	mesh(left, _cyl(0.058, 0.32), skin, Vector3(0, -0.44, 0))  # the forearm, bare
+	blob(left, Vector3(0, -0.62, 0), 0.06, skin)
 	var hand: Node3D = group(root, Vector3.ZERO)
-	mesh(hand, _cyl(0.065, 0.4), robe, Vector3(0.3, 1.32, 0.16), Vector3(-1.3, 0, 0))
-	blob(hand, Vector3(0.3, 1.38, 0.36), 0.06, skin)
+	var right := group(hand, Vector3(0.29, 1.5, 0))
+	right.rotation.x = -0.35
+	mesh(right, _cyl(0.07, 0.3), robe, Vector3(0, -0.14, 0))
+	var elbow := group(right, Vector3(0, -0.28, 0))
+	elbow.rotation.x = -1.68  # the forearm raised: from the elbow up and forward to the hand
+	blob(elbow, Vector3.ZERO, 0.062, skin)
+	mesh(elbow, _cyl(0.058, 0.32), skin, Vector3(0, -0.16, 0))
+	blob(hand, Vector3(0.3, 1.38, 0.38), 0.06, skin)
 	var head: Node3D = group(root, Vector3(0, 1.72, 0.02))
-	blob(head, Vector3(0, 0.08, 0), 0.14, skin, Vector3(1.0, 1.15, 1.05), 8)
+	blob(head, Vector3(0, 0.08, 0), 0.14, face, Vector3(1.0, 1.15, 1.05), 8)
 	blob(head, Vector3(0, 0.17, -0.04), 0.14, hair, Vector3(1.05, 0.7, 1.05), 8)
 	if look.get("beard", "none") != "none":
 		blob(head, Vector3(0, -0.05, 0.07), 0.11, hair, Vector3(1.0, 1.4 if look.get("beard") == "long" else 0.9, 0.7), 6)

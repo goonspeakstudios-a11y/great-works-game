@@ -42,7 +42,14 @@ const COMMON := ["proletarius", "servus", "ancilla", "peregrinus", "baiulus", "m
 const SHIFTS := {"mulio": "night", "caupo": "always", "lictor": "day", "vigil": "always", "miles": "always", "meretrix": "night",
 	"vespillo": "night"}
 ## How far each age has fallen: greyer, darker, thicker air (urbs_life.gd).
-const GLOOM := {"heroic": 0.0, "early": 0.02, "republic": 0.15, "empire": 0.25, "late": 0.45, "collapse": 0.6, "fall": 0.78}
+const GLOOM := {"heroic": 0.0, "early": 0.02, "republic": 0.12, "empire": 0.2, "late": 0.4, "collapse": 0.55, "fall": 0.75}
+## The light of each age (docs/rome-city-notes.md 2.4): the age of heroes in a clear morning, the
+## Republic at noon, the Empire in a golden afternoon, 384 in haze, 455 under smoke, 552 at a long
+## dusk. The fog's share of the mood's, the exposure, the haze and the smoke (urbs_life.gd).
+const FOG := {"heroic": 0.25, "early": 0.3, "republic": 0.35, "empire": 0.4, "late": 0.7, "collapse": 0.9, "fall": 0.8}
+const EXPOSURE := {"heroic": 1.0, "early": 0.98, "republic": 0.95, "empire": 0.92, "late": 0.88, "collapse": 0.8, "fall": 0.75}
+const HAZE := {"late": 0.7, "collapse": 0.3}
+const SMOKE := {"collapse": 0.6, "fall": 0.1}
 ## The music zone of each age (music.gd): the town by day and night, then the same tune gone
 ## wrong, then only its echo.
 const ZONE := {"heroic": "urbs", "early": "urbs", "republic": "urbs_late", "empire": "urbs_late", "late": "urbs_fall",
@@ -59,8 +66,8 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	Kit.sunset(world, str(age.get("mood", "morning")))
 	for we: Node in world.find_children("*", "WorldEnvironment", true, false):  # a city seen far down its streets
 		var env: Environment = (we as WorldEnvironment).environment
-		env.fog_density *= 0.4 if id != "fall" else 0.8
-		env.tonemap_exposure = 0.9
+		env.fog_density *= float(FOG.get(id, 0.4))
+		env.tonemap_exposure = float(EXPOSURE.get(id, 0.9))
 	var out: Array = []
 	var spots := {}
 	var arrival := RomeMap.on_ground(c["arrival"]["at"])
@@ -118,6 +125,54 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 		out.append({"kind": "statue", "pos": pos, "text": "Look at %s" % m["name"],
 			"note": "[b]%s[/b], %s\n\n%s" % [_title(str(m["name"])), age["when"], note]})
 
+	# the bridges with a story (the Sublician's through every age), read from their near end
+	for deck: Array in fab.get("bridges", []):
+		if deck.size() < 4:
+			continue
+		var b: Dictionary = deck[3]
+		var bnote := str(b.get("states", {}).get(id, {}).get("note", b.get("note", "")))
+		if bnote == "":
+			continue
+		var a: Vector3 = deck[0]
+		var z: Vector3 = deck[1]
+		var near_end := a if RomeMap.inside(RomeMap.walkable(), a) else z
+		var far_end := z if near_end == a else a
+		var pos := near_end + (near_end - far_end).normalized() * 2.5 + Vector3(0, 0.05, 0)
+		pos.y = RomeMap.ground(pos)
+		out.append({"kind": "statue", "pos": pos, "text": "Look at %s" % b["name"],
+			"note": "[b]%s[/b], %s\n\n%s" % [_title(str(b["name"])), age["when"], bnote]})
+
+	# the crossroads shrines, and the tombs along the roads outside the gates (rome_map.gd)
+	var compita: Dictionary = RomeMap.streets_data().get("compita", {}).get(id, {})
+	var offerings: bool = id in Activities.data().get("offering_ages", [])
+	for cp: Dictionary in fab.get("compita", []):
+		var where := "the crossing of %s" % " and ".join((cp["streets"] as Array).map(func(s: String) -> String: return s.trim_prefix("the ")))
+		var at: Vector3 = cp["at"]
+		var ahead := Vector3(sin(float(cp["yaw"])), 0, cos(float(cp["yaw"])))
+		var pos := at + ahead * 2.0
+		pos.y = RomeMap.ground(pos)
+		out.append({"kind": "statue", "pos": pos, "text": "Look at the shrine at the crossing",
+			"note": "[b]The crossroads shrine[/b], %s\n\n%s\n\n%s" % [age["when"], where.substr(0, 1).to_upper() + where.substr(1) + ".", compita.get("note", "")]})
+		if offerings and str(cp["style"]) == "lares":
+			var side := pos + Vector3(ahead.z, 0, -ahead.x) * 1.6
+			side.y = RomeMap.ground(side)
+			out.append({"kind": "activity", "pos": side, "scene": "offering", "subs": {"god": "the Lares of the crossing", "temple": "the shrine at " + where},
+				"text": "Leave a pinch of meal for the Lares"})
+	var epitaphs: Array = RomeMap.streets_data().get("epitaphs", [])
+	var edge := RomeMap.walkable()
+	var tn := 0
+	for tb: Dictionary in fab.get("tombs", []):
+		var at: Vector3 = tb["at"]
+		if not RomeMap.inside(edge, at) or epitaphs.is_empty():
+			continue
+		var ahead := Vector3(sin(float(tb["yaw"])), 0, cos(float(tb["yaw"])))
+		var pos := at + ahead * (3.0 if tb["kind"] == "altar" else 13.0)
+		pos.y = RomeMap.ground(pos)
+		var e: Dictionary = epitaphs[tn % epitaphs.size()]
+		tn += 1
+		out.append({"kind": "statue", "pos": pos, "text": "Read the tomb by %s" % str(tb["road"]),
+			"note": "[b]A tomb on %s[/b], %s\n\n%s\n\n%s" % [tb["road"], age["when"], e["text"], e["note"]]})
+
 	# your room, the rites, the games, the temples' offerings (urbs_activities.gd)
 	Activities.place(world, id, fab, out, spots, func(s: Dictionary) -> Vector3: return _front(s))
 
@@ -142,6 +197,8 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 		if is_instance_valid(p["root"]):
 			(p["root"] as Node3D).queue_free()
 	town.sound = DisplayServer.get_name() != "headless"
+	town.burnt = fab.get("burnt", [])
+	town.waters = fab.get("waters", [])
 	_regulars(spawn, id, out)
 	town.setup(world, id, int(progress.data.get("rome_day", 1)) if progress != null else 1, people)
 	life.town = town
@@ -155,17 +212,68 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 	Kit.stars(sky)
 	life.stars = sky
 	life.windows = RomeMap.window_glass()
+	life.shops = fab.get("shops")
 	life.flames = fab.get("flames", [])
 	var start: float = float(progress.data.get("rome_hour", 8.0)) if progress != null else 8.0
+	life.haze = float(HAZE.get(id, 0.0))
+	life.smoke = float(SMOKE.get(id, 0.0))
+	life.long_dusk = id == "fall"
 	life.setup(world, start, float(GLOOM.get(id, 0.0)))
 	var landmarks: Array = (fab["monuments"] as Array).filter(func(m: Dictionary) -> bool: return (m["m"] as Dictionary).has("note")).map(
 		func(m: Dictionary) -> Dictionary: return {"name": str(m["m"]["name"]), "pos": m["at"]})
+	landmarks.append_array(_street_marks(fab))  # the crossroads shrines and the street fountains, named, for the way
+	_gate_guards(spawn, id, out, str(age["when"]))
 	var birds: Array = Kit.flock(world, Vector3(0, 0, 0), 9 if id != "fall" else 4, 40.0, 26.0)
 	return {"name": "Rome, %s" % age["when"], "interactables": out, "spawn": arrival + Vector3(0, 0.05, 0),
 		"yaw": Places.look_yaw(arrival_to - arrival), "spots": spots, "flicker": flicker, "people": people, "squads": squads,
 		"restored": 0, "sway": fab.get("sway", []), "birds": birds, "back": [life.phase()], "arrivals": arrivals, "regions": regions,
 		"age": id, "line": str(age.get("line", "")), "life": life, "landmarks": landmarks, "zone": ZONE.get(id, "urbs"),
 		"fronts": _fronts(fab)}
+
+
+## The small marks of the streets that directions can name and the map can show: every crossroads
+## shrine ("the shrine at the crossing of the Argiletum and the Vicus Patricius") and the first
+## fountain on each street ("the fountain on the Alta Semita"). Minor: no errand sends you to one.
+static func _street_marks(fab: Dictionary) -> Array:
+	var out: Array = []
+	for cp: Dictionary in fab.get("compita", []):
+		var names: Array = (cp["streets"] as Array).map(func(s: String) -> String: return s.trim_prefix("the ").split(" and ")[0])
+		out.append({"name": "the shrine at the crossing of %s" % " and ".join(names), "pos": cp["at"], "minor": true})
+	var Plan: GDScript = load("res://scripts/hall/urbs_plan.gd")
+	var named := {}
+	for f: Vector3 in (fab.get("fountains", []) as Array) + (fab.get("lacus", []) as Array):
+		var street: String = Plan.street_at(f)
+		if street == "" or named.has(street):
+			continue
+		named[street] = true
+		out.append({"name": "the fountain on %s" % street.split(" and ")[0], "pos": f, "minor": true})
+	return out
+
+
+## A guard at each gate of the Servian wall you can reach: the gate is a threshold, and someone
+## keeps it. The gate's note (streets.json "gates") is read beside its tower, which the wall builds.
+static func _gate_guards(spawn: Callable, age: String, out: Array = [], when: String = "") -> void:
+	var edge := RomeMap.walkable()
+	var notes: Dictionary = RomeMap.streets_data().get("gates", {})
+	for g: Dictionary in RomeMap.data().get("wall", {}).get("gates", []):
+		var at := RomeMap.at(g["at"])
+		if not RomeMap.inside(edge, at):
+			continue
+		if notes.has(str(g["name"])):
+			var look := at + Vector3(0, 0, 4.0)
+			look.y = RomeMap.ground(look)
+			out.append({"kind": "statue", "pos": look, "text": "Look at the %s" % g["name"],
+				"note": "[b]The %s[/b], %s\n\n%s" % [g["name"], when, notes[str(g["name"])]]})
+		if age == "fall":
+			continue
+		var toward := Vector3.ZERO - at
+		toward.y = 0.0
+		var side := Vector3(toward.normalized().z, 0, -toward.normalized().x) * 4.0
+		var spot := at + side
+		spot.y = RomeMap.ground(spot)
+		var p: Dictionary = spawn.call(PATROLS.get(age, "miles"), spot, Kit.face_yaw(spot, at))
+		p["shift"] = "always"
+		p.erase("path")
 
 
 ## Where to stand before each standing monument, by its id (for the regulars' errands).
@@ -209,8 +317,11 @@ static func _front(s: Dictionary) -> Vector3:
 		"circus":
 			ahead = Vector3(ahead.z, 0, -ahead.x)
 			dist = RomeMap.span(140.0) / 2.0 + 16.0
-		"obelisk", "column", "colossus", "shrine", "fountain_cone", "rostra":
+		"obelisk", "column", "colossus", "shrine", "fountain_cone", "rostra", "comitium":
 			dist = RomeMap.footprint(m) + 1.0
+		"cloaca":  # seen from the bank beside it, not from the water
+			ahead = Vector3(ahead.z, 0, -ahead.x)
+			dist = 7.0
 	var p := at + ahead * dist
 	p.y = RomeMap.ground(p)
 	return p
@@ -311,6 +422,7 @@ static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictiona
 	var gathering: Array = (fab["monuments"] as Array).filter(func(s: Dictionary) -> bool: return s["state"] == "whole").map(
 		func(s: Dictionary) -> Vector3: return _front(s))
 	gathering.append_array(fab.get("fountains", []))
+	gathering.append_array(fab.get("lacus", []))
 	gathering = gathering.filter(func(q: Vector3) -> bool: return RomeMap.inside(edge, q))
 	gathering.shuffle()
 	for k in mini(12 if id != "fall" else 3, gathering.size()):
@@ -425,6 +537,8 @@ static func _dressed(world: Node3D, at: Vector3, yaw: float, look: Dictionary, g
 	var skin: String = ["c8a078", "b88a64", "d8b08a", "a07850", "8a6040"][rng.randi() % 5]
 	var dress := {"robe": shade.to_html(false), "hair_color": hair, "skin": skin,
 		"beard": look.get("beard", "short" if gender == "m" and rng.randf() < 0.3 else "none")}
+	if gender == "f":
+		dress["cloth"] = "dress"
 	var p: Dictionary
 	if look.get("toga", false) and gender == "m":
 		dress["stripe"] = look.get("stripe", false)
@@ -438,9 +552,9 @@ static func _dressed(world: Node3D, at: Vector3, yaw: float, look: Dictionary, g
 	if gender == "f" or look.get("long_hair", false):
 		Kit.box(head, Vector3(0, -0.02, -0.12), Vector3(0.26, 0.26, 0.08), "#" + hair, false)
 		Kit.blob(head, Vector3(0, 0.12, -0.14), 0.07, "#" + hair)  # hair in a knot
-		Kit.cylinder(root, Vector3(0, 0.05, 0), 0.27, 0.8, "#" + shade.to_html(false), false, 8, 0.24)  # the long dress
+		Kit.cylinder(root, Vector3(0, 0.05, 0), 0.27, 0.8, Kit.People.key("dress", shade.to_html(false)), false, 8, 0.24)  # the long dress
 	if look.get("apron", false):
-		Kit.box(root, Vector3(0, 0.75, 0.2), Vector3(0.36, 0.6, 0.03), "#d8ccb0", false)
+		Kit.box(root, Vector3(0, 0.75, 0.2), Vector3(0.36, 0.6, 0.03), "c_linen", false)
 	if look.get("tray", false):
 		Kit.box(hand, Vector3(0.3, 1.36, 0.42), Vector3(0.5, 0.05, 0.34), "wood", false)
 		for k in 3:
@@ -456,7 +570,7 @@ static func _dressed(world: Node3D, at: Vector3, yaw: float, look: Dictionary, g
 	if look.get("fasces", false):
 		Rome.fasces(root, Vector3(0.36, 0.0, 0.18), true)
 	if look.get("headcloth", false):
-		Kit.blob(head, Vector3(0, 0.14, -0.03), 0.17, "#e8e0d0", Vector3(1.0, 0.9, 1.1), 8)
+		Kit.blob(head, Vector3(0, 0.14, -0.03), 0.17, "c_linen", Vector3(1.0, 0.9, 1.1), 8)
 	if look.get("hood", false):
 		Kit.blob(head, Vector3(0, 0.12, -0.05), 0.19, "#" + shade.to_html(false), Vector3(1.0, 1.1, 1.1), 8)
 	return p

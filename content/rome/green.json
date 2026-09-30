@@ -1,0 +1,356 @@
+{
+  "about": "What grows in Rome besides the trees of its squares and courtyards: the sacred groves (luci) that stood in the city from its beginning, the woods on the hills before they were built over, the orchards of the small city, and the pleasure gardens (horti) the rich laid out from the last century BC. Positions are map metres [east, north] of the Forum, radii too; 'from' and 'until' are years (negative BC). Kinds: sacred (oaks and a few cypresses, kept as a grove), wood (pines and oaks, thick), orchard (fruit trees in rows), horti (pines, cypresses, planes, box, flowers, a pergola or two, paths). 'waters' are the standing and running waters besides the Tiber: kinds pond, marsh, lake (at, r) and stream (points, width, in map metres).",
+  "groves": [
+    {
+      "name": "the grove of Vesta",
+      "at": [
+        150,
+        -90
+      ],
+      "r": 90,
+      "kind": "sacred",
+      "note": "Below the temple of Vesta, on the Palatine's slope: the grove into which the Vestals' hearth looked."
+    },
+    {
+      "name": "the Asylum",
+      "at": [
+        -150,
+        170
+      ],
+      "r": 90,
+      "kind": "sacred",
+      "note": "The saddle between the Capitol's two summits, where Romulus opened a refuge for whoever would come."
+    },
+    {
+      "name": "the grove of Juno Lucina",
+      "at": [
+        700,
+        520
+      ],
+      "r": 120,
+      "kind": "sacred",
+      "note": "On the Cispian, the grove of the goddess of childbirth, older than her temple (375 BC)."
+    },
+    {
+      "name": "the grove of Libitina",
+      "at": [
+        1250,
+        250
+      ],
+      "r": 120,
+      "kind": "sacred",
+      "note": "On the Esquiline, the grove of the goddess of funerals, where the undertakers kept their register of the dead."
+    },
+    {
+      "name": "the Fagutal",
+      "at": [
+        650,
+        200
+      ],
+      "r": 100,
+      "kind": "sacred",
+      "note": "The beech grove on the Oppian, with the shrine of Jupiter Fagutalis."
+    },
+    {
+      "name": "the grove of Strenia",
+      "at": [
+        430,
+        30
+      ],
+      "r": 80,
+      "kind": "sacred",
+      "note": "At the head of the Sacred Way: on New Year's day, boughs were carried from it to the Capitol."
+    },
+    {
+      "name": "the grove of Furrina",
+      "at": [
+        -1250,
+        -550
+      ],
+      "r": 140,
+      "kind": "sacred",
+      "note": "On the Janiculum's slope across the river, where Gaius Gracchus died in 121 BC."
+    },
+    {
+      "name": "the grove of Stimula",
+      "at": [
+        -500,
+        -1000
+      ],
+      "r": 120,
+      "kind": "sacred",
+      "note": "Under the Aventine by the river, where the Bacchanals met by night until the Senate put them down in 186 BC."
+    },
+    {
+      "name": "the Caelian's oaks",
+      "at": [
+        900,
+        -600
+      ],
+      "r": 250,
+      "kind": "wood",
+      "until": -150,
+      "note": "The Caelian was once the Querquetulanus, the hill of oaks, and its woods stood into the Republic."
+    },
+    {
+      "name": "the Aventine's woods",
+      "at": [
+        -300,
+        -1100
+      ],
+      "r": 220,
+      "kind": "wood",
+      "until": -100,
+      "note": "The Aventine outside the sacred boundary kept its woods, Diana's temple among them."
+    },
+    {
+      "name": "the Esquiline heights",
+      "at": [
+        1200,
+        500
+      ],
+      "r": 300,
+      "kind": "wood",
+      "until": -50,
+      "note": "The high ground over the agger, woods and the paupers' burial pits, until Maecenas made his gardens there."
+    },
+    {
+      "name": "the Janiculum",
+      "at": [
+        -1600,
+        -350
+      ],
+      "r": 350,
+      "kind": "wood",
+      "note": "The ridge across the river, wooded to its top."
+    },
+    {
+      "name": "the Quirinal's back",
+      "at": [
+        700,
+        1000
+      ],
+      "r": 200,
+      "kind": "wood",
+      "until": -100,
+      "note": "The slopes behind the Quirinal and Viminal, still wooded in the small city."
+    },
+    {
+      "name": "the Aventine orchards",
+      "at": [
+        -100,
+        -800
+      ],
+      "r": 150,
+      "kind": "orchard",
+      "until": -100,
+      "note": "Figs and olives in rows on the Aventine's slope toward the Circus."
+    },
+    {
+      "name": "the Esquiline orchards",
+      "at": [
+        800,
+        300
+      ],
+      "r": 120,
+      "kind": "orchard",
+      "until": -150,
+      "note": "The market gardens and fruit trees at the foot of the Esquiline."
+    },
+    {
+      "name": "the gardens of Pompey",
+      "at": [
+        -900,
+        500
+      ],
+      "r": 90,
+      "kind": "horti",
+      "from": -55,
+      "note": "The planted walks behind Pompey's theatre: plane trees, fountains and statues, the first public park in Rome."
+    },
+    {
+      "name": "the gardens of Lucullus",
+      "at": [
+        -50,
+        1500
+      ],
+      "r": 200,
+      "kind": "horti",
+      "from": -60,
+      "note": "On the Pincian, the hill of gardens: terraces, a great exedra, and the cherry trees Lucullus brought from Pontus."
+    },
+    {
+      "name": "the gardens of Sallust",
+      "at": [
+        350,
+        1350
+      ],
+      "r": 220,
+      "kind": "horti",
+      "from": -40,
+      "note": "In the valley between the Pincian and the Quirinal, the historian's gardens, imperial property after him."
+    },
+    {
+      "name": "the gardens of Maecenas",
+      "at": [
+        1150,
+        450
+      ],
+      "r": 180,
+      "kind": "horti",
+      "from": -35,
+      "note": "Maecenas laid them over the Esquiline's burial ground and the agger, with a tower Nero watched the fire from."
+    },
+    {
+      "name": "the gardens of Lamia",
+      "at": [
+        1350,
+        700
+      ],
+      "r": 120,
+      "kind": "horti",
+      "from": -20,
+      "note": "Beside those of Maecenas, and joined to them under Caligula."
+    },
+    {
+      "name": "the gardens of Caesar",
+      "at": [
+        -1400,
+        -1000
+      ],
+      "r": 200,
+      "kind": "horti",
+      "from": -45,
+      "note": "Across the river under the Janiculum, where Caesar entertained Cleopatra, left to the people in his will."
+    },
+    {
+      "name": "the gardens of Agrippa",
+      "at": [
+        -800,
+        900
+      ],
+      "r": 150,
+      "kind": "horti",
+      "from": -25,
+      "note": "In the Campus Martius by his baths: a lake, a canal, and walks under the planes."
+    },
+    {
+      "name": "the gardens of the Acilii",
+      "at": [
+        -250,
+        1650
+      ],
+      "r": 150,
+      "kind": "horti",
+      "from": 100,
+      "note": "On the Pincian's north, the gardens of a consular family."
+    }
+  ],
+  "waters": [
+    {
+      "name": "the Goat Marsh",
+      "at": [
+        -700,
+        600
+      ],
+      "r": 90,
+      "kind": "marsh",
+      "until": -100,
+      "note": "The Palus Caprae in the Campus Martius, where Romulus was reviewing the army when the storm took him from sight."
+    },
+    {
+      "name": "the Petronia",
+      "points": [
+        [
+          220,
+          900
+        ],
+        [
+          -150,
+          820
+        ],
+        [
+          -500,
+          760
+        ],
+        [
+          -850,
+          700
+        ],
+        [
+          -1050,
+          660
+        ]
+      ],
+      "width": 12,
+      "kind": "stream",
+      "until": -30,
+      "note": "The Petronia Amnis, the brook from the Cati Fons under the Quirinal across the Campus to the Tiber; the augurs took the auspices before crossing it."
+    },
+    {
+      "name": "the Cati spring",
+      "at": [
+        230,
+        905
+      ],
+      "r": 18,
+      "kind": "pond",
+      "until": -30,
+      "note": "The spring under the Quirinal the Petronia rose from."
+    },
+    {
+      "name": "Agrippa's lake",
+      "at": [
+        -800,
+        960
+      ],
+      "r": 110,
+      "kind": "lake",
+      "from": -25,
+      "note": "The Stagnum Agrippae behind his baths, with the Euripus canal running from it to the Tiber; Nero gave a feast on a raft on it."
+    },
+    {
+      "name": "the Euripus",
+      "points": [
+        [
+          -880,
+          990
+        ],
+        [
+          -1080,
+          940
+        ],
+        [
+          -1170,
+          880
+        ]
+      ],
+      "width": 10,
+      "kind": "stream",
+      "from": -25,
+      "note": "Agrippa's canal from the lake to the river, bathers swimming in it."
+    },
+    {
+      "name": "the Naumachia of Augustus",
+      "at": [
+        -1350,
+        -1100
+      ],
+      "r": 170,
+      "kind": "lake",
+      "from": -2,
+      "until": 120,
+      "note": "The basin Augustus dug across the river for mock sea-fights, thirty ships and three thousand men; it silted up and was gardens by the second century."
+    },
+    {
+      "name": "the pool of the Camenae",
+      "at": [
+        640,
+        -720
+      ],
+      "r": 22,
+      "kind": "pond",
+      "note": "The spring of the Camenae outside the Porta Capena, where Numa met Egeria and the Vestals drew their water."
+    }
+  ]
+}
