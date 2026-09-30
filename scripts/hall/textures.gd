@@ -99,14 +99,18 @@ static func material(kind: String) -> Material:
 			m.roughness = 0.4
 		"parchment":
 			m.albedo_color = Color("d8c8a0")
-		"water":
-			m.albedo_color = Color("2a5068")
-			m.roughness = 0.12
-			m.metallic = 0.35
+		"water":  # running water: ripples drifting over it (a shader, so it moves without a script)
+			var w := water(Color("2a5068"), 0.07, 0.5)
+			_cache[kind] = w
+			return w
+		"marsh":  # standing water, green with weed
+			var w := water(Color("3a5a48"), 0.03, 0.4)
+			_cache[kind] = w
+			return w
 		"sea":
-			m.albedo_color = Color("24445e")
-			m.roughness = 0.08
-			m.metallic = 0.4
+			var w := water(Color("24445e"), 0.03, 0.12)
+			_cache[kind] = w
+			return w
 		"snow":
 			m.albedo_color = Color("e8e4e0")
 		"smoke":
@@ -149,6 +153,10 @@ static func material(kind: String) -> Material:
 			world_tex.call(_noise(Color("7a746c"), Color("5e5852"), Color("908a82"), 19), 0.5)
 		"withered":
 			world_tex.call(_noise(Color("6e6250"), Color("564c3e"), Color("857866"), 23), 1.0)
+		"wet":  # paving darkened where water runs over it
+			m.albedo_color = Color(0.32, 0.34, 0.36, 0.55)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m.roughness = 0.2
 		"drybed":
 			world_tex.call(_noise(Color("9a8a70"), Color("6e6250"), Color("aa9c84"), 29), 0.4)
 		"ashbed":
@@ -323,6 +331,43 @@ static func material(kind: String) -> Material:
 
 
 ## Speckled texture from three tones: stone, earth, leaves.
+## Water that moves: two sheets of ripple drifting over each other in world space, lit like
+## a wet surface. `speed` in tiles a second, `scale` tiles a metre (finer for a basin, broad for
+## the sea).
+static func water(tint: Color, speed: float, scale: float) -> ShaderMaterial:
+	var sh := Shader.new()
+	sh.code = """
+shader_type spatial;
+uniform sampler2D ripple : filter_linear, repeat_enable;
+uniform vec4 tint : source_color;
+uniform float speed = 0.07;
+uniform float scale = 0.5;
+varying vec3 wp;
+void vertex() {
+	wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+}
+void fragment() {
+	vec2 uv = wp.xz * scale;
+	float a = texture(ripple, uv + vec2(TIME * speed, TIME * speed * 0.6)).r;
+	float b = texture(ripple, uv * 1.7 - vec2(TIME * speed * 0.8, -TIME * speed * 0.5)).r;
+	float r = a * b;
+	float glint = smoothstep(0.42, 0.5, r);
+	ALBEDO = tint.rgb * (0.75 + r * 0.6) + vec3(glint) * 0.35;
+	ROUGHNESS = 0.15;
+	METALLIC = 0.3;
+	SPECULAR = 0.7;
+	NORMAL = normalize(NORMAL + vec3((a - 0.5) * 0.25, 0.0, (b - 0.5) * 0.25));
+}
+"""
+	var m := ShaderMaterial.new()
+	m.shader = sh
+	m.set_shader_parameter("ripple", _noise(Color("808080"), Color("3a3a3a"), Color("d0d0d0"), 137))
+	m.set_shader_parameter("tint", tint)
+	m.set_shader_parameter("speed", speed)
+	m.set_shader_parameter("scale", scale)
+	return m
+
+
 static func _noise(base: Color, dark: Color, light: Color, seed_value: int) -> ImageTexture:
 	var img := Image.create(32, 32, false, Image.FORMAT_RGBA8)
 	var rng := RandomNumberGenerator.new()

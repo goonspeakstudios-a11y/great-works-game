@@ -198,6 +198,7 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 			(p["root"] as Node3D).queue_free()
 	town.sound = DisplayServer.get_name() != "headless"
 	town.burnt = fab.get("burnt", [])
+	town.waters = fab.get("waters", [])
 	_regulars(spawn, id, out)
 	town.setup(world, id, int(progress.data.get("rome_day", 1)) if progress != null else 1, people)
 	life.town = town
@@ -240,7 +241,7 @@ static func _street_marks(fab: Dictionary) -> Array:
 		out.append({"name": "the shrine at the crossing of %s" % " and ".join(names), "pos": cp["at"], "minor": true})
 	var Plan: GDScript = load("res://scripts/hall/urbs_plan.gd")
 	var named := {}
-	for f: Vector3 in fab.get("fountains", []):
+	for f: Vector3 in (fab.get("fountains", []) as Array) + (fab.get("lacus", []) as Array):
 		var street: String = Plan.street_at(f)
 		if street == "" or named.has(street):
 			continue
@@ -421,6 +422,7 @@ static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictiona
 	var gathering: Array = (fab["monuments"] as Array).filter(func(s: Dictionary) -> bool: return s["state"] == "whole").map(
 		func(s: Dictionary) -> Vector3: return _front(s))
 	gathering.append_array(fab.get("fountains", []))
+	gathering.append_array(fab.get("lacus", []))
 	gathering = gathering.filter(func(q: Vector3) -> bool: return RomeMap.inside(edge, q))
 	gathering.shuffle()
 	for k in mini(12 if id != "fall" else 3, gathering.size()):

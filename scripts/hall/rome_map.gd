@@ -478,6 +478,12 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 			mat = "basalt"  # the Sacred Way was paved in marble only under the emperors' fathers
 		ribbon(world, pts, float(r["width"]), mat if mat != "earth" else "path")
 		streets.append(pts)
+		if year >= -200 and year < 537 and not lost and mat != "earth":  # the gutter along the kerb, running with the basins' overflow
+			for i in pts.size() - 1:
+				var a: Vector3 = pts[i]
+				var b: Vector3 = pts[i + 1]
+				var n := Vector3((b - a).normalized().z, 0, -(b - a).normalized().x) * (float(r["width"]) / 2.0 - 0.3)
+				ribbon(world, [a + n, b + n], 0.35, "water", 0.16)
 	for a: Dictionary in c.get("aqueducts", []):
 		if year < int(a["year"]):
 			continue
@@ -506,11 +512,12 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	if skip.is_empty() or not inside(skip, forum):  # the Forum's paving of travertine slabs
 		Kit.box(world, forum + Vector3(0, 0.03, 0), Vector3(70.0, 0.06, 30.0), "paving", false, Vector3(0, -0.617 + PI / 2.0, 0))
 	var out := {"flicker": flicker, "monuments": standing, "streets": streets, "bridges": bridges, "stalls": [], "fountains": [],
-		"clear": opts.get("clear", []), "doors": [], "banks": [], "flames": [], "compita": [], "tombs": []}
+		"clear": opts.get("clear", []), "doors": [], "banks": [], "flames": [], "compita": [], "tombs": [], "waters": [], "lacus": []}
 	if opts.get("blocks", true):
 		_road_tombs(world, c, year, age_id, standing, skip, out)
 		_blocks(world, age, standing, streets, skip, lost, out)
 		_compita(world, c, age_id, skip, out)
+		_street_basins(world, c, year, lost, standing, skip, out)
 		_corners(world, c, skip)
 	return out
 
@@ -653,6 +660,55 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 		g.name = "Compitum%d" % k
 		Urbs.compitum(g, style)
 		out["compita"].append({"at": q, "yaw": yaw, "streets": j["streets"], "style": style})
+
+
+## The street basins (lacus): a trough with a running spout every fifty-odd paces along the named
+## streets you can walk, on the pavement against the house fronts, alternating sides, from the
+## first aqueducts (a few in 280 BC, when only the Appia ran); dry once they are cut. out["lacus"]:
+## [pos], and out["waters"] gets each as a place of the sound of water.
+static func _street_basins(world: Node3D, c: Dictionary, year: int, lost: bool, standing: Array, skip: Array, out: Dictionary) -> void:
+	var edge := walkable()
+	var flowing := year < 537 and not lost
+	var gap := 45.0 if year >= -200 else 140.0
+	var stalls: Array = out.get("stalls", [])
+	var compita: Array = (out.get("compita", []) as Array).map(func(cp: Dictionary) -> Vector3: return cp["at"])
+	var n := 0
+	for r: Dictionary in c.get("roads", []):
+		var pts: Array = (r["points"] as Array).map(func(p: Array) -> Vector3: return at(p))
+		var half := float(r["width"]) / 2.0
+		var along := 25.0 + float(n % 3) * 9.0
+		for i in pts.size() - 1:
+			var a: Vector3 = pts[i]
+			var b: Vector3 = pts[i + 1]
+			var dir := b - a
+			dir.y = 0.0
+			var length := dir.length()
+			dir = dir.normalized()
+			var across := Vector3(dir.z, 0, -dir.x)
+			while along < length:
+				var p := a + dir * along
+				along += gap
+				if along - gap < 10.0 or length - (along - gap) < 10.0:
+					continue  # not at the crossings
+				var side := 1.0 if n % 2 == 0 else -1.0
+				var q := p + across * side * (half + 0.9)
+				n += 1
+				if not inside(edge, q) or river_edge(q) < 8.0 or (not skip.is_empty() and inside(skip, q)):
+					continue
+				if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
+					continue
+				if stalls.any(func(st: Vector3) -> bool: return Vector2(st.x - q.x, st.z - q.z).length() < 2.6):
+					continue
+				if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
+					continue
+				q.y = ground(q)
+				var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
+				g.name = "Lacus%d" % out["lacus"].size()
+				Rome.lacus(g, Vector3.ZERO, 0.0, flowing)
+				out["lacus"].append(q)
+				if flowing:
+					out["waters"].append([q, "fountain"])
+			along -= length
 
 
 ## The tombs along the roads outside the gates: every so many paces on the stretch of each road
@@ -911,9 +967,13 @@ static func window_glass() -> StandardMaterial3D:
 
 ## A texture that takes each instance's colour (a MultiMesh's), so one plaster can be ochre, rose,
 ## cream or blue-grey from house to house.
-static func tinted(kind: String) -> StandardMaterial3D:
+static func tinted(kind: String) -> Material:
 	if not _tints.has(kind):
-		var m: StandardMaterial3D = (load("res://scripts/hall/textures.gd").material(kind) as StandardMaterial3D).duplicate()
+		var base: Material = load("res://scripts/hall/textures.gd").material(kind)
+		if not base is StandardMaterial3D:  # water and the like: a shader, worn as it is
+			_tints[kind] = base
+			return base
+		var m: StandardMaterial3D = (base as StandardMaterial3D).duplicate()
 		m.vertex_color_use_as_albedo = true
 		_tints[kind] = m
 	return _tints[kind]
@@ -966,7 +1026,15 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		opens.append([at(o["at"]), span(float(o["r"]))])
 	var keep_off: Array = standing.map(func(s: Dictionary) -> Array: return [s["at"], footprint(s["m"])])
 	var wooded := groves(year)  # the sacred groves, the woods, the orchards and the gardens (green.json)
+	var pools: Array = []  # the ponds, marshes and lakes: [centre, radius]
 	var roads: Array = []
+	for w: Dictionary in waters(year):
+		if w["kind"] == "stream":  # a stream is a corridor nothing is built across, its banks left green
+			var pts: Array = w["points"]
+			for i in pts.size() - 1:
+				roads.append([pts[i], pts[i + 1], float(w["width"]) / 2.0 + 1.0, true])
+		else:
+			pools.append([w["at"], float(w["r"]) + 3.0])
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = r["points"]
 		for i in pts.size() - 1:
@@ -1000,11 +1068,13 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	var parts := {}  # "mesh|material" -> [[transform, colour], ...]
 	_burnt = []
 	_roosts = []
+	_pools = []
+	_springs = []
 	var placed: Array = []  # [centre, reach] of every house built, so none is built into another
 	# the lanes between the blocks: unpaved streets along the bent grid every third row and column,
 	# broken at the named streets, the squares, the monuments, the river and the wall, which the
 	# houses front onto like the named streets (so the city is blocks of houses between streets)
-	for lane: Array in _lanes(lo, hi, outer, roads, keep_off, opens, wall_line):
+	for lane: Array in _lanes(lo, hi, outer, roads, keep_off + pools, opens, wall_line):
 		var pts: Array = lane.map(func(q: Vector3) -> Vector3: return Vector3(q.x, ground(q), q.z))
 		ribbon(world, pts, LANE, "path" if not fallen else "rubble", 0.1)
 		for i in pts.size() - 1:
@@ -1047,6 +1117,8 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						_plant(trees, rng, p, "reeds", 3, 5.0, 0.8, 1.3)  # the reeds at the water
 						_plant(trees, rng, p, "grass", 2, 6.0)
 				continue
+			if pools.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1] + 4.0):
+				continue  # in the water, or on its bank (the reeds are planted with it)
 			if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
 				if roll < 0.14:
 					trees.append([p, "round", rng.randf_range(0.9, 1.3)])
@@ -1206,6 +1278,10 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				trees.append([(tomb["at"] as Vector3) + tb * Vector3(side * 2.6, 0, -0.5), "cypress", rng.randf_range(0.8, 1.1)])
 	out["doors"] = doors
 	out["burnt"] = _burnt.duplicate()
+	for pool: Vector3 in _pools:
+		out["waters"].append([pool, "fountain"])
+	for spring: Vector3 in _springs:
+		out["waters"].append([spring, "stream"])
 	if not fallen:  # the pigeons on the ridges and parapets
 		for r: Array in _roosts:
 			var at: Vector3 = r[0]
@@ -1229,6 +1305,8 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		var f: Vector3 = fountains[k]
 		var y := ground(f)
 		Rome.fountain(world, Vector3(f.x, y, f.z), rng.randf() * TAU, year < 537 and not lost)
+		if year < 537 and not lost:
+			out["waters"].append([Vector3(f.x, y, f.z), "fountain"])
 		Kit.box(world, Vector3(f.x + 1.6, y + 1.3, f.z), Vector3(0.12, 2.6, 0.12), "bronze", false)
 		flames.set_instance_transform(k, Transform3D(Basis.IDENTITY, Vector3(f.x + 1.6, y + 2.75, f.z)))
 	var fmi := MultiMeshInstance3D.new()
@@ -1261,6 +1339,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 								reeds.append([r + across * s * 2.5 + along * rng.randf_range(-2.0, 2.0), "reeds", rng.randf_range(0.7, 1.1)])
 						break
 	trees.append_array(reeds)
+	_waters(world, year, fallen, trees, rng, out)
 	_trees(world, trees, fallen)
 	for i in course.size() - 1:
 		var a: Vector3 = course[i]
@@ -1667,6 +1746,13 @@ static func _plot(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 		add.call("box", "wood", Transform3D(b.scaled(Vector3(w, 0.1, 0.1)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(0, 0, s * d / 2.0)))
 		for k in int(w / 3.0) + 1:
 			add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 1.1, 0.12)), Vector3(c.x, y + 0.55, c.z) + b * Vector3(-w / 2.0 + k * w / maxi(1, int(w / 3.0)), 0, s * d / 2.0)))
+	if rng.randf() < 0.35:  # the pond the sheep drink at
+		var pc := c + b * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, rng.randf_range(-d * 0.25, d * 0.25))
+		add.call("disc", "earth", Transform3D(Basis.IDENTITY.scaled(Vector3(4.6, 0.14, 4.6)), Vector3(pc.x, y + 0.05, pc.z)))
+		add.call("disc", "water", Transform3D(Basis.IDENTITY.scaled(Vector3(3.4, 0.1, 3.4)), Vector3(pc.x, y + 0.12, pc.z)))
+		for k in 6:
+			var a := TAU * k / 6.0
+			trees.append([pc + Vector3(cos(a) * 1.9, 0, sin(a) * 1.9), "reeds", rng.randf_range(0.6, 0.9)])
 	for k in rng.randi_range(2, 4):  # the sheep
 		add.call("box", "#e0d8c8", Transform3D(b.scaled(Vector3(0.9, 0.5, 0.5)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, rng.randf_range(-d * 0.35, d * 0.35))))
 	if rng.randf() < 0.5:
@@ -1765,6 +1851,14 @@ static func _draw(world: Node3D, parts: Dictionary) -> MultiMeshInstance3D:
 				var pm := PrismMesh.new()
 				pm.size = Vector3.ONE
 				mm.mesh = pm
+			"disc":
+				var dm := CylinderMesh.new()
+				dm.top_radius = 0.5
+				dm.bottom_radius = 0.5
+				dm.height = 1.0
+				dm.radial_segments = 14
+				dm.rings = 1
+				mm.mesh = dm
 			"quad":
 				var q := QuadMesh.new()
 				q.size = Vector2.ONE
@@ -1889,6 +1983,8 @@ static func _plant(trees: Array, rng: RandomNumberGenerator, p: Vector3, kind: S
 
 
 static var _green := {}
+static var _pools: Array = []  # the garden pools built this time, for the sound of them
+static var _springs: Array = []  # and the groves' springs
 
 
 ## content/rome/green.json: the sacred groves, the woods on the hills, the orchards and the
@@ -1898,6 +1994,89 @@ static func green_data() -> Dictionary:
 		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/rome/green.json"))
 		_green = parsed if parsed is Dictionary else {"groves": []}
 	return _green
+
+
+## The waters besides the Tiber in `year` (green.json "waters"): ponds, marshes and lakes as
+## [{at (world), r (world), kind, name}], streams as [{points (world), width (world), kind, name}].
+static func waters(year: int) -> Array:
+	var out: Array = []
+	for w: Dictionary in green_data().get("waters", []):
+		if w.has("from") and year < int(w["from"]):
+			continue
+		if w.has("until") and year >= int(w["until"]):
+			continue
+		if w.has("points"):
+			out.append({"points": (w["points"] as Array).map(func(q: Array) -> Vector3: return at(q)), "width": span(float(w["width"])),
+				"kind": "stream", "name": str(w.get("name", ""))})
+		else:
+			out.append({"at": at(w["at"]), "r": span(float(w["r"])), "kind": str(w["kind"]), "name": str(w.get("name", ""))})
+	return out
+
+
+## Lays the waters in: a pond, lake or marsh as a sheet of water in a bank of earth, reeds round
+## its edge (and through a marsh), a stream as a ribbon of water in its bed between reeds. Dry
+## once the city is emptied. Adds the reeds and bushes to `trees`, and the waters' edges to
+## out["waters"] ([pos, "stream"]) for the sound of them.
+static func _waters(world: Node3D, year: int, fallen: bool, trees: Array, rng: RandomNumberGenerator, out: Dictionary) -> void:
+	var mat := "water" if not fallen else "drybed"
+	for w: Dictionary in waters(year):
+		if w["kind"] == "stream":
+			var pts: Array = w["points"]
+			var width: float = w["width"]
+			var bed := ribbon(world, pts, width + 3.0, "earth", 0.03)
+			bed.name = "StreamBed"
+			var water := ribbon(world, pts, width, mat, 0.08)
+			water.name = "Stream"
+			for i in pts.size() - 1:
+				var a: Vector3 = pts[i]
+				var b: Vector3 = pts[i + 1]
+				var dir := (b - a).normalized()
+				var across := Vector3(dir.z, 0, -dir.x)
+				var t := 0.0
+				while t < a.distance_to(b):
+					var q := a + dir * t
+					out["waters"].append([q, "stream"])
+					for side: float in [-1.0, 1.0]:
+						if rng.randf() < 0.8:
+							trees.append([q + across * side * (width / 2.0 + rng.randf_range(0.3, 1.6)), "reeds", rng.randf_range(0.8, 1.3)])
+						if rng.randf() < 0.15:
+							trees.append([q + across * side * (width / 2.0 + rng.randf_range(2.5, 5.0)), "round" if rng.randf() < 0.6 else "bush", rng.randf_range(0.8, 1.2)])
+					t += 5.0
+			continue
+		var c: Vector3 = w["at"]
+		var r: float = w["r"]
+		var y := ground(c)
+		var bank := CylinderMesh.new()
+		bank.top_radius = r + 2.5
+		bank.bottom_radius = r + 3.0
+		bank.height = 0.12
+		bank.radial_segments = 24
+		var bm := Kit.mesh(world, bank, "earth" if w["kind"] != "marsh" else "g_turf", Vector3(c.x, y + 0.02, c.z))
+		bm.name = "Bank"
+		var sheet := CylinderMesh.new()
+		sheet.top_radius = r
+		sheet.bottom_radius = r
+		sheet.height = 0.1
+		sheet.radial_segments = 24
+		var wm := Kit.mesh(world, sheet, mat if w["kind"] != "marsh" or fallen else "marsh", Vector3(c.x, y + 0.1, c.z))
+		wm.name = "Pond"
+		var n := int(TAU * r / 2.2)
+		for k in n:  # reeds round the edge
+			var a := TAU * k / n + rng.randf_range(-0.1, 0.1)
+			var d := r + rng.randf_range(-0.6, 1.2)
+			if rng.randf() < 0.75:
+				trees.append([c + Vector3(cos(a) * d, 0, sin(a) * d), "reeds", rng.randf_range(0.8, 1.3)])
+			if k % 4 == 0:
+				out["waters"].append([c + Vector3(cos(a) * r, 0, sin(a) * r), "stream"])
+			if k % 6 == 0 and rng.randf() < 0.7:
+				trees.append([c + Vector3(cos(a) * (r + 4.0), 0, sin(a) * (r + 4.0)), "round" if w["kind"] == "lake" else "bush", rng.randf_range(0.8, 1.2)])
+		if w["kind"] == "marsh":  # reeds through it, and tussocks
+			for k in int(r * r / 12.0):
+				var a := rng.randf() * TAU
+				var d := sqrt(rng.randf()) * r
+				trees.append([c + Vector3(cos(a) * d, y + 0.12, sin(a) * d), "reeds" if rng.randf() < 0.7 else "grass", rng.randf_range(0.7, 1.2)])
+		if w["kind"] == "lake" and not fallen:  # a quay of travertine on the near side, steps down to the water
+			Kit.box(world, Vector3(c.x, y + 0.25, c.z + r + 1.0), Vector3(12.0, 0.5, 2.0), "travertine")
 
 
 ## The groves standing in `year`: [{at (world), r (world), kind, name}].
@@ -1924,6 +2103,10 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 			_plant(trees, rng, p, "round", 3, 6.0, 0.9, 1.4)
 			if rng.randf() < 0.4:
 				_plant(trees, rng, p, "cypress", 1, 5.0, 1.0, 1.3)
+			if rng.randf() < 0.15 and not far:  # the grove's spring, which runs whatever the aqueducts do
+				Rome.spring(world, Vector3(p.x, y, p.z), true)
+				_plant(trees, rng, p, "reeds", 4, 3.0)
+				_springs.append(Vector3(p.x, y, p.z))
 		"wood":
 			_plant(trees, rng, p, "pine" if y > 8.0 or rng.randf() < 0.5 else "round", 3, 6.5, 0.9, 1.3)
 			_plant(trees, rng, p, "round", 1, 6.0, 0.7, 1.0)
@@ -1936,6 +2119,13 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 		_:  # horti
 			if y < 4.0 and not fallen:
 				add.call("box", "g_turf", Transform3D(Basis.IDENTITY.scaled(Vector3(14.0, 0.5, 14.0)), Vector3(p.x, y - 0.15, p.z)))
+			if rng.randf() < 0.2 and not fallen:  # a pool in its rim of travertine, with a jet in the middle of it
+				var pb := Basis(Vector3.UP, rng.randf() * TAU)
+				add.call("box", "travertine", Transform3D(pb.scaled(Vector3(7.0, 0.5, 5.0)), Vector3(p.x, y + 0.2, p.z)))
+				add.call("box", "water", Transform3D(pb.scaled(Vector3(6.2, 0.12, 4.2)), Vector3(p.x, y + 0.42, p.z)))
+				if not far:
+					Rome.jet(world, Vector3(p.x, y + 0.45, p.z), Vector3(0, 1, 0), 2.2, 14)
+					_pools.append(Vector3(p.x, y, p.z))
 			var roll := rng.randf()
 			_plant(trees, rng, p, "pine" if roll < 0.35 else ("cypress" if roll < 0.6 else "round"), 2, 6.0, 0.9, 1.3)
 			_plant(trees, rng, p, "olive", 1, 6.0, 0.8, 1.0)

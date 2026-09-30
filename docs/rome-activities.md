@@ -140,6 +140,7 @@ Z zooms in on where you stand, and the mouse names what is under it. Key 1 shows
 
 **Joined up** (the notes of `docs/rome-city-notes.md` 3, built 2026-09-29):
 - the live map draws the way to where you've been sent (the errand, else the current quest's place) as a faint line along the streets (`Plan.way`), and when your house is off the map, an arrow the way home;
+- your house is never lost: on the plan and the live map it is a gold house in a ring with its name beside it, the way home is drawn in gold along the streets from about where you stand, and H closes the plan in on it (H again, or Z, back on you);
 - when anyone gives you the way, the corner where it first turns glows on the ground for half a minute (`Plan.first_turn`, `hall._show_way`);
 - with Claude on the line, a typed "where is X?" gives the citizen the way from where they stand as a fact of their persona, so anyone can be asked;
 - the corner of the screen shows the street you are on under the region's name, and passing a gate of the Servian wall is said ("You pass through the Capene Gate, out of the walls");

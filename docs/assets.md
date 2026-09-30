@@ -95,6 +95,14 @@ end above bare forearms, the arms hang from the shoulders (the right bent at the
 things), the sandals have straps; `cloth: "toga"` or `"dress"` (and `long: true`) fall to the
 ankle. Rendered in `docs/dev/people_set.png`.
 
+### Water (scripts/hall/textures.gd `water()`, kit_rome.gd)
+`water` and `sea` are a shader: two sheets of ripple drifting over each other in world space, a
+wet surface, so every basin, gutter, pond, stream and the Tiber move without a script. `wet` is
+paving darkened where water runs over it. Pieces: `Rome.jet` (drops thrown from a spout, one
+shared mesh and process), `Rome.lacus` (the street basin: a travertine trough, a pillar with a
+bronze lion's head, the overflow down the front), `Rome.spring` (a round basin in a grove with a
+nymph's stone and a rill), `Rome.fountain` now with its jet and a wet pavement.
+
 ### The green set (scripts/hall/textures_green.gd, `Textures.material("g_<name>")`)
 What grows in Rome. Crowns and clumps, clear round the leaves, on crossed quads: `g_crown` (plane,
 fig, oak, laurel), `g_pine` (the stone pine's umbrella), `g_cypress` (a spire, on a quad five times

@@ -32,6 +32,9 @@ var _events := {}  # event id -> {people: [], ends, path?}
 var _pigeons: Array = []  # {node, home, flying}
 var _smoke: Array = []
 var _players: Array = []  # AudioStreamPlayer3D, each on one sound at a time
+var waters: Array = []  # [pos, "fountain" or "stream"]: where water runs, for the sound of it (rome_map out["waters"])
+var _water_pl: AudioStreamPlayer3D
+var _water_file := ""
 var _emitters: Array = []  # [person, sound file]
 var _sound_scan := 0.0
 var region := ""  # the part of the city you are in (hall.gd's corner name), for its sound bed
@@ -158,6 +161,7 @@ func step(delta: float, at: Vector3, hour: float, moving: bool) -> void:
 			_sound_scan = 0.5
 			_sounds(at, hour)
 			_bed(hour)
+			_water(at)
 		for k in _beds.size():  # the beds crossfade over a few seconds
 			var pl: AudioStreamPlayer = _beds[k]
 			var want := -16.0 if k == _bed_on and pl.playing else -60.0
@@ -519,6 +523,41 @@ func _sounds(at: Vector3, hour: float) -> void:
 				pl.stream = w
 				pl.play()
 		pl.global_position = near[k][1] + Vector3(0, 1.5, 0)
+
+
+## The sound of the nearest water, when one runs within earshot: a fountain's splash or a stream's
+## run, one player moved to it.
+func _water(at: Vector3) -> void:
+	var best_d := 22.0
+	var best: Array = []
+	for w: Array in waters:
+		var d := (w[0] as Vector3).distance_to(at)
+		if d < best_d:
+			best_d = d
+			best = w
+	if _water_pl == null:
+		_water_pl = AudioStreamPlayer3D.new()
+		_water_pl.max_distance = 24.0
+		_water_pl.unit_size = 4.0
+		_water_pl.volume_db = -6.0
+		_water_pl.bus = "Master"
+		world.add_child(_water_pl)
+	if best.is_empty():
+		if _water_pl.playing:
+			_water_pl.stop()
+		_water_file = ""
+		return
+	var file := "res://assets/music/%s.wav" % str(best[1])
+	if file != _water_file:
+		_water_file = file
+		var s: Variant = load(file) if ResourceLoader.exists(file) else null
+		if s is AudioStreamWAV:
+			var w: AudioStreamWAV = (s as AudioStreamWAV).duplicate()
+			w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			w.loop_end = int(w.get_length() * w.mix_rate)
+			_water_pl.stream = w
+			_water_pl.play()
+	_water_pl.global_position = (best[0] as Vector3) + Vector3(0, 0.8, 0)
 
 
 ## The region's sound bed, under the trades' sounds: started when the region (or the hour) changes,

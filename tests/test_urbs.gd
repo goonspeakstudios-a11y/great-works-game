@@ -728,6 +728,7 @@ func test_the_people_wear_the_people_set() -> void:
 
 func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var Tex: GDScript = load("res://scripts/hall/textures.gd")
 	var Plan: GDScript = load("res://scripts/hall/urbs_plan.gd")
 	var Town: GDScript = load("res://scripts/hall/urbs_town.gd")
 	var Life: GDScript = load("res://scripts/hall/urbs_life.gd")
@@ -753,6 +754,10 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(parts.call(world, "Houses_quad_graffiti_republic") == 0 and parts.call(world, "Houses_quad_graffiti_heroic") == 0, "and no election notices yet")
 			check(world.find_child("Tomb0", false, false) != null, "tombs stand along the roads outside the gates")
 			check(parts.call(world, "TreeOlives") > 40, "olives in the orchards of the small city (%d)" % parts.call(world, "TreeOlives"))
+			var wn0: Array = RomeMap.waters(-280).map(func(w: Dictionary) -> String: return str(w["name"]))
+			check(wn0.has("the Goat Marsh") and wn0.has("the Petronia") and not wn0.has("Agrippa's lake"), "in 280 BC the Goat Marsh and the Petronia brook, no lake yet")
+			check((fab["lacus"] as Array).size() > 10 and (fab["lacus"] as Array).size() < (fab["fountains"] as Array).size() + 60, "a few basins, from the Appia alone (%d)" % (fab["lacus"] as Array).size())
+			check(parts.call(world, "Houses_disc_water") > 3, "ponds in the pastures (%d)" % parts.call(world, "Houses_disc_water"))
 			var names0: Array = RomeMap.groves(-280).map(func(g: Dictionary) -> String: return str(g["name"]))
 			check(names0.has("the Caelian's oaks") and not names0.has("the gardens of Maecenas"), "in 280 BC the hills are wooded and there are no horti yet")
 		if id == "late":
@@ -763,6 +768,8 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check((fab["burnt"] as Array).size() > 10, "the quarters burnt in 455 are known (%d), for the smoke over them" % (fab["burnt"] as Array).size())
 		if id == "fall":
 			check(parts.call(world, "Grass") > 2000 and parts.call(world, "Bushes") > 300, "the emptied city grows over (%d tufts, %d bushes)" % [parts.call(world, "Grass"), parts.call(world, "Bushes")])
+			check(not (fab["waters"] as Array).any(func(w: Array) -> bool: return w[1] == "fountain"), "no fountain runs once the aqueducts are cut")
+			check(world.find_children("*", "GPUParticles3D", true, false).is_empty(), "no water falls anywhere")
 		if id == "empire":
 			check(parts.call(world, "Houses_quad_graffiti_empire") > 0, "election notices and scratched words under the emperors")
 			check(parts.call(world, "Houses_quad_h_window") > 200 and parts.call(world, "Houses_quad_h_shutter") > 50, "windows with frames and open shutters (%d, %d)" % [parts.call(world, "Houses_quad_h_window"), parts.call(world, "Houses_quad_h_shutter")])
@@ -778,6 +785,16 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(parts.call(world, "Houses_box_g_turf") > 5, "lawns in the gardens (%d)" % parts.call(world, "Houses_box_g_turf"))
 			var names: Array = RomeMap.groves(150).map(func(g: Dictionary) -> String: return str(g["name"]))
 			check(names.has("the gardens of Sallust") and names.has("the Asylum") and not names.has("the Caelian's oaks"), "in AD 150 the horti are laid out and the Caelian's oaks are long gone")
+			# running water: basins along the streets, gutters, the lake and its canal, the sound of it all
+			check((fab["lacus"] as Array).size() > 30, "street basins every fifty paces (%d)" % (fab["lacus"] as Array).size())
+			check(world.find_children("Lacus*", "Node3D", false, false).size() == (fab["lacus"] as Array).size(), "each built")
+			check(world.find_children("*", "GPUParticles3D", true, false).size() > 40, "water falling in them and in the fountains (%d jets)" % world.find_children("*", "GPUParticles3D", true, false).size())
+			var wn: Array = RomeMap.waters(150).map(func(w: Dictionary) -> String: return str(w["name"]))
+			check(wn.has("Agrippa's lake") and wn.has("the Euripus") and not wn.has("the Goat Marsh"), "in AD 150 Agrippa's lake and canal, the marsh long drained")
+			check(world.find_children("Pond*", "MeshInstance3D", true, false).size() >= 2 and world.find_children("Stream*", "MeshInstance3D", true, false).size() >= 1, "the waters are laid in")
+			check((fab["waters"] as Array).size() > 100 and (fab["waters"] as Array).any(func(w: Array) -> bool: return w[1] == "stream")
+				and (fab["waters"] as Array).any(func(w: Array) -> bool: return w[1] == "fountain"), "and every one is a place of the sound of water (%d)" % (fab["waters"] as Array).size())
+			check(Tex.material("water") is ShaderMaterial, "the water moves")
 		check(not (fab["compita"] as Array).is_empty(), "%s: shrines at the crossings (%d)" % [id, (fab["compita"] as Array).size()])
 		check(not (fab["tombs"] as Array).is_empty(), "%s: tombs along the roads (%d)" % [id, (fab["tombs"] as Array).size()])
 		check(world.find_children("*", "Label3D", true, false).size() > 20, "%s: the streets' names on the corners" % id)
@@ -791,6 +808,27 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 	check(Plan.way(on_sacra, far).size() >= 4, "the way to the river port runs along the streets (%d points)" % Plan.way(on_sacra, far).size())
 	check(Plan.first_turn(on_sacra, far) != null, "and has a first turn to light up")
 	check(Plan.first_turn(on_sacra, RomeMap.on_ground([70, -40])) == null, "a place just there has no turn")
+	# your house is never lost: the plan draws the way home in gold, and H closes in on it
+	var PlanPanel: GDScript = load("res://scripts/hall/urbs_plan_panel.gd")
+	var panel: Panel = PlanPanel.new()
+	panel.build(func(a: float, c: Color) -> StyleBox: var sb := StyleBoxFlat.new(); sb.bg_color = Color(c, a); return sb,
+		func(c: Color, big: bool = false) -> Label: var l := Label.new(); l.modulate = c; l.name = "Big" if big else "Small"; return l)
+	root.add_child(panel)
+	panel.home = RomeMap.on_ground([120, 80])
+	panel.you = on_sacra
+	panel.marks = [{"kind": "house", "name": "Your house", "pos": panel.home}]
+	panel.open("city")
+	var f: Dictionary = panel._frame()
+	check(not panel.on_home, "the plan opens on the city")
+	var key := InputEventKey.new()
+	key.pressed = true
+	key.physical_keycode = KEY_H
+	panel._unhandled_key_input(key)
+	check(panel.on_home and panel.zoomed and panel.view == "city", "H closes the plan in on your house")
+	var f2: Dictionary = panel._frame()
+	check((f2["c"] as Vector2).distance_to(Plan.to_map(panel.home)) < 1.0 and (f["c"] as Vector2).distance_to(Plan.to_map(panel.home)) > 50.0, "and the house is at its middle")
+	check((panel.way_home() as Array).size() > 2, "the way home is worked out along the streets (%d points)" % (panel.way_home() as Array).size())
+	panel.free()
 	# the sound under each part of the city, and the light of the emptied city's long evening
 	check_eq(Town.bed_for("Regio VIII, the Roman Forum", "empire", 12.0), "crowd", "the Forum's crowd")
 	check_eq(Town.bed_for("The Forum", "collapse", 12.0), "wind", "and only wind there after the sack")

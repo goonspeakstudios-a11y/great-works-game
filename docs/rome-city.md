@@ -114,6 +114,23 @@ Decided with BB1 (2026-09-28):
     plaster with a bench by the door, a lean-to and a woodpile; the houses of the rich are drafted
     stucco over a painted dado, with a porch. Cats sit by the house fronts (`urbs_town._cats`).
   - The houses of the rich stand round courtyard gardens with a lawn, two trees and a pool.
+  - **Water** (`Rome.fountain`, `Rome.lacus`, `Rome.spring`, `Rome.jet`, `rome_map._street_basins`,
+    `_waters`, `content/rome/green.json` "waters"): the water moves (a ripple shader on every sheet
+    of it, the Tiber too) and falls (drops thrown from every running spout). A street basin, a
+    trough of travertine with a bronze lion's head that never stops, stands every forty-five paces
+    along the named streets you can walk, on the pavement against the house fronts, its overflow
+    running over the kerb into the gutter that runs along every paved street from the first
+    aqueducts (a few basins in 280 BC, from the Appia alone; all dry once the aqueducts are cut,
+    the gutters gone). The square fountains and their planes stay. Besides the Tiber, the city's
+    other waters stand in their years: the Goat Marsh in the Campus and the Petronia brook from
+    the Cati spring under the Quirinal to the river, until the Campus is built up; Agrippa's lake
+    and the Euripus canal from 25 BC; the Naumachia of Augustus across the river for a century;
+    the pool of the Camenae outside the Porta Capena always. Each is a sheet of water in a bank of
+    earth with reeds round it (and through the marsh), a quay on the lake; no house or lane is
+    built across them, the streams' banks left green. The pleasure gardens have pools with a jet
+    in the middle, the sacred groves their springs in a round basin with a rill running off, the
+    pastures a pond the sheep drink at. Near any of it you hear it: the splash of a fountain or a
+    basin, the run of a stream or a pond's edge (`urbs_town._water`).
   - **The people** (the people set, `textures_people.gd`; `Kit.walker`): every citizen wears a
     woven tunic in his own dye with its folds, belt and embroidered hem, bare below the knee and
     the elbow, sandals with straps; a face with eyes, brows and a mouth on the head; hair in

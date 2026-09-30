@@ -37,7 +37,12 @@ func _initialize() -> void:
 						img.set_pixel(x, y, img.get_pixel(x, y) * col)
 		else:
 			img = Image.create(64, 64, false, Image.FORMAT_RGB8)
-			img.fill((m as StandardMaterial3D).albedo_color if m is StandardMaterial3D else Color.MAGENTA)
+			var col: Color = Color.MAGENTA
+			if m is StandardMaterial3D:
+				col = (m as StandardMaterial3D).albedo_color
+			elif m is ShaderMaterial and (m as ShaderMaterial).get_shader_parameter("tint") is Color:
+				col = (m as ShaderMaterial).get_shader_parameter("tint")
+			img.fill(col)
 		img.resize(256, 256, Image.INTERPOLATE_NEAREST if img.get_width() <= 64 else Image.INTERPOLATE_BILINEAR)
 		img.save_png("%s/mat_%s.png" % [out, k.replace("#", "_")])
 		done.append(k)

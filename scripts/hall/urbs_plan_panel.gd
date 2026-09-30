@@ -7,7 +7,9 @@ extends Panel
 ## where you stand; the mouse names what is under it. The house's plan shows its rooms as they are in
 ## the age, and the walls and doorways, bricked up or fallen.
 ##
-## Keys: 1 the city, 2 your house, Z zoom, F or Esc close.
+## Keys: 1 the city, 2 your house, Z zoom, H close in on your house, F or Esc close. Your house
+## is marked with a gold house and the way home is drawn in gold along the streets, on the plan
+## and on the live map, so it is never lost.
 ##
 ## Opened with M it is the live map: a smaller map in the corner, following you as you walk (it does
 ## not stop you), close in on where you are; M again, or Esc, puts it away. The plan of the house on
@@ -38,6 +40,9 @@ var highlight := ""  # a place named in an errand
 var regions: Array = []  # {c: Vector2 world, name}
 var route: Array = []  # the way to where you've been sent, as world points along the streets (urbs_plan.way)
 var home := Vector3.INF  # your house, for the way home on the live map
+var _home_way: Array = []  # the way home along the streets from where it was last worked out
+var _home_from := Vector3.INF
+var on_home := false  # H: the plan closed in on your house
 var _title: Label
 var _hint: Label
 var _under := ""
@@ -111,9 +116,9 @@ func refresh() -> void:
 	var when := str(RomeMap.ages()[maxi(0, ["heroic", "early", "republic", "empire", "late", "collapse", "fall"].find(age))]["when"]) \
 		if not RomeMap.ages().is_empty() else ""
 	_title.text = ("The plan of Rome, %s" % when) if view == "city" else ("Your house, %s" % when)
-	var keys := "1 the city   2 your house   %s   F close" % ("Z whole city" if zoomed else "Z closer") if view == "city" else "1 the city   2 your house   F close"
+	var keys := "1 the city   2 your house   %s   H your house   F close" % ("Z whole city" if zoomed else "Z closer") if view == "city" else "1 the city   2 your house   F close"
 	if live:
-		keys = "M put away   Z %s" % ("whole city" if zoomed else "closer")
+		keys = "M put away   Z %s   H home" % ("whole city" if zoomed else "closer")
 		_title.text = _title.text.replace("The plan of Rome", "Rome")
 	_hint.text = keys + ("    " + _under if _under != "" and not live else "")
 	_canvas.queue_redraw()
@@ -129,6 +134,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			view = "house"
 		KEY_Z:
 			zoomed = not zoomed
+			on_home = false
+		KEY_H:
+			view = "city"
+			zoomed = true
+			on_home = not on_home
 		_:
 			return
 	get_viewport().set_input_as_handled()
@@ -141,7 +151,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 func _frame() -> Dictionary:
 	var size_px := _canvas.size
 	if zoomed:
-		var c := Plan.to_map(you)
+		var c := Plan.to_map(you if not (on_home and home != Vector3.INF) else home)
 		var span := 700.0 if live else 900.0
 		var s := minf(size_px.x, size_px.y) / span
 		return {"s": s, "c": c, "o": size_px / 2.0}
@@ -208,6 +218,11 @@ func _paint_city(c: Control) -> void:
 		c.draw_circle(_pxa(f, isle["at"]), maxf(3.0, float(isle.get("radius", 40)) * float(f["s"])), PARCHMENT)
 	for r: Dictionary in city.get("roads", []):
 		line.call(r["points"], Color("9a8a68"), maxf(1.5, float(r["width"]) * float(f["s"]) * 2.0))
+	if way_home().size() > 1:  # the way home, gold, along the streets
+		var hs := PackedVector2Array()
+		for p: Vector3 in _home_way:
+			hs.append(_px(f, Plan.to_map(p)))
+		c.draw_polyline(hs, Color(GOLD, 0.75), 3.0, true)
 	if route.size() > 1:  # the way to where you've been sent, faint, along the streets
 		var ps := PackedVector2Array()
 		for p: Vector3 in route:
@@ -253,11 +268,16 @@ func _paint_city(c: Control) -> void:
 	for mk: Dictionary in marks:
 		var p := _px(f, Plan.to_map(mk["pos"]))
 		match str(mk["kind"]):
-			"house":
-				_labels.append(Rect2(p + Vector2(8, -12), Vector2(80, 16)))
-				c.draw_rect(Rect2(p - Vector2(5, 5), Vector2(10, 10)), GOLD)
-				c.draw_rect(Rect2(p - Vector2(5, 5), Vector2(10, 10)), INK, false, 1.0)
-				c.draw_string(font, p + Vector2(8, 4), "Your house", HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 2, INK)
+			"house":  # a gold house with a roof, a ring round it, its name beside it: seen at once
+				_labels.append(Rect2(p + Vector2(12, -12), Vector2(90, 18)))
+				c.draw_arc(p, 13.0, 0, TAU, 24, Color(GOLD, 0.55), 2.0)
+				c.draw_rect(Rect2(p - Vector2(6, 1), Vector2(12, 9)), GOLD)
+				c.draw_colored_polygon(PackedVector2Array([p + Vector2(-8, -1), p + Vector2(0, -9), p + Vector2(8, -1)]), GOLD)
+				c.draw_rect(Rect2(p - Vector2(6, 1), Vector2(12, 9)), INK, false, 1.0)
+				c.draw_polyline(PackedVector2Array([p + Vector2(-8, -1), p + Vector2(0, -9), p + Vector2(8, -1)]), INK, 1.0)
+				c.draw_rect(Rect2(p + Vector2(-2, 3), Vector2(4, 5)), INK)  # the door
+				c.draw_string(font, p + Vector2(13, 5), "Your house", HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 1, INK)
+				c.draw_string(font, p + Vector2(12, 4), "Your house", HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 1, GOLD)
 			"regular":
 				c.draw_circle(p, 3.0, Color("3a5a8a"))
 				if zoomed:
@@ -293,6 +313,15 @@ func _paint_city(c: Control) -> void:
 	var b0 := Vector2(c.size.x - 20 - bar, c.size.y - 14)
 	c.draw_line(b0, b0 + Vector2(bar, 0), INK, 2.0)
 	c.draw_string(font, b0 + Vector2(0, -4), "500 paces", HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 4, INK)
+
+
+## The way home along the streets from about where you are (worked out again once you have walked
+## a dozen paces from where it was last worked out).
+func way_home() -> Array:
+	if home != Vector3.INF and (_home_from == Vector3.INF or _home_from.distance_to(you) > 12.0):
+		_home_from = you
+		_home_way = Plan.way(you, home)
+	return _home_way
 
 
 ## A label, unless it would lie over one already drawn.

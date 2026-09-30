@@ -620,6 +620,77 @@ static func fountain(parent: Node3D, at: Vector3, yaw: float, flowing: bool = tr
 	Kit.box(g, Vector3(0, 1.22, -0.64), Vector3(0.05, 0.03, 0.05), "bronze", false)  # the spout
 	if flowing:
 		Kit.box(g, Vector3(0, 0.92, -0.58), Vector3(0.04, 0.6, 0.04), "water", false, Vector3(-0.15, 0, 0))  # the stream
+		jet(g, Vector3(0, 1.2, -0.6), Vector3(0, 0.2, 1.0), 1.4)
+		Kit.box(g, Vector3(0, 0.02, 1.1), Vector3(2.4, 0.02, 1.0), "wet", false)  # the pavement wet where it overflows
+
+
+static var _jet_mesh: QuadMesh
+static var _jet_process: ParticleProcessMaterial
+
+
+## The water itself, falling: drops thrown from `from` along `dir` at `speed`, arcing down into
+## the basin. One shared mesh and one shared process, so a city of fountains costs little.
+static func jet(parent: Node3D, from: Vector3, dir: Vector3, speed: float, amount: int = 16) -> GPUParticles3D:
+	if _jet_mesh == null:
+		_jet_mesh = QuadMesh.new()
+		_jet_mesh.size = Vector2(0.07, 0.1)
+		var m := StandardMaterial3D.new()
+		m.albedo_color = Color(0.86, 0.93, 1.0, 0.85)
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		_jet_mesh.material = m
+		_jet_process = ParticleProcessMaterial.new()
+		_jet_process.spread = 7.0
+		_jet_process.gravity = Vector3(0, -7.0, 0)
+		_jet_process.scale_min = 0.6
+		_jet_process.scale_max = 1.1
+	var p := GPUParticles3D.new()
+	p.amount = amount
+	p.lifetime = 0.9
+	p.local_coords = true
+	p.draw_pass_1 = _jet_mesh
+	var pm: ParticleProcessMaterial = _jet_process.duplicate()
+	pm.direction = dir.normalized()
+	pm.initial_velocity_min = speed * 0.85
+	pm.initial_velocity_max = speed * 1.1
+	p.process_material = pm
+	p.position = from
+	p.visibility_aabb = AABB(Vector3(-2, -3, -2), Vector3(4, 5, 4))
+	parent.add_child(p)
+	return p
+
+
+## A street basin (lacus), of which the city had hundreds: a trough of travertine on the pavement
+## against a house front, a pillar behind it with a bronze lion's head that never stops, the
+## overflow running out over the kerb into the gutter. Faces +Z (the street). Dry: the trough
+## empty, a stain where the water was.
+static func lacus(parent: Node3D, at: Vector3, yaw: float, flowing: bool = true) -> void:
+	var g := Kit.group(parent, at, yaw)
+	Kit.box(g, Vector3(0, 0.4, 0), Vector3(2.0, 0.8, 1.0), "travertine")
+	Kit.box(g, Vector3(0, 0.62 if flowing else 0.35, 0), Vector3(1.7, 0.05, 0.7), "water" if flowing else "drybed", false)
+	Kit.box(g, Vector3(0, 0.85, -0.65), Vector3(0.5, 1.7, 0.3), "travertine")  # the pillar
+	Kit.blob(g, Vector3(0, 1.35, -0.48), 0.12, "bronze", Vector3(1.0, 1.0, 0.7), 6)  # the lion's head
+	if flowing:
+		Kit.box(g, Vector3(0, 1.0, -0.4), Vector3(0.035, 0.7, 0.035), "water", false, Vector3(-0.1, 0, 0))
+		jet(g, Vector3(0, 1.3, -0.4), Vector3(0, 0.1, 1.0), 1.1, 10)
+		Kit.box(g, Vector3(0, 0.4, 0.51), Vector3(0.5, 0.8, 0.02), "water", false)  # the overflow down the front
+		Kit.box(g, Vector3(0, 0.02, 0.9), Vector3(2.4, 0.02, 0.8), "wet", false)
+	else:
+		Kit.box(g, Vector3(0, 0.02, 0.9), Vector3(2.0, 0.02, 0.6), "#7a7468", false)
+
+
+## A spring in a grove: a round basin of travertine the water wells up in (no jet: it rises, it
+## does not fall), a stone by it with a nymph's name, the overflow running off into the grass in
+## a rill. Springs run on when the aqueducts are cut; dry only in the lost world.
+static func spring(parent: Node3D, at: Vector3, flowing: bool = true) -> void:
+	var g := Kit.group(parent, at, at.x + at.z)
+	Kit.cylinder(g, Vector3.ZERO, 1.7, 0.5, "travertine", true, 12)
+	Kit.cylinder(g, Vector3(0, 0.3 if flowing else 0.12, 0), 1.45, 0.08, "water" if flowing else "drybed", false, 12)
+	Kit.box(g, Vector3(-1.2, 0.85, -1.4), Vector3(0.5, 1.1, 0.2), "marble", false)  # the nymph's stone
+	if flowing:
+		Kit.box(g, Vector3(0, 0.03, 2.4), Vector3(0.5, 0.03, 1.6), "water", false)  # the rill running off
+		Kit.box(g, Vector3(0, 0.02, 2.6), Vector3(1.2, 0.02, 2.2), "wet", false)
 
 
 ## A vine pergola: two rows of posts along X, beams across, the vine's leaves over the top and
