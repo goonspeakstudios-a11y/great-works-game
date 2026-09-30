@@ -346,7 +346,7 @@ func _stage_shot(view: String) -> void:
 					_shot_view = true
 			if _args.has("plan"):  # --plan=city|zoom|house|live: the plan of the city (closer in), of your house, or the live map
 				_open_plan("house" if _args["plan"] == "house" else "city", _args["plan"] == "live")
-				_plan.zoomed = _args["plan"] in ["zoom", "live"]
+				_plan.zoom = {"zoom": 1, "street": 2, "live": 0}.get(str(_args["plan"]), 0)
 				_plan.refresh()
 			if _args.has("scene"):  # --scene=<id> [--press=N]: play a scene of the city, N lines into it
 				_start_scene(_args["scene"])

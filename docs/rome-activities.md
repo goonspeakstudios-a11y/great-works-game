@@ -117,7 +117,7 @@ Three tools for building the city up, all under `docs/`:
 - `python3 tools/dev_maps.py materials` → `docs/dev/materials.png`: every material of the city as a labelled swatch (`tools/material_sheet.gd` dumps them).
 
 ### The plan of the city, and directions that agree with it
-**The live map** (M anywhere in the city) sits in the corner and follows you as you walk, close in on where you are, with the ground in relief, the streets, the monuments, your house and the regulars; M or Esc puts it away, Z shows the whole city.
+**The live map** (M anywhere in the city) sits in the corner and follows you as you walk, close in on where you are, with the ground in relief, the streets as roads, the monuments as icons of their kind, your house and the way home in gold, and you; M or Esc puts it away, Z widens it.
 
 **The Plan** (the house's plan on the tablinum wall, and in AD 384 the Severan Marble Plan on the Temple of Peace's wall) is the same map large and still. Both draw Rome from the same data the world is built from, north at the top:
 - the Tiber and the island;
@@ -129,7 +129,7 @@ Three tools for building the city up, all under `docs/`:
 - you, as an arrow the way you face;
 - a north arrow and a bar of five hundred paces.
 
-Z zooms in on where you stand, and the mouse names what is under it. Key 1 shows the city and key 2 the plan of the house, where the mouse names each room and what it is like in the age. Bricked-up doors are drawn in red and fallen walls dashed.
+The plan fills the screen and is drawn the way a map is meant to be read: a hierarchy (the ground in faint relief, the waters in blue, the walls in ink, the streets as cased roads with the main ones wider), every monument as an icon of its kind (a temple's pediment, a civic block, a ring for the games, a blue disc for baths and waters, a diamond for a column, an arch or a tomb, a cross for a church; a ruin in grey outline), a key down the right, and names at the lettering's own size with a halo, never written over one another: you, your house and your errand first, then the landmarks, then the streets, then the rest, then the regions in capitals. Three zooms (Z): the whole city, a quarter, a street; more is named the closer you are. The arrows move the map, C brings it back on you, H closes it in on your house, the mouse wheel zooms, and the mouse names whatever is under it, in a slip beside it and in the key. Key 1 shows the city and key 2 the plan of the house, where the mouse names each room and what it is like in the age. Bricked-up doors are drawn in red and fallen walls dashed.
 
 **Directions** (`urbs_plan.gd`) are worked out on the same streets:
 - the streets are a network, walked in points 18 m apart and joined where they cross or meet;
