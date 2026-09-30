@@ -23,6 +23,7 @@ Decided with BB1 (2026-09-28):
 | Rome's reading list | `content/rome/works.json` (module `r1`) |
 | Rome's rooms and beats | `content/rome/rooms.json`, `content/rome/beats.json` |
 | The map projection, ground, river, bridges, walls, streets, blocks of houses | `scripts/hall/rome_map.gd` |
+| The feasibility map every placement is tested against and painted onto | `scripts/hall/urbs_occupancy.gd` |
 | One builder per kind of monument | `scripts/hall/kit_urbs.gd` |
 | The hub: ages, people, the navel, the gateways | `scripts/hall/places_rome.gd` (`urbs`) |
 | The day and night, who is out, what people say out loud | `scripts/hall/urbs_life.gd` |
@@ -114,22 +115,41 @@ Decided with BB1 (2026-09-28):
     plaster with a bench by the door, a lean-to and a woodpile; the houses of the rich are drafted
     stucco over a painted dado, with a porch. Cats sit by the house fronts (`urbs_town._cats`).
   - The houses of the rich stand round courtyard gardens with a lawn, two trees and a pool.
-  - **Nothing is built into anything** (`_obbs`, `_bands`, `_keep`, kept by 16 m bin; `_overlaps`,
-    `_box_on_road`, `_corners_clear`, `_in_obb`, `_on_road`): every house, plot and ruin is a box on
-    the ground, tested against every box near it by the separating-axis test, and against every
-    street, lane and corridor near it along the band's whole length (so a lane's mouth is never
-    built over), and against the monuments' and tombs' ground at its corners and inside it. The
-    streets and lanes are lined first, each walked whole by arc length, house against house
+  - **Nothing is built into anything: the feasibility map** (`scripts/hall/urbs_occupancy.gd`,
+    `rome_map._occ`): before a house, lane, tree, stall or basin is set down, the whole city is
+    a map of what stands where, one byte a half-metre cell (an `Image` of the ground, the same
+    2000 by 2000 cells whatever age), each cell one kind: free, water, bank, wall, monument, open
+    ground, grove, road, lane, house, furniture, tree, or void off the walkable ground. Everything
+    is painted onto it in the order it is laid, soft kinds first and hard kinds after, so the
+    hard always show through: the walkable outline, then the open grounds, groves, ponds and
+    their banks, the Forum's paving and the river's bank; then the river and the wall; the
+    bridges and every named street with its kerb; the aqueducts; every monument's footprint
+    (read from the built meshes' bounds, grown a pace and a half); the view corridors from each
+    street's end to the monument it runs at, and the streets again over them; and the monuments
+    last. The blocks then ask the map, not each other: a lane is laid only along a stretch
+    whose whole band is free (`band_free`, so no lane runs through a monument, into the water or
+    across the paving; it opens into the named street at its end and is painted a lane), a
+    house only where its box is free (`box_free`, a get_region of the rows it covers and a
+    count of the bytes, so 3200 houses test in a few hundred milliseconds; an exact
+    separating-axis check against the boxes in its 16 m bin confirms the corners thinner than a
+    cell), a fountain's square, a stall, a shrine, a basin, a tomb, a spring or a pool only on a
+    free disc, each painted furniture as soon as it stands, and a tree only where a pace round
+    its trunk is free ground, bank, open or grove (a tuft half a pace, reeds in the water too).
+    The streets and lanes are lined first, each walked whole by arc length, house against house
     along both sides (a house narrowed to fit before a lane's mouth, or made shallower, its
-    front always a step from the kerb; two in three have a neighbour within a pace and a half);
-    now and then the line leaves a little square with a fountain, and where no house fits a
-    stall stands on the kerb (never two within thirty paces). The blocks between take what room
-    is left, shrinking to fit or not built. Every tree, bush and tuft is culled if it would stand
-    in a house, a street or under a pergola (the trees planted in a plot's own garden, ruin,
-    field or roof are marked and kept). Basins stand on the pavement against a house front
-    (slid along the street to the nearest one, and taking a stall's place), shrines on a corner
-    pavement clear of every lane. `tools/audit_rome.gd` counts what is built into what; every
-    count is zero in 280 BC and AD 150, and the whole city builds in about ten seconds.
+    front always a step from the kerb; half have a neighbour within a pace and a half); now
+    and then the line leaves a little square with a fountain; a stall stands on the pavement
+    before the shops here and there, oftener on the named streets than in the lanes, and on
+    the kerb where no house fits (never two within thirty paces there). The blocks between
+    take what room is left, shrinking to fit or not built. Basins stand on the pavement against
+    a house front (slid along the street to the nearest one), shrines on a corner pavement
+    clear of every lane. `tools/audit_rome.gd -- --age=N [--map=path]` counts what is built
+    into what (houses into houses, over a street, into a monument; lanes through a monument,
+    in the water, across the paving; plants in a house or a street; basins, shrines, tombs and
+    fountains in a house) and dumps the map; every count is zero in all four ages, and the
+    whole city builds in five to seven seconds. `python3 tools/dev_maps.py feasibility 3 0`
+    colours the map a kind a colour with a key (`docs/dev/feasibility_empire.png`,
+    `feasibility_heroic.png`).
     The monuments of the Forum's cluster (city.json) were spaced and sized so no two solid
     buildings stand in one another: the Basilica Aemilia east of the Senate House, Janus's
     shrine at the Argiletum's mouth, the Carcer and Vespasian's temple at the Capitol's foot,
