@@ -60,9 +60,106 @@ static func city_data() -> Dictionary:
 		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(CITY_FILE))
 		if parsed is Dictionary:
 			_city = parsed
+			_city["roads"] = _bend_roads(_city.get("roads", []), _city.get("monuments", []))
 		else:
 			push_error("city.json does not parse")
 	return _city
+
+
+## A street's name as the Romans would have cut it, when city.json gives none: capitals, V for U.
+static func street_latin(name: String) -> String:
+	return name.trim_prefix("the ").split(" and ")[0].to_upper().replace("U", "V").replace("J", "I")
+
+
+## The named streets bent as streets are, once, when the city is read (every part of the game reads
+## them from here, so the map, the way-finding, the walkers and the blocks agree): each run sampled
+## every fifteen map metres and swayed sideways by two slow waves, the sway dying out at a street's
+## ends, at its junctions with other streets, over the river (where the bridges are), within the
+## Forum and against the monuments; a corner between two runs bevelled unless a street meets there.
+## A street marked "straight" (the Via Lata, the Via Appia, the Via Recta) keeps its line. The
+## points stay map metres east and north of the Forum, denser than the plan's.
+static func _bend_roads(roads: Array, monuments: Array) -> Array:
+	var lines: Array = []
+	for r: Dictionary in roads:
+		lines.append((r["points"] as Array).map(func(p: Array) -> Vector2: return Vector2(float(p[0]), float(p[1]))))
+	var scale: float = data().get("scale", 0.35)
+	var out: Array = []
+	for i in roads.size():
+		var r: Dictionary = roads[i]
+		var pts: Array = lines[i]
+		if r.get("straight", false) or pts.size() < 2:
+			out.append(r)
+			continue
+		var pins: Array = [pts[0], pts[-1]]  # where the sway is nothing: the ends and the junctions
+		for j in roads.size():
+			if j == i:
+				continue
+			var q: Array = lines[j]
+			for e in q.size():  # a point of the other street on this one
+				var reach := 40.0 if (e == 0 or e == q.size() - 1) else 12.0
+				for k in pts.size() - 1:
+					var near: Vector2 = Geometry2D.get_closest_point_to_segment(q[e], pts[k], pts[k + 1])
+					if near.distance_to(q[e]) < reach:
+						pins.append(near)
+			for k in pts.size() - 1:  # the streets crossing
+				for m in q.size() - 1:
+					var x: Variant = Geometry2D.segment_intersects_segment(pts[k], pts[k + 1], q[m], q[m + 1])
+					if x != null:
+						pins.append(x as Vector2)
+		var pinned := func(p: Vector2) -> bool:
+			for pin: Vector2 in pins:
+				if pin.distance_to(p) < 20.0:
+					return true
+			return false
+		var path: Array = [pts[0]]  # the corners bevelled where no street meets
+		for k in range(1, pts.size() - 1):
+			var v: Vector2 = pts[k]
+			if pinned.call(v):
+				path.append(v)
+				continue
+			var a: Vector2 = pts[k - 1]
+			var b: Vector2 = pts[k + 1]
+			var cut := minf(25.0, 0.35 * minf(v.distance_to(a), v.distance_to(b)))
+			path.append(v + (a - v).normalized() * cut)
+			path.append(v + (b - v).normalized() * cut)
+		path.append(pts[-1])
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash(str(r["name"]))
+		var amp := 4.0 + 0.6 * float(r.get("width", 4.0))
+		var ph1 := rng.randf() * TAU
+		var ph2 := rng.randf() * TAU
+		var bent: Array = []
+		var along := 0.0
+		for k in path.size() - 1:
+			var a: Vector2 = path[k]
+			var b: Vector2 = path[k + 1]
+			var length := a.distance_to(b)
+			var dir := (b - a) / maxf(length, 0.001)
+			var normal := Vector2(-dir.y, dir.x)
+			var steps := maxi(1, int(length / 15.0))
+			for s in range(0 if k == 0 else 1, steps + 1):
+				var t := float(s) / steps
+				var p := a.lerp(b, t)
+				var here := along + t * length
+				var env := 1.0
+				for pin: Vector2 in pins:
+					env = minf(env, clampf((pin.distance_to(p) - 10.0) / 50.0, 0.0, 1.0))
+				env = minf(env, clampf((p.length() - 120.0) / 200.0, 0.0, 1.0))  # the Forum's streets keep their lines
+				env = minf(env, clampf((river_edge(at([p.x, p.y])) - 10.0) / 25.0, 0.0, 1.0))  # straight over the bridges
+				for mon: Dictionary in monuments:
+					if not mon.has("at") or not mon.has("kind"):
+						continue
+					var keep := footprint(mon) / scale + 12.0
+					env = minf(env, clampf((Vector2(float(mon["at"][0]), float(mon["at"][1])).distance_to(p) - keep) / 40.0, 0.0, 1.0))
+				env = env * env * (3.0 - 2.0 * env)
+				var off := amp * env * (0.7 * sin(TAU * here / 260.0 + ph1) + 0.3 * sin(TAU * here / 90.0 + ph2))
+				var bp := p + normal * off
+				bent.append([bp.x, bp.y])
+			along += length
+		var rr := r.duplicate()
+		rr["points"] = bent
+		out.append(rr)
+	return out
 
 
 static func ages() -> Array:
@@ -585,36 +682,154 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	return out
 
 
-## The streets' names painted on the corners at their junctions (the Romans did not; you need them):
-## a board on the wall a few paces along each street from the crossing, red letters on plaster.
+## The streets' names painted on the corners at their junctions (the Romans did not; you need
+## them): on a house wall a few paces along each street from the crossing, a whitewashed panel with
+## the name in red capitals, in Latin (city.json "latin"), the letters the shops' notices used.
+## Where no house stands at the corner there is no name.
 static func _corners(world: Node3D, c: Dictionary, skip: Array) -> void:
 	var edge := walkable()
-	var widths := {}
+	var halves := {}
+	var latin := {}
 	for r: Dictionary in c.get("roads", []):
-		widths[str(r["name"])] = float(r["width"]) / 2.0 * span(1.0)
+		halves[str(r["name"])] = float(r["width"]) / 2.0
+		latin[str(r["name"])] = str(r.get("latin", street_latin(str(r["name"]))))
+	var n := 0
+	var placed: Array = []  # where a name stands already
 	for j: Dictionary in junctions(c):
 		var p: Vector3 = j["at"]
 		if not inside(edge, p) or (not skip.is_empty() and inside(skip, p)):
 			continue
 		for name: String in j["streets"]:
 			var dir := _street_dir(c, name, p)
-			if dir == Vector3.ZERO:
+			if dir == Vector3.ZERO or _occ == null:
 				continue
-			var side := Vector3(dir.z, 0, -dir.x)
-			var q := p + dir * 9.0 + side * (float(widths.get(name, 1.5)) + 0.4)
-			q.y = ground(q) + 3.4
-			var yaw := atan2(-side.x, -side.z)
-			var g := Kit.group(world, q, yaw)
-			Kit.box(g, Vector3(0, 0, -0.05), Vector3(3.6, 0.7, 0.08), "plaster", false)
-			var label := Label3D.new()
-			label.text = name.trim_prefix("the ").split(" and ")[0].to_upper()
-			label.font = load("res://scripts/hall/lettering.gd").LAPIDARY  # the game's own capitals
-			label.font_size = 48
-			label.pixel_size = 0.0075
-			label.modulate = Color("9a2a1a")
-			label.outline_size = 0
-			label.position = Vector3(0, 0, 0.01)
-			g.add_child(label)
+			var half: float = float(halves.get(name, 2.0))
+			var text: String = latin[name]
+			var wide := 0.27 * text.length() + 0.5
+			var found := false
+			for along: float in [8.0, 12.0, 16.0, 20.0, 24.0, 28.0]:
+				for sgn: float in [1.0, -1.0]:
+					var side := Vector3(dir.z, 0, -dir.x) * sgn
+					var base := Vector3(p.x, 0, p.z) + dir * along
+					var bi := _box_at(base + side * (half + 2.2))  # the house beside the street here
+					if bi < 0:
+						continue
+					var t := _hit_box(bi, base, side)  # to its wall
+					if t < half + 0.4 or t > half + 3.4:
+						continue
+					var wall := true  # the same wall behind the panel's whole width, nothing before it
+					for dx: float in [-wide / 2.0, wide / 2.0]:
+						if _box_at(base + dir * dx + side * (t + 0.35)) != bi or _occ.kind_at(base + dir * dx + side * (t - 0.35)) == Occupancy.HOUSE:
+							wall = false
+					if not wall:
+						continue
+					var q := base + side * (t - 0.04)
+					if _near_name(placed, q, wide / 2.0 + 2.5):
+						continue
+					placed.append(q)
+					q.y = ground(q) + 4.78  # over the shop signs, under the first storey's windows
+					var g := Kit.group(world, q, atan2(-side.x, -side.z))
+					g.name = "Corner%d" % n
+					n += 1
+					Kit.box(g, Vector3(0, 0, -0.03), Vector3(wide, 0.56, 0.04), "#efe8d8", false)
+					g.add_child(_name_label(text, 44))
+					found = true
+					break
+				if found:
+					break
+			if found:
+				continue
+			# no house wall at this corner (the Forum's streets run between monuments): a cippus of
+			# travertine on the kerb, the name cut in it in two lines, as the boundary stones were
+			for along: float in [6.0, 10.0, 14.0]:
+				if found:
+					break
+				for sgn: float in [1.0, -1.0]:
+					var side := Vector3(dir.z, 0, -dir.x) * sgn
+					var q := Vector3(p.x, 0, p.z) + dir * along + side * (half + 1.1)
+					# on open ground, or on a monument's margin (its footprint is painted a pace and a half wide), not in it
+					if not _occ.disc_free(q, 0.8, (1 << Occupancy.OPEN) | (1 << Occupancy.GROVE) | (1 << Occupancy.MONUMENT)) or _in_monument(q, 0.7) or _near_name(placed, q, 2.5):
+						continue
+					q.y = ground(q)
+					var g := Kit.group(world, q, atan2(-side.x, -side.z))
+					g.name = "Corner%d" % n
+					n += 1
+					Kit.box(g, Vector3(0, 0.55, 0), Vector3(1.1, 1.1, 0.45), "travertine", false)
+					Kit.box(g, Vector3(0, 1.14, 0), Vector3(1.2, 0.08, 0.55), "travertine", false)  # its cap
+					var label := _name_label(text.replace(" ", "\n"), 22)
+					label.position = Vector3(0, 0.62, 0.23)
+					g.add_child(label)
+					_occ.paint_disc(q, 0.8, Occupancy.FURNITURE)
+					placed.append(q)
+					found = true
+					break
+
+
+## Whether a point stands in a monument's own footprint (the built meshes' bounds), grown by `margin`.
+static func _in_monument(p: Vector3, margin: float) -> bool:
+	for m: Array in _monuments:
+		var local: Vector3 = (m[1] as Basis).transposed() * (Vector3(p.x, 0, p.z) - Vector3((m[0] as Vector3).x, 0, (m[0] as Vector3).z))
+		if absf(local.x) < float(m[2]) / 2.0 + margin and absf(local.z) < float(m[3]) / 2.0 + margin:
+			return true
+	return false
+
+
+## Whether a name already stands within `reach` of a point (two streets' names would sit on one another).
+static func _near_name(placed: Array, q: Vector3, reach: float) -> bool:
+	for o: Vector3 in placed:
+		if Vector2(o.x - q.x, o.z - q.z).length() < reach:
+			return true
+	return false
+
+
+## A street's name in the game's own capitals, red, for a panel or a stone.
+static func _name_label(text: String, size: int) -> Label3D:
+	var label := Label3D.new()
+	label.text = text
+	label.font = load("res://scripts/hall/lettering.gd").LAPIDARY
+	label.font_size = size
+	label.pixel_size = 0.0075
+	label.modulate = Color("9a2a1a")
+	label.outline_size = 0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector3(0, 0, 0.01)
+	return label
+
+
+## The house or plot standing on a point (an index into _obbs), or -1.
+static func _box_at(p: Vector3) -> int:
+	var key := Vector2i(floori(p.x / BIN), floori(p.z / BIN))
+	for i: int in _cells.get(key, []):
+		var o: Array = _obbs[i]
+		var local: Vector3 = (o[1] as Basis).transposed() * (p - o[0])
+		if absf(local.x) <= float(o[2]) / 2.0 and absf(local.z) <= float(o[3]) / 2.0:
+			return i
+	return -1
+
+
+## How far from `from` along `dir` (level) a box's wall is met, or -1 when it is not (or `from` is inside).
+static func _hit_box(i: int, from: Vector3, dir: Vector3) -> float:
+	var o: Array = _obbs[i]
+	var bt: Basis = (o[1] as Basis).transposed()
+	var lf := bt * (Vector3(from.x, 0, from.z) - Vector3((o[0] as Vector3).x, 0, (o[0] as Vector3).z))
+	var ld := bt * Vector3(dir.x, 0, dir.z)
+	var tmin := -INF
+	var tmax := INF
+	for axis in 2:
+		var pos := lf.x if axis == 0 else lf.z
+		var vel := ld.x if axis == 0 else ld.z
+		var h := float(o[2]) / 2.0 if axis == 0 else float(o[3]) / 2.0
+		if absf(vel) < 1e-6:
+			if absf(pos) > h:
+				return -1.0
+			continue
+		var t1 := (-h - pos) / vel
+		var t2 := (h - pos) / vel
+		tmin = maxf(tmin, minf(t1, t2))
+		tmax = minf(tmax, maxf(t1, t2))
+	if tmax < tmin or tmax < 0.0 or tmin <= 0.0:
+		return -1.0
+	return tmin
 
 
 ## Which way a named street runs away from a point on it (the direction of its nearest segment,
@@ -646,6 +861,7 @@ static var _monuments: Array = []  # the monuments' real footprints: [centre, ba
 static var _occ: RefCounted = null  # the feasibility map (urbs_occupancy.gd) of the city last built
 const Occupancy := preload("res://scripts/hall/urbs_occupancy.gd")
 const Houses := preload("res://scripts/hall/textures_houses.gd")
+const TexSet := preload("res://scripts/hall/textures.gd")
 const STALL_ON := [Occupancy.FREE, Occupancy.ROAD, Occupancy.LANE, Occupancy.OPEN, Occupancy.GROVE]  # where a stall may be set out
 static var _last_trees: Array = []  # what was planted, after the culling (for the audit, tools/audit_rome.gd)
 
@@ -879,50 +1095,52 @@ static func _street_basins(world: Node3D, c: Dictionary, year: int, lost: bool, 
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = (r["points"] as Array).map(func(p: Array) -> Vector3: return at(p))
 		var half := float(r["width"]) / 2.0
-		var along := 25.0 + float(n % 3) * 9.0
+		var cum: Array = [0.0]  # the street walked whole by arc length (its points are dense where it bends)
 		for i in pts.size() - 1:
+			cum.append(float(cum[-1]) + Vector2((pts[i + 1] as Vector3).x - (pts[i] as Vector3).x, (pts[i + 1] as Vector3).z - (pts[i] as Vector3).z).length())
+		var total := float(cum[-1])
+		var along := 25.0 + float(n % 3) * 9.0
+		while along < total - 10.0:
+			var i := 0
+			while i < cum.size() - 2 and float(cum[i + 1]) < along:
+				i += 1
 			var a: Vector3 = pts[i]
 			var b: Vector3 = pts[i + 1]
 			var dir := b - a
 			dir.y = 0.0
-			var length := dir.length()
 			dir = dir.normalized()
 			var across := Vector3(dir.z, 0, -dir.x)
-			while along < length:
-				var p := a + dir * along
-				along += gap
-				if along - gap < 10.0 or length - (along - gap) < 10.0:
-					continue  # not at the crossings
-				var side := 1.0 if n % 2 == 0 else -1.0
-				var q := p + across * side * (half + 0.9)
-				n += 1
-				if not inside(edge, q) or river_edge(q) < 8.0 or (not skip.is_empty() and inside(skip, q)):
-					continue
-				var found := false  # slid along the street to the nearest house front, either way
-				for slide: float in [0.0, 3.0, -3.0, 6.0, -6.0, 9.0, -9.0, 12.0, -12.0, 15.0, -15.0]:
-					var qq := q + dir * slide
-					if _occ.kind_at(qq) == Occupancy.FREE and _occ.kind_at(qq + across * side * 1.6) == Occupancy.HOUSE:
-						q = qq
-						found = true
-						break
-				if not found:
-					continue
-				if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
-					continue
-				for si in range(stalls.size() - 1, -1, -1):  # a basin takes its place over a stall
-					if Vector2((stalls[si] as Vector3).x - q.x, (stalls[si] as Vector3).z - q.z).length() < 2.6:
-						stalls.remove_at(si)
-				if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
-					continue
-				q.y = ground(q)
-				var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
-				g.name = "Lacus%d" % out["lacus"].size()
-				Rome.lacus(g, Vector3.ZERO, 0.0, flowing)
-				_occ.paint_disc(q, 1.3, Occupancy.FURNITURE)
-				out["lacus"].append(q)
-				if flowing:
-					out["waters"].append([q, "fountain"])
-			along -= length
+			var p: Vector3 = a.lerp(b, clampf((along - float(cum[i])) / maxf(float(cum[i + 1]) - float(cum[i]), 0.001), 0.0, 1.0))
+			along += gap
+			var side := 1.0 if n % 2 == 0 else -1.0
+			var q := p + across * side * (half + 0.9)
+			n += 1
+			if not inside(edge, q) or river_edge(q) < 8.0 or (not skip.is_empty() and inside(skip, q)):
+				continue
+			var found := false  # slid along the street to the nearest house front, either way
+			for slide: float in [0.0, 3.0, -3.0, 6.0, -6.0, 9.0, -9.0, 12.0, -12.0, 15.0, -15.0]:
+				var qq := q + dir * slide
+				if _occ.kind_at(qq) == Occupancy.FREE and _occ.kind_at(qq + across * side * 1.6) == Occupancy.HOUSE:
+					q = qq
+					found = true
+					break
+			if not found:
+				continue
+			if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
+				continue
+			for si in range(stalls.size() - 1, -1, -1):  # a basin takes its place over a stall
+				if Vector2((stalls[si] as Vector3).x - q.x, (stalls[si] as Vector3).z - q.z).length() < 2.6:
+					stalls.remove_at(si)
+			if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
+				continue
+			q.y = ground(q)
+			var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
+			g.name = "Lacus%d" % out["lacus"].size()
+			Rome.lacus(g, Vector3.ZERO, 0.0, flowing)
+			_occ.paint_disc(q, 1.3, Occupancy.FURNITURE)
+			out["lacus"].append(q)
+			if flowing:
+				out["waters"].append([q, "fountain"])
 
 
 ## The tombs along the roads outside the gates: every so many paces on the stretch of each road
@@ -1824,8 +2042,10 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 		if fallen:
 			continue
 		if rng.randf() < (0.35 if age_id in ["republic", "empire"] else 0.15) and age_id not in ["heroic", "early"]:  # election notices and scratched words by the shop doors
-			add.call("quad", "graffiti_" + (age_id if age_id in ["republic", "empire"] else "late"),
-				_face(b, c, Vector3(rng.randf_range(-w * 0.3, w * 0.3), 2.9 + y - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.6, 0.8)))
+			var notice_age := age_id if age_id in ["republic", "empire"] else "late"
+			var notice_n: int = (TexSet.notices(notice_age) as Array).size()
+			add.call("quad", "graffiti_%s_%d" % [notice_age, rng.randi() % maxi(1, notice_n)],
+				_face(b, c, Vector3(rng.randf_range(-w * 0.3, w * 0.3), 2.9 + y - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.8, 0.8)))
 		if shops > 0 and rng.randf() < (0.4 if not late else 0.2):
 			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled_local(Vector3(w * 0.6, 0.06, 1.8)),
 				Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 3.3, s * (d / 2.0 + 0.9))))

@@ -77,6 +77,13 @@ Decided with BB1 (2026-09-28):
     dark, sun-bleached, lighter on the hills), so it reads as earth and wear rather than a pattern.
     It is rubble in the Fall.
   - Travertine steps before many shops, basalt streets, and the Forum's slabs.
+  - **The named streets bend as streets do** (`rome_map._bend_roads`, done once when city.json is
+    read, so the map, the way-finding, the walkers and the blocks all follow the same lines):
+    each run is sampled every fifteen map metres and swayed sideways by two slow waves, the sway
+    dying out at the street's ends, at its junctions with other streets, over the river where the
+    bridges are, within the Forum and against the monuments, and the corners between runs are
+    bevelled unless a street meets there. The Via Lata, the Via Appia and the Via Recta are
+    marked `"straight"` in city.json and keep their lines, as they did.
   - The seven hills rise in walkable domes.
 - **River:** the Tiber runs between its banks, with the island, and bridges standing by date.
 - **Houses: a kit per age** (`rome_map._house`, `_old_house`, `_plot`, `_ruin`; the notes of
@@ -98,7 +105,12 @@ Decided with BB1 (2026-09-28):
     pasture with sheep, with a farmhouse and its fig among them.
   - 50 BC: the first tall insulae of two to four storeys over shops.
   - AD 150: brick-faced blocks of three to six storeys, arcaded shops, balconies, roof gardens.
-    Election notices and scratched words on the shop fronts (50 BC and AD 150, the chi-rho later).
+    Writing on the walls by the shop doors (50 BC and AD 150; `textures.notices`,
+    `pixel_caps.gd`, rendered in `docs/dev/notices_set.png`): the election notices of Pompeii's
+    walls (CIL IV) painted red on a whitewashed field, M CERRINIVM VATIAM AED O V F and its
+    fellows, and the scratched words in the plaster, ADMIROR PARIES, OTIOSIS LOCVS HIC NON EST,
+    CACATOR CAVE MALVM, VENIMVS HVC CVPIDI; in 384 the chi-rho beside VIVAS IN DEO, IN PACE,
+    SPES IN DEO, over the old scratches.
   - 384: the same blocks patched with plaster and brick, a third of the windows bricked up, shops
     shut up for good, fewer awnings.
   - 455: three in ten houses burnt to their charred beams, the doors off, scaffolding no one
@@ -367,8 +379,15 @@ file to add life; no code is needed.
   - Pigeons peck in the Forum and fly up when you run through them.
   - Dogs trot along the streets.
   - Smoke rises from the bakers' and smiths' roofs by day.
-  - Painted election notices and scratched words appear by the shop doors; the chi-rho appears in
-    the late city.
+  - Painted election notices and scratched words, real ones from Pompeii's walls, appear by the
+    shop doors; the chi-rho appears in the late city.
+  - The streets' names stand on the corners in Latin (city.json `"latin"`: VIA SACRA, VICVS
+    TVSCVS, ARGILETVM, CLIVVS SCAVRI...), red capitals on a whitewashed panel painted on a house
+    wall a few paces from each crossing, over the shop signs and under the first storey's windows
+    (`rome_map._corners`, the wall found from the houses' own boxes); where no house wall stands,
+    as in the Forum where the streets run between monuments, a cippus of travertine on the kerb
+    carries the name cut in two lines, as the boundary stones did. The Romans put no names up;
+    you need them.
 - **Sounds:** the three nearest trades are heard at their doors: the smith's forge, the weaver's
   loom, the tavern's crowd at night, the bakery's fire, the fuller's water.
 - **People talk to each other:** two acquaintances passing stop and exchange a word or two, by name.

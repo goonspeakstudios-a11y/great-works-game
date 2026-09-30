@@ -319,7 +319,7 @@
   ],
   "roads": [
     {
-      "name": "the Sacred Way",
+      "name": "the Sacred Way", "latin": "VIA SACRA",
       "width": 6,
       "points": [
         [
@@ -349,7 +349,7 @@
       ]
     },
     {
-      "name": "the Vicus Tuscus",
+      "name": "the Vicus Tuscus", "latin": "VICVS TVSCVS",
       "width": 4,
       "points": [
         [
@@ -367,7 +367,7 @@
       ]
     },
     {
-      "name": "the Vicus Iugarius",
+      "name": "the Vicus Iugarius", "latin": "VICVS IVGARIVS",
       "width": 4,
       "points": [
         [
@@ -385,7 +385,7 @@
       ]
     },
     {
-      "name": "the Argiletum and the Clivus Suburanus",
+      "name": "the Argiletum and the Clivus Suburanus", "latin": "ARGILETVM",
       "width": 5,
       "points": [
         [
@@ -411,7 +411,7 @@
       ]
     },
     {
-      "name": "the Vicus Patricius",
+      "name": "the Vicus Patricius", "latin": "VICVS PATRICIVS",
       "width": 4,
       "points": [
         [
@@ -429,7 +429,7 @@
       ]
     },
     {
-      "name": "the Vicus Longus",
+      "name": "the Vicus Longus", "latin": "VICVS LONGVS",
       "width": 4,
       "points": [
         [
@@ -447,7 +447,7 @@
       ]
     },
     {
-      "name": "the Alta Semita",
+      "name": "the Alta Semita", "latin": "ALTA SEMITA",
       "width": 5,
       "points": [
         [
@@ -469,7 +469,7 @@
       ]
     },
     {
-      "name": "the Via Lata",
+      "name": "the Via Lata", "latin": "VIA LATA", "straight": true,
       "width": 7,
       "points": [
         [
@@ -495,7 +495,7 @@
       ]
     },
     {
-      "name": "the Via Appia",
+      "name": "the Via Appia", "latin": "VIA APPIA", "straight": true,
       "width": 6,
       "points": [
         [
@@ -517,7 +517,7 @@
       ]
     },
     {
-      "name": "the Via Labicana",
+      "name": "the Via Labicana", "latin": "VIA LABICANA",
       "width": 5,
       "points": [
         [
@@ -539,7 +539,7 @@
       ]
     },
     {
-      "name": "the Via Tiburtina",
+      "name": "the Via Tiburtina", "latin": "VIA TIBVRTINA",
       "width": 5,
       "points": [
         [
@@ -557,7 +557,7 @@
       ]
     },
     {
-      "name": "the road to the Janiculum",
+      "name": "the road to the Janiculum", "latin": "VIA AVRELIA",
       "width": 5,
       "points": [
         [
@@ -583,7 +583,7 @@
       ]
     },
     {
-      "name": "the Via Recta",
+      "name": "the Via Recta", "latin": "VIA RECTA", "straight": true,
       "width": 5,
       "points": [
         [
@@ -601,7 +601,7 @@
       ]
     },
     {
-      "name": "the Via Ostiensis",
+      "name": "the Via Ostiensis", "latin": "VIA OSTIENSIS",
       "width": 5,
       "points": [
         [
@@ -627,7 +627,7 @@
       ]
     },
     {
-      "name": "the Clivus Scauri",
+      "name": "the Clivus Scauri", "latin": "CLIVVS SCAVRI",
       "width": 4,
       "points": [
         [
@@ -649,7 +649,7 @@
       ]
     },
     {
-      "name": "the street of the Esquiline",
+      "name": "the street of the Esquiline", "latin": "VICVS ESQVILINVS",
       "width": 4,
       "points": [
         [

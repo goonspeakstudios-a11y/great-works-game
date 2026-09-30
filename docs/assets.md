@@ -68,6 +68,14 @@ giallo antico, stone pine, toga wool, iron, rust, scutum (and faded). Greece: ho
 (lambda) / Athens (owl) / dead, Persian rosette cloth, wicker, black-figure pottery, papyrus,
 sand, grass, ploughed furrows, cave rock, cast shadow.
 
+### Writing on the walls (scripts/hall/pixel_caps.gd, `Textures.material("graffiti_<age>_<n>")`)
+Capitals five pixels wide and seven tall, Latin's alphabet with an interpunct between words,
+stamped into the wall notices: `textures.notices(age)` gives each age its texts (the painted
+election notices of CIL IV in red on a whitewashed field, the scratched words in grey, the
+chi-rho beside a Christian's wish in 384); `_graffiti(age, n)` sets one on a 108 by 48 texture for
+a quad 1.8 by 0.8 m. Rendered in `docs/dev/notices_set.png`. The streets' corner names are the
+game's own Lapidary capitals on a Label3D (`rome_map._corners`).
+
 ### The house set (scripts/hall/textures_houses.gd, `Textures.material("h_<name>")`)
 The textures of Rome's houses, 64 pixels to a 4 m tile in the hall's pixel style, the pale ones
 tinted per house (`rome_map.tinted`); shown together in `docs/dev/materials.png`. Walls, tiled

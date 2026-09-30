@@ -741,6 +741,25 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 	var parts := func(world: Node3D, name: String) -> int:
 		var n: Node = world.find_child(name, false, false)
 		return (n as MultiMeshInstance3D).multimesh.instance_count if n else 0
+	var parts_like := func(world: Node3D, prefix: String) -> int:  # the instances of every part whose name begins so
+		var total := 0
+		for ch in world.get_children():
+			if str(ch.name).begins_with(prefix) and ch is MultiMeshInstance3D:
+				total += (ch as MultiMeshInstance3D).multimesh.instance_count
+		return total
+	# the streets: bent as streets are, straight where the plan says so, each with its Latin name
+	var roads: Array = RomeMap.city_data()["roads"]
+	var by_name := {}
+	for r: Dictionary in roads:
+		by_name[str(r["name"])] = r
+	check(((by_name["the Sacred Way"] as Dictionary)["points"] as Array).size() > 12, "the Sacred Way bends (%d points)" % ((by_name["the Sacred Way"] as Dictionary)["points"] as Array).size())
+	check(((by_name["the Via Lata"] as Dictionary)["points"] as Array).size() == 5, "the Via Lata runs straight")
+	var latin_ok := true
+	for r: Dictionary in roads:
+		var l := str(r.get("latin", ""))
+		if l.is_empty() or l != l.to_upper() or l.contains("U") or l.contains("J"):
+			latin_ok = false
+	check(latin_ok, "every street has its name in Latin capitals, V for U")
 	for k in [0, 3, 4, 5, 6]:
 		var a: Dictionary = ages[k]
 		var world := Node3D.new()
@@ -751,7 +770,7 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 		if id == "heroic":
 			check(parts.call(world, "Houses_box_h_tufa") > 20, "the age of heroes builds in tufa (%d)" % parts.call(world, "Houses_box_h_tufa"))
 			check(parts.call(world, "Houses_box_furrows") > 5, "and has fields inside its wall (%d plots)" % parts.call(world, "Houses_box_furrows"))
-			check(parts.call(world, "Houses_quad_graffiti_republic") == 0 and parts.call(world, "Houses_quad_graffiti_heroic") == 0, "and no election notices yet")
+			check(parts_like.call(world, "Houses_quad_graffiti_") == 0, "and no election notices yet")
 			check(world.find_child("Tomb0", false, false) != null, "tombs stand along the roads outside the gates")
 			check(parts.call(world, "TreeOlives") > 40, "olives in the orchards of the small city (%d)" % parts.call(world, "TreeOlives"))
 			var wn0: Array = RomeMap.waters(-280).map(func(w: Dictionary) -> String: return str(w["name"]))
@@ -763,7 +782,7 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 		if id == "late":
 			check(parts.call(world, "Houses_quad_h_brick") > 10, "the late city bricks up its windows (%d)" % parts.call(world, "Houses_quad_h_brick"))
 			check(parts.call(world, "Houses_quad_h_shop_shut") > 5, "and shuts shops for good (%d)" % parts.call(world, "Houses_quad_h_shop_shut"))
-			check(parts.call(world, "Houses_quad_graffiti_late") > 0, "and its walls carry the chi-rho")
+			check(parts_like.call(world, "Houses_quad_graffiti_late_") > 0, "and its walls carry the chi-rho")
 		if id == "collapse":
 			check((fab["burnt"] as Array).size() > 10, "the quarters burnt in 455 are known (%d), for the smoke over them" % (fab["burnt"] as Array).size())
 		if id == "fall":
@@ -771,7 +790,24 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(not (fab["waters"] as Array).any(func(w: Array) -> bool: return w[1] == "fountain"), "no fountain runs once the aqueducts are cut")
 			check(world.find_children("*", "GPUParticles3D", true, false).is_empty(), "no water falls anywhere")
 		if id == "empire":
-			check(parts.call(world, "Houses_quad_graffiti_empire") > 0, "election notices and scratched words under the emperors")
+			check(parts_like.call(world, "Houses_quad_graffiti_empire_") > 0, "election notices and scratched words under the emperors")
+			var corners := world.find_children("Corner*", "Node3D", false, false)
+			var placed_well := 0
+			var on_walls := 0
+			for g: Node3D in corners:
+				if g.position.y - RomeMap.ground(g.position) > 3.0:  # a panel: on a house wall
+					on_walls += 1
+					if RomeMap._occ.kind_at(g.position - g.transform.basis.z * 0.6) == RomeMap.Occupancy.HOUSE:
+						placed_well += 1
+				elif RomeMap._occ.kind_at(g.position) == RomeMap.Occupancy.FURNITURE and not RomeMap._in_monument(g.position, 0.5):  # a cippus: on the kerb, in no monument
+					placed_well += 1
+			check(corners.size() > 15 and on_walls > 5 and placed_well == corners.size(), "the streets' names in Latin on the corners, panels on house walls, cippi where there is no wall (%d, %d on walls, %d placed well)" % [corners.size(), on_walls, placed_well])
+			var latin_on_walls := true
+			for g: Node3D in corners:
+				var l: Label3D = g.get_child(g.get_child_count() - 1)
+				if l.text.contains("U") or l.text != l.text.to_upper():
+					latin_on_walls = false
+			check(latin_on_walls, "every corner name is Latin capitals, V for U")
 			check(parts.call(world, "Houses_quad_h_window") > 200 and parts.call(world, "Houses_quad_h_shutter") > 50, "windows with frames and open shutters (%d, %d)" % [parts.call(world, "Houses_quad_h_window"), parts.call(world, "Houses_quad_h_shutter")])
 			check(parts.call(world, "Houses_quad_h_cloth") > 20 and parts.call(world, "Houses_quad_h_door") > 20, "washing on the lines, doors in the walls")
 			check(fab.get("shops") != null, "the shop fronts are known, for their shutters at night")
@@ -804,7 +840,8 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(Tex.material("water") is ShaderMaterial, "the water moves")
 		check(not (fab["compita"] as Array).is_empty(), "%s: shrines at the crossings (%d)" % [id, (fab["compita"] as Array).size()])
 		check(not (fab["tombs"] as Array).is_empty(), "%s: tombs along the roads (%d)" % [id, (fab["tombs"] as Array).size()])
-		check(world.find_children("*", "Label3D", true, false).size() > 20, "%s: the streets' names on the corners" % id)
+		var named := world.find_children("*", "Label3D", true, false).size()
+		check(named > (20 if id in ["heroic", "empire", "late"] else 0), "%s: the streets' names on the corners (%d)" % [id, named])
 		world.free()
 	check(int(shops["fall"]) < int(shops["empire"]) / 3, "the emptied city is open ground with a few ruins (%d houses against %d)" % [shops["fall"], shops["empire"]])
 	# the streets have names you can stand on, and the way is drawn along them

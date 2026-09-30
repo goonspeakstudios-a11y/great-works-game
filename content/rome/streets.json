@@ -115,7 +115,7 @@
     "the street of the Esquiline": "earth"
   },
   "corners": {
-    "note": "The Romans put no names on their streets: you asked. The painted names on the corner shops are for you, in the letters the shops' notices used.",
+    "note": "The Romans put no names on their streets: you asked. The names painted on the house walls at the corners are for you, in Latin as the Romans would have cut them (city.json latin), in the red capitals the shops' notices used.",
     "letters": "red"
   },
   "gates": {
