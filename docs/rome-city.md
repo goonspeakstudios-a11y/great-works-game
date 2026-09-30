@@ -114,6 +114,21 @@ Decided with BB1 (2026-09-28):
     plaster with a bench by the door, a lean-to and a woodpile; the houses of the rich are drafted
     stucco over a painted dado, with a porch. Cats sit by the house fronts (`urbs_town._cats`).
   - The houses of the rich stand round courtyard gardens with a lawn, two trees and a pool.
+  - **Nothing is built into anything** (`_obbs`, `_bands`, `_keep`; `_overlaps`, `_corners_clear`,
+    `_in_obb`, `_on_road`): every house, plot and ruin is a box on the ground, tested against every
+    box already built by the separating-axis test, and against the streets, lanes and corridors
+    and the monuments' and tombs' ground at its four corners. The streets and lanes are lined
+    first, house against house along both sides of every stretch, each with its front a step
+    from the kerb; then the blocks between take what room is left, shrinking to fit or not built.
+    Every tree, bush and tuft is culled if it would stand in a house, a street or under a pergola
+    (the trees planted in a plot's own garden, ruin, field or roof are marked and kept). Basins
+    stand only against a house front, shrines only on a corner pavement, fountains and stalls
+    only in the open. `tools/audit_rome.gd` counts what is built into what; every count is zero.
+    The monuments of the Forum's cluster (city.json) were spaced and sized so no two solid
+    buildings stand in one another: the Basilica Aemilia east of the Senate House, Janus's
+    shrine at the Argiletum's mouth, the Carcer and Vespasian's temple at the Capitol's foot,
+    Minerva's temple in Nerva's forum, the Meta Sudans and the gladiators' school clear of the
+    Colosseum, the Basilica Julia clear of Castor's temple.
   - **Water** (`Rome.fountain`, `Rome.lacus`, `Rome.spring`, `Rome.jet`, `rome_map._street_basins`,
     `_waters`, `content/rome/green.json` "waters"): the water moves (a ripple shader on every sheet
     of it, the Tiber too) and falls (drops thrown from every running spout). A street basin, a

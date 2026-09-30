@@ -577,6 +577,79 @@ static func _street_dir(c: Dictionary, name: String, p: Vector3) -> Vector3:
 
 static var _streets := {}
 static var _burnt: Array = []  # where the houses burnt, while the blocks are built (out["burnt"])
+static var _obbs: Array = []  # every house, plot and ruin built this time: [centre, basis, w, d], so nothing is built into another
+static var _bands: Array = []  # the streets, lanes and corridors: [a, b, half + 3], so nothing stands in them
+static var _keep: Array = []  # the monuments' ground and the tombs: [centre, radius]
+static var _last_trees: Array = []  # what was planted, after the culling (for the audit, tools/audit_rome.gd)
+static var _pergolas: Array = []  # the pergolas and pools of the gardens, which no tree may stand in
+
+
+## Whether two boxes on the ground overlap (each grown by `margin` all round), by the separating
+## axis test on the two boxes' own axes.
+static func _sat(c1: Vector3, b1: Basis, w1: float, d1: float, c2: Vector3, b2: Basis, w2: float, d2: float, margin: float = 0.0) -> bool:
+	var axes: Array = [Vector2(b1.x.x, b1.x.z), Vector2(b1.z.x, b1.z.z), Vector2(b2.x.x, b2.x.z), Vector2(b2.z.x, b2.z.z)]
+	var dc := Vector2(c2.x - c1.x, c2.z - c1.z)
+	for ax: Vector2 in axes:
+		var a := ax.normalized()
+		var e1 := absf(a.dot(Vector2(b1.x.x, b1.x.z))) * (w1 / 2.0 + margin) + absf(a.dot(Vector2(b1.z.x, b1.z.z))) * (d1 / 2.0 + margin)
+		var e2 := absf(a.dot(Vector2(b2.x.x, b2.x.z))) * (w2 / 2.0 + margin) + absf(a.dot(Vector2(b2.z.x, b2.z.z))) * (d2 / 2.0 + margin)
+		if absf(a.dot(dc)) > e1 + e2:
+			return false
+	return true
+
+
+## Whether a box would be built into something already built.
+static func _overlaps(c: Vector3, b: Basis, w: float, d: float, margin: float = 0.5) -> bool:
+	var reach := Vector2(w, d).length() / 2.0 + margin
+	for o: Array in _obbs:
+		var oc: Vector3 = o[0]
+		if Vector2(oc.x - c.x, oc.z - c.z).length() > reach + Vector2(float(o[2]), float(o[3])).length() / 2.0 + margin:
+			continue
+		if _sat(c, b, w, d, oc, o[1], float(o[2]), float(o[3]), margin):
+			return true
+	return false
+
+
+## Whether a point stands inside something built (grown by `margin`).
+static func _in_obb(p: Vector3, margin: float = 0.0) -> bool:
+	for o: Array in _obbs:
+		var oc: Vector3 = o[0]
+		if Vector2(oc.x - p.x, oc.z - p.z).length() > Vector2(float(o[2]), float(o[3])).length() / 2.0 + margin + 0.5:
+			continue
+		var local: Vector3 = (o[1] as Basis).inverse() * (p - oc)
+		if absf(local.x) <= float(o[2]) / 2.0 + margin and absf(local.z) <= float(o[3]) / 2.0 + margin:
+			return true
+	return false
+
+
+## Whether a point stands in a street, a lane or a corridor (their real width, plus `margin`).
+static func _on_road(p: Vector3, margin: float = 0.0) -> bool:
+	for r: Array in _bands:
+		if _to_segment(p, r[0], r[1]) < float(r[2]) - 3.0 + margin:
+			return true
+	return false
+
+
+## Whether a box's corners all keep out of the streets and off the monuments' ground, and no
+## monument or tomb stands inside it.
+static func _corners_clear(c: Vector3, b: Basis, w: float, d: float) -> bool:
+	for sx: float in [-1.0, 1.0]:
+		for sz: float in [-1.0, 1.0]:
+			var q := c + b * Vector3(sx * w / 2.0, 0, sz * d / 2.0)
+			if _on_road(q, 0.6):
+				return false
+			for k: Array in _keep:
+				if Vector2(q.x - (k[0] as Vector3).x, q.z - (k[0] as Vector3).z).length() < float(k[1]):
+					return false
+	var inv := b.inverse()
+	for k: Array in _keep:
+		var kc: Vector3 = k[0]
+		if Vector2(kc.x - c.x, kc.z - c.z).length() > Vector2(w, d).length() / 2.0 + float(k[1]):
+			continue
+		var local := inv * (kc - c)
+		if absf(local.x) < w / 2.0 + float(k[1]) and absf(local.z) < d / 2.0 + float(k[1]):
+			return false
+	return true
 
 
 ## content/rome/streets.json: the epitaphs, the shops' signs, the crossroads shrines, the paving.
@@ -641,19 +714,24 @@ static func _compita(world: Node3D, c: Dictionary, age_id: String, skip: Array, 
 		var p: Vector3 = j["at"]
 		if not inside(edge, p) or (not skip.is_empty() and inside(skip, p)):
 			continue
-		var q := p  # on the corner: of twelve spots round the crossing, the one farthest from any street
-		var best := -1.0
+		var q := Vector3.INF  # on the corner: of twelve spots round the crossing, one on the pavement and in no house
+		var best := INF
 		for s in 12:
 			var a := TAU * (s + 0.5 * (k % 2)) / 12.0
-			var cand := p + Vector3(cos(a), 0, sin(a)) * 7.0
-			var off := INF
-			for r: Dictionary in c.get("roads", []):
-				var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
-				for i in pts.size() - 1:
-					off = minf(off, _to_segment(cand, pts[i], pts[i + 1]) - float(r["width"]) / 2.0)
-			if off > best:
-				best = off
-				q = cand
+			for reach: float in [3.5, 5.0, 7.0, 9.0, 12.0]:
+				var cand := p + Vector3(cos(a), 0, sin(a)) * reach
+				var off := INF
+				for r: Dictionary in c.get("roads", []):
+					var pts: Array = (r["points"] as Array).map(func(pp: Array) -> Vector3: return at(pp))
+					for i in pts.size() - 1:
+						off = minf(off, _to_segment(cand, pts[i], pts[i + 1]) - float(r["width"]) / 2.0)
+				if off < 0.5 or _in_obb(cand, 0.4) or _on_road(cand, 0.5):
+					continue  # in a house, or in a lane
+				if off < best:
+					best = off
+					q = cand
+		if q == Vector3.INF:
+			continue
 		q.y = ground(q)
 		var yaw := atan2(p.x - q.x, p.z - q.z)
 		var g := Kit.group(world, q, yaw)
@@ -697,10 +775,12 @@ static func _street_basins(world: Node3D, c: Dictionary, year: int, lost: bool, 
 					continue
 				if standing.any(func(s: Dictionary) -> bool: return Vector2(s["at"].x - q.x, s["at"].z - q.z).length() < footprint(s["m"]) + 3.0):
 					continue
-				if stalls.any(func(st: Vector3) -> bool: return Vector2(st.x - q.x, st.z - q.z).length() < 2.6):
+				if stalls.any(func(st: Vector3) -> bool: return Vector2(st.x - q.x, st.z - q.z).length() < 2.2):
 					continue
 				if compita.any(func(cp: Vector3) -> bool: return Vector2(cp.x - q.x, cp.z - q.z).length() < 10.0):
 					continue
+				if _in_obb(q, 0.2) or not _in_obb(q + across * side * 1.6, 0.0):
+					continue  # a basin stands on the pavement against a house front, nowhere else
 				q.y = ground(q)
 				var g := Kit.group(world, q, atan2(-across.x * side, -across.z * side))
 				g.name = "Lacus%d" % out["lacus"].size()
@@ -1070,6 +1150,11 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	_roosts = []
 	_pools = []
 	_springs = []
+	_obbs = []
+	_pergolas = []
+	for tomb: Dictionary in out.get("tombs", []):
+		keep_off.append([tomb["at"], 4.5])
+	_keep = keep_off
 	var placed: Array = []  # [centre, reach] of every house built, so none is built into another
 	# the lanes between the blocks: unpaved streets along the bent grid every third row and column,
 	# broken at the named streets, the squares, the monuments, the river and the wall, which the
@@ -1079,6 +1164,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		ribbon(world, pts, LANE, "path" if not fallen else "rubble", 0.1)
 		for i in pts.size() - 1:
 			roads.append([lane[i], lane[i + 1], LANE / 2.0 + 3.0])
+	_bands = roads
 	var add := func(kind: String, mat: String, xf: Transform3D, col: Color = Color.WHITE) -> void:
 		var key := kind + "|" + mat
 		if not parts.has(key):
@@ -1088,6 +1174,116 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	var doors: Array = out.get("doors", [])
 	var taken := {}
 	var lined := {}  # road index and side -> [[metres along it, house width], ...]: the houses lined up on each street
+	# raising a house on a plot found free: a ruin in the emptied city or the lost world, a plain
+	# block far off, a domus on the hills and here and there, else the block split into houses
+	var raise := func(p: Vector3, basis: Basis, w: float, d: float, far: bool, street_half: float, roll2: float, hill: bool) -> void:
+		var yaw := basis.get_euler().y
+		var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
+		if not far:
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(w, 14.0 if not ruin else 6.0, d)
+			Kit.solid(world, shape, Vector3(p.x, ground(p) + 2.0, p.z), Vector3(0, yaw, 0))
+		if ruin:
+			_ruin(add, p, basis, w, d, rng, trees, fallen and not lost and p.distance_to(abitato) < abitato_r * 1.3)
+			return
+		if far:
+			_far_house(add, p, basis, w, d, rng, palette, republic, old)
+			return
+		var near_river := river_edge(p) < 40.0
+		if hill or (roll2 < 0.1 and not near_river):
+			_domus(add, p, basis, w, d, rng, palette, trees)
+			return
+		# the block split into two or three houses side by side along its length
+		var lots := 1 if w < 11.0 else (2 if w < 20.0 else 3)
+		var x0 := -w / 2.0
+		for k in lots:
+			var lw := w / lots
+			var centre := p + basis * Vector3(x0 + lw * (k + 0.5), 0, 0)
+			var kind := "insula"
+			if near_river and rng.randf() < 0.5:
+				kind = "horreum"
+			elif rng.randf() < 0.12:
+				kind = "row"
+			var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
+			if old:
+				floors = 1 if rng.randf() < 0.55 else 2
+			if fallen:
+				floors = rng.randi_range(1, 2)
+			if floors > 3 and landmarks.any(func(l: Vector3) -> bool: return Vector2(l.x - centre.x, l.z - centre.z).length() < LANDMARK_LOW):
+				floors = 3  # kept low round the landmarks, so they show over the roofs
+			_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors, id, street_half)
+	# where nothing is built: off the map, in a cleared or skipped zone, on the wall's line, on the
+	# river's bank, in the water, in an open square, on a monument's ground, in a grove
+	var blocked := func(p: Vector3) -> bool:
+		if not inside(outer, p):
+			return true
+		if clear.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 16.0):
+			return true
+		if not skip.is_empty() and (inside(skip, p) or skip.any(func(q: Vector3) -> bool: return Vector2(q.x - p.x, q.z - p.z).length() < 12.0)):
+			return true
+		if wall_line.any(func(seg: Array) -> bool: return _to_segment(p, seg[0], seg[1]) < 11.0):
+			return true
+		if river_edge(p) < 9.0:
+			return true
+		if pools.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1] + 4.0):
+			return true
+		if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
+			return true
+		if keep_off.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
+			return true
+		if wooded.any(func(g: Dictionary) -> bool: return Vector2(p.x - (g["at"] as Vector3).x, p.z - (g["at"] as Vector3).z).length() < float(g["r"])):
+			return true
+		return false
+	# the streets lined first, house against house along both sides of every named street and
+	# lane, each with its front a step from the kerb, so every street has walls; the gaps left
+	# (a square, a garden) are where the age leaves them
+	for r: Array in roads:
+		if r.size() >= 4:
+			continue  # a view corridor or a stream: not a street to line
+		var a: Vector3 = r[0]
+		var b: Vector3 = r[1]
+		var half := float(r[2]) - 3.0
+		var dir := b - a
+		dir.y = 0.0
+		var length := dir.length()
+		dir = dir.normalized()
+		var n := Vector3(dir.z, 0, -dir.x)
+		for side: float in [-1.0, 1.0]:
+			var t := 9.0 + rng.randf_range(0.0, 4.0)
+			while t < length - 9.0:
+				var w := rng.randf_range(9.5, 13.5)
+				if rng.randf() < 0.15:
+					w += 5.0
+				if t + w > length - 9.0:
+					break
+				var d := rng.randf_range(8.0, 10.0)
+				var p := a + dir * (t + w / 2.0) + n * side * (half + 1.6 + d / 2.0)
+				var far := not inside(edge, p)
+				var y := ground(p)
+				var hill := y > 4.0
+				var keep := 0.92
+				if republic and not inside(servian, p):
+					keep = 0.5 if not old else 0.3
+				if hill:
+					keep = 0.8
+				if fallen and not lost:
+					keep = 0.4 if p.distance_to(abitato) < abitato_r else 0.15
+				if old and (hill or p.distance_to(forum) > 95.0) and inside(servian, p):
+					keep = 0.35  # the fields of the small city's hills, a farmhouse among them
+				if far and rng.randf() < 0.3:
+					t += w + 2.0
+					continue
+				if rng.randf() > keep:
+					t += w + 2.0
+					continue
+				var yaw := atan2(-n.x * side, -n.z * side)  # the house's front (+Z) toward the street
+				var basis := Basis(Vector3.UP, yaw)
+				if blocked.call(p) or _overlaps(p, basis, w, d) or not _corners_clear(p, basis, w, d):
+					t += 4.0
+					continue
+				_obbs.append([p, basis, w, d])
+				raise.call(p, basis, w, d, far, half, rng.randf(), hill)
+				t += w + rng.randf_range(0.3, 1.5)
 	for j in int((hi.y - lo.y) / PITCH) + 1:
 		for i in int((hi.x - lo.x) / PITCH) + 1:
 			if taken.has(Vector2i(i, j)):
@@ -1162,9 +1358,10 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 							room = false
 							break
 				if not room:
-					if roll < 0.5 and not fallen and not far and (roads[k] as Array).size() < 4:
+					if roll < 0.25 and not fallen and not far and (roads[k] as Array).size() < 4:
 						var stall: Vector3 = street["q"] + (street["n"] as Vector3) * (half + 1.2)
-						out["stalls"].append(stall)
+						if not _in_obb(stall, 0.4):
+							out["stalls"].append(stall)
 					continue
 				if not lined.has(side_key):
 					lined[side_key] = []
@@ -1197,7 +1394,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				elif kind == "rock":  # the Capitol's bare face
 					add.call("rock", "rock", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(rng.randf_range(3.0, 6.0), rng.randf_range(1.5, 3.0), rng.randf_range(3.0, 6.0))), Vector3(p.x, y + 0.2, p.z)))
 					_plant(trees, rng, p, "grass", 3, 6.0)
-				elif roll2 < 0.35 and not far and not hill:
+				elif roll2 < 0.35 and not far and not hill and not _in_obb(p, 3.0) and not _on_road(p, 2.5):
 					out["fountains"].append(p)
 					trees.append([p + Vector3(3.5, 0, 2.5), "round", rng.randf_range(0.9, 1.2)])  # the plane over the fountain
 				elif roll2 < 0.8 or hill:
@@ -1221,56 +1418,48 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 					taken[Vector2i(i + 1, j)] = true
 					w += PITCH
 					p += basis * Vector3(PITCH / 2.0, 0, 0)
+				var fits := false
+				for shrink: float in [1.0, 0.8, 0.65]:
+					if not _overlaps(p, basis, w * shrink, d * shrink) and _corners_clear(p, basis, w * shrink, d * shrink):
+						w *= shrink
+						d *= shrink
+						fits = true
+						break
+				if not fits:
+					continue
+				_obbs.append([p, basis, w, d])
 				_plot(add, p, basis, w, d, rng, palette, trees, doors, far)
 				continue
 			if rng.randf() < 0.22 and not hill and not old and not snapped:  # a long block over two cells, the alley between built over
-				taken[Vector2i(i + 1, j)] = true
-				w += PITCH
-				p += basis * Vector3(PITCH / 2.0, 0, 0)
-			var reach := maxf(w, d) / 2.0 * 0.8
-			if placed.any(func(o: Array) -> bool: return Vector2(o[0].x - p.x, o[0].z - p.z).length() < float(o[1]) + reach):
-				continue  # into a house already built
-			placed.append([p, reach])
+				var p2 := p + basis * Vector3(PITCH / 2.0, 0, 0)
+				if not _overlaps(p2, basis, w + PITCH, d) and _corners_clear(p2, basis, w + PITCH, d):
+					taken[Vector2i(i + 1, j)] = true
+					w += PITCH
+					p = p2
+			# a block between the rows lined along the streets and lanes takes what room is left: it
+			# is built smaller if it must, and not at all under six paces
+			var fitted := false
+			for shrink: float in [1.0, 0.85, 0.72, 0.6, 0.5]:
+				var ww := w * shrink
+				var dd := d * shrink
+				if ww < 6.0 or dd < 6.0:
+					break
+				if not _overlaps(p, basis, ww, dd) and _corners_clear(p, basis, ww, dd):
+					w = ww
+					d = dd
+					fitted = true
+					break
+			if not fitted:
+				continue  # into a house already built, a street, or a monument's ground
+			_obbs.append([p, basis, w, d])
+			placed.append([p, maxf(w, d) / 2.0])
 			if hill and rng.randf() < 0.45:  # the yard behind a hill house: a fig, a cypress
 				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.5)), "round" if rng.randf() < 0.5 else ("cypress" if rng.randf() < 0.6 else "olive"), rng.randf_range(0.6, 0.9)])
-			elif not hill and rng.randf() < (0.36 if not far else 0.18):  # a pine or a cypress in a courtyard, grown up over the roofs
+			elif not hill and rng.randf() < (0.4 if not far else 0.2):  # a pine or a cypress in the yard behind, grown up over the roofs
 				var tall := rng.randf() < 0.55
-				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, rng.randf_range(-d * 0.25, d * 0.25)), "pine" if tall else "cypress",
-					rng.randf_range(1.8, 2.4) if tall else rng.randf_range(1.8, 2.4)])
-			var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
-			if not far:
-				var shape := BoxShape3D.new()
-				shape.size = Vector3(w, 14.0 if not ruin else 6.0, d)
-				Kit.solid(world, shape, Vector3(p.x, ground(p) + 2.0, p.z), Vector3(0, yaw, 0))
-			if ruin:
-				_ruin(add, p, basis, w, d, rng, trees, fallen and not lost and p.distance_to(abitato) < abitato_r * 1.3)
-				continue
-			if far:
-				_far_house(add, p, basis, w, d, rng, palette, republic, old)
-				continue
-			var near_river := river_edge(p) < 40.0
-			if hill or (roll2 < 0.1 and not near_river):
-				_domus(add, p, basis, w, d, rng, palette, trees)
-				continue
-			# the block split into two or three houses side by side along its length
-			var lots := 1 if w < 11.0 else (2 if w < 20.0 else 3)
-			var x0 := -w / 2.0
-			for k in lots:
-				var lw := w / lots
-				var centre := p + basis * Vector3(x0 + lw * (k + 0.5), 0, 0)
-				var kind := "insula"
-				if near_river and rng.randf() < 0.5:
-					kind = "horreum"
-				elif rng.randf() < 0.12:
-					kind = "row"
-				var floors := rng.randi_range(2, 4) if republic else rng.randi_range(3, 6)
-				if old:
-					floors = 1 if rng.randf() < 0.55 else 2
-				if fallen:
-					floors = rng.randi_range(1, 2)
-				if floors > 3 and landmarks.any(func(l: Vector3) -> bool: return Vector2(l.x - centre.x, l.z - centre.z).length() < LANDMARK_LOW):
-					floors = 3  # kept low round the landmarks, so they show over the roofs
-				_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors, id, float(street["half"]) if snapped else 0.0)
+				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.6)), "pine" if tall else "cypress",
+					rng.randf_range(1.8, 2.4)])
+			raise.call(p, basis, w, d, far, float(street["half"]) if snapped else 0.0, roll2, hill)
 	for tomb: Dictionary in out.get("tombs", []):  # a cypress either side of each tomb along the roads
 		var tb := Basis(Vector3.UP, float(tomb["yaw"]))
 		for side: float in [-1.0, 1.0]:
@@ -1340,6 +1529,21 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						break
 	trees.append_array(reeds)
 	_waters(world, year, fallen, trees, rng, out)
+	# nothing grows through a house, in a street or under a pergola (a fourth entry marks a tree
+	# planted where it belongs inside a plot: a garden's, a ruin's, a field's, a roof's)
+	var grown: Array = []
+	for t: Array in trees:
+		if t.size() > 3:
+			grown.append(t)
+			continue
+		var q: Vector3 = t[0]
+		if _in_obb(q, 0.6 if t[1] in ["grass", "flowers", "bush", "reeds"] else 1.2) or _on_road(q, 0.4):
+			continue
+		if _pergolas.any(func(g: Vector3) -> bool: return Vector2(g.x - q.x, g.z - q.z).length() < 4.5):
+			continue
+		grown.append(t)
+	trees = grown
+	_last_trees = trees
 	_trees(world, trees, fallen)
 	for i in course.size() - 1:
 		var a: Vector3 = course[i]
@@ -1454,7 +1658,7 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 					var q := Vector3(c.x, top, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0.5, rng.randf_range(-d * 0.35, d * 0.35))
 					add.call("box", "terracotta", Transform3D(b.scaled(Vector3(1.4, 0.6, 0.6)), q))
 					add.call("box", "leaves", Transform3D(b.scaled(Vector3(1.3, 0.5, 0.5)), q + Vector3(0, 0.5, 0)))
-				trees.append([Vector3(c.x, top + 0.3, c.z) + b * Vector3(w * 0.2, 0, 0), "round", 0.45])
+				trees.append([Vector3(c.x, top + 0.3, c.z) + b * Vector3(w * 0.2, 0, 0), "round", 0.45, true])
 				for x: float in [-1.0, 1.0]:  # the pergola's posts and beams, a vine over it
 					for z: float in [-1.0, 1.0]:
 						add.call("box", "wood", Transform3D(b.scaled(Vector3(0.15, 2.4, 0.15)), Vector3(c.x, top, c.z) + b * Vector3(x * w * 0.25 - w * 0.15, 1.2, z * d * 0.2)))
@@ -1569,12 +1773,12 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 			if rng.randf() < 0.45:
 				_sign(add, c, b, w, d, y, s, rng, x)
 			if rng.randf() < 0.22 and not late:  # a vine trained over the front on two poles
-				var out_to := s * (d / 2.0 + 2.2)
+				var out_to := s * (d / 2.0 + 1.35)
 				for px: float in [-bw * 0.4, bw * 0.4]:
 					add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 3.1, 0.12)), Vector3(c.x, y + 1.55, c.z) + b * Vector3(x + px, 0, out_to)))
 				add.call("box", "wood", Transform3D(b.scaled(Vector3(bw * 0.8 + 0.2, 0.08, 0.08)), Vector3(c.x, y + 3.1, c.z) + b * Vector3(x, 0, out_to)))
-				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled(Vector3(bw * 0.9, 2.4, 1.0)),
-					Vector3(c.x, y + 3.25, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))))
+				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled(Vector3(bw * 0.9, 1.5, 1.0)),
+					Vector3(c.x, y + 3.25, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.7))))
 		elif door or (shop and fallen):
 			var which := "h_door" if roll < 0.72 else ("h_door_red" if roll < 0.76 else "h_door_green")
 			if burnt:
@@ -1726,7 +1930,7 @@ static func _plot(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 	if roll < 0.2 and not far:  # the farmhouse, small, and its fig
 		var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
 		_old_house(add, c + b * Vector3(-w * 0.2, 0, 0), b, w * 0.5, d * 0.6, 1, rng, tint, y - 1.5, doors)
-		trees.append([c + b * Vector3(w * 0.3, 0, d * 0.2), "round", 0.8])
+		trees.append([c + b * Vector3(w * 0.3, 0, d * 0.2), "round", 0.8, true])
 		return
 	if roll < 0.5:  # vegetables in rows
 		add.call("box", "furrows", Transform3D(b.scaled(Vector3(w, 0.16, d)), Vector3(c.x, y + 0.02, c.z)))
@@ -1752,11 +1956,11 @@ static func _plot(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 		add.call("disc", "water", Transform3D(Basis.IDENTITY.scaled(Vector3(3.4, 0.1, 3.4)), Vector3(pc.x, y + 0.12, pc.z)))
 		for k in 6:
 			var a := TAU * k / 6.0
-			trees.append([pc + Vector3(cos(a) * 1.9, 0, sin(a) * 1.9), "reeds", rng.randf_range(0.6, 0.9)])
+			trees.append([pc + Vector3(cos(a) * 1.9, 0, sin(a) * 1.9), "reeds", rng.randf_range(0.6, 0.9), true])
 	for k in rng.randi_range(2, 4):  # the sheep
 		add.call("box", "#e0d8c8", Transform3D(b.scaled(Vector3(0.9, 0.5, 0.5)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, rng.randf_range(-d * 0.35, d * 0.35))))
 	if rng.randf() < 0.5:
-		trees.append([c + b * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, rng.randf_range(-d * 0.3, d * 0.3)), "round", rng.randf_range(0.7, 1.0)])
+		trees.append([c + b * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, rng.randf_range(-d * 0.3, d * 0.3)), "round", rng.randf_range(0.7, 1.0), true])
 
 
 ## A house of the rich: two storeys of drafted stucco with a painted dado round a courtyard garden
@@ -1780,10 +1984,10 @@ static func _domus(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng:
 			(b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
 	add.call("box", "g_turf", Transform3D(b.scaled(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
 	add.call("box", "water", Transform3D(b.scaled(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
-	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7])
-	trees.append([c + b * Vector3(-1.4, 0, -1.2), "olive" if rng.randf() < 0.5 else "cypress", 0.6])
+	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7, true])
+	trees.append([c + b * Vector3(-1.4, 0, -1.2), "olive" if rng.randf() < 0.5 else "cypress", 0.6, true])
 	for k in 3:
-		trees.append([Vector3(c.x, y + 0.3, c.z) + b * Vector3(rng.randf_range(-1.8, 1.8), 0, rng.randf_range(-1.6, 1.6)), "flowers" if k < 2 else "bush", 0.6])
+		trees.append([Vector3(c.x, y + 0.3, c.z) + b * Vector3(rng.randf_range(-1.8, 1.8), 0, rng.randf_range(-1.6, 1.6)), "flowers" if k < 2 else "bush", 0.6, true])
 	_roost(c + b * Vector3(0, 0, d / 2.0 + 0.2), y + h + 1.8, rng, b)
 	for s: float in [1.0, -1.0]:  # a few small windows high up
 		for k in 2:
@@ -1832,7 +2036,7 @@ static func _ruin(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 			add.call("quad", "h_vine", _face(b, c, local, s, Vector2(1.2, 3.4), not along_x))
 	add.call("box", "rubble", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, d * 0.6)), Vector3(c.x, y + 0.1, c.z)))
 	if rng.randf() < 0.45:
-		trees.append([c + b * Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2)), "bush" if rng.randf() < 0.6 else "round", rng.randf_range(0.6, 1.1)])
+		trees.append([c + b * Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2)), "bush" if rng.randf() < 0.6 else "round", rng.randf_range(0.6, 1.1), true])
 
 
 ## Draws all the houses' parts: one MultiMesh for each mesh and surface, each part its own colour.
@@ -2123,6 +2327,7 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 				var pb := Basis(Vector3.UP, rng.randf() * TAU)
 				add.call("box", "travertine", Transform3D(pb.scaled(Vector3(7.0, 0.5, 5.0)), Vector3(p.x, y + 0.2, p.z)))
 				add.call("box", "water", Transform3D(pb.scaled(Vector3(6.2, 0.12, 4.2)), Vector3(p.x, y + 0.42, p.z)))
+				_pergolas.append(Vector3(p.x, y, p.z))
 				if not far:
 					Rome.jet(world, Vector3(p.x, y + 0.45, p.z), Vector3(0, 1, 0), 2.2, 14)
 					_pools.append(Vector3(p.x, y, p.z))
@@ -2133,6 +2338,7 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 			_plant(trees, rng, p, "flowers", 3, 6.5)
 			if not far and rng.randf() < 0.14 and not fallen:
 				Rome.pergola(world, Vector3(p.x, y, p.z), rng.randf() * TAU, 6.0)
+				_pergolas.append(Vector3(p.x, y, p.z))
 	if not far:
 		_plant(trees, rng, p, "grass", 3 if fallen else 4, 7.0, 0.8, 1.3)
 
