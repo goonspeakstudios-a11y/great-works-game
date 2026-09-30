@@ -32,6 +32,7 @@ const FOOTPRINT := {"temple": 16.0, "double_temple": 42.0, "round_temple": 8.0, 
 	"amphitheatre": 100.0, "colossus": 6.0, "fountain_cone": 9.0, "ludus": 24.0, "baths": 70.0, "palace": 62.0,
 	"houses": 50.0, "circus": 118.0, "obelisk": 4.0, "open_circus": 55.0, "theatre": 42.0, "pantheon": 30.0,
 	"stadium": 52.0, "altar": 10.0, "mausoleum": 30.0, "church": 50.0, "comitium": 12.0, "cloaca": 6.0, "beak_column": 3.0,
+	"lupanar": 8.0, "catasta": 4.0, "gibbets": 10.0, "puticuli": 14.0,
 	"lacus": 5.0, "fig": 4.0, "milliarium": 3.0, "statues": 10.0, "tomb": 6.0, "altar_open": 9.0, "hut": 7.0, "cave": 8.0,
 	"rock": 10.0, "tower": 6.0, "portico": 22.0}
 

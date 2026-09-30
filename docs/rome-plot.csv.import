@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cktnab3ojmsth"
+
+[deps]
+
+files=["res://docs/rome-plot.id.translation", "res://docs/rome-plot.name.translation", "res://docs/rome-plot.kind.translation", "res://docs/rome-plot.east.translation", "res://docs/rome-plot.north.translation", "res://docs/rome-plot.height.translation", "res://docs/rome-plot.from.translation", "res://docs/rome-plot.ruin.translation", "res://docs/rome-plot.gone.translation", "res://docs/rome-plot.has.translation"]
+
+source_file="res://docs/rome-plot.csv"
+dest_files=["res://docs/rome-plot.id.translation", "res://docs/rome-plot.name.translation", "res://docs/rome-plot.kind.translation", "res://docs/rome-plot.east.translation", "res://docs/rome-plot.north.translation", "res://docs/rome-plot.height.translation", "res://docs/rome-plot.from.translation", "res://docs/rome-plot.ruin.translation", "res://docs/rome-plot.gone.translation", "res://docs/rome-plot.has.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -732,7 +732,9 @@ const Caps := preload("res://scripts/hall/pixel_caps.gd")
 ## wonder, wall, that you have not fallen in ruins, holding up the tedium of so many writers;
 ## this is no place for idlers, move along, loiterer; shitter, beware the evil; we came here
 ## eager, much more eager are we to leave; Celadus the Thracian, the girls' sigh; here dwells
-## happiness. In the late city the chi-rho beside a Christian's wish: may you live in God; in
+## happiness. And the coarser hands: Restituta, take off your tunic, I beg; Lucilla made money
+## from her body; Serena can't stand Isidorus; Vibius Restitutus slept here alone and longed for
+## his Urbana. In the late city the chi-rho beside a Christian's wish: may you live in God; in
 ## peace; hope in God.
 const PROGRAMMATA := [
 	{"lines": ["M CERRINIVM", "VATIAM AED", "O V F"], "painted": true},
@@ -749,6 +751,10 @@ const SCRATCHED := [
 const SCRATCHED_LATER := [
 	{"lines": ["SVSPIRIVM", "PVELLARVM", "CELADVS THRAEX"], "painted": false},
 	{"lines": ["HIC HABITAT", "FELICITAS"], "painted": false},
+	{"lines": ["RESTITVTA PONE", "TVNICAM ROGO"], "painted": false},
+	{"lines": ["LVCILLA EX", "CORPORE LVCRVM", "FACIEBAT"], "painted": false},
+	{"lines": ["SERENA", "ISIDORV FASTIDIT"], "painted": false},
+	{"lines": ["VIBIVS RESTITVTVS", "HIC SOLVS DORMIVIT", "ET VRBANAM SVAM", "DESIDERABAT"], "painted": false},
 ]
 const CHRISTIAN := [
 	{"lines": ["VIVAS IN DEO"], "painted": false, "chi_rho": true},

@@ -2495,7 +2495,7 @@ func _first_words(c: Dictionary) -> String:
 		_favour_done.erase(c["id"])
 		return str(fav["after"][times % fav["after"].size()]).replace("{target}", target)
 	var story := _quest_words(c) if c.has("regular") and here == "urbs" else ""
-	var words := Citizen.greeting(c)
+	var words := Citizen.greeting(c, _talk_ctx())
 	var lines: Array = c.get("regular_lines", [])
 	if not lines.is_empty():
 		words = str(lines[mini(times, lines.size() - 1)])
@@ -2513,6 +2513,26 @@ func _first_words(c: Dictionary) -> String:
 			words += " " + ask.replace("{target}", t["call"]).replace("{title}", t["title"]).replace(
 				"{msg}", str(fav["messages"][randi() % fav["messages"].size()]))
 	return words
+
+
+## What a citizen's first words can draw on: the hour, the weather, the day, and what the ledger
+## says of you in this age (citizen.greeting's `ctx`).
+func _talk_ctx() -> Dictionary:
+	if here != "urbs" or life == null:
+		return {}
+	var ctx := {"hour": life.hour}
+	if life.town:
+		ctx["raining"] = life.town.raining
+		ctx["hot"] = life.hour >= 12.0 and life.hour < 16.0 and not life.town.raining
+		var f: Dictionary = life.town.festival()
+		ctx["festival"] = str(f.get("name", "")) if not f.is_empty() else ""
+		ctx["market"] = life.town.market_day()
+	var deeds: Array = []
+	for e in standing().data().get("ledger", []):
+		if e.get("age", "") == _age_id():
+			deeds.append(str(e.get("text", "")))
+	ctx["deeds"] = deeds
+	return ctx
 
 
 ## What stands nearest you in the city, by name, nearest first.

@@ -243,7 +243,7 @@ func _voices(at: Vector3, speed: float) -> void:
 			line = ["Salve again, stranger!", "Ah, you! Still in Rome?", "Hello again, friend.", "You again! Good."][rng.randi() % 4]
 			_heard[i] = _t + 40.0
 		elif d < 4.0 and rng.randf() < 0.35:
-			line = Citizen.react(c, "night" if phase() == "night" else "greet", rng)
+			line = Citizen.react(c, "night" if phase() == "night" else "greet", rng, {"hour": hour, "raining": town.raining if town else false})
 			_heard[i] = _t + 25.0
 		elif d < 14.0 and d > 3.0 and rng.randf() < 0.03 and _chat(root, c):
 			_heard[i] = _t + 30.0

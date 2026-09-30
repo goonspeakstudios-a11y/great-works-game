@@ -126,10 +126,110 @@ static func _next(p: Dictionary, key: String, list: Array) -> String:
 	return str(list[k % list.size()])
 
 
-## What they say when you first stop them.
-static func greeting(p: Dictionary) -> String:
+## What they say when you first stop them: a greeting (the hour's or the weather's when `ctx`
+## says what hour and weather it is, sometimes in Latin), their mood, and then, as the day and
+## their standing allow, a word on the festival or the market, what they have heard of you, a
+## grievance, a name dropped, with the verbal habit of their kind. `ctx`: {hour, raining, hot,
+## festival, market, deeds: [what the ledger says of you]}.
+static func greeting(p: Dictionary, ctx: Dictionary = {}) -> String:
+	var v: Dictionary = data().get("voice", {})
 	var hello: Array = data()["reacts"]["greet"].get(p["class"], ["Salve."])
-	return "%s %s" % [hello[absi(hash(p["id"])) % hello.size()], p["mood_line"]]
+	var h := absi(hash(p["id"]))
+	var opener: String = hello[h % hello.size()]
+	if not ctx.is_empty() and not v.is_empty():
+		var by_hour := hour_line(v, ctx, h)
+		if ctx.get("raining", false) and h % 3 != 0:
+			opener = str(_at(v["weather"]["rain"], h))
+		elif ctx.get("hot", false) and h % 4 == 0:
+			opener = str(_at(v["weather"]["heat"], h))
+		elif by_hour != "" and h % 5 < 2:
+			opener = by_hour
+		elif h % 7 == 0:
+			opener = latin(p, "greet", h)
+	var out := "%s %s" % [opener, p["mood_line"]]
+	if v.is_empty():
+		return out
+	var said: Dictionary = p["said"]
+	var fest := str(ctx.get("festival", ""))
+	if fest != "" and not said.has("festival"):
+		said["festival"] = 1
+		out += " " + str(_at(v["festival"], h)).replace("{festival}", fest)
+	elif ctx.get("market", false) and not said.has("market"):
+		said["market"] = 1
+		out += " " + str(_at(v["market"], h))
+	var deeds: Array = ctx.get("deeds", [])
+	if not deeds.is_empty() and not said.has("memory") and h % 2 == 0:
+		said["memory"] = 1
+		var deed := str(deeds[h % deeds.size()])
+		out += " " + str(_at(v["memory"], h)).replace("{deed}", deed.substr(0, 1).to_lower() + deed.substr(1))
+	elif h % 3 == 1 and not said.has("grievance"):
+		said["grievance"] = 1
+		out += " " + grievance(p, h)
+	elif h % 3 == 2 and not said.has("drop"):
+		said["drop"] = 1
+		var drops: Array = v["drops"].get(p["age"], [])
+		if not drops.is_empty():
+			out += " %s, %s." % [str(_at(drops, h)), habit(p)]
+	return out
+
+
+static func _at(list: Array, h: int) -> Variant:
+	return list[h % list.size()] if not list.is_empty() else ""
+
+
+## The greeting the hour calls for, or "" when the hour is not given.
+static func hour_line(v: Dictionary, ctx: Dictionary, h: int) -> String:
+	if not ctx.has("hour"):
+		return ""
+	var hour := float(ctx["hour"])
+	var when := "night"
+	if hour >= 5.0 and hour < 7.5:
+		when = "dawn"
+	elif hour < 11.5:
+		when = "morning"
+	elif hour < 14.0:
+		when = "noon"
+	elif hour < 18.0:
+		when = "afternoon"
+	elif hour < 20.5:
+		when = "evening"
+	return str(_at(v["hours"].get(when, []), h))
+
+
+## Their verbal habit: a regular's own, else their class's.
+static func habit(p: Dictionary) -> String:
+	if str(p.get("habit", "")) != "":
+		return str(p["habit"])
+	var habits: Array = data().get("voice", {}).get("habits", {}).get(p["class"], ["as they say"])
+	return str(_at(habits, absi(hash(p["id"])) / 7))
+
+
+## A grievance of their kind, with their habit on it now and then.
+static func grievance(p: Dictionary, h: int) -> String:
+	var list: Array = data().get("voice", {}).get("grievances", {}).get(p["class"], [])
+	if list.is_empty():
+		return ""
+	var line := str(_at(list, h / 3))
+	if h % 2 == 0:
+		line = line.trim_suffix(".") + ", " + habit(p) + "."
+	return line
+
+
+## A Latin word of theirs: "greet", "bye" or "oath" (a woman's or a Christian's where it differs).
+static func latin(p: Dictionary, kind: String, h: int) -> String:
+	var l: Dictionary = data().get("voice", {}).get("latin", {})
+	match kind:
+		"greet":
+			return str(_at(l.get("greet_f" if p.get("gender", "m") == "f" else "greet", ["Salve."]), h))
+		"bye":
+			return str(_at(l.get("bye", ["Vale."]), h))
+		"oath":
+			if p.get("class", "") == "church":
+				return str(_at(l.get("christian_oaths", ["Christe!"]), h))
+			return str(_at(l.get("oaths_f" if p.get("gender", "m") == "f" else "oaths", ["Mehercle!"]), h))
+		"price":
+			return str(_at(l.get("prices", ["two asses"]), h))
+	return ""
 
 
 ## Their answer to one of the talk panel's topics. `near`: the names of what stands close by.
@@ -160,6 +260,8 @@ static func reply(p: Dictionary, topic: String, near: Array = []) -> String:
 				return "Just along there's %s. You can't miss it." % near[0]
 			return "Just along there's %s, and past it %s. Ask anyone." % [near[0], near[1]]
 		"bye":
+			if absi(hash(p["id"])) % 3 == 0:
+				return latin(p, "bye", absi(hash(p["id"])) / 3)
 			return str(_pick_by(p, d["reacts"]["bye"]))
 	return str(_pick_by(p, d["reacts"]["puzzled"]))
 
@@ -218,13 +320,24 @@ How to talk:
 
 ## What they say out loud: "greet" as you come near, "bump" when you walk into them, "call" (a
 ## seller crying their wares), "night" (out after dark).
-static func react(p: Dictionary, kind: String, rng: RandomNumberGenerator) -> String:
+static func react(p: Dictionary, kind: String, rng: RandomNumberGenerator, ctx: Dictionary = {}) -> String:
 	var d := data()
+	var h := rng.randi()
 	match kind:
 		"bump":
-			return str(_pick(rng, d["reacts"]["bump"]))
+			var line := str(_pick(rng, d["reacts"]["bump"]))
+			return (latin(p, "oath", h) + " " + line) if h % 3 == 0 else line  # an oath first, now and then
 		"night":
 			return str(_pick(rng, d["reacts"]["night"]))
 		"call":
 			return str(_pick(rng, job(p["job"]).get("call", [])))
+	if not ctx.is_empty() and d.has("voice"):  # the hour's or the weather's greeting, or a Latin one
+		if ctx.get("raining", false) and h % 2 == 0:
+			return str(_at(d["voice"]["weather"]["rain"], h))
+		if h % 4 == 0:
+			var line := hour_line(d["voice"], ctx, h)
+			if line != "":
+				return line
+		if h % 5 == 0:
+			return latin(p, "greet", h)
 	return str(_pick(rng, d["reacts"]["greet"].get(p["class"], ["Salve."])))

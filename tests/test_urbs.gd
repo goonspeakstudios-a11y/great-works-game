@@ -747,6 +747,34 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			if str(ch.name).begins_with(prefix) and ch is MultiMeshInstance3D:
 				total += (ch as MultiMeshInstance3D).multimesh.instance_count
 		return total
+	# the citizens' voices: the hour's and the weather's greetings, the day's word, the ledger's memory, a habit, Latin
+	var Citizen: GDScript = load("res://scripts/hall/citizen.gd")
+	var vrng := RandomNumberGenerator.new()
+	vrng.seed = 5
+	var dawn := 0
+	var wet := 0
+	var latin := 0
+	var remembered := 0
+	for k in 40:
+		var who: Dictionary = Citizen.make(vrng, ["pistor", "matrona", "servus", "senator"][k % 4], "empire", ["Subura"])
+		var words: String = Citizen.greeting(who, {"hour": 6.0, "deeds": ["carried water for the baker"]})
+		if words.contains("before the sun") or words.contains("shutters are barely") or words.contains("Cold at this hour"):
+			dawn += 1
+		if words.contains("carried water"):
+			remembered += 1
+		who["said"] = {}
+		var rain: String = Citizen.greeting(who, {"hour": 10.0, "raining": true})
+		if rain.contains("rain") or rain.contains("Wet"):
+			wet += 1
+		if words.begins_with("Salv") or words.begins_with("Ave"):
+			latin += 1
+	check(dawn > 3 and wet > 15 and remembered > 8 and latin > 2, "the citizens greet by the hour (%d), the weather (%d), remember your deeds (%d) and speak Latin (%d)" % [dawn, wet, remembered, latin])
+	var bumped: Dictionary = Citizen.make(vrng, "proletarius", "empire", ["Subura"])
+	var oaths := 0
+	for k in 30:
+		if Citizen.react(bumped, "bump", vrng).begins_with("Mehercle") or Citizen.react(bumped, "bump", vrng).contains("!"):
+			oaths += 1
+	check(oaths > 0 and Citizen.habit(bumped) != "", "oaths and a verbal habit")
 	# the streets: bent as streets are, straight where the plan says so, each with its Latin name
 	var roads: Array = RomeMap.city_data()["roads"]
 	var by_name := {}

@@ -541,6 +541,7 @@ static func _regulars(spawn: Callable, age: String, out: Array) -> void:
 		who["call"] = str(names[age]).split(" ")[0].trim_suffix(",")
 		who["regular"] = r["id"]
 		who["regular_lines"] = r["lines"].get(age, [])
+		who["habit"] = str(r.get("habit", ""))
 		p["shift"] = "day"
 		p.erase("path")
 		for it: Dictionary in out:

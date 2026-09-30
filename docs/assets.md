@@ -119,9 +119,21 @@ taller than wide), `g_olive` (grey, the sky through it), `g_bush` (box, myrtle),
 between the leaves), `g_turf` (a lawn with daisies), `g_bark`. `rome_map._trees` draws every
 tree as a bark trunk and two or three crossed quads. Rendered in `docs/dev/green_set.png`.
 
+### Letters cut in stone (kit_rome.gd `Rome.inscription`)
+The game's Lapidary capitals on a Label3D set on a face: the temples' dedications along their
+friezes, the arches' attic texts, the Golden Milestone's miles, the pipe stamps at the basins, the
+epitaphs on the road tombs, the corner names on their panels and cippi. The shop signs' pictures
+now number twelve (`textures_houses.SIGNS`: wine, bread, knife, shoe, cloth, pot, fish, hammer,
+shears, scales, cup, roll), one per trade (`rome_map.TRADES`).
+
 ## Music (assets/music, from tools/make_music.py)
 Every place track is 48 s, in layers that loop in step, with a ghost (the faint echo heard while
 the place is lost). Zones are listed in `scripts/pixel/music.gd`.
+
+The streets' sounds besides the tracks: `forge`, `loom`, `crowd`, `fire`, `fountain` and, new,
+`mill` (a donkey mill's grind), `tavern` (the crowd with cups knocked on the boards), `trickle` (a
+basin's spout), and the footfalls `step_stone`, `step_earth`, `step_slab` played by
+`urbs_life._footsteps` by what the feasibility map says is underfoot.
 
 | Zone | Mode and instruments | Layers |
 |---|---|---|
