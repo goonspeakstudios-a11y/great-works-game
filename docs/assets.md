@@ -79,7 +79,7 @@ Fronts, one image to one quad: `h_shop` (the arched bay, shutters folded back, t
 pots) and `h_shop_shut` (the shutters up, urbs_life.gd swaps them at dusk), `h_door` and its
 painted `h_door_red`, `h_door_green`, `h_window` (frame and sill, clear in the middle for the
 lit pane), `h_window_small` (barred), `h_shutter` (one leaf), `h_cloth` (washing, tinted the
-tunics' colours), `h_vine`, `h_sign`. Storey-aligned things (the damp at the foot, the painted
+tunics' colours), `h_vine`, `h_sign` and `h_sign_<trade>` (the shop's board with its trade painted: wine, bread, knife, shoe, cloth, pot, fish), rendered in `docs/dev/signs_set.png`). Storey-aligned things (the damp at the foot, the painted
 dado) are geometry, since a world-tiled texture repeats up the wall.
 
 ### The people set (scripts/hall/textures_people.gd, `Textures.material("c_<name>#rrggbb")`)

@@ -775,6 +775,10 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(parts.call(world, "Houses_quad_h_window") > 200 and parts.call(world, "Houses_quad_h_shutter") > 50, "windows with frames and open shutters (%d, %d)" % [parts.call(world, "Houses_quad_h_window"), parts.call(world, "Houses_quad_h_shutter")])
 			check(parts.call(world, "Houses_quad_h_cloth") > 20 and parts.call(world, "Houses_quad_h_door") > 20, "washing on the lines, doors in the walls")
 			check(fab.get("shops") != null, "the shop fronts are known, for their shutters at night")
+			var signs := 0
+			for trade: String in RomeMap.Houses.SIGNS:
+				signs += parts.call(world, "Houses_quad_h_sign_" + trade)
+			check(signs > 200 and signs % 2 == 0, "painted signs hung out over the pavement, the trade pictured on both faces (%d)" % signs)
 			check((fab["stalls"] as Array).size() > 100 and (fab["stalls"] as Array).size() < 600, "stalls on the kerbs where no house fits, not everywhere (%d)" % (fab["stalls"] as Array).size())
 			check((fab["fountains"] as Array).size() > 8, "little squares with fountains off the streets (%d)" % (fab["fountains"] as Array).size())
 			check(RomeMap._obbs.size() > 2000, "the city is full (%d houses and plots)" % RomeMap._obbs.size())

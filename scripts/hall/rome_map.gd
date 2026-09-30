@@ -645,6 +645,7 @@ static var _bands: Array = []  # the streets, lanes and corridors: [a, b, half +
 static var _monuments: Array = []  # the monuments' real footprints: [centre, basis, w, d], for the audit
 static var _occ: RefCounted = null  # the feasibility map (urbs_occupancy.gd) of the city last built
 const Occupancy := preload("res://scripts/hall/urbs_occupancy.gd")
+const Houses := preload("res://scripts/hall/textures_houses.gd")
 const STALL_ON := [Occupancy.FREE, Occupancy.ROAD, Occupancy.LANE, Occupancy.OPEN, Occupancy.GROVE]  # where a stall may be set out
 static var _last_trees: Array = []  # what was planted, after the culling (for the audit, tools/audit_rome.gd)
 
@@ -1520,7 +1521,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 						_plant(trees, rng, p, "grass", 5, 7.0, 0.8, 1.4)
 						_plant(trees, rng, p, "bush", 1, 6.0, 0.6, 1.0)
 				elif kind == "rock":  # the Capitol's bare face
-					add.call("rock", "rock", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(rng.randf_range(3.0, 6.0), rng.randf_range(1.5, 3.0), rng.randf_range(3.0, 6.0))), Vector3(p.x, y + 0.2, p.z)))
+					add.call("rock", "rock", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(rng.randf_range(3.0, 6.0), rng.randf_range(1.5, 3.0), rng.randf_range(3.0, 6.0))), Vector3(p.x, y + 0.2, p.z)))
 					_plant(trees, rng, p, "grass", 3, 6.0)
 				elif roll2 < 0.35 and not far and not hill and _occ.disc_free(p, 3.5):
 					out["fountains"].append(p)
@@ -1607,8 +1608,8 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			for k in int(r[2]):
 				var q := at + bb * Vector3(rng.randf_range(-1.2, 1.2), 0.1, rng.randf_range(-0.2, 0.2))
 				var turn := bb * Basis(Vector3.UP, rng.randf_range(-0.6, 0.6))
-				add.call("box", "#8a8a94", Transform3D(turn.scaled(Vector3(0.16, 0.14, 0.3)), q))
-				add.call("box", "#5a6a70", Transform3D(turn.scaled(Vector3(0.1, 0.1, 0.12)), q + turn * Vector3(0, 0.09, 0.14)))
+				add.call("box", "#8a8a94", Transform3D(turn.scaled_local(Vector3(0.16, 0.14, 0.3)), q))
+				add.call("box", "#5a6a70", Transform3D(turn.scaled_local(Vector3(0.1, 0.1, 0.12)), q + turn * Vector3(0, 0.09, 0.14)))
 	out["shops"] = _draw(world, parts)
 	# the street fountains, with a lamp on a post by each
 	var flames := MultiMesh.new()
@@ -1726,8 +1727,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 	var wall_tint := Color.WHITE if brick else (tint if not burnt else tint.darkened(0.5))
 	if kind == "horreum":  # a warehouse: plain brick, a few small high windows, a flat roof, a big door
 		var h := 8.0
-		add.call("box", "h_brick", Transform3D(b.scaled(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)))
-		add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, y + h + 0.15, c.z)))
+		add.call("box", "h_brick", Transform3D(b.scaled_local(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)))
+		add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, y + h + 0.15, c.z)))
 		for s: float in [1.0, -1.0]:
 			for k in maxi(1, int(w / 4.0)):
 				var x := -w / 2.0 + (k + 0.5) * w / maxi(1, int(w / 4.0))
@@ -1736,8 +1737,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 		return
 	var ground_h := 4.0
 	# the ground storey, and its bays: shops, doors, blank wall
-	add.call("box", wall, Transform3D(b.scaled(Vector3(w, y + ground_h - low, d)), Vector3(c.x, (low + y + ground_h) / 2.0, c.z)), wall_tint)
-	add.call("box", "#8a8074", Transform3D(b.scaled(Vector3(w + 0.04, 0.9, d + 0.04)), Vector3(c.x, y + 0.45, c.z)), tint.darkened(0.35))  # the damp at the foot
+	add.call("box", wall, Transform3D(b.scaled_local(Vector3(w, y + ground_h - low, d)), Vector3(c.x, (low + y + ground_h) / 2.0, c.z)), wall_tint)
+	add.call("box", "#8a8074", Transform3D(b.scaled_local(Vector3(w + 0.04, 0.9, d + 0.04)), Vector3(c.x, y + 0.45, c.z)), tint.darkened(0.35))  # the damp at the foot
 	var shops := 0
 	for s: float in [1.0, -1.0]:
 		shops += _bays(add, c, b, w, d, y, s, kind, rng, fallen, late, burnt, doors, age_id)
@@ -1745,14 +1746,14 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 			shops += _bays(add, c, b, w, d, y, s, kind, rng, fallen, late, burnt, doors, age_id, true)
 	var top := y + ground_h
 	if kind == "row" or floors <= 1:  # a row of shops: a lean-to of tiles
-		add.call("prism", _roof_of(age_id, burnt), Transform3D(b.scaled(Vector3(w + 0.6, 1.6, d + 0.8)), Vector3(c.x, top + 0.8, c.z)))
+		add.call("prism", _roof_of(age_id, burnt), Transform3D(b.scaled_local(Vector3(w + 0.6, 1.6, d + 0.8)), Vector3(c.x, top + 0.8, c.z)))
 		_ridge(add, c, b, w, d, top + 1.6, rng)
 	else:
 		var upper := (floors - 1) * 4.0
 		var setback := floors >= 4 and rng.randf() < 0.35
 		if setback:
 			upper -= 4.0
-		add.call("box", wall, Transform3D(b.scaled(Vector3(w, upper, d)), Vector3(c.x, top + upper / 2.0, c.z)), wall_tint)
+		add.call("box", wall, Transform3D(b.scaled_local(Vector3(w, upper, d)), Vector3(c.x, top + upper / 2.0, c.z)), wall_tint)
 		if late or burnt:  # plaster patched over the brick
 			for k in rng.randi_range(1, 3):
 				var s := 1.0 if rng.randf() < 0.5 else -1.0
@@ -1765,51 +1766,51 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 		top += upper
 		if burnt:  # the roof gone to its charred beams, the top storey open
 			for k in maxi(2, int(w / 2.2)):
-				add.call("box", "#2a2622", Transform3D(b.scaled(Vector3(0.25, 0.3, d + 0.6)), Vector3(c.x, top + 0.4, c.z) + b * Vector3(-w / 2.0 + (k + 0.5) * w / maxi(2, int(w / 2.2)), 0, 0)))
-			add.call("box", "#2a2622", Transform3D(b.scaled(Vector3(w + 0.4, 0.2, 0.25)), Vector3(c.x, top + 0.4, c.z)))
+				add.call("box", "#2a2622", Transform3D(b.scaled_local(Vector3(0.25, 0.3, d + 0.6)), Vector3(c.x, top + 0.4, c.z) + b * Vector3(-w / 2.0 + (k + 0.5) * w / maxi(2, int(w / 2.2)), 0, 0)))
+			add.call("box", "#2a2622", Transform3D(b.scaled_local(Vector3(w + 0.4, 0.2, 0.25)), Vector3(c.x, top + 0.4, c.z)))
 			if rng.randf() < 0.4:  # scaffolding no one finishes
 				var s := 1.0 if rng.randf() < 0.5 else -1.0
 				for x: float in [-w * 0.3, 0.0, w * 0.3]:
-					add.call("box", "wood", Transform3D(b.scaled(Vector3(0.18, top - y + 2.0, 0.18)), Vector3(c.x, (y + top + 2.0) / 2.0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.0))))
-				add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.7, 0.12, 1.2)), Vector3(c.x, top - 1.0, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.7))))
+					add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.18, top - y + 2.0, 0.18)), Vector3(c.x, (y + top + 2.0) / 2.0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.0))))
+				add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w * 0.7, 0.12, 1.2)), Vector3(c.x, top - 1.0, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.7))))
 			return
 		if setback:  # a top storey set back, lighter, often timber-framed
 			var tw := w - 1.8
 			var td := d - 1.8
 			var tint2 := Color("#" + str(palette[rng.randi() % palette.size()]))
-			add.call("box", "h_timber" if rng.randf() < 0.5 else "h_plaster", Transform3D(b.scaled(Vector3(tw, 3.4, td)), Vector3(c.x, top + 1.7, c.z)), tint2)
+			add.call("box", "h_timber" if rng.randf() < 0.5 else "h_plaster", Transform3D(b.scaled_local(Vector3(tw, 3.4, td)), Vector3(c.x, top + 1.7, c.z)), tint2)
 			_windows(add, c, b, tw, td, top + 1.6, rng, 0.0, true)
-			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.25, d)), Vector3(c.x, top + 0.12, c.z)))  # the terrace round it
+			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w, 0.25, d)), Vector3(c.x, top + 0.12, c.z)))  # the terrace round it
 			top += 3.4
 		if rng.randf() < 0.6 or republic:  # a tiled roof
 			var rw := w + 0.8 if not setback else w - 1.0
 			var rd := d + 0.8 if not setback else d - 1.0
-			add.call("prism", _roof_of(age_id, false), Transform3D(b.scaled(Vector3(rw, 2.2, rd)), Vector3(c.x, top + 1.1, c.z)))
+			add.call("prism", _roof_of(age_id, false), Transform3D(b.scaled_local(Vector3(rw, 2.2, rd)), Vector3(c.x, top + 1.1, c.z)))
 			_ridge(add, c, b, rw, rd, top + 2.2, rng)
 		else:  # a roof terrace with its parapet, sometimes a garden and a pergola on it
-			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, top + 0.15, c.z)))
-			add.call("box", "h_plaster", Transform3D(b.scaled(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, d / 2.0)), tint)
-			add.call("box", "h_plaster", Transform3D(b.scaled(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, -d / 2.0)), tint)
+			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, top + 0.15, c.z)))
+			add.call("box", "h_plaster", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, d / 2.0)), tint)
+			add.call("box", "h_plaster", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, -d / 2.0)), tint)
 			if rng.randf() < 0.55 and not fallen:
 				for k in rng.randi_range(2, 4):  # planters of box and myrtle, and a little tree in a pot
 					var q := Vector3(c.x, top, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0.5, rng.randf_range(-d * 0.35, d * 0.35))
-					add.call("box", "terracotta", Transform3D(b.scaled(Vector3(1.4, 0.6, 0.6)), q))
-					add.call("box", "leaves", Transform3D(b.scaled(Vector3(1.3, 0.5, 0.5)), q + Vector3(0, 0.5, 0)))
+					add.call("box", "terracotta", Transform3D(b.scaled_local(Vector3(1.4, 0.6, 0.6)), q))
+					add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(1.3, 0.5, 0.5)), q + Vector3(0, 0.5, 0)))
 				trees.append([Vector3(c.x, top + 0.3, c.z) + b * Vector3(w * 0.2, 0, 0), "round", 0.45, true])
 				for x: float in [-1.0, 1.0]:  # the pergola's posts and beams, a vine over it
 					for z: float in [-1.0, 1.0]:
-						add.call("box", "wood", Transform3D(b.scaled(Vector3(0.15, 2.4, 0.15)), Vector3(c.x, top, c.z) + b * Vector3(x * w * 0.25 - w * 0.15, 1.2, z * d * 0.2)))
-				add.call("box", "leaves", Transform3D(b.scaled(Vector3(w * 0.55, 0.25, d * 0.45)), Vector3(c.x, top, c.z) + b * Vector3(-w * 0.15, 2.5, 0)))
+						add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.15, 2.4, 0.15)), Vector3(c.x, top, c.z) + b * Vector3(x * w * 0.25 - w * 0.15, 1.2, z * d * 0.2)))
+				add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(w * 0.55, 0.25, d * 0.45)), Vector3(c.x, top, c.z) + b * Vector3(-w * 0.15, 2.5, 0)))
 			if rng.randf() < 0.5:
 				_roost(c + b * Vector3(rng.randf_range(-w * 0.4, w * 0.4), 0, d / 2.0), top + 0.8, rng)
 		if floors >= 3 and rng.randf() < 0.45 and not fallen:  # a wooden balcony along the second storey
 			var s := 1.0 if rng.randf() < 0.5 else -1.0
-			add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.8, 0.2, 1.1)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.0, s * (d / 2.0 + 0.55))))
-			add.call("box", "wood", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, 0.08)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.5, s * (d / 2.0 + 1.08))))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w * 0.8, 0.2, 1.1)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.0, s * (d / 2.0 + 0.55))))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w * 0.8, 0.8, 0.08)), Vector3(c.x, y, c.z) + b * Vector3(0, 8.5, s * (d / 2.0 + 1.08))))
 			for k in 3:  # pots and washing on it
-				add.call("box", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.35, 0.35, 0.35)),
+				add.call("box", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.35, 0.35, 0.35)),
 					Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.3, s * (d / 2.0 + 0.8))))
-				add.call("box", "leaves", Transform3D(Basis.IDENTITY.scaled(Vector3(0.4, 0.3, 0.4)),
+				add.call("box", "leaves", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.4, 0.3, 0.4)),
 					Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.65, s * (d / 2.0 + 0.8))))
 			for k in rng.randi_range(2, 4):
 				add.call("quad", "h_cloth", _face(b, c, Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.9 + y - c.y, s * (d / 2.0 + 1.12)), s, Vector2(0.7, 0.8)),
@@ -1819,21 +1820,21 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 		add.call("quad", "h_vine", _face(b, c, Vector3(rng.randf_range(-w * 0.4, w * 0.4), y + 2.6 - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.3, 5.0)))
 	for s: float in [1.0, -1.0]:  # before the shops: a step of slabs, an awning, wares
 		if rng.randf() < 0.55:
-			add.call("box", "r_slab", Transform3D(b.scaled(Vector3(w, 0.1, 1.5)), Vector3(c.x, y + 0.02, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.75))))
+			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w, 0.1, 1.5)), Vector3(c.x, y + 0.02, c.z) + b * Vector3(0, 0, s * (d / 2.0 + 0.75))))
 		if fallen:
 			continue
 		if rng.randf() < (0.35 if age_id in ["republic", "empire"] else 0.15) and age_id not in ["heroic", "early"]:  # election notices and scratched words by the shop doors
 			add.call("quad", "graffiti_" + (age_id if age_id in ["republic", "empire"] else "late"),
 				_face(b, c, Vector3(rng.randf_range(-w * 0.3, w * 0.3), 2.9 + y - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.6, 0.8)))
 		if shops > 0 and rng.randf() < (0.4 if not late else 0.2):
-			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled(Vector3(w * 0.6, 0.06, 1.8)),
+			add.call("box", "awning", Transform3D(b * Basis(Vector3.RIGHT, 0.35 * s).scaled_local(Vector3(w * 0.6, 0.06, 1.8)),
 				Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 3.3, s * (d / 2.0 + 0.9))))
 			for k in rng.randi_range(2, 5):
 				var q := Vector3(c.x, y, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, s * (d / 2.0 + rng.randf_range(0.5, 1.4)))
 				if rng.randf() < 0.6:
 					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY, q + Vector3(0, 0.45, 0)))
 				else:
-					add.call("box", "wood", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(0.7, 0.6, 0.7)), q + Vector3(0, 0.3, 0)))
+					add.call("box", "wood", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(0.7, 0.6, 0.7)), q + Vector3(0, 0.3, 0)))
 
 
 ## The colours washing is dyed: the undyed wool of most tunics, and the reds, blues and ochres of
@@ -1850,7 +1851,7 @@ static func _roof_of(age_id: String, burnt: bool) -> String:
 ## The ridge of a tiled roof: a line of cover tiles, and now and then the pigeons sitting on it.
 static func _ridge(add: Callable, c: Vector3, b: Basis, rw: float, rd: float, top: float, rng: RandomNumberGenerator) -> void:
 	var along_x := rw >= rd  # the prism's ridge runs along its longer side
-	add.call("box", "#8a4a30", Transform3D(b.scaled(Vector3(rw if along_x else 0.3, 0.22, 0.3 if along_x else rd)), Vector3(c.x, top - 0.05, c.z)))
+	add.call("box", "#8a4a30", Transform3D(b.scaled_local(Vector3(rw if along_x else 0.3, 0.22, 0.3 if along_x else rd)), Vector3(c.x, top - 0.05, c.z)))
 	if rng.randf() < 0.18:
 		var t := rng.randf_range(-0.4, 0.4)
 		_roost(c + b * (Vector3(rw * t, 0, 0) if along_x else Vector3(0, 0, rd * t)), top + 0.1, rng, b)
@@ -1868,13 +1869,13 @@ static func _washing(add: Callable, c: Vector3, b: Basis, w: float, d: float, h:
 	var length := 2.0 * (street_w + 1.6) + 0.3
 	var x := rng.randf_range(-w * 0.3, w * 0.3)
 	var start := Vector3(c.x, 0, c.z) + b * Vector3(x, h, d / 2.0)
-	add.call("box", "#4a3a2a", Transform3D(b.scaled(Vector3(0.03, 0.03, length)), start + b * Vector3(0, 0, length / 2.0)))
+	add.call("box", "#4a3a2a", Transform3D(b.scaled_local(Vector3(0.03, 0.03, length)), start + b * Vector3(0, 0, length / 2.0)))
 	var n := int(length / 0.95)
 	for k in n:
 		if rng.randf() < 0.25:
 			continue
 		var z := d / 2.0 + 0.5 + k * 0.95
-		add.call("quad", "h_cloth", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(0.75, rng.randf_range(0.6, 1.0), 1.0)),
+		add.call("quad", "h_cloth", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled_local(Vector3(0.75, rng.randf_range(0.6, 1.0), 1.0)),
 			Vector3(c.x, 0, c.z) + b * Vector3(x, h - 0.45, z)), TUNICS[rng.randi() % TUNICS.size()])
 
 
@@ -1903,18 +1904,18 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 		if shop and not fallen:
 			shops += 1
 			add.call("quad", "h_shop", _face(b, c, Vector3(x, y + 1.9 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(minf(bw - 0.3, 3.4), 3.7)))
-			add.call("box", "travertine", Transform3D(b.scaled(Vector3(minf(bw - 1.2, 2.4), 0.95, 0.5)), Vector3(c.x, y + 0.47, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))
+			add.call("box", "travertine", Transform3D(b.scaled_local(Vector3(minf(bw - 1.2, 2.4), 0.95, 0.5)), Vector3(c.x, y + 0.47, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))
 			for j in rng.randi_range(1, 3):  # the pots on the counter
-				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.6, 0.6, 0.6)),
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.6, 0.6, 0.6)),
 					Vector3(c.x, y + 1.2, c.z) + b * Vector3(x + rng.randf_range(-0.8, 0.8), 0, s * (d / 2.0 + 0.25))))
 			if rng.randf() < 0.45:
 				_sign(add, c, b, w, d, y, s, rng, x)
 			if rng.randf() < 0.22 and not late:  # a vine trained over the front on two poles
 				var out_to := s * (d / 2.0 + 1.35)
 				for px: float in [-bw * 0.4, bw * 0.4]:
-					add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 3.1, 0.12)), Vector3(c.x, y + 1.55, c.z) + b * Vector3(x + px, 0, out_to)))
-				add.call("box", "wood", Transform3D(b.scaled(Vector3(bw * 0.8 + 0.2, 0.08, 0.08)), Vector3(c.x, y + 3.1, c.z) + b * Vector3(x, 0, out_to)))
-				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled(Vector3(bw * 0.9, 1.5, 1.0)),
+					add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.12, 3.1, 0.12)), Vector3(c.x, y + 1.55, c.z) + b * Vector3(x + px, 0, out_to)))
+				add.call("box", "wood", Transform3D(b.scaled_local(Vector3(bw * 0.8 + 0.2, 0.08, 0.08)), Vector3(c.x, y + 3.1, c.z) + b * Vector3(x, 0, out_to)))
+				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled_local(Vector3(bw * 0.9, 1.5, 1.0)),
 					Vector3(c.x, y + 3.25, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.7))))
 		elif door or (shop and fallen):
 			var which := "h_door" if roll < 0.72 else ("h_door_red" if roll < 0.76 else "h_door_green")
@@ -1922,10 +1923,10 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 				add.call("quad", "dark", _face(b, c, Vector3(x, y + 1.4 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(1.4, 2.8)))  # off its hinges
 			else:
 				add.call("quad", which, _face(b, c, Vector3(x, y + 1.4 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(1.5, 2.9)))
-				add.call("box", "bronze", Transform3D(b.scaled(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.6, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.1))))  # the lamp
+				add.call("box", "bronze", Transform3D(b.scaled_local(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.6, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.1))))  # the lamp
 				if rng.randf() < 0.4:  # a bush of box or a rose in a pot by the door
 					var pot := Vector3(c.x, y, c.z) + b * Vector3(x - 1.0, 0, s * (d / 2.0 + 0.45))
-					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.9, 0.55, 0.9)), pot + Vector3(0, 0.25, 0)))
+					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.9, 0.55, 0.9)), pot + Vector3(0, 0.25, 0)))
 					var potted := "g_flowers" if rng.randf() < 0.5 else "g_bush"
 					add.call("quad", potted, _face(b, c, Vector3(x - 1.0, y + 0.85 - c.y, s * (d / 2.0 + 0.45)), s, Vector2(0.9, 0.8)))
 					add.call("quad", potted, _face(b, c, Vector3(x - 1.0, y + 0.85 - c.y, s * (d / 2.0 + 0.45)), s, Vector2(0.9, 0.8), true))
@@ -1938,39 +1939,29 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 	return shops
 
 
-## A shop's sign on its front: a board hung out over the door with what the shop sells on it, the
+## A shop's sign: a painted board hung out over the pavement from an iron bracket, edge-on to the
+## front so it reads from along the street both ways, with what the shop sells painted on it, the
 ## Romans' way (a wine jar, a loaf, a knife, a shoe, a bolt of cloth, a pot, a fish).
 static func _sign(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: float, s: float, rng: RandomNumberGenerator, x: float = NAN) -> void:
 	if is_nan(x):
 		x = rng.randf_range(-w * 0.35, w * 0.35)
-	var board := Vector3(c.x, y, c.z) + b * Vector3(x, 3.5, s * (d / 2.0 + 0.5))
-	add.call("box", "wood", Transform3D(b.scaled(Vector3(1.1, 0.7, 0.06)), board))
-	add.call("box", "wood", Transform3D(b.scaled(Vector3(0.06, 0.06, 0.9)), Vector3(c.x, y, c.z) + b * Vector3(x, 3.9, s * (d / 2.0 + 0.25))))
-	var front := board + b * Vector3(0, 0, s * 0.06)
-	match rng.randi() % 7:
-		0:  # a wine jar
-			add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.5, 0.5, 0.3)), front))
-		1:  # a loaf
-			add.call("box", "#c8a060", Transform3D(b.scaled(Vector3(0.5, 0.28, 0.1)), front))
-		2:  # a knife
-			add.call("box", "iron", Transform3D((b * Basis(Vector3(0, 0, 1), 0.5)).scaled(Vector3(0.7, 0.1, 0.04)), front))
-		3:  # a shoe
-			add.call("box", "#5a3a22", Transform3D(b.scaled(Vector3(0.6, 0.18, 0.1)), front + b * Vector3(0, -0.1, 0)))
-			add.call("box", "#5a3a22", Transform3D(b.scaled(Vector3(0.22, 0.3, 0.1)), front + b * Vector3(-0.19, 0.1, 0)))
-		4:  # a bolt of cloth
-			add.call("box", "#6a3a8a", Transform3D(b.scaled(Vector3(0.7, 0.35, 0.08)), front))
-		5:  # a pot
-			add.call("box", "terracotta", Transform3D(b.scaled(Vector3(0.4, 0.4, 0.1)), front))
-		_:  # a fish
-			add.call("box", "#8a9aa8", Transform3D(b.scaled(Vector3(0.7, 0.22, 0.06)), front))
-			add.call("box", "#8a9aa8", Transform3D((b * Basis(Vector3(0, 0, 1), 0.8)).scaled(Vector3(0.22, 0.22, 0.06)), front + b * Vector3(0.4, 0, 0)))
+	var trade: String = Houses.SIGNS[rng.randi() % Houses.SIGNS.size()]
+	var base := Vector3(c.x, y, c.z)
+	var out := s * (d / 2.0 + 0.7)  # the board's middle, out from the wall
+	add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.05, 0.05, 1.3)), base + b * Vector3(x, 4.35, s * (d / 2.0 + 0.65))))  # the bracket's arm
+	add.call("box", "iron", Transform3D((b * Basis(Vector3.RIGHT, -0.36 * s)).scaled_local(Vector3(0.04, 0.04, 1.28)), base + b * Vector3(x, 4.12, s * (d / 2.0 + 0.6))))  # its brace
+	for hang: float in [0.3, 1.1]:  # the two hangers
+		add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.03, 0.1, 0.03)), base + b * Vector3(x, 4.32, s * (d / 2.0 + hang))))
+	add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.05, 0.75, 1.0)), base + b * Vector3(x, 3.9, out)))  # the board's edges
+	for side: float in [1.0, -1.0]:  # the picture on both faces
+		add.call("quad", "h_sign_" + trade, _face(b, c, Vector3(x + side * 0.03, y + 3.9 - c.y, out), side, Vector2(1.0, 0.75), true))
 
 
 ## A window on a face: a quad of glass (a dark shutter by day, lamplight by night) facing out along
 ## the house's `s` side. `local` is from the house's centre.
 static func _face(b: Basis, c: Vector3, local: Vector3, s: float, size: Vector2, side: bool = false) -> Transform3D:
 	var turn := b * (Basis(Vector3.UP, PI / 2.0 * s) if side else (Basis.IDENTITY if s > 0.0 else Basis(Vector3.UP, PI)))
-	return Transform3D(turn.scaled(Vector3(size.x, size.y, 1.0)), c + b * local)
+	return Transform3D(turn.scaled_local(Vector3(size.x, size.y, 1.0)), c + b * local)
 
 
 ## A storey's windows round a house, at height `h`: each its wooden frame and sill, the pane
@@ -2010,12 +2001,12 @@ static func _window(add: Callable, c: Vector3, b: Basis, local: Vector3, s: floa
 		for e: float in [-1.0, 1.0]:
 			var hinge := c + b * local + turn * Vector3(e * 0.55, 0, 0)
 			var leaf := turn * Basis(Vector3.UP, -e * 1.15)
-			add.call("quad", "h_shutter", Transform3D(leaf.scaled(Vector3(0.5, 1.4, 1.0)), hinge + leaf * Vector3(e * 0.25, 0, 0)))
+			add.call("quad", "h_shutter", Transform3D(leaf.scaled_local(Vector3(0.5, 1.4, 1.0)), hinge + leaf * Vector3(e * 0.25, 0, 0)))
 	if roll > 0.7:  # a pot of flowers on the sill
 		var sill := c + b * local + turn * Vector3(rng.randf_range(-0.25, 0.25), -0.6, 0.2)
-		add.call("box", "terracotta", Transform3D(turn.scaled(Vector3(0.3, 0.28, 0.3)), sill))
-		add.call("box", "leaves", Transform3D(turn.scaled(Vector3(0.36, 0.22, 0.36)), sill + Vector3(0, 0.24, 0)))
-		add.call("box", TUNICS[2 + rng.randi() % 3].to_html(false).insert(0, "#"), Transform3D(turn.scaled(Vector3(0.18, 0.1, 0.18)), sill + Vector3(0, 0.38, 0)))
+		add.call("box", "terracotta", Transform3D(turn.scaled_local(Vector3(0.3, 0.28, 0.3)), sill))
+		add.call("box", "leaves", Transform3D(turn.scaled_local(Vector3(0.36, 0.22, 0.36)), sill + Vector3(0, 0.24, 0)))
+		add.call("box", TUNICS[2 + rng.randi() % 3].to_html(false).insert(0, "#"), Transform3D(turn.scaled_local(Vector3(0.18, 0.1, 0.18)), sill + Vector3(0, 0.38, 0)))
 
 
 ## A house of the early city: one or two storeys of tufa blocks, or plaster over a timber frame,
@@ -2026,10 +2017,10 @@ static func _old_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, 
 	var y := ground(c)
 	var h := 4.2 if floors <= 1 else 7.2
 	var tufa := rng.randf() < 0.55
-	add.call("box", "h_tufa" if tufa else "h_timber", Transform3D(b.scaled(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)),
+	add.call("box", "h_tufa" if tufa else "h_timber", Transform3D(b.scaled_local(Vector3(w, y + h - low, d)), Vector3(c.x, (low + y + h) / 2.0, c.z)),
 		Color.WHITE if tufa else tint)
 	var thatch := rng.randf() < 0.35
-	add.call("prism", "wicker" if thatch else "h_roof", Transform3D(b.scaled(Vector3(w + 1.8, 2.6 if thatch else 2.0, d + 1.8)), Vector3(c.x, y + h + (1.3 if thatch else 1.0), c.z)))
+	add.call("prism", "wicker" if thatch else "h_roof", Transform3D(b.scaled_local(Vector3(w + 1.8, 2.6 if thatch else 2.0, d + 1.8)), Vector3(c.x, y + h + (1.3 if thatch else 1.0), c.z)))
 	if not thatch:
 		_ridge(add, c, b, w + 1.8, d + 1.8, y + h + 2.0, rng)
 	for s: float in [1.0, -1.0]:
@@ -2041,15 +2032,15 @@ static func _old_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, 
 	var dx := rng.randf_range(-w * 0.3, w * 0.3)
 	add.call("quad", "h_door", _face(b, c, Vector3(dx, y + 1.3 - c.y, side * (d / 2.0 + 0.04)), side, Vector2(1.3, 2.5)))
 	if rng.randf() < 0.5:  # a bench by the door
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(1.4, 0.08, 0.4)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(dx + 1.4, 0, side * (d / 2.0 + 0.3))))
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 0.8, 0, side * (d / 2.0 + 0.3))))
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 2.0, 0, side * (d / 2.0 + 0.3))))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(1.4, 0.08, 0.4)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(dx + 1.4, 0, side * (d / 2.0 + 0.3))))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 0.8, 0, side * (d / 2.0 + 0.3))))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.08, 0.45, 0.35)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(dx + 2.0, 0, side * (d / 2.0 + 0.3))))
 	if rng.randf() < 0.4:  # a lean-to shed against one end, and the woodpile under it
 		var e := 1.0 if rng.randf() < 0.5 else -1.0
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(2.4, 2.2, d * 0.6)), Vector3(c.x, y + 1.1, c.z) + b * Vector3(e * (w / 2.0 + 1.2), 0, 0)))
-		add.call("box", "wicker", Transform3D((b * Basis(Vector3(0, 0, 1), -e * 0.35)).scaled(Vector3(3.0, 0.15, d * 0.65)), Vector3(c.x, y + 2.5, c.z) + b * Vector3(e * (w / 2.0 + 1.3), 0, 0)))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(2.4, 2.2, d * 0.6)), Vector3(c.x, y + 1.1, c.z) + b * Vector3(e * (w / 2.0 + 1.2), 0, 0)))
+		add.call("box", "wicker", Transform3D((b * Basis(Vector3(0, 0, 1), -e * 0.35)).scaled_local(Vector3(3.0, 0.15, d * 0.65)), Vector3(c.x, y + 2.5, c.z) + b * Vector3(e * (w / 2.0 + 1.3), 0, 0)))
 		for k in 5:
-			add.call("box", "trunk", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(0.9, 0.2, 0.2)), Vector3(c.x, y + 0.1 + (k / 3) * 0.2, c.z) + b * Vector3(e * (w / 2.0 + 2.6), 0, -0.4 + (k % 3) * 0.25)))
+			add.call("box", "trunk", Transform3D((b * Basis(Vector3.UP, PI / 2.0)).scaled_local(Vector3(0.9, 0.2, 0.2)), Vector3(c.x, y + 0.1 + (k / 3) * 0.2, c.z) + b * Vector3(e * (w / 2.0 + 2.6), 0, -0.4 + (k % 3) * 0.25)))
 	if rng.randf() < 0.12:
 		add.call("quad", "h_vine", _face(b, c, Vector3(rng.randf_range(-w * 0.4, w * 0.4), y + 2.2 - c.y, -side * (d / 2.0 + 0.05)), -side, Vector2(1.2, 4.0)))
 	if rng.randf() < 0.3 and doors.size() < 900:
@@ -2070,32 +2061,32 @@ static func _plot(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 		trees.append([c + b * Vector3(w * 0.3, 0, d * 0.2), "round", 0.8, true])
 		return
 	if roll < 0.5:  # vegetables in rows
-		add.call("box", "furrows", Transform3D(b.scaled(Vector3(w, 0.16, d)), Vector3(c.x, y + 0.02, c.z)))
+		add.call("box", "furrows", Transform3D(b.scaled_local(Vector3(w, 0.16, d)), Vector3(c.x, y + 0.02, c.z)))
 		for k in int(d / 1.6):
-			add.call("box", "leaves", Transform3D(b.scaled(Vector3(w * 0.9, 0.35, 0.5)), Vector3(c.x, y + 0.3, c.z) + b * Vector3(0, 0, -d / 2.0 + (k + 0.5) * 1.6)))
+			add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(w * 0.9, 0.35, 0.5)), Vector3(c.x, y + 0.3, c.z) + b * Vector3(0, 0, -d / 2.0 + (k + 0.5) * 1.6)))
 		return
 	if roll < 0.75:  # a vineyard
-		add.call("box", "earth", Transform3D(b.scaled(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))
+		add.call("box", "earth", Transform3D(b.scaled_local(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))
 		for k in int(w / 2.4):
 			var x := -w / 2.0 + (k + 0.5) * 2.4
 			for j in 3:
-				add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 1.8, 0.12)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(x, 0, -d / 2.0 + 1.0 + j * (d - 2.0) / 2.0)))
-			add.call("box", "leaves", Transform3D(b.scaled(Vector3(0.7, 1.2, d - 1.6)), Vector3(c.x, y + 1.4, c.z) + b * Vector3(x, 0, 0)))
+				add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.12, 1.8, 0.12)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(x, 0, -d / 2.0 + 1.0 + j * (d - 2.0) / 2.0)))
+			add.call("box", "leaves", Transform3D(b.scaled_local(Vector3(0.7, 1.2, d - 1.6)), Vector3(c.x, y + 1.4, c.z) + b * Vector3(x, 0, 0)))
 		return
-	add.call("box", "grass", Transform3D(b.scaled(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))  # pasture, fenced
+	add.call("box", "grass", Transform3D(b.scaled_local(Vector3(w, 0.12, d)), Vector3(c.x, y + 0.02, c.z)))  # pasture, fenced
 	for s: float in [1.0, -1.0]:
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(w, 0.1, 0.1)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(0, 0, s * d / 2.0)))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(w, 0.1, 0.1)), Vector3(c.x, y + 0.9, c.z) + b * Vector3(0, 0, s * d / 2.0)))
 		for k in int(w / 3.0) + 1:
-			add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 1.1, 0.12)), Vector3(c.x, y + 0.55, c.z) + b * Vector3(-w / 2.0 + k * w / maxi(1, int(w / 3.0)), 0, s * d / 2.0)))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.12, 1.1, 0.12)), Vector3(c.x, y + 0.55, c.z) + b * Vector3(-w / 2.0 + k * w / maxi(1, int(w / 3.0)), 0, s * d / 2.0)))
 	if rng.randf() < 0.35:  # the pond the sheep drink at
 		var pc := c + b * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, rng.randf_range(-d * 0.25, d * 0.25))
-		add.call("disc", "earth", Transform3D(Basis.IDENTITY.scaled(Vector3(4.6, 0.14, 4.6)), Vector3(pc.x, y + 0.05, pc.z)))
-		add.call("disc", "water", Transform3D(Basis.IDENTITY.scaled(Vector3(3.4, 0.1, 3.4)), Vector3(pc.x, y + 0.12, pc.z)))
+		add.call("disc", "earth", Transform3D(Basis.IDENTITY.scaled_local(Vector3(4.6, 0.14, 4.6)), Vector3(pc.x, y + 0.05, pc.z)))
+		add.call("disc", "water", Transform3D(Basis.IDENTITY.scaled_local(Vector3(3.4, 0.1, 3.4)), Vector3(pc.x, y + 0.12, pc.z)))
 		for k in 6:
 			var a := TAU * k / 6.0
 			trees.append([pc + Vector3(cos(a) * 1.9, 0, sin(a) * 1.9), "reeds", rng.randf_range(0.6, 0.9), true])
 	for k in rng.randi_range(2, 4):  # the sheep
-		add.call("box", "#e0d8c8", Transform3D(b.scaled(Vector3(0.9, 0.5, 0.5)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, rng.randf_range(-d * 0.35, d * 0.35))))
+		add.call("box", "#e0d8c8", Transform3D(b.scaled_local(Vector3(0.9, 0.5, 0.5)), Vector3(c.x, y + 0.45, c.z) + b * Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0, rng.randf_range(-d * 0.35, d * 0.35))))
 	if rng.randf() < 0.5:
 		trees.append([c + b * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, rng.randf_range(-d * 0.3, d * 0.3)), "round", rng.randf_range(0.7, 1.0), true])
 
@@ -2114,13 +2105,13 @@ static func _domus(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng:
 	for wing: Array in wings:
 		var q: Vector3 = c + b * (wing[0] as Vector3)
 		var size: Vector3 = wing[1]
-		add.call("box", "h_stucco", Transform3D(b.scaled(Vector3(size.x, y + h - low, size.z)), Vector3(q.x, (low + y + h) / 2.0, q.z)), tint)
-		add.call("box", "#8a3a2a", Transform3D(b.scaled(Vector3(size.x + 0.04, 1.3, size.z + 0.04)), Vector3(q.x, y + 0.65, q.z)))  # the painted dado
-		add.call("box", "#c8a060", Transform3D(b.scaled(Vector3(size.x + 0.04, 0.2, size.z + 0.04)), Vector3(q.x, y + 1.4, q.z)))  # and its band
-		add.call("prism", "h_roof", Transform3D(b.scaled(Vector3(size.x + 0.6, 1.8, size.z + 0.6)) if size.x > size.z else
-			(b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
-	add.call("box", "g_turf", Transform3D(b.scaled(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
-	add.call("box", "water", Transform3D(b.scaled(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
+		add.call("box", "h_stucco", Transform3D(b.scaled_local(Vector3(size.x, y + h - low, size.z)), Vector3(q.x, (low + y + h) / 2.0, q.z)), tint)
+		add.call("box", "#8a3a2a", Transform3D(b.scaled_local(Vector3(size.x + 0.04, 1.3, size.z + 0.04)), Vector3(q.x, y + 0.65, q.z)))  # the painted dado
+		add.call("box", "#c8a060", Transform3D(b.scaled_local(Vector3(size.x + 0.04, 0.2, size.z + 0.04)), Vector3(q.x, y + 1.4, q.z)))  # and its band
+		add.call("prism", "h_roof", Transform3D(b.scaled_local(Vector3(size.x + 0.6, 1.8, size.z + 0.6)) if size.x > size.z else
+			(b * Basis(Vector3.UP, PI / 2.0)).scaled_local(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
+	add.call("box", "g_turf", Transform3D(b.scaled_local(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
+	add.call("box", "water", Transform3D(b.scaled_local(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
 	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7, true])
 	trees.append([c + b * Vector3(-1.4, 0, -1.2), "olive" if rng.randf() < 0.5 else "cypress", 0.6, true])
 	for k in 3:
@@ -2131,9 +2122,9 @@ static func _domus(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng:
 			add.call("quad", "h_window_small", _face(b, c, Vector3(-w * 0.25 + k * w * 0.5, 5.2 + y - c.y, s * (d / 2.0 + 0.04)), s, Vector2(0.7, 0.9)))
 	add.call("quad", "h_door_red" if rng.randf() < 0.5 else "h_door", _face(b, c, Vector3(0, y + 1.5 - c.y, d / 2.0 + 0.04), 1.0, Vector2(1.7, 3.0)))
 	for x: float in [-1.3, 1.3]:  # the porch
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(0.2, 3.2, 0.2)), Vector3(c.x, y + 1.6, c.z) + b * Vector3(x, 0, d / 2.0 + 1.3)))
-	add.call("box", "h_roof", Transform3D((b * Basis(Vector3.RIGHT, 0.3)).scaled(Vector3(3.4, 0.2, 1.8)), Vector3(c.x, y + 3.4, c.z) + b * Vector3(0, 0, d / 2.0 + 0.8)))
-	add.call("box", "bronze", Transform3D(b.scaled(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.7, c.z) + b * Vector3(1.2, 0, d / 2.0 + 0.1)))  # the lamp
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.2, 3.2, 0.2)), Vector3(c.x, y + 1.6, c.z) + b * Vector3(x, 0, d / 2.0 + 1.3)))
+	add.call("box", "h_roof", Transform3D((b * Basis(Vector3.RIGHT, 0.3)).scaled_local(Vector3(3.4, 0.2, 1.8)), Vector3(c.x, y + 3.4, c.z) + b * Vector3(0, 0, d / 2.0 + 0.8)))
+	add.call("box", "bronze", Transform3D(b.scaled_local(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.7, c.z) + b * Vector3(1.2, 0, d / 2.0 + 0.1)))  # the lamp
 
 
 ## A house far off, beyond where you walk: a plain block and its roof.
@@ -2144,8 +2135,8 @@ static func _far_house(add: Callable, c: Vector3, b: Basis, w: float, d: float, 
 	if old:
 		h = rng.randf_range(4.0, 6.5)
 	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
-	add.call("box", "r_wall" if not old or rng.randf() < 0.5 else "tufa", Transform3D(b.scaled(Vector3(w, h + 1.0, d)), Vector3(c.x, y + h / 2.0 - 0.5, c.z)), tint)
-	add.call("prism", "r_roof", Transform3D(b.scaled(Vector3(w + 0.8 + (1.0 if old else 0.0), 2.2, d + 0.8 + (1.0 if old else 0.0))), Vector3(c.x, y + h + 1.1, c.z)))
+	add.call("box", "r_wall" if not old or rng.randf() < 0.5 else "tufa", Transform3D(b.scaled_local(Vector3(w, h + 1.0, d)), Vector3(c.x, y + h / 2.0 - 0.5, c.z)), tint)
+	add.call("prism", "r_roof", Transform3D(b.scaled_local(Vector3(w + 0.8 + (1.0 if old else 0.0), 2.2, d + 0.8 + (1.0 if old else 0.0))), Vector3(c.x, y + h + 1.1, c.z)))
 
 
 ## A house fallen to ruin: broken walls without a roof, sometimes one wall still high, bushes and a
@@ -2155,9 +2146,9 @@ static func _ruin(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 	var y := ground(c)
 	if hut and rng.randf() < 0.5:
 		var hp := c + b * Vector3(rng.randf_range(-w * 0.15, w * 0.15), 0, rng.randf_range(-d * 0.15, d * 0.15))
-		add.call("box", "wood", Transform3D(b.scaled(Vector3(3.6, 2.4, 3.0)), Vector3(hp.x, y + 1.2, hp.z)))
-		add.call("prism", "wicker", Transform3D(b.scaled(Vector3(4.2, 1.4, 3.6)), Vector3(hp.x, y + 3.1, hp.z)))
-		add.call("quad", "h_door", Transform3D(b.scaled(Vector3(0.9, 1.7, 1.0)), Vector3(hp.x, y + 0.9, hp.z) + b * Vector3(0, 0, 1.52)))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(3.6, 2.4, 3.0)), Vector3(hp.x, y + 1.2, hp.z)))
+		add.call("prism", "wicker", Transform3D(b.scaled_local(Vector3(4.2, 1.4, 3.6)), Vector3(hp.x, y + 3.1, hp.z)))
+		add.call("quad", "h_door", Transform3D(b.scaled_local(Vector3(0.9, 1.7, 1.0)), Vector3(hp.x, y + 0.9, hp.z) + b * Vector3(0, 0, 1.52)))
 	for wall: Array in [[Vector3(0, 0, d / 2.0), Vector3(w, 0, 0.8)], [Vector3(0, 0, -d / 2.0), Vector3(w, 0, 0.8)],
 			[Vector3(w / 2.0, 0, 0), Vector3(0.8, 0, d)], [Vector3(-w / 2.0, 0, 0), Vector3(0.8, 0, d)]]:
 		if rng.randf() < 0.25:
@@ -2165,13 +2156,13 @@ static func _ruin(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng: 
 		var h := rng.randf_range(0.8, 4.5) if rng.randf() < 0.85 else rng.randf_range(6.0, 11.0)
 		var q: Vector3 = c + b * (wall[0] as Vector3)
 		var size: Vector3 = wall[1]
-		add.call("box", "h_brick", Transform3D(b.scaled(Vector3(size.x, h + 1.0, size.z)), Vector3(q.x, y + h / 2.0 - 0.5, q.z)))
+		add.call("box", "h_brick", Transform3D(b.scaled_local(Vector3(size.x, h + 1.0, size.z)), Vector3(q.x, y + h / 2.0 - 0.5, q.z)))
 		if h > 3.0 and rng.randf() < 0.4:
 			var along_x := size.x > size.z
 			var s := 1.0 if rng.randf() < 0.5 else -1.0
 			var local := (wall[0] as Vector3) + (Vector3(0, y + 1.8 - c.y, s * 0.42) if along_x else Vector3(s * 0.42, y + 1.8 - c.y, 0))
 			add.call("quad", "h_vine", _face(b, c, local, s, Vector2(1.2, 3.4), not along_x))
-	add.call("box", "rubble", Transform3D(b.scaled(Vector3(w * 0.8, 0.8, d * 0.6)), Vector3(c.x, y + 0.1, c.z)))
+	add.call("box", "rubble", Transform3D(b.scaled_local(Vector3(w * 0.8, 0.8, d * 0.6)), Vector3(c.x, y + 0.1, c.z)))
 	if rng.randf() < 0.45:
 		trees.append([c + b * Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2)), "bush" if rng.randf() < 0.6 else "round", rng.randf_range(0.6, 1.1), true])
 
@@ -2252,7 +2243,7 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 	var cross := func(tex: String, at: Vector3, w: float, h: float, n: int) -> void:
 		var yaw := rng.randf() * TAU
 		for k in n:
-			quads[tex].append(Transform3D(Basis(Vector3.UP, yaw + PI * k / n).scaled(Vector3(w, h, 1.0)), at))
+			quads[tex].append(Transform3D(Basis(Vector3.UP, yaw + PI * k / n).scaled_local(Vector3(w, h, 1.0)), at))
 	for t: Array in trees:
 		var p: Vector3 = t[0]
 		var kind: String = t[1]
@@ -2261,13 +2252,13 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 		var lean := Basis(Vector3(1, 0, 0), rng.randf_range(-0.05, 0.05)) * Basis(Vector3(0, 0, 1), rng.randf_range(-0.05, 0.05))
 		match kind:
 			"pine":
-				trunks.append(Transform3D(lean.scaled(Vector3(0.7, 9.0, 0.7) * s), Vector3(p.x, y + 4.5 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled_local(Vector3(0.7, 9.0, 0.7) * s), Vector3(p.x, y + 4.5 * s, p.z)))
 				cross.call("g_pine", Vector3(p.x, y + 9.6 * s, p.z), 8.0 * s, 4.0 * s, 3)
 			"cypress":
-				trunks.append(Transform3D(Basis.IDENTITY.scaled(Vector3(0.4, 1.0, 0.4) * s), Vector3(p.x, y + 0.5 * s, p.z)))
+				trunks.append(Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.4, 1.0, 0.4) * s), Vector3(p.x, y + 0.5 * s, p.z)))
 				cross.call("g_cypress", Vector3(p.x, y + 5.0 * s, p.z), 2.0 * s, 10.0 * s, 2)
 			"olive":
-				trunks.append(Transform3D(lean.scaled(Vector3(0.6, 2.4, 0.6) * s), Vector3(p.x, y + 1.2 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled_local(Vector3(0.6, 2.4, 0.6) * s), Vector3(p.x, y + 1.2 * s, p.z)))
 				cross.call("g_olive", Vector3(p.x, y + 3.6 * s, p.z), 4.6 * s, 3.4 * s, 3)
 			"bush":
 				cross.call("g_bush", Vector3(p.x, y + 0.8 * s, p.z), 2.4 * s, 1.6 * s, 2)
@@ -2278,7 +2269,7 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 			"flowers":
 				cross.call("g_flowers", Vector3(p.x, y + 0.4 * s, p.z), 1.1 * s, 0.8 * s, 2)
 			_:
-				trunks.append(Transform3D(lean.scaled(Vector3(0.6, 3.2, 0.6) * s), Vector3(p.x, y + 1.6 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled_local(Vector3(0.6, 3.2, 0.6) * s), Vector3(p.x, y + 1.6 * s, p.z)))
 				cross.call("g_olive" if fallen else "g_crown", Vector3(p.x, y + 4.5 * s, p.z), 5.4 * s, 4.6 * s, 3)
 	var draw := func(xfs: Array, mesh: Mesh, mat: String, name: String, shadows: bool) -> void:
 		if xfs.is_empty():
@@ -2460,11 +2451,11 @@ static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator,
 						"olive" if rng.randf() < 0.6 else "round", rng.randf_range(0.7, 0.9)])
 		_:  # horti
 			if y < 4.0 and not fallen:
-				add.call("box", "g_turf", Transform3D(Basis.IDENTITY.scaled(Vector3(14.0, 0.5, 14.0)), Vector3(p.x, y - 0.15, p.z)))
+				add.call("box", "g_turf", Transform3D(Basis.IDENTITY.scaled_local(Vector3(14.0, 0.5, 14.0)), Vector3(p.x, y - 0.15, p.z)))
 			if rng.randf() < 0.2 and not fallen and _occ.disc_free(p, 4.5, Occupancy.ALLOW_FURNITURE):  # a pool in its rim of travertine, with a jet in the middle of it
 				var pb := Basis(Vector3.UP, rng.randf() * TAU)
-				add.call("box", "travertine", Transform3D(pb.scaled(Vector3(7.0, 0.5, 5.0)), Vector3(p.x, y + 0.2, p.z)))
-				add.call("box", "water", Transform3D(pb.scaled(Vector3(6.2, 0.12, 4.2)), Vector3(p.x, y + 0.42, p.z)))
+				add.call("box", "travertine", Transform3D(pb.scaled_local(Vector3(7.0, 0.5, 5.0)), Vector3(p.x, y + 0.2, p.z)))
+				add.call("box", "water", Transform3D(pb.scaled_local(Vector3(6.2, 0.12, 4.2)), Vector3(p.x, y + 0.42, p.z)))
 				_occ.paint_box(Vector3(p.x, y, p.z), pb, 7.0, 5.0, Occupancy.FURNITURE, 0.5)
 				if not far:
 					Rome.jet(world, Vector3(p.x, y + 0.45, p.z), Vector3(0, 1, 0), 2.2, 14)

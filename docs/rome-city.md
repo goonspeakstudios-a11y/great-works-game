@@ -87,6 +87,10 @@ Decided with BB1 (2026-09-28):
     monuments, the river and the wall; so the city is blocks of houses between streets. A house
     near a street (named or lane) is lined up along it, its front a step from the kerb, one after
     another on each side (`_nearest_road`, `lined`); no house is built into another (`placed`).
+  - Every part of a house is scaled in the house's own axes (`Basis.scaled_local`, never
+    `Basis.scaled`, which scales along the world's: with it every house turned off the world's
+    axes was sheared, and its thin parts, the signs, counters, balconies and brackets, were
+    flattened to slivers along the world's x).
   - 280 and 201 BC: low houses of tufa blocks, or plaster over a timber frame with the timbers
     showing, one or two storeys under wide eaves of tiles or thatch, a blank wall to the street with
     a door in it, no shops. Two-thirds of the outer hills inside the wall (the Esquiline, the
@@ -101,8 +105,10 @@ Decided with BB1 (2026-09-28):
     finishes; smoke still going up from the burnt quarters, seen across the city.
   - 552: open ground with a few ruins (two in five cells built by the river, one in seven beyond),
     huts of wood and thatch inside the ruined walls where people still live.
-  - Every shop has a painted sign hung over its door: a wine jar, a loaf, a knife, a shoe, a bolt of
-    cloth, a pot, a fish.
+  - Every second shop has a painted sign hung out over the pavement from an iron bracket, edge-on
+    to the front so it reads from along the street both ways, the trade pictured on both faces
+    (`textures_houses.signboard`, `h_sign_<trade>`): a wine jar, a loaf, a knife, a shoe, a bolt
+    of cloth, a pot, a fish.
   - **The fronts** (the house set, `textures_houses.gd`; `_bays`, `_window`, `_washing`): the
     ground storey is bays, each a shop (its arched bay, a counter of stone before it with pots on
     it, the shutters put up at dusk and taken down at dawn by `urbs_life.gd`), a door (planks and
