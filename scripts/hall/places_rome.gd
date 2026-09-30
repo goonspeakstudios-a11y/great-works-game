@@ -168,7 +168,7 @@ static func urbs(world: Node3D, doors: Array, progress: RefCounted, age_index: i
 		var ahead := Vector3(sin(float(tb["yaw"])), 0, cos(float(tb["yaw"])))
 		var pos := at + ahead * (3.0 if tb["kind"] == "altar" else 13.0)
 		pos.y = RomeMap.ground(pos)
-		var e: Dictionary = epitaphs[tn % epitaphs.size()]
+		var e: Dictionary = epitaphs[int(tb.get("epitaph", tn)) % epitaphs.size()]  # the one cut on it (rome_map._road_tombs)
 		tn += 1
 		out.append({"kind": "statue", "pos": pos, "text": "Read the tomb by %s" % str(tb["road"]),
 			"note": "[b]A tomb on %s[/b], %s\n\n%s\n\n%s" % [tb["road"], age["when"], e["text"], e["note"]]})
@@ -441,7 +441,31 @@ static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictiona
 
 	# everyone else, at their trades
 	var stalls: Array = fab.get("stalls", [])
-	var shops: Array = fab.get("doors", [])
+	var shops: Array = []  # the houses' doors
+	var by_trade := {}  # the shops' doors by their trade (rome_map.gd's tabernae)
+	for dd: Array in fab.get("doors", []):
+		if dd.size() > 2 and str(dd[2]) != "":
+			if not by_trade.has(dd[2]):
+				by_trade[dd[2]] = []
+			by_trade[dd[2]].append(dd)
+		else:
+			shops.append(dd)
+	# the shopkeepers first, each at the door of a shop of their own trade
+	var keepers := int(total * 0.3)
+	var trades: Array = by_trade.keys()
+	var tries := 0
+	while keepers > 0 and not trades.is_empty() and tries < total * 3:
+		tries += 1
+		var trade: String = trades[rng.randi() % trades.size()]
+		var list: Array = by_trade[trade]
+		if list.is_empty() or Citizen.job(trade).is_empty() or not (Citizen.job(trade)["ages"] as Array).has("late" if id == "collapse" else id):
+			trades.erase(trade)
+			continue
+		var door: Array = list.pop_at(rng.randi() % list.size())
+		if not RomeMap.inside(edge, door[0]):
+			continue
+		citizen.call(trade, door[0], door[1])
+		keepers -= 1
 	var temples: Array = (fab["monuments"] as Array).filter(func(s: Dictionary) -> bool: return s["m"]["kind"] == "temple" and s["state"] == "whole")
 	var banks: Array = fab.get("banks", [])
 	var guard := 0
@@ -460,6 +484,11 @@ static func _people(world: Node3D, c: Dictionary, age: Dictionary, fab: Dictiona
 				_stall(world, at, yaw, rng)
 				citizen.call(job["id"], at + Basis(Vector3.UP, yaw) * Vector3(0, 0, -1.0), yaw)
 			"door":
+				var own: Array = by_trade.get(job["id"], [])
+				if not own.is_empty():  # a shop of their own trade, if one is still unkept
+					var mine: Array = own.pop_at(rng.randi() % own.size())
+					citizen.call(job["id"], mine[0], mine[1])
+					continue
 				if shops.is_empty():
 					continue
 				var door: Array = shops.pop_at(rng.randi() % shops.size())

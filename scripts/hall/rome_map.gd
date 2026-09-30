@@ -424,6 +424,56 @@ static func plain(world: Node3D, whole: bool) -> void:
 	terrain(world, "r_ground" if whole else "rubble")
 
 
+## What the traffic leaves on a paved street: the wheels' ruts worn in the stones a cart's gauge
+## apart, stepping stones across it every so often (the Pompeian way over the wet and the dung),
+## and an iron grate over the drain at the kerb now and then.
+static func _street_wear(world: Node3D, pts: Array, width: float, fallen: bool) -> void:
+	var cum: Array = [0.0]
+	for i in pts.size() - 1:
+		cum.append(float(cum[-1]) + Vector2((pts[i + 1] as Vector3).x - (pts[i] as Vector3).x, (pts[i + 1] as Vector3).z - (pts[i] as Vector3).z).length())
+	var total := float(cum[-1])
+	var along_at := func(t: float) -> Array:  # [point, direction] at t metres along
+		var i := 0
+		while i < cum.size() - 2 and float(cum[i + 1]) < t:
+			i += 1
+		var a: Vector3 = pts[i]
+		var b: Vector3 = pts[i + 1]
+		var f := clampf((t - float(cum[i])) / maxf(float(cum[i + 1]) - float(cum[i]), 0.001), 0.0, 1.0)
+		var dir := b - a
+		dir.y = 0.0
+		return [a.lerp(b, f), dir.normalized()]
+	for side: float in [-0.7, 0.7]:  # the ruts
+		var rut: Array = []
+		for i in pts.size():
+			var dir: Vector3 = (pts[mini(i + 1, pts.size() - 1)] as Vector3) - (pts[maxi(i - 1, 0)] as Vector3)
+			dir.y = 0.0
+			dir = dir.normalized()
+			rut.append((pts[i] as Vector3) + Vector3(dir.z, 0, -dir.x) * side)
+		ribbon(world, rut, 0.16, "#38383e", 0.125)
+	var t := 26.0
+	while t < total - 8.0:  # stepping stones across, and a grate at the kerb between
+		var here: Array = along_at.call(t)
+		var p: Vector3 = here[0]
+		var dir: Vector3 = here[1]
+		var across := Vector3(dir.z, 0, -dir.x)
+		var n := maxi(2, int(width / 1.3))
+		for k in n:
+			var q := p + across * ((k - (n - 1) / 2.0) * 1.25)
+			q.y = ground(q) + 0.12
+			Kit.box(world, q + Vector3(0, 0.13, 0), Vector3(0.55, 0.26, 0.5), "travertine" if not fallen else "rubble", false, Vector3(0, atan2(dir.x, dir.z), 0))
+		var g: Array = along_at.call(t + 34.0)
+		if t + 34.0 < total - 8.0:
+			var gp: Vector3 = g[0]
+			var gd: Vector3 = g[1]
+			var kerb := gp + Vector3(gd.z, 0, -gd.x) * (width / 2.0 - 0.45)
+			kerb.y = ground(kerb) + 0.17
+			var yaw := atan2(gd.x, gd.z)
+			Kit.box(world, kerb, Vector3(0.55, 0.04, 0.8), "iron", false, Vector3(0, yaw, 0))
+			for sl in 3:
+				Kit.box(world, kerb + Basis(Vector3.UP, yaw) * Vector3(-0.15 + sl * 0.15, 0.01, 0), Vector3(0.06, 0.05, 0.62), "dark", false, Vector3(0, yaw, 0))
+		t += 70.0
+
+
 ## A strip laid on the ground along a line of world points (a street, the river): `width` wide,
 ## `lift` above the ground (or at the fixed height `y` when given).
 static func ribbon(world: Node3D, points: Array, width: float, mat: String, lift: float = 0.12, y: float = NAN) -> MeshInstance3D:
@@ -620,6 +670,7 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 				var b: Vector3 = pts[i + 1]
 				var n := Vector3((b - a).normalized().z, 0, -(b - a).normalized().x) * (float(r["width"]) / 2.0 - 0.3)
 				ribbon(world, [a + n, b + n], 0.35, "water", 0.16)
+			_street_wear(world, pts, float(r["width"]), fallen)
 	for a: Dictionary in c.get("aqueducts", []):
 		if year < int(a["year"]):
 			continue
@@ -862,6 +913,15 @@ static var _occ: RefCounted = null  # the feasibility map (urbs_occupancy.gd) of
 const Occupancy := preload("res://scripts/hall/urbs_occupancy.gd")
 const Houses := preload("res://scripts/hall/textures_houses.gd")
 const TexSet := preload("res://scripts/hall/textures.gd")
+const Citizen := preload("res://scripts/hall/citizen.gd")
+## The trades a shop (taberna) can be: [the job in people.json, the picture on its sign, its weight].
+## A street's shops are drawn from those of them the age has (the job's "ages").
+const TRADES := [["pistor", "bread", 3], ["vinarius", "wine", 2], ["caupo", "wine", 2], ["popinarius", "cup", 2], ["lanius", "knife", 2],
+	["faber", "hammer", 2], ["sutor", "shoe", 2], ["vestiarius", "cloth", 2], ["fullo", "cloth", 1], ["tonsor", "shears", 2],
+	["medicus", "cup", 1], ["nummularius", "scales", 1], ["librarius", "roll", 1], ["figulus", "pot", 2], ["cetarius", "fish", 2],
+	["olearius", "wine", 1], ["unguentarius", "wine", 1], ["lucernarius", "pot", 1], ["crustularius", "bread", 1]]
+static var _trade_bags := {}
+static var _lamps: Array = []  # the lamps by the house doors, lit at dusk (the flames multimesh)
 const STALL_ON := [Occupancy.FREE, Occupancy.ROAD, Occupancy.LANE, Occupancy.OPEN, Occupancy.GROVE]  # where a stall may be set out
 static var _last_trees: Array = []  # what was planted, after the culling (for the audit, tools/audit_rome.gd)
 
@@ -1140,7 +1200,7 @@ static func _street_basins(world: Node3D, c: Dictionary, year: int, lost: bool, 
 			_occ.paint_disc(q, 1.3, Occupancy.FURNITURE)
 			out["lacus"].append(q)
 			if flowing:
-				out["waters"].append([q, "fountain"])
+				out["waters"].append([q, "trickle"])  # the thin fall of the spout, not a fountain's splash
 
 
 ## The tombs along the roads outside the gates: every so many paces on the stretch of each road
@@ -1182,9 +1242,11 @@ static func _road_tombs(world: Node3D, c: Dictionary, year: int, age_id: String,
 				var kind := "round" if n % 9 == 4 and year > -100 else "altar"
 				var g := Kit.group(world, q, atan2(p.x - q.x, p.z - q.z))
 				g.name = "Tomb%d" % n
-				Rome.tomb(g, Vector3.ZERO, 0.0, kind, whole)
+				var epitaphs: Array = streets_data().get("epitaphs", [])
+				var which := n % maxi(1, epitaphs.size())
+				Rome.tomb(g, Vector3.ZERO, 0.0, kind, whole, str(epitaphs[which].get("latin", "")) if not epitaphs.is_empty() else "")
 				_occ.paint_disc(q, 4.5, Occupancy.FURNITURE)
-				out["tombs"].append({"at": q, "yaw": g.rotation.y, "kind": kind, "road": str(r["name"])})
+				out["tombs"].append({"at": q, "yaw": g.rotation.y, "kind": kind, "road": str(r["name"]), "epitaph": which})
 				n += 1
 				if n > 90:
 					return
@@ -1508,6 +1570,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	_springs = []
 	_obbs = []
 	_cells = {}
+	_lamps = []
 	var named: Array = []  # the named streets' stretches, [a, b, half + 3], for the lanes' mouths
 	for r: Array in roads:
 		if r.size() < 4:
@@ -1529,7 +1592,41 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 		if not parts.has(key):
 			parts[key] = []
 		parts[key].append([xf, col])
+	for line: Dictionary in lines:  # what the animals leave in the lanes: dung, and straw fallen from the loads
+		if absf(float(line["half"]) - LANE / 2.0) > 0.01:
+			continue
+		var lpts: Array = line["pts"]
+		for i in lpts.size() - 1:
+			if rng.randf() > (0.35 if not fallen else 0.1):
+				continue
+			var q: Vector3 = (lpts[i] as Vector3).lerp(lpts[i + 1], rng.randf())
+			q += Vector3(rng.randf_range(-1.0, 1.0), 0, rng.randf_range(-1.0, 1.0))
+			q.y = ground(q) + 0.1
+			if rng.randf() < 0.55:
+				add.call("rock", "#4a3a26", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(0.3, 0.1, 0.26)), q + Vector3(0, 0.03, 0)))
+			else:
+				add.call("box", "#c8b070", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled_local(Vector3(0.7, 0.02, 0.45)), q + Vector3(0, 0.01, 0)))
 	var trees: Array = []  # [where, kind, size]
+	if id in ["late", "collapse", "fall"]:  # weeds in the gutters of the streets no aedile keeps
+		for line: Dictionary in lines:
+			if absf(float(line["half"]) - LANE / 2.0) < 0.01:
+				continue
+			var spts: Array = line["pts"]
+			var shalf := float(line["half"])
+			for i in spts.size() - 1:
+				var a: Vector3 = spts[i]
+				var bq: Vector3 = spts[i + 1]
+				var dirv := (bq - a)
+				dirv.y = 0.0
+				var seg := dirv.length()
+				dirv = dirv.normalized()
+				var t: float = rng.randf_range(0.0, 6.0)
+				while t < seg:
+					if rng.randf() < 0.6:
+						var q := a + dirv * t + Vector3(dirv.z, 0, -dirv.x) * (shalf - 0.3) * (1.0 if rng.randf() < 0.5 else -1.0)
+						q.y = ground(q) + 0.12
+						trees.append([q, "grass", rng.randf_range(0.6, 1.0), true])
+					t += rng.randf_range(4.0, 9.0)
 	var doors: Array = out.get("doors", [])
 	var taken := {}
 	# raising a house on a plot found free: a ruin in the emptied city or the lost world, a plain
@@ -1837,7 +1934,9 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	flame_mesh.height = 0.4
 	flames.mesh = flame_mesh
 	var fountains: Array = out["fountains"]
-	flames.instance_count = fountains.size()
+	flames.instance_count = fountains.size() + _lamps.size()
+	for k in _lamps.size():  # the little flames of the door lamps
+		flames.set_instance_transform(fountains.size() + k, Transform3D(Basis.IDENTITY.scaled(Vector3(0.45, 0.45, 0.45)), _lamps[k]))
 	for k in fountains.size():
 		var f: Vector3 = fountains[k]
 		var y := ground(f)
@@ -1934,7 +2033,8 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 	var tint := Color("#" + str(palette[rng.randi() % palette.size()]))
 	var old := age_id in ["heroic", "early"]
 	var late := age_id == "late"
-	var burnt := age_id == "collapse" and rng.randf() < 0.3
+	# the burnt quarters of 455; and in every age a house or two in each quarter gutted by the fires Rome never lacked
+	var burnt := (age_id == "collapse" and rng.randf() < 0.3) or (age_id in ["republic", "empire", "late"] and rng.randf() < 0.008)
 	if burnt:
 		_burnt.append(Vector3(c.x, y + floors * 4.0, c.z))
 	if old and kind != "horreum":
@@ -2005,6 +2105,12 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 			var rd := d + 0.8 if not setback else d - 1.0
 			add.call("prism", _roof_of(age_id, false), Transform3D(b.scaled_local(Vector3(rw, 2.2, rd)), Vector3(c.x, top + 1.1, c.z)))
 			_ridge(add, c, b, rw, rd, top + 2.2, rng)
+			if rng.randf() < 0.3:  # a patch of the roof re-tiled: newer tiles on the mossy roofs of the late city, older ones before
+				var ps := 1.0 if rng.randf() < 0.5 else -1.0
+				var slope := atan2(2.2, rd / 2.0)
+				var patch := Vector3(c.x, top, c.z) + b * Vector3(rng.randf_range(-rw * 0.3, rw * 0.3), 1.1 + 0.06, ps * rd * 0.25)
+				add.call("box", "h_roof" if late else "h_roof", Transform3D((b * Basis(Vector3.RIGHT, -slope * ps)).scaled_local(Vector3(rng.randf_range(1.6, 2.8), 0.06, 1.4)), patch),
+					Color.WHITE if late else Color(0.84, 0.78, 0.72))
 		else:  # a roof terrace with its parapet, sometimes a garden and a pergola on it
 			add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.3, d + 0.3)), Vector3(c.x, top + 0.15, c.z)))
 			add.call("box", "h_plaster", Transform3D(b.scaled_local(Vector3(w + 0.3, 0.8, 0.25)), Vector3(c.x, top, c.z) + b * Vector3(0, 0.55, d / 2.0)), tint)
@@ -2033,6 +2139,16 @@ static func _house(add: Callable, c: Vector3, b: Basis, w: float, d: float, floo
 			for k in rng.randi_range(2, 4):
 				add.call("quad", "h_cloth", _face(b, c, Vector3(rng.randf_range(-w * 0.35, w * 0.35), 8.9 + y - c.y, s * (d / 2.0 + 1.12)), s, Vector2(0.7, 0.8)),
 					TUNICS[rng.randi() % TUNICS.size()])
+	var prop_chance: float = {"late": 0.22, "collapse": 0.4, "empire": 0.05, "republic": 0.05}.get(age_id, 0.0)
+	if floors >= 2 and not burnt and rng.randf() < prop_chance:  # a wall shored up with timber props from the pavement
+		var ps := 1.0 if rng.randf() < 0.5 else -1.0
+		var px := rng.randf_range(-w * 0.3, w * 0.3)
+		var lean := atan2(2.3, 5.6)
+		for k in 2:
+			var foot := Vector3(c.x, y, c.z) + b * Vector3(px + k * 1.4, 0, ps * (d / 2.0 + 2.3))
+			var mid := foot + b * Vector3(0, 2.9, -ps * 1.15)
+			add.call("box", "wood", Transform3D((b * Basis(Vector3.RIGHT, lean * ps)).scaled_local(Vector3(0.22, 6.1, 0.22)), mid))
+		add.call("box", "wood", Transform3D(b.scaled_local(Vector3(1.9, 0.14, 0.14)), Vector3(c.x, y + 3.0, c.z) + b * Vector3(px + 0.7, 0, ps * (d / 2.0 + 1.1))))  # the brace between them
 	if rng.randf() < 0.14 and not burnt:  # a vine up the wall
 		var s := 1.0 if rng.randf() < 0.5 else -1.0
 		add.call("quad", "h_vine", _face(b, c, Vector3(rng.randf_range(-w * 0.4, w * 0.4), y + 2.6 - c.y, s * (d / 2.0 + 0.05)), s, Vector2(1.3, 5.0)))
@@ -2123,13 +2239,16 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 			continue
 		if shop and not fallen:
 			shops += 1
+			var trade: Array = _trade_for(age_id, rng)  # [job, picture]
 			add.call("quad", "h_shop", _face(b, c, Vector3(x, y + 1.9 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(minf(bw - 0.3, 3.4), 3.7)))
 			add.call("box", "travertine", Transform3D(b.scaled_local(Vector3(minf(bw - 1.2, 2.4), 0.95, 0.5)), Vector3(c.x, y + 0.47, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))
-			for j in rng.randi_range(1, 3):  # the pots on the counter
-				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.6, 0.6, 0.6)),
-					Vector3(c.x, y + 1.2, c.z) + b * Vector3(x + rng.randf_range(-0.8, 0.8), 0, s * (d / 2.0 + 0.25))))
-			if rng.randf() < 0.45:
-				_sign(add, c, b, w, d, y, s, rng, x)
+			_wares(add, c, b, x, s, d, y, str(trade[1]) if not trade.is_empty() else "wine", rng)
+			if rng.randf() < 0.6:
+				_sign(add, c, b, w, d, y, s, rng, x, str(trade[1]) if not trade.is_empty() else "")
+			if not trade.is_empty() and doors.size() < 1800:  # the shop's door, for its keeper (places_rome.gd)
+				var at_shop := Vector3(c.x, 0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))
+				at_shop.y = ground(at_shop)
+				doors.append([at_shop, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z), str(trade[0])])
 			if rng.randf() < 0.22 and not late:  # a vine trained over the front on two poles
 				var out_to := s * (d / 2.0 + 1.35)
 				for px: float in [-bw * 0.4, bw * 0.4]:
@@ -2144,6 +2263,10 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 			else:
 				add.call("quad", which, _face(b, c, Vector3(x, y + 1.4 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(1.5, 2.9)))
 				add.call("box", "bronze", Transform3D(b.scaled_local(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.6, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.1))))  # the lamp
+				if not fallen:
+					_lamps.append(Vector3(c.x, y + 2.84, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.22)))
+				add.call("box", "r_slab", Transform3D(b.scaled_local(Vector3(1.6, 0.07, 0.5)), Vector3(c.x, y + 0.035, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))  # the threshold
+				add.call("box", "#a8a094", Transform3D(b.scaled_local(Vector3(0.9, 0.075, 0.28)), Vector3(c.x, y + 0.036, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 0.25))))  # worn hollow by the feet
 				if rng.randf() < 0.4:  # a bush of box or a rose in a pot by the door
 					var pot := Vector3(c.x, y, c.z) + b * Vector3(x - 1.0, 0, s * (d / 2.0 + 0.45))
 					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.9, 0.55, 0.9)), pot + Vector3(0, 0.25, 0)))
@@ -2153,19 +2276,98 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 			if rng.randf() < 0.4 and doors.size() < 900 and not fallen:
 				var at_door := Vector3(c.x, 0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))
 				at_door.y = ground(at_door)
-				doors.append([at_door, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z)])
+				doors.append([at_door, atan2((b * Vector3(0, 0, s)).x, (b * Vector3(0, 0, s)).z), ""])
 		elif rng.randf() < 0.3:  # blank wall, a window low in it
 			add.call("quad", "h_window_small", _face(b, c, Vector3(x, y + 2.6 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(0.8, 0.9)))
 	return shops
 
 
+## A trade for a shop of the age, drawn by weight from the trades whose job the age has: [job, picture].
+static func _trade_for(age_id: String, rng: RandomNumberGenerator) -> Array:
+	var key := "late" if age_id == "collapse" else age_id
+	if not _trade_bags.has(key):
+		var bag: Array = []
+		for t: Array in TRADES:
+			var j: Dictionary = Citizen.job(str(t[0]))
+			if j.is_empty() or not (j.get("ages", []) as Array).has(key):
+				continue
+			for k in int(t[2]):
+				bag.append([t[0], t[1]])
+		_trade_bags[key] = bag
+	var bag: Array = _trade_bags[key]
+	return bag[rng.randi() % bag.size()] if not bag.is_empty() else []
+
+
+## The wares of a trade set out on its counter (and, for the butcher, hung from the lintel): loaves,
+## jars and cups, joints and a cleaver, tools on an anvil, shoes, bolts of cloth, the barber's shears,
+## mirror and stool, the changer's scales and coins, rolls, pots, fish.
+static func _wares(add: Callable, c: Vector3, b: Basis, x: float, s: float, d: float, y: float, picture: String, rng: RandomNumberGenerator) -> void:
+	var top := y + 0.95
+	var out := s * (d / 2.0 + 0.25)
+	var at := func(dx: float, dy: float, dz: float = 0.0) -> Vector3:
+		return Vector3(c.x, top + dy, c.z) + b * Vector3(x + dx, 0, out + s * dz)
+	match picture:
+		"bread":
+			for k in rng.randi_range(3, 5):
+				add.call("box", "#c8a060", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.4, 0.4))).scaled_local(Vector3(0.28, 0.13, 0.2)), at.call(-0.8 + k * 0.4, 0.07, rng.randf_range(-0.1, 0.1))))
+		"wine":
+			for k in rng.randi_range(2, 3):
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.6, 0.6, 0.6)), at.call(-0.6 + k * 0.6, 0.25)))
+			add.call("disc", "#8a6a4a", Transform3D(b.scaled_local(Vector3(0.12, 0.09, 0.12)), at.call(0.9, 0.05)))
+		"cup":
+			add.call("disc", "iron", Transform3D(b.scaled_local(Vector3(0.45, 0.28, 0.45)), at.call(-0.5, 0.14)))  # the pot of stew
+			for k in 3:
+				add.call("disc", "#8a6a4a", Transform3D(b.scaled_local(Vector3(0.12, 0.1, 0.12)), at.call(0.2 + k * 0.3, 0.05, rng.randf_range(-0.1, 0.1))))
+		"knife":
+			add.call("box", "iron", Transform3D((b * Basis(Vector3.UP, 0.3)).scaled_local(Vector3(0.35, 0.03, 0.1)), at.call(0.4, 0.02)))  # the cleaver
+			add.call("box", "#a03a2a", Transform3D(b.scaled_local(Vector3(0.4, 0.12, 0.25)), at.call(-0.5, 0.06)))  # a joint on the block
+			for k in 2:  # joints hung from the lintel
+				add.call("box", "#a03a2a", Transform3D(b.scaled_local(Vector3(0.18, 0.4, 0.14)), Vector3(c.x, y + 2.9, c.z) + b * Vector3(x - 0.9 + k * 0.5, 0, s * (d / 2.0 + 0.2))))
+		"hammer":
+			add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.5, 0.25, 0.22)), at.call(-0.5, 0.12)))  # a small anvil
+			for k in 3:
+				add.call("box", "iron", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.5, 0.5))).scaled_local(Vector3(0.4, 0.04, 0.05)), at.call(0.3 + k * 0.25, 0.02)))
+		"shoe":
+			for k in 4:
+				add.call("box", "#5a3a22", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.3, 0.3))).scaled_local(Vector3(0.12, 0.09, 0.28)), at.call(-0.75 + k * 0.5, 0.05)))
+		"cloth":
+			for k in 3:
+				add.call("box", TUNICS[(k * 2 + rng.randi() % 2) % TUNICS.size()].to_html(false).insert(0, "#"), Transform3D(b.scaled_local(Vector3(0.7, 0.12, 0.25)), at.call(-0.6 + k * 0.6, 0.06)))
+		"shears":
+			add.call("box", "iron", Transform3D((b * Basis(Vector3.UP, 0.6)).scaled_local(Vector3(0.28, 0.02, 0.08)), at.call(0.3, 0.02)))
+			add.call("disc", "bronze", Transform3D(b.scaled_local(Vector3(0.16, 0.02, 0.16)), at.call(-0.4, 0.01)))  # the mirror
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.36, 0.45, 0.36)), Vector3(c.x, y + 0.22, c.z) + b * Vector3(x + 1.2, 0, s * (d / 2.0 + 0.9))))  # the stool on the pavement
+		"scales":
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.05, 0.4, 0.05)), at.call(0.5, 0.2)))
+			add.call("box", "wood", Transform3D(b.scaled_local(Vector3(0.6, 0.03, 0.03)), at.call(0.5, 0.4)))
+			for dx: float in [0.2, 0.8]:
+				add.call("disc", "bronze", Transform3D(b.scaled_local(Vector3(0.14, 0.02, 0.14)), at.call(dx, 0.2)))
+			for k in 4:
+				add.call("disc", "bronze", Transform3D(b.scaled_local(Vector3(0.06, 0.05, 0.06)), at.call(-0.8 + k * 0.18, 0.025)))
+		"roll":
+			for k in 4:
+				add.call("box", "parchment", Transform3D(b.scaled_local(Vector3(0.26, 0.05, 0.05)), at.call(-0.7 + k * 0.4, 0.03, rng.randf_range(-0.12, 0.12))))
+		"pot":
+			for k in 2:
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.5, 0.5, 0.5)), at.call(-0.7 + k * 0.5, 0.2)))
+			for k in 2:
+				add.call("disc", "terracotta", Transform3D(b.scaled_local(Vector3(0.24, 0.2, 0.24)), at.call(0.3 + k * 0.45, 0.1)))
+		"fish":
+			for k in 5:
+				add.call("box", "#8a9aa8", Transform3D((b * Basis(Vector3.UP, rng.randf_range(-0.6, 0.6))).scaled_local(Vector3(0.36, 0.05, 0.11)), at.call(-0.8 + k * 0.4, 0.03, rng.randf_range(-0.12, 0.12))))
+		_:
+			for j in rng.randi_range(1, 3):
+				add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled_local(Vector3(0.6, 0.6, 0.6)), at.call(rng.randf_range(-0.8, 0.8), 0.25)))
+
+
 ## A shop's sign: a painted board hung out over the pavement from an iron bracket, edge-on to the
 ## front so it reads from along the street both ways, with what the shop sells painted on it, the
 ## Romans' way (a wine jar, a loaf, a knife, a shoe, a bolt of cloth, a pot, a fish).
-static func _sign(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: float, s: float, rng: RandomNumberGenerator, x: float = NAN) -> void:
+static func _sign(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: float, s: float, rng: RandomNumberGenerator, x: float = NAN,
+		picture: String = "") -> void:
 	if is_nan(x):
 		x = rng.randf_range(-w * 0.35, w * 0.35)
-	var trade: String = Houses.SIGNS[rng.randi() % Houses.SIGNS.size()]
+	var trade: String = picture if picture != "" else Houses.SIGNS[rng.randi() % Houses.SIGNS.size()]
 	var base := Vector3(c.x, y, c.z)
 	var out := s * (d / 2.0 + 0.7)  # the board's middle, out from the wall
 	add.call("box", "iron", Transform3D(b.scaled_local(Vector3(0.05, 0.05, 1.3)), base + b * Vector3(x, 4.35, s * (d / 2.0 + 0.65))))  # the bracket's arm

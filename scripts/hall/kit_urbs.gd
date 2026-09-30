@@ -25,7 +25,7 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 	match str(m["kind"]):
 		"temple":
 			g.scale = Vector3.ONE * size
-			Rome.temple(g, Vector3.ZERO, 0.0, whole, temple_style(m, year), variant)
+			Rome.temple(g, Vector3.ZERO, 0.0, whole, temple_style(m, year), variant, str(m.get("inscription", "")))
 		"double_temple":
 			double_temple(g, size, whole)
 		"round_temple":
@@ -73,7 +73,7 @@ static func build(parent: Node3D, m: Dictionary, at: Vector3, yaw: float, whole:
 		"shrine":
 			shrine(g, whole)
 		"arch":
-			Rome.triumphal_arch(g, Vector3.ZERO, 0.0, true, whole)
+			Rome.triumphal_arch(g, Vector3.ZERO, 0.0, true, whole, str(m.get("inscription", "")))
 		"forum":
 			forum(g, float(m.get("w", 60.0)) * span, float(m.get("d", 100.0)) * span, whole)
 		"column":
@@ -280,6 +280,9 @@ static func milliarium(g: Node3D, whole: bool) -> void:
 	Kit.box(g, Vector3(0, 0.4, 0), Vector3(2.0, 0.8, 2.0), "marble")
 	Kit.cylinder(g, Vector3(0, 0.8, 0), 0.6, 2.6, "gold" if whole else "marble", true, 10)
 	Kit.cylinder(g, Vector3(0, 3.4, 0), 0.8, 0.3, "marble", false, 10)
+	if whole:  # its name, and the miles to the great cities cut below it
+		Rome.inscription(g, Vector3(0, 2.75, 0.63), ["MILLIARIVM", "AVREVM"], 18, "3a2a1a")
+		Rome.inscription(g, Vector3(0, 1.7, 0.63), ["OSTIA XVI", "CAPVA CXXXVI", "ARIMINVM CCXXII", "BRVNDISIVM CCCLX"], 12, "3a2a1a")
 
 
 ## A row of honorific statues on columns along the Forum: bronzes of consuls and generals,

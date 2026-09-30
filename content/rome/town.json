@@ -1007,10 +1007,12 @@
   "sounds": {
     "faber": "forge",
     "textrix": "loom",
-    "caupo": "crowd",
-    "popinarius": "crowd",
+    "caupo": "tavern",
+    "popinarius": "tavern",
     "pistor": "fire",
-    "fullo": "fountain"
+    "fullo": "fountain",
+    "molitor": "mill",
+    "vinarius": "tavern"
   },
   "regulars": [
     {

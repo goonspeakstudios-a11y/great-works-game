@@ -815,6 +815,14 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			for trade: String in RomeMap.Houses.SIGNS:
 				signs += parts.call(world, "Houses_quad_h_sign_" + trade)
 			check(signs > 200 and signs % 2 == 0, "painted signs hung out over the pavement, the trade pictured on both faces (%d)" % signs)
+			var tabernae: Array = (fab["doors"] as Array).filter(func(dd: Array) -> bool: return dd.size() > 2 and str(dd[2]) != "")
+			var known_trades := true
+			var kinds := {}
+			for dd: Array in tabernae:
+				kinds[dd[2]] = true
+				if load("res://scripts/hall/citizen.gd").job(str(dd[2])).is_empty():
+					known_trades = false
+			check(tabernae.size() > 300 and known_trades and kinds.size() >= 10, "every shop has a trade of the city, its wares on the counter (%d shops, %d trades)" % [tabernae.size(), kinds.size()])
 			check((fab["stalls"] as Array).size() > 100 and (fab["stalls"] as Array).size() < 600, "stalls on the kerbs where no house fits, not everywhere (%d)" % (fab["stalls"] as Array).size())
 			check((fab["fountains"] as Array).size() > 8, "little squares with fountains off the streets (%d)" % (fab["fountains"] as Array).size())
 			check(RomeMap._obbs.size() > 2000, "the city is full (%d houses and plots)" % RomeMap._obbs.size())
@@ -915,7 +923,9 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 	check(looks.any(func(i): return str(i["text"]).contains("Sublician")), "and the Sublician Bridge has its story")
 	check(hall.landmarks.any(func(l): return l.get("minor", false)), "the shrines and fountains are landmarks the way can name")
 	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"].get("title", "") == "shepherd"), "a shepherd drives his flock to the cattle market")
-	check(hall.people.filter(func(p): return p.get("cart", false)).size() == 1, "and a mule cart goes up the Via Lata")
+	var carts: Array = hall.people.filter(func(p): return p.get("cart", false))
+	check(carts.size() == 3 and carts.filter(func(p): return p.get("shift") == "night").size() == 2, "a mule cart goes up the Via Lata by day, and the night carts come in after dark (%d)" % carts.size())
+	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"].get("title", "") == "watchman" and p.get("shift") == "night"), "the watchman walks the Sacred Way at night with his torch")
 	check(looks.any(func(i): return str(i["text"]).contains("Gate")), "the gates of the wall have their notes")
 	check(hall.people.any(func(p): return p.has("citizen") and p["citizen"]["job"] == "lictor" and not p.has("path") and p.get("shift", "") == "always"), "a guard stands at a gate")
 	var rng := RandomNumberGenerator.new()
