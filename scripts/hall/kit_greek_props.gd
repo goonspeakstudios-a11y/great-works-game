@@ -397,7 +397,7 @@ static func apple_tree(parent: Node3D, at: Vector3, size: float = 1.0, alive: bo
 	if not alive:
 		Kit._bare(crown, size, [Vector3(0.8, 1.0, 0.2), Vector3(-0.7, 0.9, -0.3), Vector3(0.1, 1.4, 0.6)])
 		return crown
-	Kit.blob(crown, Vector3(0, 0.9 * size, 0), 1.2 * size, "plane", Vector3(1.2, 0.85, 1.2), 7)
+	Kit.leaves(crown, "g_crown", Vector3(0, 0.9 * size, 0), 3.0 * size, 2.4 * size)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(at.x * 7.0 + at.z * 3.0)
 	for k in 8:

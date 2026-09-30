@@ -82,6 +82,27 @@ lit pane), `h_window_small` (barred), `h_shutter` (one leaf), `h_cloth` (washing
 tunics' colours), `h_vine`, `h_sign`. Storey-aligned things (the damp at the foot, the painted
 dado) are geometry, since a world-tiled texture repeats up the wall.
 
+### The people set (scripts/hall/textures_people.gd, `Textures.material("c_<name>#rrggbb")`)
+The textures of everyone built on kit.gd's walker (Rome's citizens and togati, Homer's people,
+the teachers), each made in the person's own colour, rounded to sixteen steps a channel so a crowd
+shares a few dozen textures (`key()`). Cloth, one image round a cylinder: `c_tunic` (the weave,
+four soft folds, the belt), `c_skirt` (the tunic below the belt, an embroidered hem), `c_toga`
+(undyed wool, the folds slantwise), `c_dress` (the women's pleats and deep hem), `c_cloak`. Skin
+and hair: `c_skin`, `c_face` (eyes, brows, mouth, cheeks and the chin's shadow, drawn across the
+sphere's front seam), `c_hair` (strands). Tiled: `c_leather` (stitched), `c_linen`. The walker
+itself changed with them: the tunic ends at the knee and the leg is bare below it, the sleeves
+end above bare forearms, the arms hang from the shoulders (the right bent at the elbow to hold
+things), the sandals have straps; `cloth: "toga"` or `"dress"` (and `long: true`) fall to the
+ankle. Rendered in `docs/dev/people_set.png`.
+
+### The green set (scripts/hall/textures_green.gd, `Textures.material("g_<name>")`)
+What grows in Rome. Crowns and clumps, clear round the leaves, on crossed quads: `g_crown` (plane,
+fig, oak, laurel), `g_pine` (the stone pine's umbrella), `g_cypress` (a spire, on a quad five times
+taller than wide), `g_olive` (grey, the sky through it), `g_bush` (box, myrtle), `g_reeds`,
+`g_grass`, `g_flowers` (poppies, oleander, daisies). Tiled: `g_canopy` (a vine over a pergola, cut
+between the leaves), `g_turf` (a lawn with daisies), `g_bark`. `rome_map._trees` draws every
+tree as a bark trunk and two or three crossed quads. Rendered in `docs/dev/green_set.png`.
+
 ## Music (assets/music, from tools/make_music.py)
 Every place track is 48 s, in layers that loop in step, with a ghost (the faint echo heard while
 the place is lost). Zones are listed in `scripts/pixel/music.gd`.

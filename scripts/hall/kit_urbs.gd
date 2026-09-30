@@ -256,7 +256,7 @@ static func lacus(g: Node3D, whole: bool) -> void:
 	if whole:
 		Kit.box(g, Vector3(-3.0, 0.5, 2.0), Vector3(0.18, 1.0, 0.18), "wood", false)  # the vine's post
 		Kit.blob(g, Vector3(-3.0, 1.3, 2.0), 0.7, "leaves", Vector3(1.0, 0.7, 1.0), 6)
-		Kit.blob(g, Vector3(3.6, 2.4, -1.4), 1.3, "olive", Vector3(1.0, 0.8, 1.0), 6)
+		Kit.leaves(g, "g_olive", Vector3(3.6, 2.5, -1.4), 3.0, 2.4)
 		Kit.cylinder(g, Vector3(3.6, 0.0, -1.4), 0.15, 1.8, "trunk", false, 6)
 
 
@@ -270,8 +270,7 @@ static func fig(g: Node3D, whole: bool) -> void:
 	for a: float in [0.4, 2.3, 4.2]:
 		var d := Vector3(cos(a) * 1.4, 1.2, sin(a) * 1.4)
 		Kit.mesh(g, Kit._cyl(0.1, d.length()), "trunk", Vector3(0, 2.4, 0) + d / 2.0, Quaternion(Vector3.UP, d.normalized()).get_euler())
-	Kit.blob(g, Vector3(0, 4.2, 0), 2.8, "leaves", Vector3(1.2, 0.7, 1.2), 7)
-	Kit.blob(g, Vector3(1.2, 4.6, 0.6), 1.8, "leaves", Vector3(1.1, 0.7, 1.1), 6)
+	Kit.leaves(g, "g_crown", Vector3(0, 4.6, 0), 7.5, 5.2)
 	Rome.she_wolf(g, Vector3(0, 0, 2.4), 0.3, whole)  # the bronze wolf and the twins under the fig (kit_rome)
 
 

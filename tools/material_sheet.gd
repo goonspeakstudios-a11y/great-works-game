@@ -10,7 +10,10 @@ const KINDS := ["r_ground", "r_dirt", "r_wall", "r_brick", "r_shop", "r_roof", "
 	"graffiti_republic", "porphyry", "giallo", "water", "drybed", "deadwood",
 	"h_plaster", "h_plaster_worn", "h_brick", "h_tufa", "h_timber", "h_stucco", "h_roof", "h_roof_moss", "h_roof_broken",
 	"h_shop", "h_shop_shut", "h_door", "h_door_red", "h_door_green", "h_window", "h_window_small", "h_shutter", "h_cloth",
-	"h_vine", "h_sign"]
+	"h_vine", "h_sign",
+	"c_tunic#8a6a4a", "c_skirt#8a6a4a", "c_toga#e8e2d2", "c_dress#5a4a7a", "c_cloak#6a4a3a", "c_skin#c8a078", "c_face#c8a078",
+	"c_face#8a6040", "c_hair#3a2a1e", "c_leather", "c_linen",
+	"g_crown", "g_pine", "g_cypress", "g_olive", "g_bush", "g_reeds", "g_grass", "g_flowers", "g_canopy", "g_turf", "g_bark"]
 
 
 func _initialize() -> void:
@@ -36,7 +39,7 @@ func _initialize() -> void:
 			img = Image.create(64, 64, false, Image.FORMAT_RGB8)
 			img.fill((m as StandardMaterial3D).albedo_color if m is StandardMaterial3D else Color.MAGENTA)
 		img.resize(256, 256, Image.INTERPOLATE_NEAREST if img.get_width() <= 64 else Image.INTERPOLATE_BILINEAR)
-		img.save_png("%s/mat_%s.png" % [out, k])
+		img.save_png("%s/mat_%s.png" % [out, k.replace("#", "_")])
 		done.append(k)
 	print("materials: ", done.size())
 	quit()

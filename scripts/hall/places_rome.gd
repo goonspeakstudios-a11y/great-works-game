@@ -535,6 +535,8 @@ static func _dressed(world: Node3D, at: Vector3, yaw: float, look: Dictionary, g
 	var skin: String = ["c8a078", "b88a64", "d8b08a", "a07850", "8a6040"][rng.randi() % 5]
 	var dress := {"robe": shade.to_html(false), "hair_color": hair, "skin": skin,
 		"beard": look.get("beard", "short" if gender == "m" and rng.randf() < 0.3 else "none")}
+	if gender == "f":
+		dress["cloth"] = "dress"
 	var p: Dictionary
 	if look.get("toga", false) and gender == "m":
 		dress["stripe"] = look.get("stripe", false)
@@ -548,9 +550,9 @@ static func _dressed(world: Node3D, at: Vector3, yaw: float, look: Dictionary, g
 	if gender == "f" or look.get("long_hair", false):
 		Kit.box(head, Vector3(0, -0.02, -0.12), Vector3(0.26, 0.26, 0.08), "#" + hair, false)
 		Kit.blob(head, Vector3(0, 0.12, -0.14), 0.07, "#" + hair)  # hair in a knot
-		Kit.cylinder(root, Vector3(0, 0.05, 0), 0.27, 0.8, "#" + shade.to_html(false), false, 8, 0.24)  # the long dress
+		Kit.cylinder(root, Vector3(0, 0.05, 0), 0.27, 0.8, Kit.People.key("dress", shade.to_html(false)), false, 8, 0.24)  # the long dress
 	if look.get("apron", false):
-		Kit.box(root, Vector3(0, 0.75, 0.2), Vector3(0.36, 0.6, 0.03), "#d8ccb0", false)
+		Kit.box(root, Vector3(0, 0.75, 0.2), Vector3(0.36, 0.6, 0.03), "c_linen", false)
 	if look.get("tray", false):
 		Kit.box(hand, Vector3(0.3, 1.36, 0.42), Vector3(0.5, 0.05, 0.34), "wood", false)
 		for k in 3:
@@ -566,7 +568,7 @@ static func _dressed(world: Node3D, at: Vector3, yaw: float, look: Dictionary, g
 	if look.get("fasces", false):
 		Rome.fasces(root, Vector3(0.36, 0.0, 0.18), true)
 	if look.get("headcloth", false):
-		Kit.blob(head, Vector3(0, 0.14, -0.03), 0.17, "#e8e0d0", Vector3(1.0, 0.9, 1.1), 8)
+		Kit.blob(head, Vector3(0, 0.14, -0.03), 0.17, "c_linen", Vector3(1.0, 0.9, 1.1), 8)
 	if look.get("hood", false):
 		Kit.blob(head, Vector3(0, 0.12, -0.05), 0.19, "#" + shade.to_html(false), Vector3(1.0, 1.1, 1.1), 8)
 	return p

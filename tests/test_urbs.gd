@@ -684,6 +684,48 @@ func test_the_ten_sites_change_through_the_seven_ages() -> void:
 	check_eq(Urbs.temple_style(RomeMap.staged(by_id["jupiter"], "collapse"), 455), "imperial", "a stripped roof is still the imperial temple")
 
 
+func test_the_people_wear_the_people_set() -> void:
+	var Kit: GDScript = load("res://scripts/hall/kit.gd")
+	var Rome: GDScript = load("res://scripts/hall/kit_rome.gd")
+	var People: GDScript = load("res://scripts/hall/kit_greek_people.gd")
+	var Tex: GDScript = load("res://scripts/hall/textures.gd")
+	var PeopleTex: GDScript = load("res://scripts/hall/textures_people.gd")
+	var root: Node = (Engine.get_main_loop() as SceneTree).root
+	var world := Node3D.new()
+	root.add_child(world)
+	var mats := func(node: Node) -> Array:
+		var out: Array = []
+		for mi: Node in node.find_children("*", "MeshInstance3D", true, false):
+			var m: Material = (mi as MeshInstance3D).material_override
+			if m is StandardMaterial3D:
+				for kind: String in Tex._cache:
+					if Tex._cache[kind] == m:
+						out.append(kind)
+		return out
+	# a citizen: a woven tunic in his dye, bare legs and forearms, a face, hair, leather sandals
+	var w: Dictionary = Kit.walker(world, Vector3.ZERO, 0.0, {"robe": "8a6a4a", "skin": "c8a078", "hair_color": "3a2a1e", "beard": "short"})
+	var worn: Array = mats.call(w["root"])
+	check(worn.has(PeopleTex.key("tunic", "8a6a4a")) and worn.has(PeopleTex.key("skirt", "8a6a4a")), "the tunic and its skirt in his dye")
+	check(worn.has(PeopleTex.key("face", "c8a078")) and worn.has(PeopleTex.key("skin", "c8a078")), "a face on the head, skin on the limbs")
+	check(worn.has(PeopleTex.key("hair", "3a2a1e")) and worn.has("c_leather"), "hair in strands, leather sandals")
+	check(worn.count(PeopleTex.key("skin", "c8a078")) >= 8, "the legs below the knee and the forearms are bare (%d skin parts)" % worn.count(PeopleTex.key("skin", "c8a078")))
+	var m: StandardMaterial3D = Tex.material(PeopleTex.key("face", "c8a078"))
+	var img: Image = m.albedo_texture.get_image()
+	check(img.get_pixel(4, 13).r > 0.9 and img.get_pixel(60, 13).r > 0.9 and img.get_pixel(4, 14).r < 0.3, "the eyes look out of the front of the head, an iris in each")
+	check(img.get_pixel(0, 21).r < 0.7 and img.get_pixel(0, 21).g < 0.4, "and the mouth is under them")
+	check_eq(PeopleTex.key("tunic", "8a6b4b"), PeopleTex.key("tunic", "8a6a4a"), "two tunics dyed nearly alike share one texture")
+	# a togatus in his wool to the ankle, a woman in her long dress, a Greek in his tunic
+	var t: Dictionary = Rome.togatus(world, Vector3(2, 0, 0), 0.0, {"skin": "c8a078", "hair_color": "3a2a1e"})
+	var toga: Array = mats.call(t["root"])
+	check(toga.has(PeopleTex.key("toga", "e8e2d2")) and not toga.any(func(k: String) -> bool: return k.begins_with("c_skirt")), "the toga falls to the ankle over the tunic")
+	var pen: Dictionary = People.figure(world, Vector3(4, 0, 0), 0.0, "penelope")
+	check(mats.call(pen["root"]).any(func(k: String) -> bool: return k.begins_with("c_dress")), "Penelope in her long dress")
+	var od: Dictionary = People.figure(world, Vector3(6, 0, 0), 0.0, "odysseus")
+	check(mats.call(od["root"]).any(func(k: String) -> bool: return k.begins_with("c_skirt")), "Odysseus in a tunic to the knee")
+	check(Tex.material("g_crown") != null and Tex.material("g_turf") != null and Tex.material("g_canopy") != null, "the green set resolves")
+	world.free()
+
+
 func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
 	var Plan: GDScript = load("res://scripts/hall/urbs_plan.gd")
@@ -710,17 +752,32 @@ func test_the_city_reads_from_street_level_and_finds_its_way() -> void:
 			check(parts.call(world, "Houses_box_furrows") > 5, "and has fields inside its wall (%d plots)" % parts.call(world, "Houses_box_furrows"))
 			check(parts.call(world, "Houses_quad_graffiti_republic") == 0 and parts.call(world, "Houses_quad_graffiti_heroic") == 0, "and no election notices yet")
 			check(world.find_child("Tomb0", false, false) != null, "tombs stand along the roads outside the gates")
+			check(parts.call(world, "TreeOlives") > 40, "olives in the orchards of the small city (%d)" % parts.call(world, "TreeOlives"))
+			var names0: Array = RomeMap.groves(-280).map(func(g: Dictionary) -> String: return str(g["name"]))
+			check(names0.has("the Caelian's oaks") and not names0.has("the gardens of Maecenas"), "in 280 BC the hills are wooded and there are no horti yet")
 		if id == "late":
 			check(parts.call(world, "Houses_quad_h_brick") > 10, "the late city bricks up its windows (%d)" % parts.call(world, "Houses_quad_h_brick"))
 			check(parts.call(world, "Houses_quad_h_shop_shut") > 5, "and shuts shops for good (%d)" % parts.call(world, "Houses_quad_h_shop_shut"))
 			check(parts.call(world, "Houses_quad_graffiti_late") > 0, "and its walls carry the chi-rho")
 		if id == "collapse":
 			check((fab["burnt"] as Array).size() > 10, "the quarters burnt in 455 are known (%d), for the smoke over them" % (fab["burnt"] as Array).size())
+		if id == "fall":
+			check(parts.call(world, "Grass") > 2000 and parts.call(world, "Bushes") > 300, "the emptied city grows over (%d tufts, %d bushes)" % [parts.call(world, "Grass"), parts.call(world, "Bushes")])
 		if id == "empire":
 			check(parts.call(world, "Houses_quad_graffiti_empire") > 0, "election notices and scratched words under the emperors")
 			check(parts.call(world, "Houses_quad_h_window") > 200 and parts.call(world, "Houses_quad_h_shutter") > 50, "windows with frames and open shutters (%d, %d)" % [parts.call(world, "Houses_quad_h_window"), parts.call(world, "Houses_quad_h_shutter")])
 			check(parts.call(world, "Houses_quad_h_cloth") > 20 and parts.call(world, "Houses_quad_h_door") > 20, "washing on the lines, doors in the walls")
 			check(fab.get("shops") != null, "the shop fronts are known, for their shutters at night")
+			# the green city: trees as leaves on crossed quads, the groves and gardens, the grass and reeds
+			check(parts.call(world, "TreeCrowns") > 900 and parts.call(world, "TreePines") > 600 and parts.call(world, "TreeCypresses") > 400,
+				"planes, pines and cypresses stand through the city (%d, %d, %d quads)" % [parts.call(world, "TreeCrowns"), parts.call(world, "TreePines"), parts.call(world, "TreeCypresses")])
+			check(parts.call(world, "Grass") > 1000 and parts.call(world, "Bushes") > 100 and parts.call(world, "Flowers") > 30, "grass, bushes and flowers on the open ground (%d, %d, %d)" % [parts.call(world, "Grass"), parts.call(world, "Bushes"), parts.call(world, "Flowers")])
+			check(parts.call(world, "Reeds") > 30, "reeds along the Tiber (%d)" % parts.call(world, "Reeds"))
+			check(parts.call(world, "Houses_quad_g_canopy") > 20, "vines trained over the shop fronts (%d)" % parts.call(world, "Houses_quad_g_canopy"))
+			check(parts.call(world, "Houses_quad_g_bush") + parts.call(world, "Houses_quad_g_flowers") > 40, "pots by the doors")
+			check(parts.call(world, "Houses_box_g_turf") > 5, "lawns in the gardens (%d)" % parts.call(world, "Houses_box_g_turf"))
+			var names: Array = RomeMap.groves(150).map(func(g: Dictionary) -> String: return str(g["name"]))
+			check(names.has("the gardens of Sallust") and names.has("the Asylum") and not names.has("the Caelian's oaks"), "in AD 150 the horti are laid out and the Caelian's oaks are long gone")
 		check(not (fab["compita"] as Array).is_empty(), "%s: shrines at the crossings (%d)" % [id, (fab["compita"] as Array).size()])
 		check(not (fab["tombs"] as Array).is_empty(), "%s: tombs along the roads (%d)" % [id, (fab["tombs"] as Array).size()])
 		check(world.find_children("*", "Label3D", true, false).size() > 20, "%s: the streets' names on the corners" % id)

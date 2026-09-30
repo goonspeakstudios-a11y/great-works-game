@@ -113,7 +113,11 @@ Decided with BB1 (2026-09-28):
     carry a line of cover tiles and, here and there, pigeons. The old houses are tufa or timber and
     plaster with a bench by the door, a lean-to and a woodpile; the houses of the rich are drafted
     stucco over a painted dado, with a porch. Cats sit by the house fronts (`urbs_town._cats`).
-  - The houses of the rich stand round courtyard gardens with a tree and a pool.
+  - The houses of the rich stand round courtyard gardens with a lawn, two trees and a pool.
+  - **The people** (the people set, `textures_people.gd`; `Kit.walker`): every citizen wears a
+    woven tunic in his own dye with its folds, belt and embroidered hem, bare below the knee and
+    the elbow, sandals with straps; a face with eyes, brows and a mouth on the head; hair in
+    strands. The togati's wool falls to the ankle, the women's dresses too.
   - Warehouses line the river, and single-storey rows of shops line some streets.
   - Little squares hold fountains with a lamp. Within seventy metres of a landmark the flats are
     kept to three storeys, so the landmark shows over the roofs.
@@ -159,9 +163,23 @@ Decided with BB1 (2026-09-28):
   - View corridors: from each end of a street to the monument it runs at, nothing is built across
     the sight line (`CORRIDOR`).
   - A guard at every gate of the Servian wall you can reach; passing a gate is said in the corner.
-- **Trees:** stone pines on the ridges, cypresses on the Palatine and by the temples, the fig and the
-  plane in the valleys, bare rock outcrops on the Capitol's face (`_hill_tree`), round-headed trees
-  in the squares, along the river and in the gardens, and bushes in the ruins.
+- **Green** (the green set, `textures_green.gd`; `_trees`, `_grove_cell`, `content/rome/green.json`):
+  every tree is a bark trunk and crossed quads of leaves. Stone pines on the ridges, cypresses on
+  the Palatine and by the temples, the fig and the plane in the valleys, bare rock outcrops on the
+  Capitol's face (`_hill_tree`); on the hills' open cells a clump of pines or cypresses, an olive
+  and bushes, and a fig or a cypress in the yard behind half the hill houses; a pine or a cypress
+  over one courtyard in five in the flats' blocks, so green stands up over the roofs; a plane
+  over every street fountain; grass in tufts and flowers on all open ground you can walk; reeds
+  and trees along the Tiber's banks; a cypress either side of the tombs along the roads. The
+  groves of green.json stand in their years: the sacred groves (Vesta's, the Asylum, Juno Lucina's,
+  Libitina's, the Fagutal, Strenia's, Furrina's, Stimula's) in every age; the woods on the Caelian
+  (the hill of oaks), the Aventine, the Esquiline, the Quirinal's back and the Janiculum while the
+  city is small; orchards of olives and figs on the Aventine and under the Esquiline; and from the
+  last century BC the horti (Pompey's, Lucullus's, Sallust's, Maecenas's, Lamia's, Caesar's,
+  Agrippa's, the Acilii's) with pines, cypresses, planes, box, flowers, lawns and a pergola now and
+  then. On the street, a vine trained over one shop front in five on poles, and a pot of box or
+  flowers by two doors in five. The houses of the rich have a lawn, two trees, box and flowers in
+  the peristyle. The emptied city grows over: grass and bushes over the open ground and the ruins.
 - **Walls and aqueducts:**
   - The Servian wall stands in every age, three metres thick with a tower at each gate, the agger
     (the earth rampart) behind it on the east; lower under the emperors, when the city has spilled

@@ -32,9 +32,7 @@ static func stone_pine(parent: Node3D, at: Vector3, size: float = 1.0, alive: bo
 			var d := Vector3(cos(a) * 3.6, 1.6, sin(a) * 3.6) * size
 			Kit.mesh(crown, Kit._cyl(0.05 * size, d.length()), "deadwood", d / 2.0, Quaternion(Vector3.UP, d.normalized()).get_euler())
 		return crown
-	Kit.blob(crown, Vector3(0, 1.9 * size, 0), 3.6 * size, "pine", Vector3(1.25, 0.32, 1.2), 9)
-	Kit.blob(crown, Vector3(0.9 * size, 2.3 * size, 0.4 * size), 2.4 * size, "pine", Vector3(1.2, 0.35, 1.1), 8)
-	Kit.blob(crown, Vector3(-1.1 * size, 2.2 * size, -0.6 * size), 2.2 * size, "pine", Vector3(1.1, 0.35, 1.2), 8)
+	Kit.leaves(crown, "g_pine", Vector3(0, 2.2 * size, 0), 9.0 * size, 4.4 * size)
 	return crown
 
 
@@ -417,6 +415,7 @@ static func century(parent: Node3D, at: Vector3, rows: int = 10, files: int = 8,
 static func togatus(parent: Node3D, at: Vector3, yaw: float, look: Dictionary, undead: bool = false) -> Dictionary:
 	var shaped := look.duplicate()
 	shaped["robe"] = "e8e2d2"
+	shaped["cloth"] = "toga"
 	var w := Kit.walker(parent, at, yaw, shaped)
 	var root: Node3D = w["root"]
 	var fold := Kit.group(root, Vector3.ZERO)

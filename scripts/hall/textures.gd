@@ -22,20 +22,37 @@ static func material(kind: String) -> Material:
 		m.uv1_triplanar = true
 		m.uv1_world_triplanar = true
 		m.uv1_scale = Vector3(scale, scale, scale)
-	if kind.begins_with("h_"):  # the house set (textures_houses.gd): walls, roofs, fronts of Rome's houses
-		var made: Dictionary = load("res://scripts/hall/textures_houses.gd").make(kind)
+	if kind.begins_with("c_"):  # the people set (textures_people.gd): cloth, skin, a face, hair, in the person's colour
+		var name := kind.substr(2)
+		var tint := Color.WHITE
+		var at := name.find("#")
+		if at >= 0:
+			tint = Color(name.substr(at))
+			name = name.substr(0, at)
+		var made: Dictionary = load("res://scripts/hall/textures_people.gd").make(name, tint)
 		if made.is_empty():
-			push_warning("no house texture " + kind)
+			push_warning("no people texture " + kind)
+			m.albedo_color = Color("ff00ff")
+		elif made.get("uv", false):
+			m.albedo_texture = made["tex"]
+		else:
+			world_tex.call(made["tex"], float(made["scale"]))
+		_cache[kind] = m
+		return m
+	if kind.begins_with("h_") or kind.begins_with("g_"):  # the house set (textures_houses.gd) and the green set (textures_green.gd)
+		var made: Dictionary = load("res://scripts/hall/textures_houses.gd" if kind.begins_with("h_") else "res://scripts/hall/textures_green.gd").make(kind)
+		if made.is_empty():
+			push_warning("no texture " + kind)
 			m.albedo_color = Color("ff00ff")
 		elif made.get("uv", false):  # one image to one quad
 			m.albedo_texture = made["tex"]
 			m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-			if made.get("cut", false):
-				m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-				m.alpha_scissor_threshold = 0.5
-				m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		else:
 			world_tex.call(made["tex"], float(made["scale"]))
+		if made.get("cut", false):
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+			m.alpha_scissor_threshold = 0.5
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		_cache[kind] = m
 		return m
 	if kind.begins_with("ph_"):  # a CC0 Poly Haven texture, e.g. "ph_marble_tiles" (assets/polyhaven)

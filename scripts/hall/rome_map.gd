@@ -508,9 +508,9 @@ static func fabric(world: Node3D, age: Dictionary, opts: Dictionary = {}) -> Dic
 	var out := {"flicker": flicker, "monuments": standing, "streets": streets, "bridges": bridges, "stalls": [], "fountains": [],
 		"clear": opts.get("clear", []), "doors": [], "banks": [], "flames": [], "compita": [], "tombs": []}
 	if opts.get("blocks", true):
+		_road_tombs(world, c, year, age_id, standing, skip, out)
 		_blocks(world, age, standing, streets, skip, lost, out)
 		_compita(world, c, age_id, skip, out)
-		_road_tombs(world, c, year, age_id, standing, skip, out)
 		_corners(world, c, skip)
 	return out
 
@@ -965,6 +965,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			continue
 		opens.append([at(o["at"]), span(float(o["r"]))])
 	var keep_off: Array = standing.map(func(s: Dictionary) -> Array: return [s["at"], footprint(s["m"])])
+	var wooded := groves(year)  # the sacred groves, the woods, the orchards and the gardens (green.json)
 	var roads: Array = []
 	for r: Dictionary in c.get("roads", []):
 		var pts: Array = r["points"]
@@ -1039,16 +1040,33 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			if wall_line.any(func(seg: Array) -> bool: return _to_segment(p, seg[0], seg[1]) < 11.0):
 				continue  # the wall, and the way along it
 			if river_edge(p) < 9.0:
-				if river_edge(p) > 4.0 and roll < 0.25:
-					trees.append([p, "round" if roll2 < 0.5 else "pine", rng.randf_range(0.8, 1.2)])  # trees along the bank
+				if river_edge(p) > 4.0:
+					if roll < 0.4:
+						trees.append([p, "round" if roll2 < 0.6 else ("olive" if roll2 < 0.8 else "pine"), rng.randf_range(0.8, 1.2)])  # trees along the bank
+					if not far:
+						_plant(trees, rng, p, "reeds", 3, 5.0, 0.8, 1.3)  # the reeds at the water
+						_plant(trees, rng, p, "grass", 2, 6.0)
 				continue
 			if opens.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
-				if roll < 0.08:
-					trees.append([p, "round", rng.randf_range(0.8, 1.2)])
+				if roll < 0.14:
+					trees.append([p, "round", rng.randf_range(0.9, 1.3)])
+				if not far and roll2 < 0.5:
+					_plant(trees, rng, p, "grass", 3, 7.0)
 				continue
 			if keep_off.any(func(o: Array) -> bool: return Vector2(p.x - o[0].x, p.z - o[0].z).length() < o[1]):
-				if roll < 0.12:
-					trees.append([p, "cypress", rng.randf_range(0.9, 1.2)])  # the sacred groves by the temples
+				if roll < 0.3:
+					trees.append([p, "cypress" if roll2 < 0.7 else "round", rng.randf_range(0.9, 1.2)])  # the sacred groves by the temples
+				continue
+			var grove: Dictionary = {}
+			for g: Dictionary in wooded:
+				if Vector2(p.x - (g["at"] as Vector3).x, p.z - (g["at"] as Vector3).z).length() < float(g["r"]):
+					grove = g
+					break
+			if not grove.is_empty():
+				var near := _nearest_road(p, roads)
+				if float(near["d"]) < float(near["half"]) + 3.0 and near["n"] != Vector3.ZERO:
+					p = (near["q"] as Vector3) + (near["n"] as Vector3) * (float(near["half"]) + 5.0)  # the trees stand back from the street
+				_grove_cell(world, trees, rng, p, str(grove["kind"]), far, fallen, add)
 				continue
 			# a cell near a street is lined up along it, its front a step from the kerb, so the street
 			# has walls (the road entries are [a, b, half-width + 3, corridor?]); a cell on the street
@@ -1089,7 +1107,7 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			var y := ground(p)
 			var hill := y > 4.0
 			var outer_hill := old and (hill or p.distance_to(forum) > 95.0) and inside(servian, p)  # the Esquiline, the Caelian, the Aventine's back
-			var keep := 0.93
+			var keep := 0.9
 			if republic and not inside(servian, p):
 				keep = 0.45 if not old else 0.25
 			if hill:
@@ -1098,17 +1116,29 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				keep = 0.4 if p.distance_to(abitato) < abitato_r else 0.15
 			if roll > keep:  # a little square: a fountain, a tree, or a garden on the hills
 				var kind := _hill_tree(p, y, roll2)
-				if fallen:
-					if roll2 < 0.25:
-						trees.append([p, "bush" if roll2 < 0.12 else kind, rng.randf_range(0.7, 1.2)])
+				if fallen:  # the emptied city grown over
+					if roll2 < 0.4:
+						trees.append([p, "bush" if roll2 < 0.2 else kind, rng.randf_range(0.7, 1.2)])
+					if not far:
+						_plant(trees, rng, p, "grass", 5, 7.0, 0.8, 1.4)
+						_plant(trees, rng, p, "bush", 1, 6.0, 0.6, 1.0)
 				elif kind == "rock":  # the Capitol's bare face
 					add.call("rock", "rock", Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(rng.randf_range(3.0, 6.0), rng.randf_range(1.5, 3.0), rng.randf_range(3.0, 6.0))), Vector3(p.x, y + 0.2, p.z)))
+					_plant(trees, rng, p, "grass", 3, 6.0)
 				elif roll2 < 0.35 and not far and not hill:
 					out["fountains"].append(p)
+					trees.append([p + Vector3(3.5, 0, 2.5), "round", rng.randf_range(0.9, 1.2)])  # the plane over the fountain
 				elif roll2 < 0.8 or hill:
 					trees.append([p, kind, rng.randf_range(0.8, 1.3)])
-					if hill:
-						trees.append([p + Vector3(rng.randf_range(-5, 5), 0, rng.randf_range(-5, 5)), "cypress" if kind == "cypress" or roll2 < 0.5 else "pine", rng.randf_range(0.8, 1.1)])
+					if hill:  # the hills' gardens: a clump, bushes, the grass between
+						_plant(trees, rng, p, "cypress" if kind == "cypress" or roll2 < 0.5 else "pine", 2, 6.0, 0.8, 1.2)
+						_plant(trees, rng, p, "round" if roll2 < 0.5 else "olive", 1, 6.0, 0.7, 1.0)
+						_plant(trees, rng, p, "bush", 2, 6.0)
+					else:
+						_plant(trees, rng, p, "bush", 1, 4.0)
+						_plant(trees, rng, p, "flowers", 2, 4.0)
+					if not far:
+						_plant(trees, rng, p, "grass", 4, 7.0)
 				continue
 			if not snapped:
 				var along := _warp(bx + 1.0, bz) - bend  # which way the bent grid's rows run here
@@ -1129,6 +1159,12 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 			if placed.any(func(o: Array) -> bool: return Vector2(o[0].x - p.x, o[0].z - p.z).length() < float(o[1]) + reach):
 				continue  # into a house already built
 			placed.append([p, reach])
+			if hill and rng.randf() < 0.45:  # the yard behind a hill house: a fig, a cypress
+				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.3, w * 0.3), 0, -(d / 2.0 + 1.5)), "round" if rng.randf() < 0.5 else ("cypress" if rng.randf() < 0.6 else "olive"), rng.randf_range(0.6, 0.9)])
+			elif not hill and rng.randf() < (0.36 if not far else 0.18):  # a pine or a cypress in a courtyard, grown up over the roofs
+				var tall := rng.randf() < 0.55
+				trees.append([p + basis * Vector3(rng.randf_range(-w * 0.25, w * 0.25), 0, rng.randf_range(-d * 0.25, d * 0.25)), "pine" if tall else "cypress",
+					rng.randf_range(1.8, 2.4) if tall else rng.randf_range(1.8, 2.4)])
 			var ruin: bool = lost or (fallen and (p.distance_to(abitato) > abitato_r or roll2 < 0.3))
 			if not far:
 				var shape := BoxShape3D.new()
@@ -1163,6 +1199,11 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				if floors > 3 and landmarks.any(func(l: Vector3) -> bool: return Vector2(l.x - centre.x, l.z - centre.z).length() < LANDMARK_LOW):
 					floors = 3  # kept low round the landmarks, so they show over the roofs
 				_house(add, centre, basis, lw - 0.3, d, floors, kind, rng, palette, republic, fallen, trees, doors, id, float(street["half"]) if snapped else 0.0)
+	for tomb: Dictionary in out.get("tombs", []):  # a cypress either side of each tomb along the roads
+		var tb := Basis(Vector3.UP, float(tomb["yaw"]))
+		for side: float in [-1.0, 1.0]:
+			if rng.randf() < 0.7:
+				trees.append([(tomb["at"] as Vector3) + tb * Vector3(side * 2.6, 0, -0.5), "cypress", rng.randf_range(0.8, 1.1)])
 	out["doors"] = doors
 	out["burnt"] = _burnt.duplicate()
 	if not fallen:  # the pigeons on the ridges and parapets
@@ -1175,7 +1216,6 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 				add.call("box", "#8a8a94", Transform3D(turn.scaled(Vector3(0.16, 0.14, 0.3)), q))
 				add.call("box", "#5a6a70", Transform3D(turn.scaled(Vector3(0.1, 0.1, 0.12)), q + turn * Vector3(0, 0.09, 0.14)))
 	out["shops"] = _draw(world, parts)
-	_trees(world, trees, fallen)
 	# the street fountains, with a lamp on a post by each
 	var flames := MultiMesh.new()
 	flames.transform_format = MultiMesh.TRANSFORM_3D
@@ -1201,6 +1241,27 @@ static func _blocks(world: Node3D, age: Dictionary, standing: Array, streets: Ar
 	# where the river folk work: along the banks inside the city
 	var banks: Array = []
 	var course: Array = (data()["tiber"]["course"] as Array).map(func(q: Array) -> Vector3: return at(q))
+	var reeds: Array = []  # the reeds at the water's edge, both banks, the whole way through the city
+	for i in course.size() - 1:
+		var a: Vector3 = course[i]
+		var b: Vector3 = course[i + 1]
+		var along := (b - a).normalized()
+		var across := Vector3(along.z, 0, -along.x)
+		var t := 0.0
+		while t < a.distance_to(b):
+			var q := a + along * t
+			t += 7.0
+			for s: float in [-1.0, 1.0]:
+				for off in range(6, 40, 2):
+					var r := q + across * s * float(off)
+					if river_edge(r) > 1.2:
+						if inside(edge, r) and skip.is_empty():
+							reeds.append([r + across * s * rng.randf_range(0.0, 1.5), "reeds", rng.randf_range(0.8, 1.3)])
+							if rng.randf() < 0.5:
+								reeds.append([r + across * s * 2.5 + along * rng.randf_range(-2.0, 2.0), "reeds", rng.randf_range(0.7, 1.1)])
+						break
+	trees.append_array(reeds)
+	_trees(world, trees, fallen)
 	for i in course.size() - 1:
 		var a: Vector3 = course[i]
 		var b: Vector3 = course[i + 1]
@@ -1428,6 +1489,13 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 					Vector3(c.x, y + 1.2, c.z) + b * Vector3(x + rng.randf_range(-0.8, 0.8), 0, s * (d / 2.0 + 0.25))))
 			if rng.randf() < 0.45:
 				_sign(add, c, b, w, d, y, s, rng, x)
+			if rng.randf() < 0.22 and not late:  # a vine trained over the front on two poles
+				var out_to := s * (d / 2.0 + 2.2)
+				for px: float in [-bw * 0.4, bw * 0.4]:
+					add.call("box", "wood", Transform3D(b.scaled(Vector3(0.12, 3.1, 0.12)), Vector3(c.x, y + 1.55, c.z) + b * Vector3(x + px, 0, out_to)))
+				add.call("box", "wood", Transform3D(b.scaled(Vector3(bw * 0.8 + 0.2, 0.08, 0.08)), Vector3(c.x, y + 3.1, c.z) + b * Vector3(x, 0, out_to)))
+				add.call("quad", "g_canopy", Transform3D((b * Basis(Vector3.RIGHT, -PI / 2.0)).scaled(Vector3(bw * 0.9, 2.4, 1.0)),
+					Vector3(c.x, y + 3.25, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))))
 		elif door or (shop and fallen):
 			var which := "h_door" if roll < 0.72 else ("h_door_red" if roll < 0.76 else "h_door_green")
 			if burnt:
@@ -1435,6 +1503,12 @@ static func _bays(add: Callable, c: Vector3, b: Basis, w: float, d: float, y: fl
 			else:
 				add.call("quad", which, _face(b, c, Vector3(x, y + 1.4 - c.y, s * (d / 2.0 + 0.04)), s, Vector2(1.5, 2.9)))
 				add.call("box", "bronze", Transform3D(b.scaled(Vector3(0.12, 0.3, 0.2)), Vector3(c.x, y + 2.6, c.z) + b * Vector3(x + 1.0, 0, s * (d / 2.0 + 0.1))))  # the lamp
+				if rng.randf() < 0.4:  # a bush of box or a rose in a pot by the door
+					var pot := Vector3(c.x, y, c.z) + b * Vector3(x - 1.0, 0, s * (d / 2.0 + 0.45))
+					add.call("amphora", "terracotta", Transform3D(Basis.IDENTITY.scaled(Vector3(0.9, 0.55, 0.9)), pot + Vector3(0, 0.25, 0)))
+					var potted := "g_flowers" if rng.randf() < 0.5 else "g_bush"
+					add.call("quad", potted, _face(b, c, Vector3(x - 1.0, y + 0.85 - c.y, s * (d / 2.0 + 0.45)), s, Vector2(0.9, 0.8)))
+					add.call("quad", potted, _face(b, c, Vector3(x - 1.0, y + 0.85 - c.y, s * (d / 2.0 + 0.45)), s, Vector2(0.9, 0.8), true))
 			if rng.randf() < 0.4 and doors.size() < 900 and not fallen:
 				var at_door := Vector3(c.x, 0, c.z) + b * Vector3(x, 0, s * (d / 2.0 + 1.1))
 				at_door.y = ground(at_door)
@@ -1618,9 +1692,12 @@ static func _domus(add: Callable, c: Vector3, b: Basis, w: float, d: float, rng:
 		add.call("box", "#c8a060", Transform3D(b.scaled(Vector3(size.x + 0.04, 0.2, size.z + 0.04)), Vector3(q.x, y + 1.4, q.z)))  # and its band
 		add.call("prism", "h_roof", Transform3D(b.scaled(Vector3(size.x + 0.6, 1.8, size.z + 0.6)) if size.x > size.z else
 			(b * Basis(Vector3.UP, PI / 2.0)).scaled(Vector3(size.z + 0.6, 1.8, size.x + 0.6)), Vector3(q.x, y + h + 0.9, q.z)))
-	add.call("box", "leaves", Transform3D(b.scaled(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
+	add.call("box", "g_turf", Transform3D(b.scaled(Vector3(w - 2.0 * t - 1.6, 0.3, d - 2.0 * t - 1.6)), Vector3(c.x, y + 0.15, c.z)))  # the garden
 	add.call("box", "water", Transform3D(b.scaled(Vector3(1.8, 0.1, 1.2)), Vector3(c.x, y + 0.32, c.z) + b * Vector3(-1.0, 0, 0)))
 	trees.append([c + b * Vector3(1.2, 0, 0.5), "round" if rng.randf() < 0.6 else "cypress", 0.7])
+	trees.append([c + b * Vector3(-1.4, 0, -1.2), "olive" if rng.randf() < 0.5 else "cypress", 0.6])
+	for k in 3:
+		trees.append([Vector3(c.x, y + 0.3, c.z) + b * Vector3(rng.randf_range(-1.8, 1.8), 0, rng.randf_range(-1.6, 1.6)), "flowers" if k < 2 else "bush", 0.6])
 	_roost(c + b * Vector3(0, 0, d / 2.0 + 0.2), y + h + 1.8, rng, b)
 	for s: float in [1.0, -1.0]:  # a few small windows high up
 		for k in 2:
@@ -1727,31 +1804,48 @@ static func _draw(world: Node3D, parts: Dictionary) -> MultiMeshInstance3D:
 	return shops
 
 
-## The city's trees, all in a few MultiMeshes: the stone pine (a tall bare trunk and a flat dark
-## crown), the cypress (a dark spire), the round-headed plane, fig and laurel, and bushes in the
-## ruins. [where, kind, size].
+## The city's trees and everything else that grows, all in a few MultiMeshes: each tree a trunk
+## and two or three crossed quads of leaves (textures_green.gd), so a crown is a mass of leaves
+## against the sky and not a green ball. Kinds: "pine" (the stone pine, a tall bare trunk and a
+## flat crown), "cypress" (a dark spire), "round" (plane, fig, oak, laurel), "olive", "bush",
+## "reeds", "grass" and "flowers" (tufts on the ground). [where, kind, size].
 static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 	var trunks: Array = []
-	var crowns := {"pine": [], "cypress": [], "round": [], "bush": []}
+	var quads := {"g_crown": [], "g_pine": [], "g_cypress": [], "g_olive": [], "g_bush": [], "g_reeds": [], "g_grass": [], "g_flowers": []}
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1723
+	var cross := func(tex: String, at: Vector3, w: float, h: float, n: int) -> void:
+		var yaw := rng.randf() * TAU
+		for k in n:
+			quads[tex].append(Transform3D(Basis(Vector3.UP, yaw + PI * k / n).scaled(Vector3(w, h, 1.0)), at))
 	for t: Array in trees:
 		var p: Vector3 = t[0]
 		var kind: String = t[1]
 		var s: float = t[2]
 		var y := p.y if p.y > 0.5 else ground(p)
-		var lean := Basis(Vector3(1, 0, 0), randf_range(-0.05, 0.05))
+		var lean := Basis(Vector3(1, 0, 0), rng.randf_range(-0.05, 0.05)) * Basis(Vector3(0, 0, 1), rng.randf_range(-0.05, 0.05))
 		match kind:
 			"pine":
-				trunks.append(Transform3D(lean.scaled(Vector3(0.35, 9.0, 0.35) * s), Vector3(p.x, y + 4.5 * s, p.z)))
-				crowns["pine"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(6.5, 2.0, 6.5) * s), Vector3(p.x, y + 9.4 * s, p.z)))
+				trunks.append(Transform3D(lean.scaled(Vector3(0.7, 9.0, 0.7) * s), Vector3(p.x, y + 4.5 * s, p.z)))
+				cross.call("g_pine", Vector3(p.x, y + 9.6 * s, p.z), 8.0 * s, 4.0 * s, 3)
 			"cypress":
-				trunks.append(Transform3D(Basis.IDENTITY.scaled(Vector3(0.25, 1.5, 0.25) * s), Vector3(p.x, y + 0.75 * s, p.z)))
-				crowns["cypress"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(1.6, 9.0, 1.6) * s), Vector3(p.x, y + 5.5 * s, p.z)))
+				trunks.append(Transform3D(Basis.IDENTITY.scaled(Vector3(0.4, 1.0, 0.4) * s), Vector3(p.x, y + 0.5 * s, p.z)))
+				cross.call("g_cypress", Vector3(p.x, y + 5.0 * s, p.z), 2.0 * s, 10.0 * s, 2)
+			"olive":
+				trunks.append(Transform3D(lean.scaled(Vector3(0.6, 2.4, 0.6) * s), Vector3(p.x, y + 1.2 * s, p.z)))
+				cross.call("g_olive", Vector3(p.x, y + 3.6 * s, p.z), 4.6 * s, 3.4 * s, 3)
 			"bush":
-				crowns["bush"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(2.2, 1.4, 2.2) * s), Vector3(p.x, y + 0.5 * s, p.z)))
+				cross.call("g_bush", Vector3(p.x, y + 0.8 * s, p.z), 2.4 * s, 1.6 * s, 2)
+			"reeds":
+				cross.call("g_reeds", Vector3(p.x, y + 0.9 * s, p.z), 1.8 * s, 1.8 * s, 2)
+			"grass":
+				cross.call("g_grass", Vector3(p.x, y + 0.35 * s, p.z), 1.1 * s, 0.7 * s, 2)
+			"flowers":
+				cross.call("g_flowers", Vector3(p.x, y + 0.4 * s, p.z), 1.1 * s, 0.8 * s, 2)
 			_:
-				trunks.append(Transform3D(lean.scaled(Vector3(0.3, 3.4, 0.3) * s), Vector3(p.x, y + 1.7 * s, p.z)))
-				crowns["round"].append(Transform3D(Basis.IDENTITY.scaled(Vector3(4.6, 3.8, 4.6) * s), Vector3(p.x, y + 4.4 * s, p.z)))
-	var draw := func(xfs: Array, mesh: Mesh, mat: String, name: String) -> void:
+				trunks.append(Transform3D(lean.scaled(Vector3(0.6, 3.2, 0.6) * s), Vector3(p.x, y + 1.6 * s, p.z)))
+				cross.call("g_olive" if fallen else "g_crown", Vector3(p.x, y + 4.5 * s, p.z), 5.4 * s, 4.6 * s, 3)
+	var draw := func(xfs: Array, mesh: Mesh, mat: String, name: String, shadows: bool) -> void:
 		if xfs.is_empty():
 			return
 		var mm := MultiMesh.new()
@@ -1764,6 +1858,8 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 		mmi.name = name
 		mmi.multimesh = mm
 		mmi.material_override = load("res://scripts/hall/textures.gd").material(mat)
+		if not shadows:
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		world.add_child(mmi)
 	var trunk := CylinderMesh.new()
 	trunk.top_radius = 0.4
@@ -1771,22 +1867,84 @@ static func _trees(world: Node3D, trees: Array, fallen: bool) -> void:
 	trunk.height = 1.0
 	trunk.radial_segments = 6
 	trunk.rings = 1
-	var ball := SphereMesh.new()
-	ball.radius = 0.5
-	ball.height = 1.0
-	ball.radial_segments = 10
-	ball.rings = 5
-	var spire := CylinderMesh.new()
-	spire.top_radius = 0.05
-	spire.bottom_radius = 0.5
-	spire.height = 1.0
-	spire.radial_segments = 8
-	spire.rings = 2
-	draw.call(trunks, trunk, "trunk", "TreeTrunks")
-	draw.call(crowns["pine"], ball, "pine", "TreePines")
-	draw.call(crowns["cypress"], spire, "cypress", "TreeCypresses")
-	draw.call(crowns["round"], ball, "olive" if fallen else "leaves", "TreeCrowns")
-	draw.call(crowns["bush"], ball, "leaves", "Bushes")
+	var quad := QuadMesh.new()
+	quad.size = Vector2.ONE
+	draw.call(trunks, trunk, "g_bark", "TreeTrunks", true)
+	draw.call(quads["g_pine"], quad, "g_pine", "TreePines", true)
+	draw.call(quads["g_cypress"], quad, "g_cypress", "TreeCypresses", true)
+	draw.call(quads["g_crown"], quad, "g_crown", "TreeCrowns", true)
+	draw.call(quads["g_olive"], quad, "g_olive", "TreeOlives", true)
+	draw.call(quads["g_bush"], quad, "g_bush", "Bushes", true)
+	draw.call(quads["g_reeds"], quad, "g_reeds", "Reeds", false)
+	draw.call(quads["g_grass"], quad, "g_grass", "Grass", false)
+	draw.call(quads["g_flowers"], quad, "g_flowers", "Flowers", false)
+
+
+## Puts `n` of `kind` down round `p`, within `spread` metres, each its own size.
+static func _plant(trees: Array, rng: RandomNumberGenerator, p: Vector3, kind: String, n: int, spread: float, lo: float = 0.8, hi: float = 1.2) -> void:
+	for k in n:
+		var a := rng.randf() * TAU
+		var d := sqrt(rng.randf()) * spread
+		trees.append([p + Vector3(cos(a) * d, 0, sin(a) * d), kind, rng.randf_range(lo, hi)])
+
+
+static var _green := {}
+
+
+## content/rome/green.json: the sacred groves, the woods on the hills, the orchards and the
+## pleasure gardens, each with its years.
+static func green_data() -> Dictionary:
+	if _green.is_empty():
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/rome/green.json"))
+		_green = parsed if parsed is Dictionary else {"groves": []}
+	return _green
+
+
+## The groves standing in `year`: [{at (world), r (world), kind, name}].
+static func groves(year: int) -> Array:
+	var out: Array = []
+	for g: Dictionary in green_data().get("groves", []):
+		if g.has("from") and year < int(g["from"]):
+			continue
+		if g.has("until") and year >= int(g["until"]):
+			continue
+		out.append({"at": at(g["at"]), "r": span(float(g["r"])), "kind": str(g["kind"]), "name": str(g.get("name", ""))})
+	return out
+
+
+## Plants one cell of a grove: oaks and a cypress in a sacred grove, pines and oaks thick in a
+## wood, fruit trees in rows in an orchard, and in the pleasure gardens the whole set with
+## flowers, box and a pergola now and then. `street_half` keeps the trees off a street the cell
+## lies against.
+static func _grove_cell(world: Node3D, trees: Array, rng: RandomNumberGenerator, p: Vector3, kind: String, far: bool, fallen: bool,
+		add: Callable) -> void:
+	var y := ground(p)
+	match kind:
+		"sacred":
+			_plant(trees, rng, p, "round", 3, 6.0, 0.9, 1.4)
+			if rng.randf() < 0.4:
+				_plant(trees, rng, p, "cypress", 1, 5.0, 1.0, 1.3)
+		"wood":
+			_plant(trees, rng, p, "pine" if y > 8.0 or rng.randf() < 0.5 else "round", 3, 6.5, 0.9, 1.3)
+			_plant(trees, rng, p, "round", 1, 6.0, 0.7, 1.0)
+			_plant(trees, rng, p, "bush", 2, 6.0)
+		"orchard":
+			for i in 2:
+				for j in 2:
+					trees.append([p + Vector3(-3.5 + i * 7.0 + rng.randf_range(-0.5, 0.5), 0, -3.5 + j * 7.0 + rng.randf_range(-0.5, 0.5)),
+						"olive" if rng.randf() < 0.6 else "round", rng.randf_range(0.7, 0.9)])
+		_:  # horti
+			if y < 4.0 and not fallen:
+				add.call("box", "g_turf", Transform3D(Basis.IDENTITY.scaled(Vector3(14.0, 0.5, 14.0)), Vector3(p.x, y - 0.15, p.z)))
+			var roll := rng.randf()
+			_plant(trees, rng, p, "pine" if roll < 0.35 else ("cypress" if roll < 0.6 else "round"), 2, 6.0, 0.9, 1.3)
+			_plant(trees, rng, p, "olive", 1, 6.0, 0.8, 1.0)
+			_plant(trees, rng, p, "bush", 2, 6.0, 0.8, 1.2)
+			_plant(trees, rng, p, "flowers", 3, 6.5)
+			if not far and rng.randf() < 0.14 and not fallen:
+				Rome.pergola(world, Vector3(p.x, y, p.z), rng.randf() * TAU, 6.0)
+	if not far:
+		_plant(trees, rng, p, "grass", 3 if fallen else 4, 7.0, 0.8, 1.3)
 
 
 ## What grows on a hill, so the hills can be told apart from any street: stone pines on the ridges,
