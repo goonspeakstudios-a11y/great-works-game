@@ -208,3 +208,17 @@ and round it `cephalus_house`, `gyges`, `the_line`, `cave` (with a way up added 
 Socrates, Glaucon and Adeimantus at the council table; `People.hero_arms` with two new heroes,
 Gyges (the ring) and Socrates (the cup). The music zone `academy` gains `crowd` (the city) and
 `salpinx` (its guardians).
+
+## In use (sprint 7, Rome's first module)
+The eleven places of `scripts/hall/places_rome_books.gd` are built from the Rome kit (`Rome.atrium`,
+`lararium`, `capsa`, `pergola`, `fountain`, `spring`, `stone_pine`, `togatus`, `century`, `aquila`,
+`subsellia`, `rostra`, `gateway`, `tomb`, `insula`, `triclinium`, `inscription`, `temple`), the city's
+monument builders (`Urbs.hut`, `cave`, `fig`, `portico`), the Greek kit (`Greek.plough_team`, `altar`,
+`mask`, `kline`, `cave`, `troy_wall`, `bema`), the props (`Props.pyre`, `bier`, `shrine`, `bath`) and
+the people (`People.figure` with forty new figures: Remus, the Sabine women, Tarquin, Brutus,
+Antony, the conspirators, Anchises, Ascanius, Creusa, Dido, the Sibyl, Turnus, Memmius, Iphigenia,
+Calchas, Nature, Laelius, the Carthaginians, Regulus, Masinissa, Africanus, Deucalion, Pyrrha,
+Daphne, Apollo, Eurydice, the ivory girl, Agricola, the Britons, Domitian, Epaphroditus, guests,
+guards, Paulinus, porters, clerks, the sages; `People.hero_arms` with twelve new heroes and five new
+things held: a knife, a goad, the golden bough, a lyre, a chisel). Music zones `kings`, `horti`,
+`spheres`, `stoa` (`tools/make_music.py`); maps `19bc` and `60ad` (`tools/build_map.py`).
