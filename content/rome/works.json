@@ -1,7 +1,7 @@
 {
   "source": "essentials",
   "title": "The Roman World",
-  "note": "Rome's books, in reading order. Each stands in a zone of the city (content/rome/republican_rome.json) and belongs to one of the city's four ages (content/rome/city.json): the city you walk is the age of the latest book you have begun.",
+  "note": "Rome's books, in reading order: the Rhetorica, then the Essentials' Rome module. Each stands in a zone of the city (content/rome/republican_rome.json) and belongs to one of the city's ages (content/rome/city.json): the city you walk is the age of the latest book you have mastered.",
   "modules": [
     {
       "id": "r1",
@@ -11,6 +11,17 @@
       "takeaways": [
         "Rhetoric has five parts: invention, arrangement, style, memory, and delivery.",
         "A trained memory is a house of places walked in order, with a striking image set in each."
+      ]
+    },
+    {
+      "id": "e5",
+      "title": "Rome: Duty, Empire, and the Stoics",
+      "style": "exemplum",
+      "intro": "Rome took Greek culture and turned it toward law, duty, and empire, and it produced the Stoic writers still read as practical guides. This module gives you the founding myths, the national epic, and Stoicism in its own words.",
+      "takeaways": [
+        "Roman virtue is duty to family, gods, and the state (pietas). Aeneas is its model, and Virgil shows what it costs.",
+        "The Stoics separate what is in our power (judgments, choices) from what is not (everything else).",
+        "The Epicureans (Lucretius) offer the rival cure: an atomic universe with no gods to fear and no death to suffer."
       ]
     }
   ],
@@ -27,6 +38,149 @@
       "match": "1:Rhetorica ad Herennium",
       "age": "republic",
       "rome_zone": "palatine_forum"
+    },
+    {
+      "id": "livy-the-history-of-rome",
+      "author": "Livy",
+      "title": "The History of Rome",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 1.5,
+      "read": "The Preface and I.1-16 (the founding); I.57-60 (Lucretia and the end of the kings).",
+      "edition": "Tr. Aubrey de Selincourt, The Early History of Rome and The War with Hannibal (Penguin)",
+      "match": "9:Livy — The History of Rome",
+      "age": "heroic",
+      "rome_zone": "palatina"
+    },
+    {
+      "id": "plutarch-parallel-lives",
+      "author": "Plutarch",
+      "title": "Parallel Lives",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 1.5,
+      "read": "The Life of Julius Caesar.",
+      "edition": "Tr. Robin Waterfield, Roman Lives and Greek Lives (Oxford World's Classics)",
+      "match": "9:Plutarch — Parallel Lives",
+      "age": "republic",
+      "rome_zone": "campus_martius"
+    },
+    {
+      "id": "virgil-the-aeneid",
+      "author": "Virgil",
+      "title": "The Aeneid",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 6,
+      "read": "Books 1, 2, 4, 6, and 12.",
+      "edition": "Tr. Robert Fitzgerald (Vintage) or Robert Fagles (Penguin)",
+      "match": "6:Virgil — The Aeneid",
+      "age": "republic",
+      "rome_zone": "esquilina"
+    },
+    {
+      "id": "lucretius-on-the-nature-of-things",
+      "author": "Lucretius",
+      "title": "On the Nature of Things",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 2,
+      "read": "I.1-158 (the invocation and 'nothing from nothing') and III.830-1094 ('death is nothing to us').",
+      "edition": "Tr. Martin Ferguson Smith (Hackett); or A.E. Stallings (Penguin)",
+      "match": "6:Lucretius — On the Nature of Things",
+      "age": "republic",
+      "rome_zone": "collina"
+    },
+    {
+      "id": "cicero-on-duties",
+      "author": "Cicero",
+      "title": "On Duties",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 2,
+      "read": "On Duties I.1-60 and On Friendship.",
+      "edition": "On Duties tr. Griffin and Atkins (Cambridge Texts in the History of Political Thought); On Friendship and On Old Age in Cicero: On the Good Life, tr. Michael Grant (Penguin)",
+      "match": "11:Cicero — On Duties",
+      "age": "republic",
+      "rome_zone": "palatine_forum"
+    },
+    {
+      "id": "cicero-the-dream-of-scipio",
+      "author": "Cicero",
+      "title": "The Dream of Scipio",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 0.5,
+      "read": "The whole text; it is a few pages.",
+      "edition": "In Cicero: The Republic and The Laws, tr. Niall Rudd (Oxford World's Classics)",
+      "match": "3:Cicero — The Dream of Scipio",
+      "age": "republic",
+      "rome_zone": "capitolium"
+    },
+    {
+      "id": "ovid-metamorphoses",
+      "author": "Ovid",
+      "title": "Metamorphoses",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 1.5,
+      "read": "Book I (creation, the flood, Apollo and Daphne) and Book X (Orpheus, Pygmalion).",
+      "edition": "Tr. Allen Mandelbaum (Harcourt) or Charles Martin (Norton)",
+      "match": "6:Ovid — Metamorphoses",
+      "age": "republic",
+      "rome_zone": "trans_tiberim"
+    },
+    {
+      "id": "tacitus-annals",
+      "author": "Tacitus",
+      "title": "Annals",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 1.5,
+      "read": "The Agricola; it is short. Note Calgacus's speech (ch. 30).",
+      "edition": "Agricola and Germania tr. Harold Mattingly (Penguin); Annals tr. A.J. Woodman (Hackett)",
+      "match": "9:Tacitus — Annals",
+      "age": "empire",
+      "rome_zone": "collina"
+    },
+    {
+      "id": "epictetus-enchiridion",
+      "author": "Epictetus",
+      "title": "Enchiridion",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 1,
+      "read": "The Enchiridion in full.",
+      "edition": "Tr. Robin Hard, Discourses, Fragments, Handbook (Oxford World's Classics)",
+      "match": "12:Epictetus — Enchiridion",
+      "age": "empire",
+      "rome_zone": "suburana"
+    },
+    {
+      "id": "marcus-aurelius-meditations",
+      "author": "Marcus Aurelius",
+      "title": "Meditations",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 2,
+      "read": "Books 2 and 4.",
+      "edition": "Tr. Gregory Hays (Modern Library) or Robin Hard (Oxford World's Classics)",
+      "match": "12:Marcus Aurelius — Meditations",
+      "age": "empire",
+      "rome_zone": "palatina"
+    },
+    {
+      "id": "seneca-letters-to-lucilius",
+      "author": "Seneca",
+      "title": "Letters to Lucilius",
+      "module": "e5",
+      "style": "exemplum",
+      "hours": 1,
+      "read": "On the Shortness of Life.",
+      "edition": "Tr. Robin Campbell, Letters from a Stoic (Penguin); On the Shortness of Life tr. C.D.N. Costa (Penguin)",
+      "match": "11:Seneca — Letters to Lucilius",
+      "age": "empire",
+      "rome_zone": "aventinus"
     }
   ]
 }
