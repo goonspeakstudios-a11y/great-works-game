@@ -1,0 +1,135 @@
+{
+ "title": "The world in 19 BC",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Parthian Empire",
+   "sub": "King Phraates IV, who gave back Crassus's eagles",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    191,
+    96
+   ]
+  },
+  {
+   "name": "Roman Empire",
+   "sub": "Augustus, the first emperor; the civil wars over",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    41,
+    46
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Germans",
+   "label": [
+    67,
+    22
+   ]
+  },
+  {
+   "name": "Dacians",
+   "label": [
+    111,
+    43
+   ]
+  },
+  {
+   "name": "Mauretania",
+   "label": [
+    20,
+    96
+   ]
+  },
+  {
+   "name": "Armenia",
+   "label": [
+    171,
+    67
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Rome",
+   "note": "Augustus closes the gates of Janus: peace",
+   "at": [
+    74,
+    60
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Brundisium",
+   "note": "Virgil dies here, 19 BC, the Aeneid unfinished",
+   "at": [
+    91,
+    65
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Carthage",
+   "note": "Dido's city, refounded as a Roman colony",
+   "at": [
+    67,
+    81
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Troy",
+   "note": "Ilium, where Aeneas's story begins",
+   "at": [
+    117,
+    68
+   ],
+   "main": false,
+   "side": "above"
+  },
+  {
+   "name": "Alexandria",
+   "note": "Egypt is Augustus's own province",
+   "at": [
+    128,
+    103
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Tomis",
+   "note": "Ovid's exile, from AD 8",
+   "at": [
+    124,
+    51
+   ],
+   "main": false,
+   "side": "right"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

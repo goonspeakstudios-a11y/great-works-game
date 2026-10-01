@@ -193,6 +193,54 @@ const ZONES := {
 		{"file": "stream", "db": -22.0, "needs": "water"},
 		{"file": "fire", "db": -27.0, "needs": "lamps"},
 		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# Rome's first module (places_rome_books.gd). The kings' hill (Livy): a tibia on the old tales,
+	# a hum at dusk, the ploughman's drum round the furrow, the spring and the fig's birds.
+	"kings": {"bells": false, "layers": [
+		{"file": "kings_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "kings_low", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "kings_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "kings_tibia", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "kings_drum", "db": -12.0, "music": true, "needs": "walkway"},
+		{"file": "stream", "db": -24.0, "needs": "water"},
+		{"file": "birds", "db": -23.0, "needs": "leaves"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# The gardens (Virgil, Lucretius, Ovid): a lyre and a voice on the hill, the water, the birds
+	# and the cicadas, the household's talk.
+	"horti": {"bells": false, "layers": [
+		{"file": "horti_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "horti_low", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "horti_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "horti_lyre", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "horti_voice", "db": -11.0, "music": true, "needs": "household"},
+		{"file": "fountain", "db": -25.0, "needs": "water"},
+		{"file": "birds", "db": -23.0, "needs": "leaves"},
+		{"file": "cicadas", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# The spheres (the Dream of Scipio): the Arx at night, the nine tones once the lamps are lit
+	# and the stars out, a lyre, the voices, the owl, the crickets, the spring below.
+	"spheres": {"bells": false, "layers": [
+		{"file": "spheres_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "spheres_tones", "db": -10.0, "music": true, "needs": "lamps"},
+		{"file": "spheres_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "spheres_lyre", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "spheres_voices", "db": -11.0, "music": true, "needs": "household"},
+		{"file": "stream", "db": -25.0, "needs": "water"},
+		{"file": "owl", "db": -24.0, "needs": "leaves"},
+		{"file": "crickets", "db": -24.0},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
+	# The Stoa (Tacitus, Epictetus, Marcus Aurelius, Seneca): a tibia, a slow pulse, the bass on
+	# the beat, the crowd of the city, and the legion's march once the soldiers are back.
+	"stoa": {"bells": false, "layers": [
+		{"file": "stoa_ghost", "db": -9.0, "music": true, "until": "teacher", "fade": 1.5},
+		{"file": "stoa_pulse", "db": -11.0, "music": true, "needs": "lamps"},
+		{"file": "stoa_drone", "db": -10.0, "music": true, "needs": "sun"},
+		{"file": "stoa_tibia", "db": -10.0, "music": true, "needs": "teacher"},
+		{"file": "stoa_bass", "db": -11.0, "music": true, "needs": "walkway"},
+		{"file": "stoa_march", "db": -11.0, "music": true, "needs": "soldiers"},
+		{"file": "crowd", "db": -25.0, "needs": "household"},
+		{"file": "fountain", "db": -26.0, "needs": "water"},
+		{"file": "birds", "db": -24.0, "needs": "leaves"},
+		{"file": "wind", "db": -25.0, "loud_db": -16.0, "loud_until": "sun"}]},
 }
 
 var zone := ""

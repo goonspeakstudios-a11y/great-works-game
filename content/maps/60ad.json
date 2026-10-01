@@ -1,0 +1,142 @@
+{
+ "title": "The world in AD 60",
+ "size": [
+  216,
+  148
+ ],
+ "regions": [
+  {
+   "name": "Parthian Empire",
+   "sub": "King Vologases I, at war with Rome over Armenia",
+   "color": [
+    84,
+    118,
+    70
+   ],
+   "label": [
+    194,
+    100
+   ]
+  },
+  {
+   "name": "Roman Empire",
+   "sub": "Emperor Nero; Seneca at his side, for now",
+   "color": [
+    150,
+    58,
+    42
+   ],
+   "label": [
+    91,
+    50
+   ]
+  }
+ ],
+ "others": [
+  {
+   "name": "Caledonians",
+   "label": [
+    22,
+    2
+   ]
+  },
+  {
+   "name": "Germans",
+   "label": [
+    67,
+    18
+   ]
+  },
+  {
+   "name": "Dacians",
+   "label": [
+    111,
+    43
+   ]
+  },
+  {
+   "name": "Sarmatians",
+   "label": [
+    141,
+    36
+   ]
+  },
+  {
+   "name": "Armenia",
+   "label": [
+    172,
+    66
+   ]
+  },
+  {
+   "name": "Arabia",
+   "label": [
+    172,
+    132
+   ]
+  }
+ ],
+ "pins": [
+  {
+   "name": "Rome",
+   "note": "Seneca writes to Paulinus, the prefect of the grain",
+   "at": [
+    74,
+    60
+   ],
+   "main": true,
+   "side": "right"
+  },
+  {
+   "name": "Corsica",
+   "note": "Seneca's exile, AD 41 to 49",
+   "at": [
+    63,
+    59
+   ],
+   "main": false,
+   "side": "left"
+  },
+  {
+   "name": "Ostia",
+   "note": "Claudius's new harbour for the corn ships",
+   "at": [
+    73,
+    61
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Camulodunum",
+   "note": "Boudica burns the colony, AD 60",
+   "at": [
+    37,
+    20
+   ],
+   "main": false,
+   "side": "above"
+  },
+  {
+   "name": "Alexandria",
+   "note": "the corn of Egypt sails from here",
+   "at": [
+    128,
+    103
+   ],
+   "main": false,
+   "side": "below"
+  },
+  {
+   "name": "Corduba",
+   "note": "Seneca's birthplace",
+   "at": [
+    19,
+    76
+   ],
+   "main": false,
+   "side": "below"
+  }
+ ],
+ "credit": "Coastlines: Natural Earth (public domain). Borders approximate."
+}

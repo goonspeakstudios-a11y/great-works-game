@@ -997,6 +997,113 @@ def render_ephesus(seconds: int = 48, seed: int = 167) -> dict[str, list[float]]
     return {k: _fold(v, total) for k, v in stems.items()}
 
 
+# ---------- Rome's first module: four more places in the city ----------
+
+# The kings' Rome (Livy): the city of tufa and timber in D Dorian, plain and old. A tibia carries
+# a slow tune like the old tales told at dusk, a low hum under it, and a drum at the ploughman's
+# pace, one tread every two seconds, round the furrow of the first wall.
+KINGS_SCALE = [293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.26, 698.46]
+
+
+def render_kings(seconds: int = 48, seed: int = 231) -> dict[str, list[float]]:
+    """The hut of Romulus in four layers: the drone, the tibia, the hum, the ploughman's drum."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 6 * RATE) for k in ("drone", "tibia", "low", "drum")}
+    for freq, level in ((73.42, 0.045), (110.0, 0.025), (146.83, 0.012)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    for t, length, f in _phrases(rng, seconds, 3.0, KINGS_SCALE, [-2, -1, -1, 1, 1, 2], [1.5, 2.0, 2.0, 3.0], (3.0, 5.0), (2, 4)):
+        reed(stems["tibia"], f / 2, 0.12, int(t * RATE), length * 0.95, rng, attack=0.3)
+    for k, (t0, f) in enumerate(((0.0, 146.83), (12.0, 130.81), (24.0, 146.83), (36.0, 110.0))):
+        choir(stems["low"], f, 0.04, int(t0 * RATE), 12.0, rng, attack=3.0, release=3.0)
+        choir(stems["low"], f * 1.5, 0.015 if k % 2 else 0.02, int((t0 + 1.0) * RATE), 11.0, rng, attack=3.0, release=3.0)
+    drum_rng = random.Random(seed + 1)
+    for k in range(24):
+        drum(stems["drum"], int(k * 2.0 * RATE), 0.2, drum_rng, base=52.0)
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
+# The gardens (Virgil, Lucretius, Ovid): the horti on the hills about Rome, in F Lydian, warm and
+# still. A lyre picks a slow tune, a woman's voice hums on its long notes, a low string marks the
+# quarters, and a drone like the afternoon.
+HORTI_SCALE = [349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.26, 698.46, 783.99, 880.00]
+
+
+def render_horti(seconds: int = 48, seed: int = 233) -> dict[str, list[float]]:
+    """The gardens in four layers: the drone, the lyre, the voice, the low string."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 6 * RATE) for k in ("drone", "lyre", "voice", "low")}
+    for freq, level in ((87.31, 0.04), (130.81, 0.022), (174.61, 0.01)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    for t, length, f in _phrases(rng, seconds, 2.0, HORTI_SCALE, [-1, -1, 1, 1, 2, -2, 3], [1.0, 1.5, 2.0, 2.0, 3.0], (2.0, 4.0), (3, 5)):
+        pluck(stems["lyre"], f / 2, 0.16, int(t * RATE), 3.0, rng, 0.4, 0.998)
+        if length >= 2.0:
+            choir(stems["voice"], f, 0.035, int((t + 0.1) * RATE), length + 0.5, rng, attack=0.4, release=0.6)
+    for k in range(8):
+        pluck(stems["low"], (87.31, 130.81, 116.54, 87.31)[k % 4], 0.14, int(k * 6 * RATE), 5.0, rng, 0.25, 0.998, release=0.5)
+    out = {k: _fold(v, total) for k, v in stems.items()}
+    out["low"] = _centred(out["low"])
+    return out
+
+
+# The spheres (the Dream of Scipio): the Arx at night. Nine tones for the nine spheres, each
+# swelling in turn through the loop, the lowest for the moon and the highest for the heaven of
+# the fixed stars (Cicero: the highest sphere the sharpest note, the moon the lowest); a lyre
+# far off; a choir on the long notes; a drone of the night.
+SPHERES = [130.81, 164.81, 196.00, 261.63, 329.63, 392.00, 523.25, 659.26, 783.99]
+SPHERES_SCALE = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.26, 783.99, 880.00]
+
+
+def render_spheres(seconds: int = 48, seed: int = 239) -> dict[str, list[float]]:
+    """The Arx at night in four layers: the drone, the nine tones, the lyre, the voices."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 24 * RATE) for k in ("drone", "tones", "lyre", "voices")}
+    for freq, level in ((65.41, 0.04), (98.00, 0.02)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    for k, f in enumerate(SPHERES):  # each sphere's tone swells for 20 s, one entering every 5 s
+        swell(stems["tones"], f, 0.04 / (1.0 + k * 0.2), int(k * 5 * RATE), 20.0)
+    for t, length, f in _phrases(rng, seconds, 4.0, SPHERES_SCALE, [-1, 1, 2, -2, 3], [2.0, 3.0, 4.0], (4.0, 7.0), (1, 3)):
+        pluck(stems["lyre"], f / 2, 0.14, int(t * RATE), 4.0, rng, 0.3, 0.998, release=0.4)
+    for t0, length, f in ((0.0, 16.0, 261.63), (16.0, 16.0, 329.63), (32.0, 16.0, 261.63)):
+        choir(stems["voices"], f, 0.04, int(t0 * RATE), length + 2.0, rng, attack=4.0, release=4.0)
+        choir(stems["voices"], f * 1.5, 0.018, int((t0 + 2.0) * RATE), length, rng, attack=4.0, release=4.0)
+    return {k: _fold(v, total) for k, v in stems.items()}
+
+
+# The Stoa (Tacitus, Epictetus, Marcus, Seneca): the Empire's Rome, in E Phrygian, bare and
+# steady. A tibia on a plain tune, a plucked ostinato like a slow pulse, a low bass on the beat,
+# and, only when the soldiers are back, the legion's march with its horn.
+STOA_SCALE = [329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.26, 698.46, 783.99]
+STOA_PULSE = [0, 0, 4, 0, 2, 0, 4, 2]  # scale steps, one a second: a slow heartbeat on E and B
+
+
+def render_stoa(seconds: int = 48, seed: int = 241) -> dict[str, list[float]]:
+    """The Stoa in five layers: the drone, the tibia, the pulse, the bass, the march."""
+    rng = random.Random(seed)
+    total = seconds * RATE
+    stems = {k: [0.0] * (total + 6 * RATE) for k in ("drone", "tibia", "pulse", "bass", "march")}
+    for freq, level in ((82.41, 0.045), (123.47, 0.02)):
+        osc(stems["drone"], fit(freq, seconds), level, 0, lambda n: 1.0 if n < total else -1)
+    for t, length, f in _phrases(rng, seconds, 2.5, STOA_SCALE, [-1, -1, 1, 1, -2, 2], [1.0, 1.5, 2.0, 2.0], (2.5, 4.5), (2, 4)):
+        reed(stems["tibia"], f / 2, 0.11, int(t * RATE), length * 0.95, rng, attack=0.25)
+    for k in range(seconds):
+        pluck(stems["pulse"], STOA_SCALE[STOA_PULSE[k % len(STOA_PULSE)]] / 2, 0.1, int(k * RATE), 1.2, rng, 0.3, 0.995)
+    for k in range(12):
+        pluck(stems["bass"], (82.41, 82.41, 65.41, 73.42)[k % 4], 0.14, int(k * 4 * RATE), 3.6, rng, 0.25, 0.998, release=0.4)
+    drum_rng = random.Random(seed + 1)
+    beat = seconds / 80
+    for k in range(80):
+        drum(stems["march"], int(k * beat * RATE), 0.18 if k % 2 == 0 else 0.1, drum_rng, base=60.0)
+    for t0 in (0.0, 24.0):
+        for dt, f, length in ((0.0, 164.81, 0.4), (0.5, 220.0, 0.4), (1.0, 329.63, 1.4)):
+            brass(stems["march"], f, 0.14, int((t0 + dt) * RATE), length, attack=0.05, release=0.25)
+    out = {k: _fold(v, total) for k, v in stems.items()}
+    out["bass"] = _centred(out["bass"])
+    return out
+
+
 # ---------- sounds of the later places ----------
 
 def render_crowd(seconds: int = 12, seed: int = 89, voices: int = 14) -> list[float]:
@@ -1615,6 +1722,11 @@ JOBS: dict[str, Callable[[], None]] = {
     "step_stone": _one("step_stone", render_step_stone, 0.5),
     "step_earth": _one("step_earth", render_step_earth, 0.5),
     "step_slab": _one("step_slab", render_step_slab, 0.5),
+    # Rome's first module: the kings' hill, the gardens, the spheres over the Arx, the Stoa
+    "kings": _track("kings", render_kings, ("drone", "tibia", "low"), KINGS_SCALE, 73.42, "reed", 235),
+    "horti": _track("horti", render_horti, ("drone", "lyre", "voice"), HORTI_SCALE, 87.31, "lyre", 237),
+    "spheres": _track("spheres", render_spheres, ("drone", "tones", "lyre"), SPHERES_SCALE, 65.41, "lyre", 243),
+    "stoa": _track("stoa", render_stoa, ("drone", "tibia", "pulse", "bass"), STOA_SCALE, 82.41, "reed", 247),
 }
 
 

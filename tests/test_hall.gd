@@ -110,7 +110,11 @@ const OPEN_WORKS := ["porphyry-isagoge", "aristotle-categories", "aristotle-the-
 const NEW_PLACES := ["rhetorica-ad-herennium", "euclid-elements", "homer-the-iliad", "hesiod-theogony", "sappho-fragments",
 	"aeschylus-the-oresteia", "sophocles-the-theban-plays", "euripides-the-tragedies",
 	"aristophanes-the-comedies", "herodotus-the-histories", "thucydides-the-peloponnesian-war",
-	"the-pre-socratics", "plato-republic"]
+	"the-pre-socratics", "plato-republic"] + ROME_PLACES
+## Rome's first module (places_rome_books.gd), each book in its own zone of the city.
+const ROME_PLACES := ["livy-the-history-of-rome", "plutarch-parallel-lives", "virgil-the-aeneid", "lucretius-on-the-nature-of-things",
+	"cicero-on-duties", "cicero-the-dream-of-scipio", "ovid-metamorphoses", "tacitus-annals", "epictetus-enchiridion",
+	"marcus-aurelius-meditations", "seneca-letters-to-lucilius"]
 
 
 func test_rooms_follow_the_reading_list() -> void:
@@ -975,13 +979,19 @@ func test_the_city_in_speech_rises_step_by_step_at_the_academy() -> void:
 
 ## The Rhetorica is the first zone of Rome: its place is laid out on the map of Republican Rome
 ## (rome_map.gd), everything you can reach stands inside its zone and a fence runs round it, and
-## the rest of the city's zones wait on the same map, sealed, for the Rome world.
+## every other zone of the city opens with the first of Rome's books that stands in it.
 func test_the_rhetorica_is_the_first_zone_of_rome() -> void:
 	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
 	var zones: Array = RomeMap.data()["zones"]
 	check(zones.size() >= 8, "Rome is laid out in zones (%d)" % zones.size())
-	check_eq(zones.filter(func(z): return z["opens_with"] != null).map(func(z): return z["id"]), ["palatine_forum"],
-		"only the Forum under the Palatine is open, with the Rhetorica")
+	check(zones.all(func(z): return z["opens_with"] != null), "every zone opens with a book")
+	var first := {}
+	for d in Rooms.doors_of("rome"):
+		if not first.has(d["zone"]):
+			first[d["zone"]] = d["work"]
+	for z in zones:
+		check_eq(z["opens_with"], first.get(z["id"], ""), "%s opens with the first book that stands in it" % z["id"])
+		check_eq(Rooms.room(z["opens_with"]).get("rome_zone", ""), z["id"], "%s: the room knows its zone" % z["opens_with"])
 	check_eq(Rooms.room("rhetorica-ad-herennium").get("rome_zone", ""), "palatine_forum", "the room knows its zone")
 	check(RomeMap.data()["wall"]["gates"].size() >= 12, "the Servian wall has its gates")
 	var hall: Node = Hall.new()
@@ -997,12 +1007,42 @@ func test_the_rhetorica_is_the_first_zone_of_rome() -> void:
 	hall.free()
 
 
+## Each of Rome's books stands in its own zone of the city, on a terrace of its hill or on the flat
+## by the river and the Forum: everything to do is inside the zone, you arrive inside it, the
+## city of the book's own age stands about it, and the gateway in the city that leads to it stands
+## in the same zone.
+func test_each_of_romes_books_stands_in_its_zone() -> void:
+	var RomeMap: GDScript = load("res://scripts/hall/rome_map.gd")
+	var hall: Node = Hall.new()
+	hall.offline = true
+	(Engine.get_main_loop() as SceneTree).root.add_child(hall)
+	var gates: Dictionary = RomeMap.city_data()["gates"]
+	for work in ROME_PLACES:
+		var zone: String = Rooms.room(work)["rome_zone"]
+		var outline: Array = RomeMap.outline(zone)
+		check(gates.has(work), "%s has its gateway in the city" % work)
+		if gates.has(work):
+			check(RomeMap.inside(outline, RomeMap.at(gates[work]["at"])), "%s: its gateway stands in %s" % [work, zone])
+		hall.progress.data = {"works": {}}
+		hall.travel(work)
+		var outside: Array = hall.interactables.filter(func(i): return not RomeMap.inside(outline, i["pos"]))
+		check(outside.is_empty(), "%s: everything to do stands inside %s: %s" % [work, zone, str(outside.map(func(i): return i.get("text", "")))])
+		check(RomeMap.inside(outline, hall.player.position), "%s: you arrive inside it" % work)
+		var low: Array = hall.interactables.filter(func(i): return i["pos"].y < RomeMap.ground(i["pos"]) - 0.5)
+		check(low.is_empty(), "%s: nothing to do is under the ground: %s" % [work, str(low.map(func(i): return i.get("text", "")))])
+		check(hall.here_name.contains(Rooms.room(work)["when"]), "%s: the corner says when: %s" % [work, hall.here_name])
+	hall.free()
+
+
 ## The Rhetorica has left Greece for Rome: it is not on the Shore or among the Nexus's columns, but
 ## the first book of Rome's own reading list, in the Rome world.
 func test_the_rhetorica_is_rome_s_book() -> void:
 	check(not Rooms.doors().any(func(d): return d["work"] == "rhetorica-ad-herennium"), "not a Greek door")
 	var rome := Rooms.doors_of("rome")
-	check_eq(rome.map(func(d): return d["work"]), ["rhetorica-ad-herennium"], "Rome's reading list begins with it")
+	check_eq(rome[0]["work"], "rhetorica-ad-herennium", "Rome's reading list begins with it")
+	check_eq(rome.size(), 1 + ROME_PLACES.size(), "and goes on with the Essentials' Rome module")
+	check_eq(rome.slice(1).map(func(d): return d["work"]), ROME_PLACES, "in the list's own order")
+	check(rome.all(func(d): return d["open"]), "every book of the module has its place")
 	check_eq(Rooms.room("rhetorica-ad-herennium").get("world", ""), "rome", "its room is in the Rome world")
 	check(Rooms.doors().any(func(d): return d["work"] == "porphyry-isagoge"), "the Isagoge stays in Greece")
 

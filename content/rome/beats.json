@@ -90,5 +90,961 @@
     }
    ]
   }
+ },
+ "livy-the-history-of-rome": {
+  "the_furrow": {
+   "hero": "romulus",
+   "title": "Romulus, Livy I.7",
+   "point": "founding",
+   "steps": [
+    {
+     "line": "The vultures have given you the hill. Yoke the white ox and the white cow, and mark the line of the wall."
+    },
+    {
+     "go": "team",
+     "text": "Take the plough"
+    },
+    {
+     "act": "Drive the furrow round the hill",
+     "hold": 1.6
+    },
+    {
+     "go": "round",
+     "text": "Follow the furrow round"
+    },
+    {
+     "line": "“Remus, in derision of his brother, leaped over the new walls.”"
+    },
+    {
+     "look": "remus"
+    },
+    {
+     "line": "Your brother stands inside your line, laughing."
+    },
+    {
+     "act": "Strike",
+     "hold": 1.2
+    },
+    {
+     "hide": "remus"
+    },
+    {
+     "line": "“So perish every one that shall hereafter leap over my wall.” Romulus held the city alone."
+    }
+   ]
+  },
+  "the_sabines": {
+   "hero": "hersilia",
+   "title": "Hersilia, Livy I.13",
+   "point": "sabines",
+   "steps": [
+    {
+     "line": "Your father's army and your husband's stand face to face in the valley. You were taken from the one and married to the other."
+    },
+    {
+     "line": "“The Sabine women, from the outrage on whom the war originated, with hair dishevelled and garments rent...”"
+    },
+    {
+     "go": "between",
+     "text": "Run between the armies"
+    },
+    {
+     "look": "romans"
+    },
+    {
+     "act": "Hold out your arms",
+     "hold": 1.6
+    },
+    {
+     "line": "“Turn your anger on us. We are the cause of the war: better that we perish than live widowed or orphaned.”"
+    },
+    {
+     "look": "sabines"
+    },
+    {
+     "line": "Both armies lower their spears. The kings make peace and one city of two peoples. Rome has learned its way of growing."
+    }
+   ]
+  },
+  "the_oath": {
+   "hero": "brutus",
+   "title": "Brutus, Livy I.58-59",
+   "point": "oath",
+   "steps": [
+    {
+     "hide": "brutus"
+    },
+    {
+     "line": "Lucretia has told them what Sextus Tarquin did, made them swear vengeance, and said: “no unchaste woman shall live by my example.”"
+    },
+    {
+     "line": "“She plunged a knife, which she kept concealed beneath her garment, into her heart.”"
+    },
+    {
+     "look": "bier"
+    },
+    {
+     "line": "Her father and her husband are overwhelmed with grief. You have played the fool all your life so that the king would not fear you."
+    },
+    {
+     "act": "Draw the knife from the wound",
+     "hold": 1.4
+    },
+    {
+     "swap": "right",
+     "what": "knife"
+    },
+    {
+     "eye": 0.4
+    },
+    {
+     "act": "Hold it up, and swear",
+     "hold": 2.0
+    },
+    {
+     "line": "“By this blood, most pure before the outrage of a prince, I swear that I will pursue Lucius Tarquinius Superbus and all his race...”"
+    },
+    {
+     "line": "“...nor will I suffer them or any other to be king in Rome.” You hand them the knife; they swear it too."
+    },
+    {
+     "look": "men"
+    },
+    {
+     "eye": -0.4
+    },
+    {
+     "line": "They carry her body to the forum of Collatia. The kings have reigned two hundred and forty-four years; the Republic begins tonight."
+    }
+   ]
+  }
+ },
+ "plutarch-parallel-lives": {
+  "the_rubicon": {
+   "hero": "caesar",
+   "title": "Caesar, Plutarch 32",
+   "point": "rubicon",
+   "steps": [
+    {
+     "line": "This small river is the border of your province. Cross it with your army, and you are at war with Rome."
+    },
+    {
+     "look": "eagle"
+    },
+    {
+     "line": "“Computing how many calamities his passing that river would bring upon mankind, and what a relation of it would be transmitted...”"
+    },
+    {
+     "act": "Stand on the bank, and weigh it",
+     "hold": 2.0
+    },
+    {
+     "line": "“At last, in a sort of passion, casting aside calculation, and abandoning himself to what might come...”"
+    },
+    {
+     "act": "Say it: the die is cast"
+    },
+    {
+     "go": "far",
+     "text": "Cross"
+    },
+    {
+     "line": "“He took the river.” Whatever follows, you cannot now go back."
+    }
+   ]
+  },
+  "the_diadem": {
+   "hero": "caesar",
+   "title": "Caesar, Plutarch 61",
+   "point": "diadem",
+   "steps": [
+    {
+     "line": "The feast of the Lupercalia. You sit on the Rostra in a golden chair, in triumphal robes, and Antony runs up from the race."
+    },
+    {
+     "look": "antony"
+    },
+    {
+     "line": "“Antony... brought him a diadem wreathed with laurel.” A few clap, as arranged. The crowd is silent."
+    },
+    {
+     "act": "Push the diadem away"
+    },
+    {
+     "line": "Everyone cheers. Antony offers it again. A few clap; the rest are silent."
+    },
+    {
+     "act": "Push it away again",
+     "hold": 1.2
+    },
+    {
+     "line": "“The people followed his refusal with great shouts.” You send the diadem to the Capitol, to Jupiter, the only king in Rome."
+    },
+    {
+     "look": "crowd"
+    },
+    {
+     "line": "You have refused the name. You keep the thing. Rome has seen the difference, and some of them are counting the days."
+    }
+   ]
+  },
+  "the_ides": {
+   "hero": "caesar",
+   "title": "Caesar, Plutarch 66",
+   "point": "ides",
+   "steps": [
+    {
+     "line": "The Ides of March. A soothsayer said beware this day; Calpurnia dreamed; you came anyway. The Senate sits in Pompey's hall."
+    },
+    {
+     "go": "seat",
+     "text": "Take your seat"
+    },
+    {
+     "look": "statue"
+    },
+    {
+     "line": "“The senators who were not in the plot were astonished and dared neither fly nor assist Caesar, nor so much as speak a word.”"
+    },
+    {
+     "line": "Tillius Cimber comes with a petition for his brother. The others press round, as if to join him. He pulls your toga from your neck."
+    },
+    {
+     "look": "man0"
+    },
+    {
+     "line": "“Casca gave him the first cut, in the neck, which was not mortal nor dangerous.” You seize his hand: Casca, what are you doing?"
+    },
+    {
+     "act": "Look at them, one by one",
+     "hold": 2.0
+    },
+    {
+     "line": "Daggers on every side. “When he saw Brutus's sword drawn, he covered his face with his robe and submitted.”"
+    },
+    {
+     "act": "Pull your toga over your face",
+     "hold": 1.6
+    },
+    {
+     "eye": -1.2
+    },
+    {
+     "line": "You fall at the foot of Pompey's statue, with twenty-three wounds. The pedestal runs with blood: Pompey presides over the vengeance."
+    },
+    {
+     "eye": 1.2
+    }
+   ]
+  }
+ },
+ "virgil-the-aeneid": {
+  "out_of_troy": {
+   "hero": "aeneas",
+   "title": "Aeneas, Aeneid II",
+   "point": "troy",
+   "steps": [
+    {
+     "line": "Troy is burning. Hector's ghost told you to take the gods of the city and go. Your father will not leave his house."
+    },
+    {
+     "look": "anchises"
+    },
+    {
+     "line": "“And die with me? Must I? He said no more. An omen on the boy's head changed his mind.” Now he will come, if you carry him."
+    },
+    {
+     "go": "father",
+     "text": "Go to your father"
+    },
+    {
+     "act": "Lift him onto your shoulders",
+     "hold": 1.8
+    },
+    {
+     "hide": "anchises"
+    },
+    {
+     "line": "“Haste, my dear father, 'tis no time to wait, and load my shoulders with a willing freight.” He carries the household gods."
+    },
+    {
+     "look": "ascanius"
+    },
+    {
+     "line": "“My hand shall lead our little son; and you, my faithful consort, shall our steps pursue.” Creusa follows behind."
+    },
+    {
+     "go": "gate",
+     "text": "Make for the gate, through the fire"
+    },
+    {
+     "look": "creusa"
+    },
+    {
+     "hide": "creusa"
+    },
+    {
+     "line": "“Alas! I lost Creusa.” You went back into the burning city and found only her shade, who told you to go on. You went on."
+    }
+   ]
+  },
+  "the_bough": {
+   "hero": "aeneas",
+   "title": "Aeneas, Aeneid VI",
+   "point": "golden_bough",
+   "steps": [
+    {
+     "line": "The Sibyl: “the gates of hell are open night and day; smooth the descent, and easy is the way: but to return... there the labour lies.”"
+    },
+    {
+     "look": "sibyl"
+    },
+    {
+     "line": "“In the neighb'ring grove there stands a tree; the queen of Stygian realms has claimed it for her own. A golden bough...”"
+    },
+    {
+     "line": "“If fate has chosen you, it comes away in your hand; if not, no force can tear it.” Two doves of your mother show you the tree."
+    },
+    {
+     "go": "tree",
+     "text": "Follow the doves to the tree"
+    },
+    {
+     "look": "bough"
+    },
+    {
+     "act": "Take hold of the bough",
+     "hold": 1.6
+    },
+    {
+     "hide": "bough"
+    },
+    {
+     "swap": "left",
+     "what": "bough"
+    },
+    {
+     "line": "It comes away. “He seized the shining bough with greedy hand and bore it to the Sibyl's cave.”"
+    },
+    {
+     "go": "mouth",
+     "text": "Go down to the cave's mouth"
+    },
+    {
+     "line": "Below are the Styx, the unburied dead, Dido who will not speak to you, and your father among the souls to come. You have your way back."
+    }
+   ]
+  },
+  "the_belt": {
+   "hero": "aeneas",
+   "title": "Aeneas, Aeneid XII",
+   "point": "turnus",
+   "steps": [
+    {
+     "swap": "right",
+     "what": "sword"
+    },
+    {
+     "look": "turnus"
+    },
+    {
+     "line": "Turnus is down, your spear through his thigh. The Rutulians groan. He raises his hand to you."
+    },
+    {
+     "line": "“I ask not life... but if you can be moved by a father's grief, pity old Daunus, and send me, or my body, back to my own.”"
+    },
+    {
+     "line": "“In deep suspense the Trojan seem'd to stand, and, just prepar'd to strike, repress'd his hand.”"
+    },
+    {
+     "act": "Hesitate",
+     "hold": 2.0
+    },
+    {
+     "look": "belt"
+    },
+    {
+     "line": "On his shoulder, the belt of Pallas, the boy Evander gave into your care, whom Turnus killed and stripped. The studs shine in the sun."
+    },
+    {
+     "line": "“Then, rous'd anew to wrath, he loudly cries... Pallas, with this sword, Pallas takes vengeance, and from your blood exacts his due.”"
+    },
+    {
+     "act": "Strike",
+     "hold": 1.4
+    },
+    {
+     "hide": "turnus"
+    },
+    {
+     "line": "“The streaming blood distain'd his arms around, and the disdainful soul came rushing thro' the wound.” The poem ends here."
+    }
+   ]
+  }
+ },
+ "lucretius-on-the-nature-of-things": {
+  "the_sunbeam": {
+   "hero": "",
+   "title": "The sunbeam, On the Nature of Things I",
+   "point": "atoms",
+   "steps": [
+    {
+     "line": "Lucretius says there are bodies too small to see, and a void for them to move in. Go and look, in a dark room."
+    },
+    {
+     "go": "door",
+     "text": "Go to the door"
+    },
+    {
+     "go": "inside",
+     "text": "Step inside, into the dark"
+    },
+    {
+     "look": "beam"
+    },
+    {
+     "act": "Watch the motes in the beam",
+     "hold": 2.5
+    },
+    {
+     "line": "“The winds beat upon the sea and overwhelm huge ships, and yet are unseen bodies.”"
+    },
+    {
+     "line": "“A ring on the finger is thinned by wearing, the dripping water hollows the stone, the ploughshare wastes away in the fields.”"
+    },
+    {
+     "line": "“Nature works by unseen bodies.” And the dark round the beam is the void: where there is no room, nothing could move at all."
+    }
+   ]
+  },
+  "nothing_to_us": {
+   "hero": "",
+   "title": "Death is nothing to us, On the Nature of Things III",
+   "point": "death",
+   "steps": [
+    {
+     "line": "The road out of the gate is lined with tombs. Read one: I was not, I was, I am not, I care not."
+    },
+    {
+     "go": "slab",
+     "text": "Go to the empty slab"
+    },
+    {
+     "act": "Lie down on the stone",
+     "hold": 1.4
+    },
+    {
+     "eye": -1.3
+    },
+    {
+     "look": "sky"
+    },
+    {
+     "line": "“Death therefore is nothing to us, concerns us not a jot, since the nature of the mind is proved to be mortal.”"
+    },
+    {
+     "line": "“When we shall be no more, when there shall have been a separation of body and soul, nothing can happen to us who shall then be no more.”"
+    },
+    {
+     "line": "The man who fears being a corpse has left a bit of himself standing by to weep. There will be no one there."
+    },
+    {
+     "act": "Get up",
+     "hold": 1.0
+    },
+    {
+     "eye": 1.3
+    },
+    {
+     "look": "tombs"
+    },
+    {
+     "line": "“Nor by prolonging life do we take one tittle from the time past in death.” Go back into the garden. The sun is still out."
+    }
+   ]
+  }
+ },
+ "cicero-on-duties": {
+  "regulus_goes_back": {
+   "hero": "regulus",
+   "title": "Regulus, On Duties I.39",
+   "point": "regulus",
+   "steps": [
+    {
+     "line": "You are Regulus, consul, captured by Carthage. They sent you to Rome to ask for an exchange of prisoners, on your oath to return."
+    },
+    {
+     "go": "senate",
+     "text": "Go before the Senate"
+    },
+    {
+     "act": "Advise them: make no exchange",
+     "hold": 1.8
+    },
+    {
+     "line": "“He gave it as his opinion that the prisoners should not be returned: they were young men and good warriors, while he was bowed with age.”"
+    },
+    {
+     "line": "His family and friends begged him to stay. He had sworn. Cicero: he preferred to return to torture rather than break his word."
+    },
+    {
+     "go": "gate",
+     "text": "Walk to the gate"
+    },
+    {
+     "look": "beyond"
+    },
+    {
+     "line": "The Carthaginians are waiting. Beyond the gate are the eyelids cut off, the sleepless days, the death. You know it."
+    },
+    {
+     "act": "Go through",
+     "hold": 2.0
+    },
+    {
+     "go": "beyond",
+     "text": "Go to them"
+    },
+    {
+     "line": "“He did not hesitate to go back, well knowing what he was going to.” Nothing is expedient that is not honourable; that was the proof."
+    }
+   ]
+  }
+ },
+ "cicero-the-dream-of-scipio": {
+  "the_ascent": {
+   "hero": "scipio",
+   "title": "Scipio, the Dream",
+   "point": "ascent",
+   "steps": [
+    {
+     "line": "You talked of Africanus with the old king until late. Now, in sleep, he comes to you, in the form you know from his bust."
+    },
+    {
+     "look": "africanus"
+    },
+    {
+     "line": "“Be firm, Scipio, and do not be afraid.” He shows you Carthage, which you will destroy, and tells you your years."
+    },
+    {
+     "act": "Give him your hand",
+     "hold": 1.4
+    },
+    {
+     "eye": 14.0
+    },
+    {
+     "line": "He takes you up. “A high place, full of stars, shining and splendid.” The whole of things lies below you."
+    },
+    {
+     "look": "earth"
+    },
+    {
+     "line": "“The earth itself appeared to me so small, that it grieved me to think of our empire, with which we cover but a point of it.”"
+    },
+    {
+     "act": "Listen",
+     "hold": 2.5
+    },
+    {
+     "line": "A sound, loud and sweet: nine spheres turning, each with its note. “The ears of men are deaf to it, as those by the Nile's cataracts.”"
+    },
+    {
+     "look": "city"
+    },
+    {
+     "line": "“How long will your mind be fixed on the ground? Do you not see what regions you have come into?”"
+    },
+    {
+     "line": "“For all who have preserved, aided or enlarged their country there is a sure and fixed place in heaven.” Exercise your soul in that."
+    },
+    {
+     "eye": -14.0
+    },
+    {
+     "line": "He is gone, and the sleep with him. You lie on Masinissa's couch in the dark, with the stars where they were."
+    }
+   ]
+  }
+ },
+ "ovid-metamorphoses": {
+  "daphne": {
+   "hero": "apollo",
+   "title": "Apollo, Metamorphoses I",
+   "point": "daphne",
+   "steps": [
+    {
+     "hide": "apollo"
+    },
+    {
+     "line": "Cupid shot you with the gold arrow and her with the lead. You have chased her down the valley; she is at her father's river."
+    },
+    {
+     "look": "daphne"
+    },
+    {
+     "line": "“Her strength being spent, she grows pale, and overcome with the fatigue of so swift a flight, looks upon the waters of Peneus...”"
+    },
+    {
+     "line": "“Destroy, by changing it, this shape of mine, by which I have pleased too much.”"
+    },
+    {
+     "go": "her",
+     "text": "Reach her"
+    },
+    {
+     "act": "Reach for her",
+     "hold": 1.8
+    },
+    {
+     "hide": "daphne"
+    },
+    {
+     "look": "tree"
+    },
+    {
+     "line": "“A heavy torpor seizes her limbs; her soft breasts are covered with a thin bark; her hair grows into leaves, her arms into branches...”"
+    },
+    {
+     "act": "Lay your hand on the bark",
+     "hold": 1.4
+    },
+    {
+     "line": "“He feels her heart still throb beneath the new bark.” You take the laurel for your tree. She bends her top, as if nodding."
+    }
+   ]
+  },
+  "looking_back": {
+   "hero": "orpheus",
+   "title": "Orpheus, Metamorphoses X",
+   "point": "orpheus",
+   "steps": [
+    {
+     "line": "You sang before the king and queen of the dead, and the shades wept. They gave her back on one condition."
+    },
+    {
+     "line": "“He may not turn back his eyes until he has passed the Avernian valleys, or the gift will be void.”"
+    },
+    {
+     "look": "eurydice"
+    },
+    {
+     "line": "She walks behind you, slowed by her wound. You must not look. The way up is steep, dark and silent."
+    },
+    {
+     "go": "up",
+     "text": "Lead her up, without looking back"
+    },
+    {
+     "act": "Keep going",
+     "hold": 2.0
+    },
+    {
+     "line": "The light is close. “Fearing that she might fail him, and eager to see her, he turned his eyes.”"
+    },
+    {
+     "look": "eurydice"
+    },
+    {
+     "hide": "eurydice"
+    },
+    {
+     "line": "“Immediately she sank back; stretching out her arms, she caught nothing but the yielding air.”"
+    },
+    {
+     "line": "“Dying a second time, she made no complaint of her husband; for what could she complain of, except that she was loved?”"
+    },
+    {
+     "go": "light",
+     "text": "Go out into the light, alone"
+    }
+   ]
+  },
+  "the_ivory_girl": {
+   "hero": "pygmalion",
+   "title": "Pygmalion, Metamorphoses X",
+   "point": "pygmalion",
+   "steps": [
+    {
+     "line": "You have seen the women of Cyprus and wanted none of them. You carved one in snow-white ivory, and she is better than any of them."
+    },
+    {
+     "look": "statue"
+    },
+    {
+     "line": "“He gives it kisses, and thinks they are returned; he speaks to it, he embraces it, he brings it presents: shells, pebbles, little birds.”"
+    },
+    {
+     "line": "At the feast of Venus you prayed, not daring to say the statue, for a wife like my ivory girl. The altar's flame leapt three times."
+    },
+    {
+     "go": "stand",
+     "text": "Go to her"
+    },
+    {
+     "act": "Kiss her",
+     "hold": 1.2
+    },
+    {
+     "line": "“She seemed to be warm.”"
+    },
+    {
+     "act": "Press your hand to her breast",
+     "hold": 1.8
+    },
+    {
+     "hide": "statue"
+    },
+    {
+     "show": "girl"
+    },
+    {
+     "line": "“The ivory grows soft, and losing its hardness, yields to the fingers, as the wax of Hymettus grows soft in the sun.”"
+    },
+    {
+     "line": "“She felt the kisses, and blushed, and raising her timid eyes to the light, saw at once her lover and the sky.”"
+    }
+   ]
+  }
+ },
+ "tacitus-annals": {
+  "a_desert_called_peace": {
+   "hero": "calgacus",
+   "title": "Calgacus, Agricola 30-32",
+   "point": "calgacus",
+   "steps": [
+    {
+     "line": "The last of the free peoples of Britain stand on this hill. Below, the Romans have drawn up. You are Calgacus; they ask you to speak."
+    },
+    {
+     "look": "legion"
+    },
+    {
+     "line": "“There is no people beyond us, nothing but waves and rocks, and the Romans, more deadly still, whose arrogance no submission escapes.”"
+    },
+    {
+     "act": "Raise your spear",
+     "hold": 1.6
+    },
+    {
+     "line": "“Robbers of the world: if the enemy is rich, they are greedy; if poor, they are ambitious; neither East nor West has satisfied them.”"
+    },
+    {
+     "line": "“To plunder, to slaughter, to steal, these things they call empire; and where they make a desert, they call it peace.”"
+    },
+    {
+     "look": "sky"
+    },
+    {
+     "act": "Cry out",
+     "hold": 1.4
+    },
+    {
+     "line": "The host answered with a shout. Then the battle, and the rout; and the next day a great silence, the hills empty, the houses smoking."
+    },
+    {
+     "line": "Tacitus put these words in your mouth. He was a Roman senator, and the son-in-law of the man who won the day. He knew they were true."
+    }
+   ]
+  }
+ },
+ "epictetus-enchiridion": {
+  "ours_and_not_ours": {
+   "hero": "",
+   "title": "Ours and not ours, Encheiridion I",
+   "point": "power",
+   "steps": [
+    {
+     "line": "Two baskets on the table. The left for what is not in our power, the right for what is. Epictetus hands you the first thing: your body."
+    },
+    {
+     "go": "left",
+     "text": "Put it in the left basket"
+    },
+    {
+     "act": "The body: not ours"
+    },
+    {
+     "line": "“Not in our power are the body, property, reputation, offices, and in a word, whatever are not our own acts.” Now: your opinion of it."
+    },
+    {
+     "go": "right",
+     "text": "The right basket"
+    },
+    {
+     "act": "Opinion: ours"
+    },
+    {
+     "line": "“In our power are opinion, movement towards a thing, desire, aversion, and in a word, whatever are our acts.” Now: your reputation."
+    },
+    {
+     "go": "left",
+     "text": "The left basket"
+    },
+    {
+     "act": "Reputation: not ours"
+    },
+    {
+     "line": "And last: what you will do about all this."
+    },
+    {
+     "go": "right",
+     "text": "The right basket"
+    },
+    {
+     "act": "What you do: ours",
+     "hold": 1.2
+    },
+    {
+     "line": "“If you think that only which is your own to be your own, no man will ever compel you, no man will hinder you; you will have no enemy.”"
+    }
+   ]
+  }
+ },
+ "marcus-aurelius-meditations": {
+  "begin_the_morning": {
+   "hero": "marcus",
+   "title": "Marcus, Meditations II.1",
+   "point": "dawn",
+   "steps": [
+    {
+     "go": "bed",
+     "text": "Lie down on the camp bed"
+    },
+    {
+     "eye": -0.9
+    },
+    {
+     "line": "It is not yet light. Your body does not want to get up. You are the emperor; the letters are already waiting, and the Danube."
+    },
+    {
+     "act": "Say it to yourself",
+     "hold": 2.0
+    },
+    {
+     "line": "“Begin the morning by saying to thyself, I shall meet with the busybody, the ungrateful, arrogant, deceitful, envious, unsocial.”"
+    },
+    {
+     "line": "“All these things happen to them by reason of their ignorance of what is good and evil.”"
+    },
+    {
+     "line": "“I can neither be injured by any of them... nor can I be angry with my kinsman, nor hate him. For we are made for co-operation.”"
+    },
+    {
+     "act": "Get up",
+     "hold": 1.4
+    },
+    {
+     "eye": 0.9
+    },
+    {
+     "go": "door",
+     "text": "Go to the door"
+    },
+    {
+     "line": "“Like feet, like hands, like eyelids, like the rows of the upper and lower teeth.” The secretary is there with the letters. Begin."
+    }
+   ]
+  },
+  "into_yourself": {
+   "hero": "marcus",
+   "title": "Marcus, Meditations IV.3",
+   "point": "retreat",
+   "steps": [
+    {
+     "line": "“Men seek retreats for themselves, houses in the country, sea-shores, and mountains; and thou too art wont to desire such things.”"
+    },
+    {
+     "go": "bench",
+     "text": "Go to the bench by the fountain"
+    },
+    {
+     "act": "Sit",
+     "hold": 1.0
+    },
+    {
+     "eye": -0.5
+    },
+    {
+     "look": "fountain"
+    },
+    {
+     "line": "“But this is a mark of the most common sort of men, for it is in thy power whenever thou shalt choose to retire into thyself.”"
+    },
+    {
+     "act": "Retire into yourself",
+     "hold": 2.5
+    },
+    {
+     "line": "“For nowhere either with more quiet or more freedom from trouble does a man retire than into his own soul.”"
+    },
+    {
+     "line": "“Constantly then give to thyself this retreat, and renew thyself; and let thy principles be brief and fundamental.”"
+    },
+    {
+     "act": "Get up",
+     "hold": 0.8
+    },
+    {
+     "eye": 0.5
+    },
+    {
+     "line": "The letters are still waiting. You go back to them a little quieter. That is all the retreat there is, and it is enough."
+    }
+   ]
+  }
+ },
+ "seneca-letters-to-lucilius": {
+  "the_ledger_of_years": {
+   "hero": "",
+   "title": "The ledger of years, On the Shortness of Life III",
+   "point": "ledger",
+   "steps": [
+    {
+     "line": "Paulinus measures the city's grain on this floor, sack by sack. Seneca asks you to measure something else: your years."
+    },
+    {
+     "go": "floor",
+     "text": "Stand on the measuring floor"
+    },
+    {
+     "act": "Count the years a creditor took",
+     "hold": 1.2
+    },
+    {
+     "act": "Count the years a patron took, and the years you waited at his door",
+     "hold": 1.2
+    },
+    {
+     "act": "Count the years a quarrel took, and a mistress, and wandering about the city",
+     "hold": 1.2
+    },
+    {
+     "line": "“Call to mind how often you have been sure of your plans; how few days have passed as you intended; when you were at your own disposal.”"
+    },
+    {
+     "line": "“You will find that you are dying before your time.”"
+    },
+    {
+     "look": "sacks"
+    },
+    {
+     "line": "“No one will bring back your years; no one will restore you to yourself. Life will go on as it began, and will not turn back.”"
+    },
+    {
+     "act": "Count what is left",
+     "hold": 1.6
+    },
+    {
+     "line": "“We do not receive a short life, but we make it a short one, and we are not poor in days, but wasteful of them.”"
+    },
+    {
+     "look": "quay"
+    },
+    {
+     "line": "Seneca to Paulinus: leave the corn to others, and withdraw to the quiet now, while there is time. He wrote it; he did not do it."
+    }
+   ]
+  }
  }
 }

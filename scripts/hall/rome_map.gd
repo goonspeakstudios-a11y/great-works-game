@@ -3017,9 +3017,11 @@ static func hill_at(p: Vector3) -> bool:
 	return ground(p) > 4.0
 
 
-## Kept for the Rhetorica's place: the Republic's city round its zone.
-static func city(world: Node3D, open_zone: String, whole: bool) -> void:
-	var republic: Dictionary = ages()[0] if not ages().is_empty() else {"id": "republic", "year": -50}
-	var copy := republic.duplicate()
-	copy["year"] = -85  # the Rhetorica's own years
+## A book's place: the city of its age round its zone (the Rhetorica's Republic of 85 BC by
+## default; each of Rome's books names its own age and year), the zone itself left empty for the
+## place to build in.
+static func city(world: Node3D, open_zone: String, whole: bool, age_id: String = "republic", year: int = -85) -> void:
+	var found: Array = ages().filter(func(a: Dictionary) -> bool: return str(a.get("id", "")) == age_id)
+	var copy: Dictionary = (found[0] as Dictionary).duplicate() if not found.is_empty() else {"id": age_id, "year": year}
+	copy["year"] = year  # the book's own years
 	fabric(world, copy, {"skip": outline(open_zone), "lost": not whole, "no_terrain": true})
