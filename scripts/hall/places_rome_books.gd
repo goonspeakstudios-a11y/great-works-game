@@ -167,12 +167,12 @@ static func _study(world: Node3D, room: Dictionary, f: Dictionary, at: Vector3, 
 ## Sabine women between them, and Lucretia on her bier in a house of Collatia with the men sworn
 ## round her. Lost: the hut fallen in, the fig dead, the spring dry, the furrow grown over.
 static func casa_romuli(world: Node3D, work: String, room: Dictionary, stage: int) -> Dictionary:
-	var f := _frame(world, room, stage, "morning", "palatina", "heroic", -280, [44, -431], Vector2(104, 104), "earth")
+	var f := _frame(world, room, stage, "morning", "palatina", "heroic", -280, [100, -431], Vector2(92, 92), "earth")
 	var b: Array = f["b"]
 	var c: Vector3 = f["c"]
 	var whole: bool = f["whole"]
 	var leaves := b.has("leaves")
-	_gate(world, room, f, Vector3(0, 0, 46), Vector3(0, 0, 24), "path")
+	_gate(world, room, f, Vector3(0, 0, 44), Vector3(0, 0, 24), "path")
 	if leaves:
 		f["birds"] = Kit.flock(world, c + Vector3(0, 0, -10), 5, 16.0, 12.0)
 
@@ -436,7 +436,7 @@ static func hortus_collinus(world: Node3D, work: String, room: Dictionary, stage
 	Kit.cylinder(world, c + Vector3(8, 0, 2), 1.4, 0.5, "travertine", true, 12)
 	Kit.cylinder(world, c + Vector3(8, 0.5, 2), 1.2, 0.08, "water" if b.has("water") else "drybed", false, 12)
 	if b.has("water"):
-		f["flicker"].append(Rome.jet(world, c + Vector3(8, 2.2, 2), Vector3(0, -1, 0), 2.0, 6))
+		Rome.jet(world, c + Vector3(8, 2.2, 2), Vector3(0, -1, 0), 2.0, 6)  # the drops that hollow the stone
 	f["out"].append(Places.seat(world, c + Vector3(4.0, 0, 12.0), Vector3(0, 0, -1), "Sit in the garden"))
 	Props.shrine(world, c + Vector3(14, 0, 14), -PI / 2.0, "aphrodite", whole)
 	for p: Vector3 in [Vector3(-14, 0, 14), Vector3(14, 0, -16)]:
@@ -603,11 +603,11 @@ static func rostra_ciceronis(world: Node3D, work: String, room: Dictionary, stag
 ## with Africanus standing in his light beneath them. Lost: the sky ashen and starless, the
 ## spheres dark, the spring dry.
 static func arx(world: Node3D, work: String, room: Dictionary, stage: int) -> Dictionary:
-	var f := _frame(world, room, stage, "twilight", "capitolium", "republic", -51, [-157, 150], Vector2(84, 84), "paving", true)
+	var f := _frame(world, room, stage, "twilight", "capitolium", "republic", -51, [-177, 126], Vector2(70, 70), "paving", true)
 	var b: Array = f["b"]
 	var c: Vector3 = f["c"]
 	var whole: bool = f["whole"]
-	_gate(world, room, f, Vector3(0, 0, 36), Vector3(0, 0, 16))
+	_gate(world, room, f, Vector3(0, 0, 33), Vector3(0, 0, 16))
 
 	# the temple, the augurs' square, the oaks, the spring
 	Rome.temple(world, c + Vector3(0, 0, -20), 0.0, whole, "republican")
@@ -615,15 +615,15 @@ static func arx(world: Node3D, work: String, room: Dictionary, stage: int) -> Di
 		var a := TAU * k / 4.0 + PI / 4.0
 		Kit.box(world, c + Vector3(-20 + cos(a) * 4.0, 0.3, -2 + sin(a) * 4.0), Vector3(0.8, 0.6, 0.8), "tufa")
 	Kit.box(world, c + Vector3(-20, 0.03, -2), Vector3(7.0, 0.06, 7.0), "stone", false)
-	for p: Vector3 in [Vector3(-30, 0, 10), Vector3(28, 0, 12), Vector3(30, 0, -14), Vector3(-30, 0, -24)]:
+	for p: Vector3 in [Vector3(-28, 0, 10), Vector3(28, 0, 12), Vector3(28, 0, -14), Vector3(-28, 0, -24)]:
 		f["sway"].append(Kit.plane_tree(world, c + p, 1.1, b.has("leaves")))
-	Rome.spring(world, c + Vector3(-30, 0, 26), b.has("water"))
+	Rome.spring(world, c + Vector3(-26, 0, 24), b.has("water"))
 	for p: Vector3 in [Vector3(-8, 0, 8), Vector3(8, 0, 8), Vector3(-12, 0, -8), Vector3(12, 0, -8)]:
 		_lamp(world, f, c + p)
 	Kit.box(world, c + Vector3(6.0, 0.25, 8.0), Vector3(0.9, 0.5, 0.7), "stone")
 	var cicero := PG._teacher(world, room, b, stage, c + Vector3(6.0, 0, 8.2), 0.0, c + Vector3(6.0, 0, 11.0), f["out"], f["spots"])
 	_study(world, room, f, Vector3(6.0, 0, 8.2), 0.0)
-	f["out"].append(Places.seat(world, c + Vector3(-34.0, 0, 34.0), Vector3(-1, 0, 1), "Sit at the edge and look down at the city"))
+	f["out"].append(Places.seat(world, c + Vector3(-30.0, 0, 30.0), Vector3(-1, 0, 1), "Sit at the edge and look down at the city"))
 
 	# Masinissa's couch under its awning, the old king and the young officer
 	var awning := Kit.group(world, c + Vector3(22, 0, 2), -PI / 2.0)
@@ -656,7 +656,7 @@ static func arx(world: Node3D, work: String, room: Dictionary, stage: int) -> Di
 	_stele_stone(world, f, work, room, "the_dream", c + Vector3(22.0, 0, 8.0), c + Vector3(22, 0, 1), "Listen at Masinissa's couch")
 	_stele_stone(world, f, work, room, "reward", c + Vector3(0, 0, -26.0), c + Vector3(0, 0, -30), "Hear Africanus's promise")
 	_stele_stone(world, f, work, room, "spheres", c + Vector3(-6.0, 0, -14.0), c + Vector3(0, 22, -32), "Look up at the spheres")
-	_stele_stone(world, f, work, room, "fame", c + Vector3(-30.0, 0, 30.0), c + Vector3(-60, 0, 60), "Look down at the city")
+	_stele_stone(world, f, work, room, "fame", c + Vector3(-26.0, 0, 30.0), c + Vector3(-60, 0, 60), "Look down at the city")
 	_stele_stone(world, f, work, room, "soul", c + Vector3(6.0, 0, -8.0), c + Vector3(0, 0, -20), "Read what moves itself")
 	_beat(f, work, room, "ascent", "the_ascent", c + Vector3(0, 0, -22.0), c + Vector3(0, 0, -30), "Go up among the stars, as Scipio",
 		{"africanus": africanus["root"]}, {"earth": c + Vector3(0, 22, -32), "city": c + Vector3(-80, -10, 90), "sky": c + Vector3(0, 60, -40)})
@@ -821,16 +821,16 @@ static func domus_agricolae(world: Node3D, work: String, room: Dictionary, stage
 ## a table for sorting what is ours from what is not, a mask on a stand, and a fig in the court.
 ## Lost: the lamp out, the fig dead, the stair fallen, the guests shades.
 static func insula_suburae(world: Node3D, work: String, room: Dictionary, stage: int) -> Dictionary:
-	var f := _frame(world, room, stage, "morning", "suburana", "empire", 90, [350, 0], Vector2(84, 84), "paving")
+	var f := _frame(world, room, stage, "morning", "suburana", "empire", 90, [350, 160], Vector2(60, 56), "paving")
 	var b: Array = f["b"]
 	var c: Vector3 = f["c"]
 	var whole: bool = f["whole"]
-	_gate(world, room, f, Vector3(0, 0, 38), Vector3(0, 0, 18))
+	_gate(world, room, f, Vector3(0, 0, 26), Vector3(0, 0, 14))
 
 	# the tenement, the lane, the stair up its side
-	Rome.insula(world, c + Vector3(0, 0, -16), 0.0, 3, 16.0, whole)
-	Rome.insula(world, c + Vector3(-22, 0, -16), 0.0, 4, 14.0, whole)
-	Rome.insula(world, c + Vector3(22, 0, -16), 0.0, 3, 14.0, whole)
+	Rome.insula(world, c + Vector3(0, 0, -16), 0.0, 3, 14.0, whole)
+	Rome.insula(world, c + Vector3(-18, 0, -16), 0.0, 4, 10.0, whole)
+	Rome.insula(world, c + Vector3(18, 0, -16), 0.0, 3, 10.0, whole)
 	for k in 6:
 		Kit.box(world, c + Vector3(10.0, 0.15 + k * 0.3, -6.0 - k * 0.8), Vector3(1.6, 0.3, 0.8), "stone" if whole else "rubble")
 	_lamp(world, f, c + Vector3(11.2, 1.6, -8.4))
@@ -858,10 +858,10 @@ static func insula_suburae(world: Node3D, work: String, room: Dictionary, stage:
 	_person(world, f, c + Vector3(-22.0, 0, 5.0), c + Vector3(-22, 0, 0), "slave")
 	Greek.mask(world, c + Vector3(16.0, 1.3, 4.0), PI, "comic", 0.9, whole)
 	Kit.cylinder(world, c + Vector3(16.0, 0, 4.0), 0.08, 1.3, "wood", false, 6)
-	_person(world, f, c + Vector3(0.0, 0, 24.0), c + Vector3(0, 0, 30), "slave")
+	_person(world, f, c + Vector3(0.0, 0, 20.0), c + Vector3(0, 0, 30), "slave")
 
 	# the six points
-	_stele_stone(world, f, work, room, "appearances", c + Vector3(3.0, 0, 24.0), c + Vector3(0, 0, 24), "Look at the man in the lane")
+	_stele_stone(world, f, work, room, "appearances", c + Vector3(3.0, 0, 20.0), c + Vector3(0, 0, 20), "Look at the man in the lane")
 	_stele_stone(world, f, work, room, "given_back", c + Vector3(-11.0, 0, -2.0), c + Vector3(-14, 0, -2), "Look at the jar on its shelf")
 	_stele_stone(world, f, work, room, "price", c + Vector3(12.0, 0, -4.0), c + Vector3(11.2, 1.6, -8.4), "Look at the lamp on the stair")
 	_stele_stone(world, f, work, room, "banquet", c + Vector3(-22.0, 0, 8.0), c + Vector3(-22, 0, 0), "Watch the dishes go round")
@@ -879,11 +879,11 @@ static func insula_suburae(world: Node3D, work: String, room: Dictionary, stage:
 ## wall with the names of the dead cut on it and fading, and the terrace's edge over the sleeping
 ## city. Lost: the lamp out, the court dry, the names worn away.
 static func palatium(world: Node3D, work: String, room: Dictionary, stage: int) -> Dictionary:
-	var f := _frame(world, room, stage, "dusk", "palatina", "empire", 175, [234, -451], Vector2(100, 84), "marble", true)
+	var f := _frame(world, room, stage, "dusk", "palatina", "empire", 175, [188, -441], Vector2(76, 76), "marble", true)
 	var b: Array = f["b"]
 	var c: Vector3 = f["c"]
 	var whole: bool = f["whole"]
-	_gate(world, room, f, Vector3(0, 0, 38), Vector3(0, 0, 18))
+	_gate(world, room, f, Vector3(0, 0, 36), Vector3(0, 0, 18))
 
 	# the wing: a long hall of brick with columns, the room at its end
 	var brick := "brick" if whole else "ashbed"
@@ -923,13 +923,14 @@ static func palatium(world: Node3D, work: String, room: Dictionary, stage: int) 
 		Rome.inscription(world, c + Vector3(-29.5, 2.0, -28.0 + k * 3.0), [names[k]], 30 - k * 2, "8a8274" if b.has("walkway") or k < 4 else "b8b4ae")
 
 	# the terrace's edge over the city
-	Kit.box(world, c + Vector3(0, 0.5, 30), Vector3(60.0, 1.0, 0.6), "marble", true)
+	Kit.box(world, c + Vector3(-30, 0.5, 30), Vector3(14.0, 1.0, 0.6), "marble", true)
+	Kit.box(world, c + Vector3(30, 0.5, 30), Vector3(14.0, 1.0, 0.6), "marble", true)
 
 	# the six points
 	_stele_stone(world, f, work, room, "point", c + Vector3(-24.0, 0, -12.0), c + Vector3(-24, 0, -16), "Read the tablet on the desk")
-	_stele_stone(world, f, work, room, "cosmopolis", c + Vector3(0, 0, 26.0), c + Vector3(0, 0, 60), "Look out over the city")
+	_stele_stone(world, f, work, room, "cosmopolis", c + Vector3(-24.0, 0, 26.0), c + Vector3(-24, 0, 60), "Look out over the city")
 	_stele_stone(world, f, work, room, "fade", c + Vector3(-26.0, 0, -4.0), c + Vector3(-29.5, 2, -4), "Read the names on the wall")
-	_stele_stone(world, f, work, room, "short_way", c + Vector3(0, 0, 10.0), c + Vector3(0, 0, 20), "Read the stone by the door")
+	_stele_stone(world, f, work, room, "short_way", c + Vector3(5.0, 0, 12.0), c + Vector3(5, 0, 20), "Read the stone by the door")
 	_beat(f, work, room, "dawn", "begin_the_morning", c + Vector3(-25.0, 0, -22.0), c + Vector3(-25, 0, -30), "Wake before dawn, as Marcus", {},
 		{"bed": c + Vector3(-25.0, 0, -24.0), "door": c + Vector3(-18.0, 0, 4.0)})
 	_beat(f, work, room, "retreat", "into_yourself", c + Vector3(6.0, 0, -9.0), c + Vector3(6, 0, -18), "Retire into yourself, as Marcus", {},
@@ -944,23 +945,23 @@ static func palatium(world: Node3D, work: String, room: Dictionary, stage: int) 
 ## Paulinus's office with its tallies, a sundial, and a row of the wise on their plinths with a
 ## bench before each. Lost: the river low and grey, the granary broken, the porters shades.
 static func emporium(world: Node3D, work: String, room: Dictionary, stage: int) -> Dictionary:
-	var f := _frame(world, room, stage, "noon", "aventinus", "empire", 49, [-370, -800], Vector2(112, 92), "paving")
+	var f := _frame(world, room, stage, "noon", "aventinus", "empire", 49, [-330, -680], Vector2(84, 64), "paving")
 	var b: Array = f["b"]
 	var c: Vector3 = f["c"]
 	var whole: bool = f["whole"]
-	_gate(world, room, f, Vector3(0, 0, 42), Vector3(0, 0, 22))
+	_gate(world, room, f, Vector3(0, 0, 30), Vector3(0, 0, 14))
 	if b.has("sun"):
-		f["birds"] = Kit.flock(world, c + Vector3(-40, 0, 0), 6, 20.0, 10.0)
+		f["birds"] = Kit.flock(world, c + Vector3(-30, 0, 0), 6, 16.0, 10.0)
 
-	# the quay and the river, the barges, the porters
-	Kit.box(world, c + Vector3(-52, -0.3, 0), Vector3(14.0, 0.2, 92.0), "water" if b.has("water") else "drybed", false)
-	Kit.box(world, c + Vector3(-45, 0.3, 0), Vector3(1.0, 0.6, 92.0), "travertine", true)
+	# the quay and the river's basin, the barges, the porters
+	Kit.box(world, c + Vector3(-38, -0.3, 0), Vector3(8.0, 0.2, 64.0), "water" if b.has("water") else "drybed", false)
+	Kit.box(world, c + Vector3(-34, 0.3, 0), Vector3(1.0, 0.6, 64.0), "travertine", true)
 	for k in 2:
-		var boat := Kit.boat(world, c + Vector3(-50.0, -0.2, -20.0 + k * 30.0), 0.0)
+		var boat := Kit.boat(world, c + Vector3(-37.5, -0.2, -16.0 + k * 26.0), 0.0)
 		f["boats"] = f.get("boats", [])
 		f["boats"].append(boat)
 	for k in 4:
-		var p := c + Vector3(-40.0 + k * 3.0, 0, 6.0 - k * 6.0)
+		var p := c + Vector3(-30.0 + k * 2.5, 0, 6.0 - k * 5.0)
 		var w := _person(world, f, p, c + Vector3(0, 0, -20), "porter")
 		Kit.blob(w["root"], Vector3(0, 1.9, 0), 0.32, "#c8b890", Vector3(1.6, 0.9, 1.0), 6)  # the sack on his shoulders
 
@@ -975,10 +976,10 @@ static func emporium(world: Node3D, work: String, room: Dictionary, stage: int) 
 	Kit.box(world, c + Vector3(-6.0, 0.4, 4.0), Vector3(1.6, 0.8, 4.0), "#c8b890", true)  # the sacks Seneca sits on
 	var seneca := PG._teacher(world, room, b, stage, c + Vector3(-6.0, 0.8, 4.0), 0.0, c + Vector3(-6.0, 0, 7.0), f["out"], f["spots"])
 	_study(world, room, f, Vector3(-6.0, 0, 4.0), 0.0)
-	f["out"].append(Places.seat(world, c + Vector3(-40.0, 0, 20.0), Vector3(-1, 0, 0), "Sit on the quay and watch the river"))
+	f["out"].append(Places.seat(world, c + Vector3(-30.0, 0, 18.0), Vector3(-1, 0, 0), "Sit on the quay and watch the river"))
 
 	# Paulinus's office, the sundial
-	var office := Kit.group(world, c + Vector3(26, 0, -4), -PI / 2.0)
+	var office := Kit.group(world, c + Vector3(28, 0, 2), -PI / 2.0)
 	Kit.box(office, Vector3(0, 2.0, -4.0), Vector3(10.0, 4.0, 0.4), "brick" if whole else "ashbed")
 	for x: float in [-5.0, 5.0]:
 		Kit.box(office, Vector3(x, 2.0, 0), Vector3(0.4, 4.0, 8.0), "brick" if whole else "ashbed")
@@ -987,25 +988,25 @@ static func emporium(world: Node3D, work: String, room: Dictionary, stage: int) 
 	var desk := Kit.desk(office, Vector3(0, 0, -1.5), 0.0, true, b.has("lamps"))
 	if desk:
 		f["flicker"].append(desk)
-	_person(world, f, c + Vector3(26.0, 0, -5.0), c + Vector3(20, 0, -4), "paulinus", "household", "sit")
-	_person(world, f, c + Vector3(26.0, 0, 0.0), c + Vector3(26, 0, -5), "clerk")
-	_lamp(world, f, c + Vector3(23.0, 0, -7.0))
+	_person(world, f, c + Vector3(28.0, 0, 1.0), c + Vector3(22, 0, 2), "paulinus", "household", "sit")
+	_person(world, f, c + Vector3(28.0, 0, 6.0), c + Vector3(28, 0, 1), "clerk")
+	_lamp(world, f, c + Vector3(25.0, 0, -1.0))
 	Kit.cylinder(world, c + Vector3(10, 0, 14), 0.9, 0.9, "marble", true, 12)
 	Kit.box(world, c + Vector3(10, 1.3, 14), Vector3(0.04, 0.8, 0.04), "bronze", false, Vector3(0, 0, 0.6))
 
 	# the wise on their plinths, a bench before each
 	for k in 4:
-		var p := c + Vector3(-30.0, 0, 24.0 - k * 6.0)
+		var p := c + Vector3(-24.0, 0, 24.0 - k * 5.0)
 		Kit.bust(world, p, PI / 2.0, {"beard": "long"})
 		Kit.bench(world, p + Vector3(3.0, 0, 0), -PI / 2.0)
-	_person(world, f, c + Vector3(-27.0, 0, 18.0), c + Vector3(-30, 0, 18), "sage", "household", "sit")
+	_person(world, f, c + Vector3(-21.0, 0, 19.0), c + Vector3(-24, 0, 19), "sage", "household", "sit")
 
 	# the six points
-	_stele_stone(world, f, work, room, "long_enough", c + Vector3(-40.0, 0, 26.0), c + Vector3(-45, 0, 26), "Read the first words on the quay")
-	_stele_stone(world, f, work, room, "preoccupied", c + Vector3(-32.0, 0, -4.0), c + Vector3(-40, 0, 0), "Watch the porters")
+	_stele_stone(world, f, work, room, "long_enough", c + Vector3(-30.0, 0, 24.0), c + Vector3(-34, 0, 24), "Read the first words on the quay")
+	_stele_stone(world, f, work, room, "preoccupied", c + Vector3(-22.0, 0, -4.0), c + Vector3(-30, 0, 0), "Watch the porters")
 	_stele_stone(world, f, work, room, "present", c + Vector3(10.0, 0, 17.0), c + Vector3(10, 0, 14), "Read the sundial")
-	_stele_stone(world, f, work, room, "the_wise", c + Vector3(-24.0, 0, 12.0), c + Vector3(-30, 0, 12), "Sit with the wise")
-	_stele_stone(world, f, work, room, "withdraw", c + Vector3(20.0, 0, -4.0), c + Vector3(26, 0, -5), "Read what Seneca tells Paulinus")
+	_stele_stone(world, f, work, room, "the_wise", c + Vector3(-18.0, 0, 12.0), c + Vector3(-24, 0, 12), "Sit with the wise")
+	_stele_stone(world, f, work, room, "withdraw", c + Vector3(22.0, 0, 2.0), c + Vector3(28, 0, 1), "Read what Seneca tells Paulinus")
 	_beat(f, work, room, "ledger", "the_ledger_of_years", c + Vector3(0, 0, -2.0), c + Vector3(0, 0, -8), "Count your years on the measuring floor", {},
-		{"floor": c + Vector3(0, 0, -7.0), "sacks": c + Vector3(-10.0, 0, -24.0), "quay": c + Vector3(-40.0, 0, 0.0)})
+		{"floor": c + Vector3(0, 0, -7.0), "sacks": c + Vector3(-10.0, 0, -24.0), "quay": c + Vector3(-30.0, 0, 0.0)})
 	return _done(room, f, seneca)

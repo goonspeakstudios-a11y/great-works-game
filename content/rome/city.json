@@ -100,12 +100,12 @@
     },
     "livy-the-history-of-rome": {
       "at": [
-        44,
-        -331
+        100,
+        -306
       ],
       "toward": [
-        44,
-        -391
+        100,
+        -366
       ]
     },
     "plutarch-parallel-lives": {
@@ -150,12 +150,12 @@
     },
     "cicero-the-dream-of-scipio": {
       "at": [
-        -157,
-        89
+        -177,
+        32
       ],
       "toward": [
-        -157,
-        149
+        -177,
+        92
       ]
     },
     "ovid-metamorphoses": {
@@ -181,31 +181,31 @@
     "epictetus-enchiridion": {
       "at": [
         350,
-        -64
+        86
       ],
       "toward": [
         350,
-        -4
+        126
       ]
     },
     "marcus-aurelius-meditations": {
       "at": [
-        234,
-        -511
+        188,
+        -544
       ],
       "toward": [
-        234,
-        -451
+        188,
+        -490
       ]
     },
     "seneca-letters-to-lucilius": {
       "at": [
-        -370,
-        -870
+        -330,
+        -766
       ],
       "toward": [
-        -370,
-        -810
+        -330,
+        -720
       ]
     }
   },
