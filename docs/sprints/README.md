@@ -20,3 +20,6 @@ Overview map: https://claude.ai/artifact/B8S3su3KEHhPqwC9oaKcTV
 - The teacher leads: plain words, one point at a time, asks you to say it in your own words; the
   tablet fills only from your own words. No quizzes, no fail states.
 - Every book mastered builds toward the Tower of the Reformed Man, one tier per world.
+- The look (2026-10-15, `docs/the-look.md`): every place built against a saturated sky, one tall
+  landmark per place, terraces with carved edges and railings, props in clumps, a warm low key
+  light with the fog tinted to the horizon and the dark below. Chunky forms at the world's fidelity.

@@ -47,6 +47,9 @@ a slow pulse, the legion's march). Two maps: 19 BC and AD 60.
   metres and lowers them again.
 - Two scanned sources (Yonge's Dream, Stewart's Seneca) keep a few scanner's slips.
 - The Cicero of On Duties and the Cicero of the Dream are two rooms with the same portrait.
+- The places are flat, bright and spread out next to the look we build toward (`docs/the-look.md`,
+  saved 2026-10-15): the look pass (fog to the sky, carved edges, a landmark each, prop clumps) is
+  the fix pass's biggest item.
 
 ## Playtest checklist for BB1
 - In the city: do the eleven gateways stand where you can find them, each in its own quarter?
