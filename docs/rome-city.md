@@ -20,8 +20,9 @@ Decided with BB1 (2026-09-28):
 |---|---|
 | The map: hills, Tiber, island, Servian wall and gates, Circus, landmarks, zones | `content/rome/republican_rome.json` |
 | The living city: ages, monuments and their years, streets, bridges, aqueducts, regions, open squares, where people cluster in the fall, what people say | `content/rome/city.json` |
-| Rome's reading list | `content/rome/works.json` (module `r1`) |
+| Rome's reading list | `content/rome/works.json` (the Rhetorica, then the Essentials' Rome module; written by `tools/import_works.py`) |
 | Rome's rooms and beats | `content/rome/rooms.json`, `content/rome/beats.json` |
+| The places of Rome's books, one per zone | `scripts/hall/places_rome_books.gd` (the Rhetorica's in `places_greek.gd`) |
 | The map projection, ground, river, bridges, walls, streets, blocks of houses | `scripts/hall/rome_map.gd` |
 | The feasibility map every placement is tested against and painted onto | `scripts/hall/urbs_occupancy.gd` |
 | One builder per kind of monument | `scripts/hall/kit_urbs.gd` |
@@ -509,22 +510,33 @@ about 85 BC.
 - Its own gateway leads back into the city.
 
 ## Zones
-| Zone | Covers | Opens with |
-|---|---|---|
-| `palatine_forum` | the Forum, and the Via Nova under the Palatine's north slope | the Rhetorica ad Herennium (open) |
-| `capitolium` | the Capitol and the Arx | a Rome book, later |
-| `palatina` | the Palatine and the Velia | later |
-| `suburana` | the Subura, the Carinae and the Caelian | later |
-| `esquilina` | the Esquiline | later |
-| `collina` | the Quirinal and the Viminal | later |
-| `aventinus` | the Aventine, the Circus Maximus and the river port | later |
-| `campus_martius` | the Campus Martius | later |
-| `trans_tiberim` | across the Tiber, the Janiculum | later |
+Every zone opens with the first of Rome's books that stands in it (`docs/sprints/sprint-07.md`):
+
+| Zone | Covers | Opens with | Also there |
+|---|---|---|---|
+| `palatine_forum` | the Forum, and the Via Nova under the Palatine's north slope | the Rhetorica ad Herennium | Cicero, On Duties (the Rostra and his house) |
+| `capitolium` | the Capitol and the Arx | Cicero, the Dream of Scipio (the Arx at night) | |
+| `palatina` | the Palatine and the Velia | Livy (the hut of Romulus) | Marcus Aurelius (the palace) |
+| `suburana` | the Subura, the Carinae and the Caelian | Epictetus (the house of Epaphroditus) | |
+| `esquilina` | the Esquiline | Virgil (Maecenas's gardens) | |
+| `collina` | the Quirinal and the Viminal | Lucretius (a garden by the Colline Gate) | Tacitus (Agricola's house) |
+| `aventinus` | the Aventine, the Circus Maximus and the river port | Seneca (the river port) | |
+| `campus_martius` | the Campus Martius | Plutarch (Pompey's portico and hall) | |
+| `trans_tiberim` | across the Tiber, the Janiculum | Ovid (a garden under the Janiculum) | |
+
+A book's place (`places_rome_books.gd`) stands on a terrace cut into its hill, level with the
+highest ground under it (`_frame`), or on the flat by the Forum and the river; the city of the
+book's own age stands about the zone (`RomeMap.city` with the age and the year), grey rubble while
+the place is lost; the zone is fenced; the gateway back into the city stands at the terrace's
+edge with the facts along the way in. The rest is as in the Greek places: the teacher, his busts,
+map and book, a seat, six stones or beats.
 
 A new Rome book gets:
-- an entry in `content/rome/works.json`, with its `age` and `rome_zone`;
-- a room in `content/rome/rooms.json`, with `"world": "rome"`;
-- a gateway position under `gates` in `city.json`.
+- an entry in `content/rome/works.json`, with its `age` and `rome_zone` (`tools/import_works.py`, `ROME_PLACES`);
+- a room in `content/rome/rooms.json`, with `"world": "rome"` and its `place`;
+- a builder in `places_rome_books.gd`, and its beats in `content/rome/beats.json`;
+- a gateway position under `gates` in `city.json`, inside its zone;
+- its zone's `opens_with` in `republican_rome.json`, if it is the first book there.
 
 ## The ground
 

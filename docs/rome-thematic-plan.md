@@ -1,6 +1,9 @@
 # Rome: the thematic plan (the Roman substrate)
 
-Status: plan only, nothing here is built yet (BB1, 2026-09-28). It fixes which authors and works
+Status: a plan for the eras (BB1, 2026-09-28). The Essentials' first Rome module is built
+(sprint 7, `docs/sprints/sprint-07.md`): its eleven books stand in their zones and ages as section
+6 decides. The rest of the plan (the witnesses, the eras' own books beyond the module) is not
+built. It fixes which authors and works
 belong to which era of the city, where in Rome each book's place stands, what the player does
 there, and how finishing Rome completes its part of the Nexus.
 
@@ -314,12 +317,16 @@ This mirrors Greece; the exact pieces are to be written into `content/nexus.json
 
 ## 6. Decisions still open
 
-1. **Import the Essentials Rome modules**, and settle which books are read in full here and which
-   stay witnesses.
+1. **Import the Essentials Rome modules.** Done for the first module (sprint 7): Livy (the
+   kings, in the heroic city), Plutarch's Caesar, Virgil, Lucretius, Cicero's Duties and the Dream,
+   Ovid (the late Republic), Tacitus, Epictetus, Marcus Aurelius and Seneca (the Empire). The
+   reading order stays the list's own; the city follows the latest book mastered.
 2. **Move Era V from AD 330 to 384.** Done (the city's late age is AD 384), so Ammianus, Symmachus and Augustine are
    eyewitnesses.
 3. **Livy's placement.** He is Augustan. Is he the storyteller of Eras I–II only, or also a book of
    Era IV (his Preface as the decline stated)? Recommended: both. His books teach Eras I and II;
    his Preface is a stone in Era IV.
-4. **The Rhetorica moves from Rome's first book to Era III** under reading order by era.
+4. **The Rhetorica stays Rome's first book** (the list's order; it moves the city to the late
+   Republic, where it belongs).
 5. **Handling Lucretia** (Era I): the oath of Brutus is played; her story is told, not shown.
+   Done so (Livy's place: her bier, and the oath as a beat).

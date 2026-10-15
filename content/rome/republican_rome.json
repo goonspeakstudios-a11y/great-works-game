@@ -463,7 +463,7 @@
     126
    ],
    "radius": 150,
-   "opens_with": null
+   "opens_with": "cicero-the-dream-of-scipio"
   },
   {
    "id": "palatina",
@@ -474,7 +474,7 @@
     -431
    ],
    "radius": 200,
-   "opens_with": null
+   "opens_with": "livy-the-history-of-rome"
   },
   {
    "id": "suburana",
@@ -485,7 +485,7 @@
     0
    ],
    "radius": 450,
-   "opens_with": null
+   "opens_with": "epictetus-enchiridion"
   },
   {
    "id": "esquilina",
@@ -496,7 +496,7 @@
     450
    ],
    "radius": 350,
-   "opens_with": null
+   "opens_with": "virgil-the-aeneid"
   },
   {
    "id": "collina",
@@ -507,7 +507,7 @@
     1000
    ],
    "radius": 450,
-   "opens_with": null
+   "opens_with": "lucretius-on-the-nature-of-things"
   },
   {
    "id": "aventinus",
@@ -518,7 +518,7 @@
     -850
    ],
    "radius": 450,
-   "opens_with": null
+   "opens_with": "seneca-letters-to-lucilius"
   },
   {
    "id": "campus_martius",
@@ -529,7 +529,7 @@
     900
    ],
    "radius": 700,
-   "opens_with": null
+   "opens_with": "plutarch-parallel-lives"
   },
   {
    "id": "trans_tiberim",
@@ -540,7 +540,7 @@
     -300
    ],
    "radius": 500,
-   "opens_with": null
+   "opens_with": "ovid-metamorphoses"
   }
  ]
 }

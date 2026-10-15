@@ -8,6 +8,10 @@ library ("file") or from the web ("urls": [[url, heading], ...]); downloads are 
 tools/data/books/ so a rebuild gives the same passages.
 
 Usage: C:\\Python314\\python.exe tools/build_corpus.py [work-id ...]
+
+Rome's books (module 5) come from Project Gutenberg, Wikisource, LacusCurtius and two scanned
+volumes on the Internet Archive (Yonge's Cicero and Stewart's Seneca), whose scanner's slips are
+put right as far as patterns can ("replace", "drop").
 """
 from __future__ import annotations
 
@@ -233,6 +237,144 @@ BOOKS = {
         "chapter": r"^\s*Chapter ([IVXL]+)\.\s*$",
         "book": r"^\s*BOOK ([IVX]+)\s*$",
     },
+    # ---------- Rome's first module: Duty, Empire, and the Stoics ----------
+    "livy-the-history-of-rome": {  # the Preface and Book I, as the reading takes them
+        "title": "History of Rome",
+        "translation": "tr. D. Spillan (1853), public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/19725/pg19725.txt", ""]],
+        "segments": [{"start": r"Whether in tracing the history of the Roman people", "end": r"(?m)^(?=BOOK II\.\s*$)", "heading": ""}],
+        "start": r"Whether in tracing the history of the Roman people",
+        "end": r"(?m)^BOOK II\.\s*$",
+        "chapter": r"^(\d+)\. ",
+        "drop": [r"(?s)^\[Footnote \d+:.*?\]\s*$", r"\[\d+\]", r"_"],
+    },
+    "plutarch-parallel-lives": {  # the Life of Caesar, as the reading takes it
+        "title": "Life of Caesar",
+        "translation": "tr. John Dryden, revised by A. H. Clough (1864), public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/674/pg674.txt", ""]],
+        "start": r"CAESAR\s*\n\s*\nAfter Sylla became master of Rome",
+        "end": r"(?m)^PHOCION\s*$",
+        "chapter": r"(?!x)x",
+    },
+    "virgil-the-aeneid": {
+        "title": "The Aeneid",
+        "translation": "tr. John Dryden (1697), public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/228/pg228.txt", ""]],
+        "start": r"(?m)^ ?BOOK I\s*$",
+        "end": r"\*\*\* END OF",
+        "chapter": r"(?!x)x",
+        "book": r"^ ?BOOK ([IVX]+)\s*$",
+    },
+    "lucretius-on-the-nature-of-things": {  # Books I and III, as the reading takes them
+        "title": "On the Nature of Things",
+        "translation": "tr. H. A. J. Munro (1864), public domain",
+        "parts": [
+            {"title": "On the Nature of Things, Book I", "html": True,
+             "urls": [["https://en.wikisource.org/w/index.php?title=On_the_Nature_of_Things_(Munro)/Book_1&action=render", ""]],
+             "start": r"(?m)^BOOK I\s*$", "end": r"(?m)^(?:Retrieved from|Categor)", "chapter": r"(?!x)x",
+             "drop": [r"\u200b", r"(?m)^BOOK I\s*$"]},
+            {"title": "On the Nature of Things, Book III", "html": True,
+             "urls": [["https://en.wikisource.org/w/index.php?title=On_the_Nature_of_Things_(Munro)/Book_3&action=render", ""]],
+             "start": r"(?m)^BOOK III\s*$", "end": r"(?m)^(?:Retrieved from|Categor)", "chapter": r"(?!x)x",
+             "drop": [r"\u200b", r"(?m)^BOOK III\s*$"]},
+        ],
+    },
+    "cicero-on-duties": {  # On Duties, Book I (Miller's Loeb, from LacusCurtius), and On Friendship
+        "title": "On Duties, and On Friendship",
+        "translation": "On Duties tr. Walter Miller (1913), On Friendship tr. E. S. Shuckburgh (1900), public domain",
+        "parts": [
+            {"title": "On Duties, Book I", "html": True,
+             "urls": [["https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Cicero/de_Officiis/1%s*.html" % page, ""]
+                      for page in ("A", "B", "C")],
+             "start": r"(?m)^Book I\s*$", "end": r"The Loeb Editor's Notes", "chapter": r"^(\d{1,3}) (?=\S)", "chapter_label": "sect.",
+             "drop": [r"(?s)The Loeb Editor's Notes.*?(?=\n\n\(Vol\. XXI\)|\Z)", r"(?m)^\(Vol\. XXI\)\s*$", r"(?m)^ ?p\d+ ?$",
+                      r"(?m)^ ?\d{1,2}\s*$", r"(?m)^\(continued\)\s*$", r"(?m)^(?:Cicero|De Officiis|Book I|Moral Goodness)\s*$",
+                      r"\u00ad", r"\u2011", r"º"]},
+            {"title": "On Friendship",
+             "urls": [["https://www.gutenberg.org/cache/epub/2808/pg2808.txt", ""]],
+             "segments": [{"start": r"(?m)^ON FRIENDSHIP\s*$", "end": r"(?m)^(?=ON OLD AGE\s*$)", "heading": ""}],
+             "start": r"(?m)^ON FRIENDSHIP\s*$", "end": r"\Z", "chapter": r"^(\d+)\. ", "chapter_label": "sect.",
+             "drop": [r"_", r"\[\d+\]"]},
+        ],
+    },
+    "cicero-the-dream-of-scipio": {  # the Dream (On the Commonwealth VI.9-26), from Yonge's Bohn volume
+        "title": "The Dream of Scipio",
+        "translation": "tr. C. D. Yonge (1853), public domain, from a scanned copy",
+        "urls": [["https://archive.org/download/treatisescicero00ciceuoft/treatisescicero00ciceuoft_djvu.txt", ""]],
+        "segments": [{"start": r"IX\. When I had arrived in Africa", "end": r"(?=A REVIEW OF THE HISTORY|TREATISE ON THE LAWS)", "heading": ""}],
+        "start": r"IX\. When I had arrived in Africa",
+        "end": r"\Z",
+        "chapter": r"^([IVX]+)\. ",
+        "chapter_label": "ch.",
+        "replace": [[r"(\w)- ?\n(\w)", r"\1\2"]],
+        "drop": [r"_", r"(?m)^.*ON THE COMMONWEALTH.*$", r"(?m)^\s*\d{3}\s*$", r"(?m)^\s*[\*\s]{3,}$", r"(?m)^\s*[^\w\s]{1,3}\s*$"],
+    },
+    "ovid-metamorphoses": {  # Books I and X, as the reading takes them, without Riley's explanations
+        "title": "Metamorphoses",
+        "translation": "tr. Henry T. Riley (1851), public domain",
+        "parts": [
+            {"title": "Metamorphoses, Book I",
+             "urls": [["https://www.gutenberg.org/cache/epub/21765/pg21765.txt", ""]],
+             "segments": [{"start": r"^FABLE (?:[IVXL]+)\. \[I\.[\d\-]+\]\s*$", "end": r"(?m)^(?=EXPLANATION\.)", "heading": "Fable {n}",
+                           "skip_start": True}],
+             "drop": [r"(?m)^ .*\n?", r"[{}]", r"\[\d+\]"],
+             "start": r"(?m)^Fable 1\s*$", "end": r"\Z", "chapter": r"^Fable (\d+)\s*$", "chapter_label": "Fable"},
+            {"title": "Metamorphoses, Book X",
+             "urls": [["https://www.gutenberg.org/cache/epub/26073/pg26073.txt", ""]],
+             "segments": [{"start": r"^FABLE (?:[IVXL]+)\. \[X\.[\d\-]+\]\s*$", "end": r"(?m)^(?=EXPLANATION\.)", "heading": "Fable {n}",
+                           "skip_start": True}],
+             "drop": [r"(?m)^ .*\n?", r"[{}]", r"\[\d+\]"],
+             "start": r"(?m)^Fable 1\s*$", "end": r"\Z", "chapter": r"^Fable (\d+)\s*$", "chapter_label": "Fable"},
+        ],
+    },
+    "tacitus-annals": {  # the Agricola, as the reading takes it
+        "title": "Agricola",
+        "translation": "the Oxford translation, revised (1854), public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/7524/pg7524.txt", ""]],
+        "segments": [{"start": r"(?m)^THE LIFE OF CNAEUS JULIUS AGRICOLA\.\s*$", "end": r"(?m)^(?=FOOTNOTES\s*$)", "heading": ""}],
+        "start": r"(?m)^THE LIFE OF CNAEUS JULIUS AGRICOLA\.\s*$",
+        "end": r"(?m)^FOOTNOTES\s*$",
+        "chapter": r"^(\d+)\. ",
+        "drop": [r"\s*\[\d+\]"],
+    },
+    "epictetus-enchiridion": {
+        "title": "Encheiridion",
+        "translation": "tr. George Long (1877), public domain",
+        "urls": [["https://www.gutenberg.org/cache/epub/10661/pg10661.txt", ""]],
+        "start": r"(?m)^THE ENCHEIRIDION, OR MANUAL\.\s*$",
+        "end": r"(?m)^FRAGMENTS|\*\*\* END OF",
+        "chapter": r"^([IVXL]+)\.\s*$",
+        "drop": [r"\s*\(\[Greek: [^\]]*\]\)", r"\s*\[Greek: [^\]]*\]"],
+    },
+    "marcus-aurelius-meditations": {  # Books II and IV, as the reading takes them
+        "title": "Meditations",
+        "translation": "tr. George Long (1862), public domain",
+        "parts": [
+            {"title": "Meditations, Book II",
+             "urls": [["https://www.gutenberg.org/cache/epub/15877/pg15877.txt", ""]],
+             "segments": [{"start": r"(?m)^II\.\s*$", "end": r"(?m)^(?=III\.\s*$)", "heading": ""}],
+             "start": r"\S", "end": r"\Z", "chapter": r"^(\d+)\. ", "chapter_label": "sect.",
+             "drop": [r"(?m)^ .*\n?", r"\[[A-Z]\]", r"\+", r"(?m)^II\.\s*$"]},
+            {"title": "Meditations, Book IV",
+             "urls": [["https://www.gutenberg.org/cache/epub/15877/pg15877.txt", ""]],
+             "segments": [{"start": r"(?m)^IV\.\s*$", "end": r"(?m)^(?=V\.\s*$)", "heading": ""}],
+             "start": r"\S", "end": r"\Z", "chapter": r"^(\d+)\. ", "chapter_label": "sect.",
+             "drop": [r"(?m)^ .*\n?", r"\[[A-Z]\]", r"\+", r"(?m)^IV\.\s*$"]},
+        ],
+    },
+    "seneca-letters-to-lucilius": {  # On the Shortness of Life, as the reading takes it, from Stewart's scanned volume
+        "title": "On the Shortness of Life",
+        "translation": "tr. Aubrey Stewart (1889), public domain, from a scanned copy",
+        "urls": [["https://archive.org/download/minordialoguesto00seneuoft/minordialoguesto00seneuoft_djvu.txt", ""]],
+        "segments": [{"start": r"OF\s+THE\s+SHO[ERO]TNESS\s+OF\s+LIFE\.\s*\n", "end": r"(?=THE\s+ELEVENTH\s+BOOK)", "heading": ""}],
+        "start": r"THE greater part of mankind",
+        "end": r"\Z",
+        "chapter": r"^([IVX]+)\.\s",
+        "chapter_label": "ch.",
+        "replace": [[r"'\s+I\s+\"HE\s+greater", "THE greater"], [r"(?m)^-\*-\s*", ""], [r"(\w)- ?\n(\w)", r"\1\2"]],
+        "drop": [r"(?m)^.*SHO[ERO]TNESS\s+O[FP]\s+LIFE\.?\s*\d*\s*$", r"(?m)^\s*\d{3}\s+MINOR\s+DIALOGUES.*$",
+                 r"(?m)^\s*\d{3}\s*$", r"(?m)^\^.*$", r"\^", r"(?m)^\s*[^\w\s]{1,3}\s*$"],
+    },
 }
 
 
@@ -432,6 +574,8 @@ def build(work_id: str) -> Path:
         text = source_text(part)
         if "segments" in part:
             text = tidy(segments(text, part))
+        for pattern, repl in part.get("replace", []):  # a scan's slips, put right
+            text = re.sub(pattern, repl, text, flags=re.M)
         body = body_of(text, part)
         if "segments" not in part:  # (a segmented book has had its debris dropped already)
             for pattern in part.get("drop", []):

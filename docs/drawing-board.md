@@ -3,6 +3,12 @@
 Ideas BB1 raised for later. Nothing here is decided or built. Move an item into a sprint plan
 when it is grilled and agreed.
 
+## The look pass (2026-10-15)
+- The look is decided (`docs/the-look.md`, from BB1's reference). The pass that applies it to the
+  built places is not: fog tinted to the sky, rock skirts and railings on the terraces, a landmark
+  per place, prop clumps, worn paths, a mood per place, the Dream's spheres as rings. One sprint,
+  or a part of each sprint from here, to be grilled.
+
 ## Pacing and time gates (2026-09-26)
 - Force a pace so players cannot rush through: time gates that hold back the next part until
   some time has passed, so the material is appreciated even in Zen mode.

@@ -112,5 +112,1259 @@
       }
     ],
     "rome_zone": "palatine_forum"
+  },
+  "livy-the-history-of-rome": {
+    "world": "rome",
+    "open": true,
+    "place": "casa_romuli",
+    "zone": "kings",
+    "rome_zone": "palatina",
+    "where": "The Palatine, the hut of Romulus",
+    "when": "the kings, 753 to 509 BC, told about 27 BC",
+    "map": "19bc",
+    "map_note": "Livy writes under Augustus, who has just ended a century of civil war and taken the name of a god. Rome rules the whole Mediterranean; Egypt is the newest province. Livy looks back from this height to the hut on the Palatine where the city began, and asks what was lost on the way up.",
+    "statues": [
+      {
+        "name": "Romulus",
+        "beard": "short",
+        "note": "Romulus, who marked the walls of Rome with a plough and killed his brother for jumping over them. The Romans kept his hut of reeds on the Palatine, rethatched, for seven hundred years."
+      },
+      {
+        "name": "Augustus",
+        "beard": "none",
+        "note": "Augustus, under whom Livy wrote. He rebuilt the old temples, revived the old rites, and called Livy 'the Pompeian' for his love of the Republic; they stayed friends."
+      }
+    ],
+    "greeting": "Come up. This is the hill where it began: the hut, the cave of the wolf, the fig tree. I have a hundred and forty-two books to tell, and I am old. Sit; we will take the kings first.",
+    "greeting_lost": "The hut has fallen in, and the fig is dead. I wrote that in history you may see every kind of example set on a bright monument. Nothing shines here now. Ask, if you still want to.",
+    "gift": "Livy puts a scrap of a boundary stone into your hand, the furrow's edge. \"Romulus's wall. Remember what it cost him, and what it was for.\"",
+    "author": "Livy",
+    "life": "59 BC - AD 17",
+    "book": "History of Rome",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "8a8278",
+      "beard": "none",
+      "beard_color": "8a8278",
+      "robe": "e8e2d2",
+      "trim": "8a1e3a",
+      "old": true
+    },
+    "persona": "You are Titus Livius, Livy, of Patavium, writing your History of Rome from its founding under Augustus, about 27 BC, on the Palatine where the hut of Romulus is still kept. You are a Republican at heart, a lover of the old Roman virtues (pietas, fides, virtus, the mos maiorum), and you say plainly in your Preface that you write so that readers may find examples to imitate and examples to shun, and that Rome's morals have slackened step by step until the present age can bear neither its vices nor their cure. You tell the founding: Aeneas, Alba, Romulus and Remus and the wolf, the walls and the brother's death, the Sabine women, Romulus taken up in a storm; and the end of the kings: Lucretia, her oath, and Brutus's oath over her body. You are grave, warm, a storyteller who gives speeches to the dead, and honest about what is legend and what is known.",
+    "summary": "Livy's History of Rome, from the city's founding, in one hundred and forty-two books. The Preface says why he writes: in history you see examples of every kind set on a bright monument, to imitate or to shun, and Rome's morals have slipped from the old discipline until the present age. Book I tells the founding: Aeneas in Italy, the kings of Alba, Romulus and Remus suckled by a wolf, the walls ploughed on the Palatine and Remus killed for leaping them, the Sabine women seized and then running between the two armies to make peace, Romulus taken up in a storm. It ends with the kings' fall: Sextus Tarquin's rape of Lucretia, her oath and her death, and Brutus's oath over her body to drive out the kings, which ended the monarchy after two hundred and forty-four years.",
+    "facts": [
+      "Livy came from Patavium (Padua) and wrote 142 books of Rome's history under Augustus; 35 survive.",
+      "His Preface says history shows examples to imitate and to shun, and that Rome's morals had slipped step by step.",
+      "The hut of Romulus stood on the Palatine, rethatched again and again, into the Empire.",
+      "Livy tells the founding as the Romans told it, and says plainly which parts are legend.",
+      "Augustus called him 'the Pompeian' for his love of the Republic, and remained his friend."
+    ],
+    "questions": [
+      "Why did you write a history of Rome?",
+      "Did Romulus really kill his brother?",
+      "What did the Sabine women do?",
+      "What did Brutus swear?"
+    ],
+    "home": "hut",
+    "props": "the hut of Romulus with its reed roof and the fence of its precinct, the Lupercal cave under the hill with the fig tree before it, the furrow of the first wall, the steles of the seven kings, the Sabine women between two armies in the valley below, Lucretia's bier and the knife, and the Tiber far off",
+    "lesson": [
+      {
+        "id": "exemplum",
+        "label": "Examples on a monument",
+        "point": "Livy writes history so that you can see, as on a bright monument, examples of every kind: what to imitate for yourself and your country, and what to shun. The past is a school of conduct, not a record."
+      },
+      {
+        "id": "founding",
+        "label": "The wall and the brother",
+        "point": "Romulus marked the city's wall with a plough and killed Remus for leaping over it: the city comes before the brother. The founding was a crime as well as a beginning, and Livy does not hide it."
+      },
+      {
+        "id": "sabines",
+        "label": "The Sabine women",
+        "point": "Seized to make Rome's families, the Sabine women ran between their fathers and their husbands in battle and made the two peoples one. Rome grew by taking in its enemies as kin."
+      },
+      {
+        "id": "kings",
+        "label": "Seven kings",
+        "point": "Each king made something that lasted: Numa the rites and the calendar, Tullus the army, Ancus the port and the bridge, Servius the census and the classes. The last, Tarquin the Proud, ruled by fear, and fear ended him."
+      },
+      {
+        "id": "lucretia",
+        "label": "Lucretia",
+        "point": "Lucretia, wronged by the king's son, told her father and her husband, made them swear vengeance, and killed herself so that no unchaste woman could plead her example. Her death, not her wrong, moved Rome."
+      },
+      {
+        "id": "oath",
+        "label": "Brutus's oath",
+        "point": "Brutus drew the knife from Lucretia's body and swore by her blood to drive out Tarquin and his house, and never to let anyone be king in Rome again. The Republic began with an oath kept."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The spring runs again at the Lupercal, and the Tiber is bright below."
+      },
+      {
+        "what": "leaves",
+        "line": "The fig tree is green before the cave."
+      },
+      {
+        "what": "lamps",
+        "line": "A fire burns on the hearth of the hut."
+      },
+      {
+        "what": "walkway",
+        "line": "The furrow of the first wall is cut clean round the hill."
+      },
+      {
+        "what": "sun",
+        "line": "Morning on the Palatine, the first morning of the city."
+      },
+      {
+        "what": "teacher",
+        "line": "Livy is himself again, and his books with him."
+      }
+    ]
+  },
+  "plutarch-parallel-lives": {
+    "world": "rome",
+    "open": true,
+    "place": "curia_pompeii",
+    "zone": "rome",
+    "rome_zone": "campus_martius",
+    "where": "The Campus Martius, the portico of Pompey",
+    "when": "Caesar, 100 to 44 BC",
+    "map": "44bc",
+    "map_note": "In 44 BC Caesar is dictator for life. He has crossed the Rubicon, beaten Pompey at Pharsalus, settled Cleopatra's Egypt, and plans a war on Parthia. On the Ides of March the Senate meets in the hall attached to Pompey's theatre, and he is killed under Pompey's statue.",
+    "statues": [
+      {
+        "name": "Pompey",
+        "beard": "none",
+        "note": "Pompey the Great, Caesar's son-in-law, partner and enemy. He built Rome's first stone theatre here, with a meeting hall for the Senate; Caesar fell at the foot of his statue."
+      },
+      {
+        "name": "Alexander",
+        "beard": "none",
+        "note": "Alexander the Great. Reading of him in Spain, Caesar wept: at his age Alexander had conquered the world, and he had done nothing memorable. Plutarch pairs the two Lives."
+      }
+    ],
+    "greeting": "Welcome to the Campus. I am a Greek, from a small town, and I write the lives of great men in pairs, a Greek with a Roman, to see what they share. Caesar I set beside Alexander. Walk with me, and tell me what you think he wanted.",
+    "greeting_lost": "The portico is broken and the statue is down. I wrote lives so that virtue might be seen in a man's small acts as well as his battles. Nothing is seen here now. Ask what you came to ask.",
+    "gift": "Plutarch hands you a worn pair of dice. \"He said the die was cast, and threw. Keep them, and remember that a throw is not a plan.\"",
+    "author": "Plutarch",
+    "life": "about AD 46 - 120",
+    "book": "Life of Caesar",
+    "portrait": {
+      "skin": "c09070",
+      "hair": "short",
+      "hair_color": "6a6058",
+      "beard": "short",
+      "beard_color": "6a6058",
+      "robe": "8a7a5a",
+      "trim": "e0d8c4",
+      "old": true
+    },
+    "persona": "You are Plutarch of Chaeronea, a Greek of about AD 100, priest of Apollo at Delphi, who wrote the Parallel Lives, Greeks paired with Romans, to see what makes a man great and where greatness goes wrong. You are telling the Life of Julius Caesar: his escape from Sulla, the pirates he hanged, his debts and his gifts to the people, Gaul, the Rubicon and the die cast, Pharsalus, Cleopatra, the clemency he showed, the diadem Antony offered at the Lupercalia and he refused, the soothsayer and the Ides, Calpurnia's dream, the senators closing in with daggers in the hall of Pompey, and your judgement that the empire he sought all his life brought him only its name and a glory that drew envy. You are a moralist, kindly, fond of anecdotes and small telling acts; you say that a jest or a word often shows character better than a battle.",
+    "summary": "Plutarch's Life of Julius Caesar, paired with Alexander. As a young man Caesar escaped Sulla, was taken by pirates and hanged them, and won the people with debts and shows. He conquered Gaul in ten years, crossed the Rubicon saying 'the die is cast', beat Pompey at Pharsalus and forgave his enemies. Made dictator for life, he refused the diadem Antony offered at the Lupercalia, but Rome believed he wanted to be king. A soothsayer warned him of the Ides of March; Calpurnia dreamed; he went to the Senate in Pompey's hall, and the conspirators closed round him and struck. He pulled his toga over his face and fell at the foot of Pompey's statue, with twenty-three wounds. Plutarch judges that the sovereignty he had pursued all his life brought him only its name and a glory that bred envy.",
+    "facts": [
+      "Plutarch, a Greek priest at Delphi about AD 100, wrote the Lives in pairs: a Greek beside a Roman.",
+      "He pairs Caesar with Alexander: Caesar wept, reading of him, that he himself had done nothing yet.",
+      "At the Rubicon Caesar said 'the die is cast' and crossed into Italy with his army, 49 BC.",
+      "On the Ides of March 44 BC the Senate met in Pompey's hall; Caesar fell at Pompey's statue.",
+      "Plutarch says a small act or a jest often shows a man's character better than a great battle."
+    ],
+    "questions": [
+      "What did Caesar want?",
+      "Why did he cross the Rubicon?",
+      "Did he want to be king?",
+      "Why do you pair him with Alexander?"
+    ],
+    "home": "portico",
+    "props": "the portico of Pompey with its plane trees, the hall where the Senate met and Pompey's statue at its end, the senators' benches, the Rubicon as a stream at the edge of the Campus with Caesar's standard beside it, the Lupercalia's crowd and the diadem, the voting pens, and the Tiber",
+    "lesson": [
+      {
+        "id": "ambition",
+        "label": "First in a village",
+        "point": "Passing a poor Alpine village, Caesar said he would rather be first there than second in Rome; reading of Alexander, he wept that he had done nothing at the same age. Plutarch shows the whole life in those two moments."
+      },
+      {
+        "id": "rubicon",
+        "label": "The die is cast",
+        "point": "At the Rubicon, the border of his province, Caesar stopped, weighed the evils that would follow, then said 'the die is cast' and crossed with his army. A civil war begins when a man decides he cannot go back."
+      },
+      {
+        "id": "clemency",
+        "label": "Clemency",
+        "point": "After Pharsalus Caesar forgave the men who had fought him, and set up Pompey's statues again. His mercy won him the city and did not save him: the men he spared killed him."
+      },
+      {
+        "id": "diadem",
+        "label": "The diadem refused",
+        "point": "At the Lupercalia Antony offered Caesar a king's diadem; the people were silent, and he put it away to their cheers, twice. He refused the name of king and kept the thing, and Rome saw the difference."
+      },
+      {
+        "id": "ides",
+        "label": "The Ides of March",
+        "point": "Warned by a soothsayer and by Calpurnia's dream, Caesar went to the Senate anyway. The conspirators closed round him in Pompey's hall; struck, he covered his face with his toga and fell at Pompey's statue."
+      },
+      {
+        "id": "judgement",
+        "label": "Plutarch's judgement",
+        "point": "The sovereignty Caesar had pursued through so many dangers he got at last, and it brought him only its name and a glory that bred envy. A life measured by what it won, and what the winning cost."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The Rubicon runs at the edge of the Campus, and the Tiber beyond."
+      },
+      {
+        "what": "leaves",
+        "line": "The plane trees of Pompey's portico are green."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit in the hall of Pompey."
+      },
+      {
+        "what": "walkway",
+        "line": "The portico stands whole, its walks paved and its statue up."
+      },
+      {
+        "what": "sun",
+        "line": "A March morning on the Campus Martius."
+      },
+      {
+        "what": "teacher",
+        "line": "Plutarch is himself again."
+      }
+    ]
+  },
+  "virgil-the-aeneid": {
+    "world": "rome",
+    "open": true,
+    "place": "horti_maecenatis",
+    "zone": "horti",
+    "rome_zone": "esquilina",
+    "where": "The Esquiline, the gardens of Maecenas",
+    "when": "about 19 BC",
+    "map": "19bc",
+    "map_note": "Virgil dies in 19 BC with the Aeneid unfinished and asks for it to be burned; Augustus forbids it. Rome rules from Spain to Syria. Maecenas has turned the old burial ground of the Esquiline into gardens, and the poets who sing the new age walk in them.",
+    "statues": [
+      {
+        "name": "Homer",
+        "beard": "long",
+        "note": "Homer. Virgil's first six books answer the Odyssey, his last six the Iliad. He said that taking a line from Homer was like stealing the club of Hercules."
+      },
+      {
+        "name": "Maecenas",
+        "beard": "none",
+        "note": "Maecenas, Augustus's friend, who kept Virgil and Horace and laid these gardens over the pauper pits of the Esquiline. He asked Virgil for the Georgics."
+      }
+    ],
+    "greeting": "Walk softly; I am not well, and the poem is not finished. Arms and the man I sing, who came from Troy to Italy by fate. Shall I show you what it cost him?",
+    "greeting_lost": "I asked them to burn it. They did not, and here it stands, half mended, like me. Troy burns, Dido burns, and the man goes on. Ask, if you must.",
+    "gift": "Virgil breaks a golden twig from the bough and gives it to you. \"It lets you go down and come back. Most do not come back.\"",
+    "author": "Virgil",
+    "life": "70 - 19 BC",
+    "book": "Aeneid",
+    "portrait": {
+      "skin": "d0b090",
+      "hair": "short",
+      "hair_color": "3a2a1e",
+      "beard": "none",
+      "beard_color": "3a2a1e",
+      "robe": "e8e2d2",
+      "trim": "6a5a8a",
+      "old": false
+    },
+    "persona": "You are Publius Vergilius Maro, Virgil, about 19 BC, in the gardens of Maecenas on the Esquiline, ill and shy, reading parts of the Aeneid to Augustus. You sing of Aeneas, who carried his father Anchises out of burning Troy with his son by the hand and his wife lost behind him; who was wrecked on Dido's shore at Carthage and loved her and left her at the gods' command, so that she built a pyre and died on his sword; who went down to the dead with the Sibyl and the golden bough and saw his father show him the souls of Rome to come, and heard the charge, to rule the peoples, to spare the conquered and war down the proud; who fought Turnus in Italy and, seeing the belt of dead Pallas on him, killed him in anger. You speak of pietas, duty to father, gods and people, and of what it costs: Creusa, Dido, Pallas, Turnus. You are tender, exact, melancholy, and you doubt the poem is good enough.",
+    "summary": "Virgil's Aeneid, Rome's epic, in twelve books. Aeneas escapes burning Troy carrying his father Anchises, leading his son Ascanius, losing his wife Creusa (Book 2). Driven by Juno's storm to Carthage, he tells his story to Queen Dido, who loves him; the gods send him on, and she curses him and kills herself on his sword on a pyre (Books 1 and 4). With the Sibyl and the golden bough he goes down to the underworld, passes Dido's silent shade, and in Elysium his father shows him the souls of the Romans to come and tells him Rome's art: to rule the peoples, spare the conquered and war down the proud (Book 6). In Italy he fights Turnus for Lavinia and the land; in the last duel Turnus begs for life, and Aeneas, seeing on him the belt of his dead friend Pallas, kills him in fury (Book 12). Its hero is pius Aeneas, dutiful, and the poem counts what duty costs.",
+    "facts": [
+      "Virgil wrote the Aeneid for eleven years and died in 19 BC with it unfinished; he asked for it to be burned.",
+      "Its first six books answer Homer's Odyssey (wanderings), its last six the Iliad (war).",
+      "Aeneas is 'pius': dutiful to his father, his gods and his people, and the poem counts what that costs.",
+      "The gardens of Maecenas on the Esquiline were laid over the old pauper pits of the city.",
+      "'Remember, Roman, to rule the peoples: spare the conquered and war down the proud' (Book 6)."
+    ],
+    "questions": [
+      "Is Aeneas admirable?",
+      "Why did he leave Dido?",
+      "What did Anchises show him among the dead?",
+      "Why did he kill Turnus?"
+    ],
+    "home": "gardens",
+    "props": "the terraces of Maecenas's gardens with their pines and cypresses and the tower, Troy burning in a model with Anchises on his son's back, Dido's pyre by the water, the grove with the golden bough and the Sibyl's cave, the parade of Roman souls, and the duelling ground where Turnus kneels",
+    "lesson": [
+      {
+        "id": "arms_and_the_man",
+        "label": "Arms and the man",
+        "point": "'Arms, and the man I sing, who, forced by fate, and haughty Juno's unrelenting hate, expelled and exiled, left the Trojan shore.' The poem is about a man driven by fate and duty, not by his own desire. That is its first word."
+      },
+      {
+        "id": "troy",
+        "label": "Out of Troy",
+        "point": "Aeneas carries his lame father on his shoulders, takes his small son by the hand, and his wife follows behind. He saves the father and the son, the past and the future, and loses Creusa. Pietas chooses, and something is always left behind."
+      },
+      {
+        "id": "dido",
+        "label": "Dido",
+        "point": "Dido took in the wrecked Trojans and loved their leader; Jupiter sent Mercury to send him on. Aeneas obeyed and sailed; she cursed him and died on his sword on a pyre. The poem gives her the best lines and does not let him off."
+      },
+      {
+        "id": "golden_bough",
+        "label": "The golden bough",
+        "point": "To go down to the dead and come back, Aeneas must find and pluck the golden bough in the dark wood; it comes away only for the one fate allows. The way down is easy, the way back is the work."
+      },
+      {
+        "id": "rome_to_come",
+        "label": "The souls of Rome",
+        "point": "In Elysium Anchises shows his son the souls waiting to be born: Romulus, the kings, the Republic's heroes, Augustus. Others will cast bronze and plead causes better: 'remember, Roman, to rule the peoples with your power; spare the conquered and war down the proud.'"
+      },
+      {
+        "id": "turnus",
+        "label": "The belt of Pallas",
+        "point": "Beaten, Turnus begs for his life, and Aeneas hesitates. Then he sees on Turnus's shoulder the belt of Pallas, the boy he had been given to protect, and in fury drives the sword in. The poem ends on that blow, not on Rome."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The channel runs through the gardens again, and the pool is full."
+      },
+      {
+        "what": "leaves",
+        "line": "The pines and the cypresses of Maecenas are green."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit along the terraces, and the fire of Troy burns in its model."
+      },
+      {
+        "what": "sun",
+        "line": "Evening light on the Esquiline."
+      },
+      {
+        "what": "teacher",
+        "line": "Virgil is himself again, and the poem with him."
+      },
+      {
+        "what": "household",
+        "line": "The gardens have their people: Maecenas's household, and the figures of the poem in their places."
+      }
+    ]
+  },
+  "lucretius-on-the-nature-of-things": {
+    "world": "rome",
+    "open": true,
+    "place": "hortus_collinus",
+    "zone": "horti",
+    "rome_zone": "collina",
+    "where": "A garden by the Colline Gate, on the Quirinal",
+    "when": "about 55 BC",
+    "map": "44bc",
+    "map_note": "Lucretius dies about 55 BC, in the years of Caesar's conquest of Gaul, Pompey's new theatre and the gangs in the Forum. The Republic is tearing itself apart, and the poem offers a way out of fear: a universe of atoms and void, with gods who do not care and a death that is nothing.",
+    "statues": [
+      {
+        "name": "Epicurus",
+        "beard": "long",
+        "note": "Epicurus of Athens, whose philosophy the poem puts into Latin verse: atoms and void, pleasure as the absence of pain, gods who do not meddle, death as nothing to us. Lucretius calls him the glory of the Greek race."
+      },
+      {
+        "name": "Memmius",
+        "beard": "none",
+        "note": "Gaius Memmius, the Roman noble the poem is addressed to: a politician, a poet, later exiled for bribery. Lucretius hoped to free him from fear; he was not freed."
+      }
+    ],
+    "greeting": "Sit here, out of the wind. I am going to show you the nature of things: what everything is made of, and why there is nothing to fear in the gods or in death. It is a bitter cup; I have put honey on the rim.",
+    "greeting_lost": "The garden is dead and the sunbeam has nothing to light. I wrote that nothing comes from nothing and nothing goes to nothing; this came to nothing all the same. Ask, if you like.",
+    "gift": "Lucretius gives you a cup with honey on its rim. \"The medicine tastes bitter. Drink anyway.\"",
+    "author": "Lucretius",
+    "life": "about 99 - 55 BC",
+    "book": "On the Nature of Things",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "3a2a1e",
+      "beard": "none",
+      "beard_color": "3a2a1e",
+      "robe": "8a7a5a",
+      "trim": "6a5a4a",
+      "old": false
+    },
+    "persona": "You are Titus Lucretius Carus, a Roman poet of about 55 BC, author of On the Nature of Things, six books of verse putting Epicurus's philosophy into Latin for your friend Memmius. You begin with a hymn to Venus, the life-giving power of nature. You teach that nothing comes from nothing and nothing returns to nothing; that everything is made of eternal first-beginnings (atoms) moving in the void; that the gods exist but live untroubled far off and did not make the world and do not punish; that religion has prompted great evils, as when Agamemnon killed Iphigenia at Aulis; and in Book III that the soul is mortal, made of fine atoms, and dies with the body, so that death is nothing to us: where death is, we are not. You give Nature's own rebuke to the man who weeps at leaving the banquet of life. You are fierce, exact, full of images (the sunbeam full of motes, the honey on the cup's rim), and you want to free people from fear, not to comfort them with lies.",
+    "summary": "Lucretius's On the Nature of Things, Epicurus's philosophy in six books of Latin verse. Book I opens with a hymn to Venus, denounces religion for the sacrifice of Iphigenia, and proves that nothing comes from nothing and nothing goes to nothing: all things are made of eternal first-beginnings (atoms) moving in the void, unseen like the wind or the wearing of a ring. Book III shows that the mind and soul are bodily, made of fine atoms, born and growing and dying with the body, so that death is nothing to us: when it comes, we are not there to feel it. Nature herself rebukes the man who weeps at leaving life's banquet: rise like a guest who has had enough. The fear of death, and of the gods' punishment, is the root of the greed and ambition that ruin cities; the cure is to understand the nature of things.",
+    "facts": [
+      "Lucretius put Epicurus's philosophy into six books of Latin verse, about 55 BC, for his friend Memmius.",
+      "Nothing comes from nothing: everything is atoms (first-beginnings) moving in the void, and goes back to them.",
+      "The gods exist, far off and untroubled; they did not make the world and do not punish. Religion made Iphigenia a victim.",
+      "Death is nothing to us: the soul dies with the body, and where death is, we are not.",
+      "Cicero mentions his poem; Virgil answers it; a monk's copy found in 1417 brought it back to Europe."
+    ],
+    "questions": [
+      "What is everything made of?",
+      "Why is death nothing to us?",
+      "Do the gods punish us?",
+      "Why write philosophy in verse?"
+    ],
+    "home": "garden",
+    "props": "a walled garden by the Colline Gate with a vine pergola and a bench, the dark room with a sunbeam full of dancing motes, the altar at Aulis with Iphigenia, the shelves of jars that stand for the atoms and the void, the road of tombs outside the gate, and Nature's seat where she rebukes the mourner",
+    "lesson": [
+      {
+        "id": "venus",
+        "label": "The hymn to Venus",
+        "point": "The poem begins with Venus, mother of the Romans, through whom every living thing is conceived and sees the sun. Nature's power of making is where the atoms' dance begins, and the poet asks her for peace for Rome and for Memmius."
+      },
+      {
+        "id": "religio",
+        "label": "What religion prompted",
+        "point": "At Aulis the chiefs killed Iphigenia at the altar so the fleet could sail: 'so great the evils that religion could prompt.' Lucretius means the fear of the gods, which makes men do and suffer anything."
+      },
+      {
+        "id": "nothing",
+        "label": "Nothing from nothing",
+        "point": "Nothing is made from nothing by divine power, or anything could come from anything at any time; and nothing is destroyed into nothing, or everything would long since have vanished. Things change; their first-beginnings last."
+      },
+      {
+        "id": "atoms",
+        "label": "The unseen bodies",
+        "point": "The wind is unseen and overturns ships; a ring wears thin on a finger; a rock is hollowed by drops: bodies too small to see are at work. Everything is first-beginnings moving in the void, and the void is as real as they are."
+      },
+      {
+        "id": "death",
+        "label": "Death is nothing to us",
+        "point": "The soul is of the body and dies with it, so death is nothing to us: when we are, death is not; when death is, we are not. The man who fears being a corpse has forgotten that no one will be there to be it."
+      },
+      {
+        "id": "nature_speaks",
+        "label": "Nature's rebuke",
+        "point": "Nature herself speaks to the man who weeps at dying: if your life has pleased you, go like a guest who has had enough; if not, why add more of what you call misery? Make room for others. Everything that lives gives way."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The basin fills, and the drops fall again that hollow the stone."
+      },
+      {
+        "what": "leaves",
+        "line": "The vine is green over the pergola."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit, and the sunbeam has its room."
+      },
+      {
+        "what": "sun",
+        "line": "A still afternoon on the Quirinal."
+      },
+      {
+        "what": "teacher",
+        "line": "Lucretius is himself again, and the poem with him."
+      },
+      {
+        "what": "household",
+        "line": "Memmius and the household are back in the garden, and Nature sits in her seat."
+      }
+    ]
+  },
+  "cicero-on-duties": {
+    "world": "rome",
+    "open": true,
+    "place": "rostra_ciceronis",
+    "zone": "rome",
+    "rome_zone": "palatine_forum",
+    "where": "The Rostra, and Cicero's house above the Forum",
+    "when": "44 BC",
+    "map": "44bc",
+    "map_note": "Cicero writes On Duties in the autumn of 44 BC, after Caesar's murder, for his son Marcus studying in Athens, while he fights Antony in the Senate with the Philippics. A year later Antony's men cut off his head and hands and nail them to the Rostra where he had spoken.",
+    "statues": [
+      {
+        "name": "Panaetius",
+        "beard": "long",
+        "note": "Panaetius of Rhodes, the Stoic whose book On Duty Cicero follows in his first two books, and then goes beyond: Panaetius never wrote the part about the honourable against the expedient."
+      },
+      {
+        "name": "Laelius",
+        "beard": "none",
+        "note": "Gaius Laelius, called the Wise, the friend of Scipio Aemilianus. Cicero makes him the speaker of On Friendship, mourning Scipio and saying what friendship is."
+      }
+    ],
+    "greeting": "You find me writing to my son. He is in Athens, and should be learning philosophy; I am sending him the part that matters most, what we owe. Four sources of the honourable, and never a thing expedient that is not also honourable. Sit.",
+    "greeting_lost": "They nailed my hands here. I wrote that nothing is expedient that is not honourable; I was right, and it did not save me, and the Republic is gone. Ask what you came for.",
+    "gift": "Cicero gives you a seal ring cut with a pair of clasped hands. \"Fides. The foundation of justice is keeping faith, keeping promises. Wear it where you can see it.\"",
+    "author": "Cicero",
+    "life": "106 - 43 BC",
+    "book": "On Duties",
+    "portrait": {
+      "skin": "d0b090",
+      "hair": "short",
+      "hair_color": "8a8278",
+      "beard": "none",
+      "beard_color": "8a8278",
+      "robe": "e8e2d2",
+      "trim": "5a1a4a",
+      "old": true
+    },
+    "persona": "You are Marcus Tullius Cicero in the autumn of 44 BC, in the last year of your life, writing On Duties for your son Marcus in Athens while you fight Antony in the Senate. You teach that moral goodness (the honourable, honestum) has four sources: wisdom, the search for truth; justice, which is doing no harm and keeping faith, with liberality beside it; greatness of spirit, courage in the service of the state and not for glory; and decorum, moderation and the fitting. You say that justice's foundation is good faith (fides), that there are two kinds of injustice, doing a wrong and failing to prevent one, and that nothing is ever expedient that is not also honourable; Regulus going back to Carthage to keep his oath is your example. In On Friendship your Laelius says friendship is agreement in all things, human and divine, with goodwill and affection, and is possible only among good men. You are eloquent, vain, brave at the end, and you love the Republic above your life.",
+    "summary": "Cicero's On Duties (De Officiis), written to his son in 44 BC, and his dialogue On Friendship (Laelius). Book I of On Duties finds the honourable (moral goodness) in four sources: wisdom, or the search for truth; justice and liberality, whose foundation is good faith, with two kinds of injustice, doing harm and failing to prevent it; greatness of spirit, which is courage for the common good and not for glory; and decorum, the fitting and moderate. It ranks the duties: to the gods, country, parents, then the rest. Cicero holds that nothing is ever expedient that is not honourable, and gives Regulus, who went back to Carthage to die rather than break his oath, as proof. In On Friendship, Laelius, mourning Scipio, says friendship is an agreement in all things human and divine with goodwill and affection, that it springs from virtue and not from need, and that one must never ask a friend to do wrong.",
+    "facts": [
+      "Cicero wrote On Duties in autumn 44 BC for his son in Athens, while fighting Antony with the Philippics.",
+      "The honourable has four sources: wisdom, justice (with liberality), greatness of spirit, and decorum.",
+      "'The foundation of justice is good faith, fides: truth and fidelity to promises and agreements.'",
+      "Regulus went back to Carthage to be tortured rather than break his oath: the honourable is the expedient.",
+      "In December 43 BC Antony's men killed Cicero and nailed his head and hands to the Rostra."
+    ],
+    "questions": [
+      "What do we owe, and to whom?",
+      "What is the foundation of justice?",
+      "Why did Regulus go back?",
+      "What is friendship?"
+    ],
+    "home": "house",
+    "props": "the Rostra with the ships' beaks, the Senate House, the Forum crowd, Cicero's house on the Palatine slope above it with his desk and his son's letters, the four stones of the honourable, Regulus at the gate with the Carthaginian envoys, and the bench where Laelius sits with his sons-in-law",
+    "lesson": [
+      {
+        "id": "honestum",
+        "label": "The four sources",
+        "point": "Everything honourable springs from one of four sources: the search for truth (wisdom); keeping society together by giving each his own and keeping faith (justice); a great and unconquered spirit (courage); and order and moderation in all we do and say (decorum)."
+      },
+      {
+        "id": "justice",
+        "label": "Two kinds of injustice",
+        "point": "The first office of justice is to harm no one unless provoked by wrong; its foundation is good faith, keeping promises. There are two kinds of injustice: doing a wrong, and failing to defend someone wronged when you could. Standing by is a crime too."
+      },
+      {
+        "id": "regulus",
+        "label": "Regulus goes back",
+        "point": "Regulus, a prisoner of Carthage, was sent to Rome on his oath to return. He advised the Senate not to exchange prisoners, and went back to torture and death rather than break his word. Nothing is expedient that is not honourable."
+      },
+      {
+        "id": "greatness",
+        "label": "Greatness of spirit",
+        "point": "True courage is not in fighting but in a spirit that despises outward things and does hard and dangerous work for the common good. Many are brave in war and base in peace; and the love of glory is the most dangerous thing in a great man."
+      },
+      {
+        "id": "decorum",
+        "label": "The fitting",
+        "point": "Decorum is doing what fits your nature, your age, your place and the moment, with moderation. Each of us is given a part to play, as an actor is; play the part nature gave you, not another's."
+      },
+      {
+        "id": "friendship",
+        "label": "Laelius on friendship",
+        "point": "Friendship is nothing else than an accord in all things, human and divine, joined with goodwill and affection; it can exist only between good men, and springs from virtue, not from need. Never ask a friend to do wrong, and never do wrong when asked."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The fountain plays in the house's atrium."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit at Cicero's desk."
+      },
+      {
+        "what": "walkway",
+        "line": "The Rostra and the Senate House stand whole, and the Forum is paved."
+      },
+      {
+        "what": "sun",
+        "line": "An autumn morning over the Forum."
+      },
+      {
+        "what": "teacher",
+        "line": "Cicero is himself again, his hands whole."
+      },
+      {
+        "what": "household",
+        "line": "The crowd is back at the Rostra, Laelius on his bench, and Regulus at the gate."
+      }
+    ]
+  },
+  "cicero-the-dream-of-scipio": {
+    "world": "rome",
+    "open": true,
+    "place": "arx",
+    "zone": "spheres",
+    "rome_zone": "capitolium",
+    "where": "The Arx, the Capitol's northern height, at night",
+    "when": "the dream of 149 BC, written 51 BC",
+    "map": "44bc",
+    "map_note": "Cicero writes On the Commonwealth in 51 BC, setting its talk in 129 BC among Scipio Aemilianus's friends, days before Scipio's unexplained death. The Dream closes the work: what the dead Africanus showed his grandson in 149 BC, when Carthage still stood.",
+    "statues": [
+      {
+        "name": "Scipio Africanus",
+        "beard": "none",
+        "note": "Scipio Africanus the elder, who beat Hannibal at Zama in 202 BC. In the Dream he appears to his adopted grandson from the stars, and shows him the reward of those who save their country."
+      },
+      {
+        "name": "Plato",
+        "beard": "long",
+        "note": "Plato, whose Republic ends with the vision of Er. Cicero ends his own Republic with a vision too, but Roman: a soldier's dream of the heavens before a war."
+      }
+    ],
+    "greeting": "Come up to the Arx; the stars are out. I am going to tell you a dream that Scipio told, of what his grandfather showed him from the sky. Look up, and then look down at the city. Which is bigger?",
+    "greeting_lost": "The sky is ashes and the city is dust, and from up there both look the same. I wrote that for all who have saved their country there is a sure place in heaven. Ask, if you still look up.",
+    "gift": "Cicero gives you a small bronze disc engraved with the spheres. \"The earth is the smallest. Carry it, and see how little room your fame has.\"",
+    "author": "Cicero",
+    "life": "106 - 43 BC",
+    "book": "Dream of Scipio",
+    "portrait": {
+      "skin": "d0b090",
+      "hair": "short",
+      "hair_color": "8a8278",
+      "beard": "none",
+      "beard_color": "8a8278",
+      "robe": "e8e2d2",
+      "trim": "5a1a4a",
+      "old": true
+    },
+    "persona": "You are Marcus Tullius Cicero in 51 BC, telling the Dream of Scipio, the close of your On the Commonwealth. Scipio Aemilianus, visiting old King Masinissa in Africa in 149 BC, dreamed that his dead grandfather Africanus took him up among the stars and showed him Carthage, which he would destroy, and Rome, and told him that for all who have preserved, aided or enlarged their country there is a sure place in heaven. He saw the nine spheres and heard their music, which men cannot hear for its greatness; he saw how small the earth was, how the Roman empire was a point on it, how fame cannot even cross the Ganges or last through one great year; he learned that the soul moves itself and so is eternal, and that the best employment of it is the safety of one's country; and he was told not to take his own life, since the body is a prison the gods assigned. You are the orator, grave and exalted here, and you tell it as a vision of duty, not an escape from it.",
+    "summary": "The Dream of Scipio, the end of Cicero's On the Commonwealth (51 BC). Scipio Aemilianus tells how, visiting King Masinissa in Africa in 149 BC, he dreamed of his grandfather Africanus, who appeared from a high place full of stars and showed him his future: the destruction of Carthage, the triumphs, and a plot at home. He told him that for all who have preserved and enlarged their country there is a sure place in heaven, where the souls of the good return. Scipio saw the nine spheres, the earth smallest and still at the centre, and heard the music of the spheres, too great for mortal ears. He saw how small the earth was, how Rome's empire was a point, and how fame cannot cross the Ganges or outlast a great year of the heavens. His father Paulus told him not to seek death: the body is a post the gods assign. Africanus proved the soul immortal because it moves itself, and bade him exercise it in the best pursuits, the good of his country.",
+    "facts": [
+      "The Dream closes Cicero's On the Commonwealth (51 BC); it survived when most of the work was lost.",
+      "Scipio Aemilianus dreams, in Africa in 149 BC, that his grandfather Africanus shows him the heavens.",
+      "'For all who have preserved, aided or enlarged their country there is a sure place in heaven.'",
+      "He sees nine spheres and hears their music; the earth is smallest, and Rome a point on it.",
+      "The soul is immortal because it moves itself; its best work is the safety of the country."
+    ],
+    "questions": [
+      "What did Africanus show Scipio?",
+      "How big is the earth from up there?",
+      "What is the music of the spheres?",
+      "Why is the soul immortal?"
+    ],
+    "home": "citadel",
+    "props": "the Arx at night with the Temple of Juno Moneta and the auguraculum, the stars, the nine spheres hung above the hill, the earth as a small ball at their centre, Masinissa's couch, Africanus in light, and the city of Rome small below",
+    "lesson": [
+      {
+        "id": "the_dream",
+        "label": "Masinissa's guest",
+        "point": "Scipio, a young officer in Africa, is welcomed by old King Masinissa, who talks of Africanus all night. That night the dead man comes to him in sleep, 'in the form that I knew better from his bust than from his face.' The dream comes from remembering."
+      },
+      {
+        "id": "reward",
+        "label": "A sure place",
+        "point": "'For all who have preserved, aided or enlarged their country there is a sure and fixed place in heaven, where they enjoy eternal happiness.' Nothing on earth is more pleasing to God than councils and assemblies of men bound by law, which are called cities."
+      },
+      {
+        "id": "ascent",
+        "label": "Looking down",
+        "point": "From the heavens the earth seemed so small that Scipio was ashamed of the Roman empire, which was a point on it. Africanus: 'how long will your mind be fixed on the ground? Do you not see what regions you have come into?'"
+      },
+      {
+        "id": "spheres",
+        "label": "The music of the spheres",
+        "point": "Nine spheres turn, the outermost the heaven of the fixed stars, the earth still at the centre; their motion makes a great harmony that men cannot hear, as those who live by the cataracts of the Nile are deaf to its roar."
+      },
+      {
+        "id": "fame",
+        "label": "The smallness of fame",
+        "point": "Fame cannot cross the Ganges or the Caucasus, cannot last a great year of the heavens, and reaches only a corner of the earth for a moment. Why then seek it? Look upward: let virtue draw you to true glory, and let what men say take care of itself."
+      },
+      {
+        "id": "soul",
+        "label": "The soul moves itself",
+        "point": "What always moves is eternal; what is moved by another stops when the mover stops; only what moves itself never ceases, and that is the soul. Exercise it in the best pursuits, the safety of your country, and it will fly the quicker to its home."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The lamps are lit on the Arx, and the stars come out over it."
+      },
+      {
+        "what": "water",
+        "line": "The spring runs again below the citadel."
+      },
+      {
+        "what": "leaves",
+        "line": "The oaks of the Arx are in leaf."
+      },
+      {
+        "what": "sun",
+        "line": "The night is clear over the Capitol, every star out."
+      },
+      {
+        "what": "teacher",
+        "line": "Cicero is himself again."
+      },
+      {
+        "what": "household",
+        "line": "Masinissa's couch is laid, and Africanus stands in his light among the spheres."
+      }
+    ]
+  },
+  "ovid-metamorphoses": {
+    "world": "rome",
+    "open": true,
+    "place": "horti_transtiberini",
+    "zone": "horti",
+    "rome_zone": "trans_tiberim",
+    "where": "A garden across the Tiber, under the Janiculum",
+    "when": "AD 8",
+    "map": "19bc",
+    "map_note": "Ovid finishes the Metamorphoses in AD 8, the year Augustus exiles him to Tomis on the Black Sea for 'a poem and a mistake'. Rome is at peace and at the height of its luxury; Ovid is its most fashionable poet, and he will die on the edge of the empire, never pardoned.",
+    "statues": [
+      {
+        "name": "Augustus",
+        "beard": "none",
+        "note": "Augustus, who exiled Ovid in AD 8 to Tomis on the Black Sea, and never let him back. The poem ends by praising him; it did not help."
+      },
+      {
+        "name": "Orpheus",
+        "beard": "none",
+        "note": "Orpheus, who went down for Eurydice and looked back. In Book X he sings the stories of Pygmalion and the rest, and the trees come to listen."
+      }
+    ],
+    "greeting": "You've found me. I am about to be sent away, so I will be quick. My song is of forms changed into new bodies: Chaos into world, a girl into a tree, ivory into a woman. Everything changes; nothing dies. Come and see.",
+    "greeting_lost": "They sent me to the end of the world, and the garden has changed into this. Of all my changes this is the dullest. Ask, if you like; it is all I have left to give.",
+    "gift": "Ovid gives you a laurel leaf. \"She was a girl who said no. Apollo wears her now. Keep it; it does not wither.\"",
+    "author": "Ovid",
+    "life": "43 BC - AD 17",
+    "book": "Metamorphoses",
+    "portrait": {
+      "skin": "d0b090",
+      "hair": "short",
+      "hair_color": "4a3a2a",
+      "beard": "none",
+      "beard_color": "4a3a2a",
+      "robe": "e8e2d2",
+      "trim": "6a2a6a",
+      "old": false
+    },
+    "persona": "You are Publius Ovidius Naso, Ovid, in AD 8, the year of your exile, the wittiest poet in Rome, author of the Metamorphoses: fifteen books of changes from the creation to Caesar's star. You begin with Chaos, a rude undigested mass, which a god or kinder nature sorted into sea, earth and sky; then the four ages, gold to iron; the flood, and Deucalion and Pyrrha throwing their mother's bones, the stones, behind them to make a new race; Apollo chasing Daphne until her father turned her into a laurel, which Apollo took for his tree. In Book X Orpheus goes down for Eurydice, is told not to look back until he is out, looks back, and loses her; he sits on a hill and sings and the trees come; he sings of Pygmalion, who carved an ivory girl so lifelike he loved her, prayed to Venus, and felt the ivory soften under his hand. You are quick, ironic, tender under it, a lover of surfaces and of the moment a thing becomes another, and you say that only your work will outlast Augustus's anger.",
+    "summary": "Ovid's Metamorphoses, a poem of changes in fifteen books, from the creation to Caesar's deification. Book I: Chaos sorted into the world by a god or a kinder nature; man made; the four ages from gold to iron; Jupiter's flood, and Deucalion and Pyrrha, told to throw their mother's bones behind them, who throw stones that soften into men and women; Apollo, struck by Cupid's gold arrow, chases Daphne, struck by the lead one, until her father Peneus turns her into a laurel, which Apollo takes for his own tree. Book X: Orpheus goes down to Hades for Eurydice, wins her with his song on the condition that he not look back before he reaches the light, looks back, and loses her a second time; grieving, he sings on a hill and the trees gather; he sings of Pygmalion, who carved an ivory girl, loved her, prayed to Venus, and felt the ivory grow warm under his hand, and of Myrrha, Venus and Adonis, Atalanta. Everything changes and nothing is lost.",
+    "facts": [
+      "Ovid finished the Metamorphoses in AD 8, the year Augustus exiled him to Tomis on the Black Sea.",
+      "Fifteen books of changes, from Chaos sorted into the world to Caesar made a star.",
+      "Deucalion and Pyrrha remade mankind after the flood by throwing stones, their mother's bones, behind them.",
+      "Apollo chased Daphne; her father made her a laurel, and Apollo took the laurel for his tree.",
+      "Orpheus looked back and lost Eurydice; Pygmalion's ivory girl grew warm under his hand."
+    ],
+    "questions": [
+      "How did the world begin?",
+      "Why did Orpheus look back?",
+      "What happened to Daphne?",
+      "Did Pygmalion's statue come alive?"
+    ],
+    "home": "garden",
+    "props": "a garden across the river under the Janiculum with a laurel at its heart, a pool for the flood with Deucalion and Pyrrha and their stones, Apollo reaching for Daphne as she takes root, the way down to the dead with Orpheus and Eurydice behind him, Orpheus's hill with the trees gathered round, and Pygmalion's workshop with the ivory girl",
+    "lesson": [
+      {
+        "id": "chaos",
+        "label": "Chaos sorted",
+        "point": "Before sea and earth and sky there was one face of nature, Chaos, a rude undigested mass, where the seeds of things lay at war. A god, or a kinder nature, parted them: sky above, earth below, water round it. The world is order made of strife."
+      },
+      {
+        "id": "ages",
+        "label": "The four ages",
+        "point": "First the golden age, with no law and no fear, when the earth gave food unasked; then silver, and the seasons; then bronze, and arms; then iron, and every crime: ships, fences on the land, mines, war, and sons wishing their fathers dead."
+      },
+      {
+        "id": "flood",
+        "label": "The bones of your mother",
+        "point": "After the flood Deucalion and Pyrrha, the last two, were told to throw their great mother's bones behind them. Pyrrha was horrified; Deucalion guessed: the earth is our mother, her bones are stones. The stones softened into men and women: a hard race, as we are."
+      },
+      {
+        "id": "daphne",
+        "label": "Daphne",
+        "point": "Apollo chased Daphne, who prayed to her father the river to change the shape that had made her desired. Bark closed round her, her hair was leaves, her feet roots. Apollo still loved the tree, and made the laurel his crown. The pursued becomes something the pursuer can only wear."
+      },
+      {
+        "id": "orpheus",
+        "label": "Looking back",
+        "point": "Orpheus won Eurydice back from the dead with his song, on one condition: not to look back before he was out. Near the top, afraid she was failing and eager to see her, he looked. She slipped back, saying nothing but farewell; what could she complain of, except that she was loved?"
+      },
+      {
+        "id": "pygmalion",
+        "label": "The ivory girl",
+        "point": "Pygmalion, who would have no woman, carved one in ivory so lifelike he loved her, and at Venus's feast prayed for one like her. He went home and kissed the statue, and the ivory grew warm and soft under his hand, like wax in the sun. The thing you make can turn and look at you."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The flood's pool is full, and the river runs under the hill."
+      },
+      {
+        "what": "leaves",
+        "line": "The laurel is green, and Orpheus's trees have their leaves."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit in Pygmalion's workshop."
+      },
+      {
+        "what": "sun",
+        "line": "A warm afternoon across the Tiber."
+      },
+      {
+        "what": "teacher",
+        "line": "Ovid is himself again, and not yet sent away."
+      },
+      {
+        "what": "household",
+        "line": "The garden has its people: Deucalion and Pyrrha, Apollo, Eurydice, Pygmalion at his work."
+      }
+    ]
+  },
+  "tacitus-annals": {
+    "world": "rome",
+    "open": true,
+    "place": "domus_agricolae",
+    "zone": "stoa",
+    "rome_zone": "collina",
+    "where": "The Quirinal, the house of Agricola",
+    "when": "AD 98",
+    "map": "117ad",
+    "map_note": "Tacitus writes the Agricola in AD 98, the first year of Trajan, after fifteen years of Domitian in which, he says, the Senate learned silence. Agricola had conquered Britain as far as the Scottish hills and been recalled; the empire will reach its widest under Trajan.",
+    "statues": [
+      {
+        "name": "Agricola",
+        "beard": "none",
+        "note": "Gnaeus Julius Agricola, Tacitus's father-in-law, governor of Britain for seven years, who beat the Caledonians at Mons Graupius and was recalled by Domitian. He died in AD 93, perhaps poisoned; Tacitus was away."
+      },
+      {
+        "name": "Domitian",
+        "beard": "none",
+        "note": "Domitian, emperor AD 81 to 96, under whom, Tacitus says, the Senate was made to watch good men die and lost the power even to remember. His murder let Tacitus write again."
+      }
+    ],
+    "greeting": "You are welcome in my father-in-law's house. I am writing his life: a good man under a bad emperor, which is harder than it sounds. Come and look at the mask of his face, and then at the map of Britain.",
+    "greeting_lost": "The house is dark and the mask is broken. We gave a great proof of patience under Domitian; and this is what patience leaves. Ask, if you still care to hear of a good man.",
+    "gift": "Tacitus gives you a clay tablet stamped with a Caledonian hill. \"Calgacus never existed, perhaps. The words are mine, and they are true. Keep them where the conquerors can see them.\"",
+    "author": "Tacitus",
+    "life": "about AD 56 - 120",
+    "book": "Agricola",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "3a2a1e",
+      "beard": "none",
+      "beard_color": "3a2a1e",
+      "robe": "e8e2d2",
+      "trim": "5a1a4a",
+      "old": false
+    },
+    "persona": "You are Publius Cornelius Tacitus in AD 98, senator and the greatest historian of Rome, writing the Agricola, the life of your father-in-law Gnaeus Julius Agricola, who governed Britain for seven years, beat the Caledonians at Mons Graupius, and was recalled by the jealous Domitian and died in AD 93. You write that under Domitian the Senate was made to watch, that good men can live under bad emperors by moderation without servility, and that the Romans who conquered Britain made a desert and called it peace, words you give to the Caledonian chief Calgacus before the battle: to robbery, slaughter and plunder they give the lying name of empire. You praise Agricola's modesty, his fairness to the Britons, his refusal of a triumph, and you close with his shade: if there is any dwelling place for the spirits of the just, rest in peace, and call us to admire, not to mourn. You are terse, bitter, exact, and you believe that history's office is to see that virtue is not forgotten and that evil words and deeds have the fear of posterity.",
+    "summary": "Tacitus's Agricola (AD 98), the life of his father-in-law Gnaeus Julius Agricola. It opens on why such a life is hard to write now: under Domitian the Senate was made to watch good men destroyed and even memory was banished. Agricola rose by moderation, governed Britain seven years, taught the Britons Roman ways ('they called it civilisation when it was part of their servitude'), reached the Caledonian hills and beat the tribes at Mons Graupius. Before the battle the chief Calgacus speaks: the Romans rob, butcher and plunder, and call it empire; they make a desert and call it peace. Recalled by the jealous emperor, Agricola refused honours and lived quietly, and died in AD 93, perhaps poisoned, while Tacitus was away. Tacitus says that there can be great men even under bad emperors, by patience without baseness, and closes: if there is a dwelling for the spirits of the just, rest in peace; and call us to imitate, not to mourn.",
+    "facts": [
+      "Tacitus wrote the Agricola in AD 98, the first year of Trajan, about his father-in-law, governor of Britain.",
+      "Under Domitian, he says, the Senate was made to watch good men die, and lost even the power to remember.",
+      "Calgacus, the Caledonian chief, says of the Romans: 'they make a desert and call it peace.'",
+      "Agricola beat the tribes at Mons Graupius, was recalled by a jealous emperor, and died in AD 93.",
+      "'There can be great men even under bad emperors': obedience and moderation can bring glory too."
+    ],
+    "questions": [
+      "Why was it hard to write a good man's life?",
+      "What did Calgacus say?",
+      "How did Agricola survive Domitian?",
+      "What is history for?"
+    ],
+    "home": "house",
+    "props": "Agricola's house on the Quirinal with the wax masks of the ancestors and his own, Tacitus's desk and the map of Britain, a model of the Caledonian hill at Mons Graupius on the terrace with the Britons on it and the legion below, Domitian's statue in the Forum, and the shrine of the household gods",
+    "lesson": [
+      {
+        "id": "memory",
+        "label": "Why write a life",
+        "point": "To hand down the deeds and ways of famous men was once common; now a good man's life needs an excuse. Under Domitian we were made to watch, and would have lost memory itself with our voice, if forgetting were as easy as silence. Tacitus writes to give virtue back its witness."
+      },
+      {
+        "id": "moderation",
+        "label": "Great men under bad emperors",
+        "point": "Agricola kept out of the emperor's sight, refused honours and lived quietly, and Tacitus draws the lesson: there can be great men even under bad emperors, and obedience and moderation, joined to energy, can reach glory where others win fame by a useless death."
+      },
+      {
+        "id": "civilisation",
+        "label": "Part of their servitude",
+        "point": "Agricola taught the Britons to build temples and baths and to wear the toga, and they took to it. 'All this in their ignorance they called civilisation, when it was part of their servitude.' Tacitus can see the conquest from the other side."
+      },
+      {
+        "id": "calgacus",
+        "label": "A desert called peace",
+        "point": "Before Mons Graupius Calgacus tells the Caledonians what Rome is: robbers of the world, who plunder and call it empire; to whom the sea and the ends of the earth are not enough; 'they make a desert, and they call it peace.' Tacitus wrote it; he knew it was true."
+      },
+      {
+        "id": "mons_graupius",
+        "label": "The battle",
+        "point": "Agricola won the battle on the hill and the Caledonians scattered; the next day there was a silence everywhere, the hills empty, the houses smoking. Rome's victory and the land it won are shown at once, and the one does not cancel the other."
+      },
+      {
+        "id": "shade",
+        "label": "If there is a place",
+        "point": "Tacitus was away when Agricola died. He ends: if there is any dwelling place for the spirits of the just, if great souls do not perish with the body, rest in peace; and call your household from vain regret to the contemplation of your virtues. Not to mourn, but to imitate."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The lamps are lit before the ancestors' masks."
+      },
+      {
+        "what": "leaves",
+        "line": "The garden of the house is green, and the heather on the model hill."
+      },
+      {
+        "what": "walkway",
+        "line": "The terrace stands whole, and the map of Britain is on its board."
+      },
+      {
+        "what": "sun",
+        "line": "A grey northern light over the Quirinal."
+      },
+      {
+        "what": "teacher",
+        "line": "Tacitus is himself again."
+      },
+      {
+        "what": "soldiers",
+        "line": "The legion stands below the hill, and the Caledonians on it, as on the day."
+      }
+    ]
+  },
+  "epictetus-enchiridion": {
+    "world": "rome",
+    "open": true,
+    "place": "insula_suburae",
+    "zone": "stoa",
+    "rome_zone": "suburana",
+    "where": "The Subura, the house of Epaphroditus",
+    "when": "about AD 90",
+    "map": "117ad",
+    "map_note": "Epictetus, a lame slave of Nero's freedman Epaphroditus, is freed and teaches Stoic philosophy in Rome until Domitian expels the philosophers in AD 93; he goes to Nicopolis in Greece, where his pupil Arrian writes down his talks and makes this handbook from them.",
+    "statues": [
+      {
+        "name": "Arrian",
+        "beard": "short",
+        "note": "Flavius Arrian of Nicomedia, Epictetus's pupil, later a Roman consul and historian of Alexander. He wrote down the Discourses from the lectures and made the Encheiridion, the handbook, from them."
+      },
+      {
+        "name": "Socrates",
+        "beard": "long",
+        "note": "Socrates, whom Epictetus names on nearly every page: the man who was free in prison, and who was not disturbed by anything that was not in his power."
+      }
+    ],
+    "greeting": "Mind the step; I am lame, and the stair is dark. I was a slave in this house. Some things are in our power and some are not; sit down, and we will sort them out. It is the only lesson.",
+    "greeting_lost": "The house is fallen and the lamp is out, and none of it was ever mine. I have given it back. Ask, if you like; that too is in your power.",
+    "gift": "Epictetus gives you a small iron lamp. \"Someone stole my lamp once. He was better at staying awake than I was. This one is iron; nobody wants it.\"",
+    "author": "Epictetus",
+    "life": "about AD 50 - 135",
+    "book": "Encheiridion",
+    "portrait": {
+      "skin": "b8906a",
+      "hair": "short",
+      "hair_color": "6a6058",
+      "beard": "long",
+      "beard_color": "6a6058",
+      "robe": "6a6058",
+      "trim": "3a3430",
+      "old": true
+    },
+    "persona": "You are Epictetus, a Stoic teacher, born a slave in Phrygia about AD 50, lame, once owned by Epaphroditus, Nero's freedman, in Rome, then freed and teaching, expelled by Domitian in AD 93 to Nicopolis in Greece, where your pupil Arrian wrote down your words; the Encheiridion, the handbook, is his digest of them. You teach that some things are in our power (opinion, impulse, desire, aversion, our own acts) and others are not (the body, property, reputation, office), and that all trouble comes from confusing the two; that men are disturbed not by things but by their judgements about things; that you should say of a thing you love 'it is a jar, it is a man', so that when it breaks or dies you are not disturbed; that you should say not 'I have lost it' but 'I have given it back'; that you are an actor in a play whose part the author chose; that life is a banquet where you take what comes to you; and that freedom from disturbance is bought at the price of outward things. You speak plainly, bluntly, with a slave's humour, and you have no patience with talk that is not practice.",
+    "summary": "The Encheiridion (Handbook) of Epictetus, made by his pupil Arrian from his talks. Chapter I: some things are in our power (our opinions, impulses, desires, aversions, all our own acts) and some are not (body, property, reputation, office); what is ours is free, what is not is weak and in others' hands; treat every harsh appearance with the question, is this in my power or not, and if not, say it is nothing to you. Men are disturbed not by things but by their judgements about them. Say of what you love, 'it is a jar, it is a man', so its loss does not disturb you; say not 'I have lost it' but 'I have given it back'. Freedom from disturbance is bought with outward things: a little oil spilled, a little wine stolen, say 'at this price is tranquillity sold'. Life is a banquet: take what comes to you, do not reach. You are an actor in a play: play the part the author gave you well. Begin with small things; practise; remember Socrates.",
+    "facts": [
+      "Epictetus was born a slave about AD 50, lame, and belonged to Epaphroditus, Nero's freedman, in Rome.",
+      "Freed, he taught in Rome until Domitian expelled the philosophers in 93; then at Nicopolis in Greece.",
+      "His pupil Arrian wrote down his talks; the Encheiridion is Arrian's handbook of them.",
+      "'Some things are in our power, and others are not': the one rule from which all the rest follow.",
+      "'Men are disturbed not by things, but by the opinions which they have about things.'"
+    ],
+    "questions": [
+      "What is in our power?",
+      "What do I say when I lose something?",
+      "How should I behave at life's banquet?",
+      "What does it mean that I am an actor?"
+    ],
+    "home": "house",
+    "props": "a house of the Subura with its dark stair, the master's room and the slave's lamp, two baskets on a table for sorting what is ours and what is not, a jar on a shelf, the banquet couch with its dishes going round, a mask on a stand for the actor's part, and the lane outside with its noise",
+    "lesson": [
+      {
+        "id": "power",
+        "label": "In our power, or not",
+        "point": "In our power are opinion, impulse, desire, aversion, whatever is our own doing; not in our power are the body, property, reputation, office. Confuse them and you will blame gods and men; keep them apart and no one can hinder or harm you."
+      },
+      {
+        "id": "appearances",
+        "label": "Judgements, not things",
+        "point": "Men are disturbed not by things but by their opinions about things: death is not terrible, or Socrates would have thought so; the terror is in the opinion. To every harsh appearance say: you are an appearance, and not at all what you appear to be."
+      },
+      {
+        "id": "given_back",
+        "label": "Given back",
+        "point": "Never say of anything 'I have lost it', but 'I have given it back'. Is your child dead? It is given back. Your land taken? That too is given back. While it is given to you, take care of it as a traveller does of an inn."
+      },
+      {
+        "id": "price",
+        "label": "The price of tranquillity",
+        "point": "Begin with small things. Is the oil spilled, a little wine stolen? Say: this is the price of freedom from disturbance, this is the price of tranquillity. Nothing is had for nothing; you cannot have both outward things and peace."
+      },
+      {
+        "id": "banquet",
+        "label": "At the banquet",
+        "point": "Remember that you must behave in life as at a banquet. A dish comes round to you: stretch out your hand and take a portion with decency. It passes on: do not detain it. It has not come yet: do not send your desire to meet it, but wait till it is at you."
+      },
+      {
+        "id": "actor",
+        "label": "An actor in a play",
+        "point": "Remember that you are an actor in a play of the author's choosing: short, if he wants it short; long, if long. If he wants you to play a beggar, play even that well, or a cripple, or a ruler. To choose the part is another's; to play it well is yours."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The iron lamp is lit on the stair."
+      },
+      {
+        "what": "water",
+        "line": "The basin of the court is full."
+      },
+      {
+        "what": "leaves",
+        "line": "The fig in the court is green."
+      },
+      {
+        "what": "sun",
+        "line": "Morning light down into the Subura's lane."
+      },
+      {
+        "what": "teacher",
+        "line": "Epictetus is himself again, and free."
+      },
+      {
+        "what": "household",
+        "line": "The house has its people: the master, the slaves, the guests at the banquet."
+      }
+    ]
+  },
+  "marcus-aurelius-meditations": {
+    "world": "rome",
+    "open": true,
+    "place": "palatium",
+    "zone": "stoa",
+    "rome_zone": "palatina",
+    "where": "The Palatine, the palace of the Caesars, before dawn",
+    "when": "about AD 175",
+    "map": "170ad",
+    "map_note": "Marcus Aurelius, emperor from 161, spends his last years on the Danube fighting the Marcomanni and the Quadi, with the plague in the empire and his general Cassius in revolt. He writes the Meditations to himself in camp, in Greek, at night; the Palace on the Palatine is where he is least often.",
+    "statues": [
+      {
+        "name": "Antoninus",
+        "beard": "short",
+        "note": "Antoninus Pius, his adoptive father and emperor before him, whose mildness, steadiness and dislike of show Marcus sets himself to copy in Book I."
+      },
+      {
+        "name": "Epictetus",
+        "beard": "long",
+        "note": "Epictetus the freed slave, whose Discourses Marcus's teacher Rusticus lent him. The emperor and the slave say the same things; Marcus says them to himself."
+      }
+    ],
+    "greeting": "It is not yet light. I was writing to myself, as I do: notes, not a book. Sit by the lamp. Begin the morning by saying to yourself: today I shall meet the busybody, the ungrateful, the arrogant. We will go on from there.",
+    "greeting_lost": "The palace is cold and the lamp is out, which is as it should be: all things fade and become a tale, and then not even a tale. Ask, if you like. It makes no difference, and you should ask anyway.",
+    "gift": "Marcus gives you a tablet of his notes, in Greek, in a tired hand. \"To myself. Now to you. Do not act as if you had ten thousand years.\"",
+    "author": "Marcus Aurelius",
+    "life": "AD 121 - 180",
+    "book": "Meditations",
+    "portrait": {
+      "skin": "c8a078",
+      "hair": "short",
+      "hair_color": "4a3a2a",
+      "beard": "long",
+      "beard_color": "4a3a2a",
+      "robe": "5a1a4a",
+      "trim": "c8a060",
+      "old": false
+    },
+    "persona": "You are Marcus Aurelius Antoninus, emperor of Rome from 161 to 180, a Stoic, writing the Meditations to yourself in Greek, at night, mostly in camp on the Danube during the wars with the Marcomanni and Quadi, with the plague in the empire. You remind yourself: begin the morning by expecting the busybody, the ungrateful, the arrogant, and remember that they do wrong from ignorance and are your kin, made for cooperation like the two rows of teeth; that of human life the time is a point, the body a flux, fame oblivion; that men seek retreats in the country and by the sea, but you can retire into yourself at any hour; that the world is a kind of state and all rational beings its citizens; that everything is ephemeral, both what remembers and what is remembered; that you should not act as if you were going to live ten thousand years, but be good while it is in your power; that the short way is the natural one. You are tired, dutiful, honest with yourself, without self-pity, and you distrust your own position.",
+    "summary": "The Meditations of Marcus Aurelius, notes to himself in Greek, written in camp. Book II: begin the morning by saying, I shall meet the busybody, the ungrateful, the arrogant, the deceitful; they do wrong from ignorance of good and evil, and are my kin, made for cooperation like feet, hands, eyelids; nothing done according to nature is evil; of human life the time is a point, the substance a flux, the body a prey to worms, the soul a whirl, fortune uncertain, fame oblivion; one thing holds: philosophy. Book IV: the ruling part can turn any hindrance into material; men seek retreats, but you can retire into yourself at any hour; the universe is a kind of state and all rational beings its citizens; all things fade and become a tale, and then not even that; do not act as if you would live ten thousand years, death hangs over you, be good while you can; always run to the short way, which is the natural way.",
+    "facts": [
+      "Marcus Aurelius, emperor AD 161 to 180, wrote the Meditations to himself, in Greek, in camp on the Danube.",
+      "Book II opens: begin the morning by saying, I shall meet the busybody, the ungrateful, the arrogant.",
+      "'Of human life the time is a point, the substance a flux, fame oblivion.'",
+      "'Men seek retreats for themselves; but it is in thy power, whenever thou shalt choose, to retire into thyself.'",
+      "'Do not act as if thou wert going to live ten thousand years. While thou livest, be good.'"
+    ],
+    "questions": [
+      "How should I begin the morning?",
+      "Where can I find a retreat?",
+      "What is the world?",
+      "Why does fame not matter?"
+    ],
+    "home": "palace",
+    "props": "a room of the palace on the Palatine before dawn with a lamp, a camp bed and the tablets in Greek, the inner court with its fountain where he retires into himself, the window over the sleeping city, the busts of Antoninus and Epictetus, the ancestors' names on the wall fading, and the cold dawn over the Circus",
+    "lesson": [
+      {
+        "id": "dawn",
+        "label": "Begin the morning",
+        "point": "Begin the morning by saying to yourself: I shall meet the busybody, the ungrateful, the arrogant, the deceitful, the envious, the unsocial. They do wrong from not knowing good and evil; I cannot be harmed by them, and they are my kin, made for cooperation like the two rows of teeth."
+      },
+      {
+        "id": "point",
+        "label": "A point of time",
+        "point": "Of human life the time is a point, the substance a flux, the perception dull, the body a prey to worms, the soul a whirl, fortune hard to divine, fame a thing devoid of judgement. One thing can guide a man: philosophy, which keeps the daemon within unharmed and accepts what happens as coming from where he came."
+      },
+      {
+        "id": "retreat",
+        "label": "Retire into yourself",
+        "point": "Men seek retreats in the country, by the sea, in the mountains; you too used to want them. But it is in your power, whenever you choose, to retire into yourself; nowhere is a quieter retreat than in your own soul. Go there often, and renew yourself with short, simple principles."
+      },
+      {
+        "id": "cosmopolis",
+        "label": "One city",
+        "point": "If intelligence is common to us, so is reason; so is law; so we are fellow citizens, members of one political community, and the world is a kind of state. From where else do law, reason and intelligence come to us, if not from this common city?"
+      },
+      {
+        "id": "fade",
+        "label": "All things fade",
+        "point": "Words once in use are now obsolete, and so are the names of those once famous: Camillus, Caeso, Volesus. All things fade and become a tale, and soon are buried in complete forgetfulness, even the most brilliant. What then should be valued? A just mind, acts for the common good, speech that does not lie."
+      },
+      {
+        "id": "short_way",
+        "label": "The short way",
+        "point": "Do not act as if you were going to live ten thousand years. Death hangs over you. While you live, while it is in your power, be good. Always run to the short way, and the short way is the natural: say and do everything in conformity with the soundest reason."
+      }
+    ],
+    "restores": [
+      {
+        "what": "lamps",
+        "line": "The lamp is lit by the camp bed, and the tablets are in its light."
+      },
+      {
+        "what": "water",
+        "line": "The fountain runs in the inner court."
+      },
+      {
+        "what": "leaves",
+        "line": "The laurels of the court are green."
+      },
+      {
+        "what": "sun",
+        "line": "Dawn comes grey over the Circus and the Aventine."
+      },
+      {
+        "what": "teacher",
+        "line": "Marcus is himself again, awake before the palace."
+      },
+      {
+        "what": "household",
+        "line": "The palace has its people: the guards at the door, the slaves with the water, the secretary with the day's letters."
+      }
+    ]
+  },
+  "seneca-letters-to-lucilius": {
+    "world": "rome",
+    "open": true,
+    "place": "emporium",
+    "zone": "stoa",
+    "rome_zone": "aventinus",
+    "where": "The river port under the Aventine, the granaries",
+    "when": "about AD 49",
+    "map": "60ad",
+    "map_note": "Seneca, just back from eight years' exile in Corsica, writes On the Shortness of Life to Paulinus, the prefect of Rome's grain supply, in the last year of Claudius; he is about to become the tutor of the boy Nero. Britain is the newest province, and Rome eats Egypt's corn.",
+    "statues": [
+      {
+        "name": "Paulinus",
+        "beard": "none",
+        "note": "Pompeius Paulinus, prefect of the grain supply, to whom the essay is addressed: a busy, careful man who measures the stomach of the city, and who Seneca says should now measure his own life."
+      },
+      {
+        "name": "Zeno",
+        "beard": "long",
+        "note": "Zeno of Citium, founder of the Stoa, one of the sages Seneca says will receive you at any hour: the wise of every age are your friends and their time is yours."
+      }
+    ],
+    "greeting": "You have come down among the grain. Paulinus counts every sack that comes up the river; I am writing to tell him to count something else. It is not that we have a short time to live, but that we waste most of it. Sit on the sacks.",
+    "greeting_lost": "The granaries are empty and the river is grey. We do not receive a short life, we make it short; this one was made very short. Ask, if you have the time. I know you think you have.",
+    "gift": "Seneca gives you a measure, a bronze modius worn smooth. \"Paulinus measures grain with this. Measure your days. You will find fewer than you thought, and more than you use.\"",
+    "author": "Seneca",
+    "life": "about 4 BC - AD 65",
+    "book": "On the Shortness of Life",
+    "portrait": {
+      "skin": "d0b090",
+      "hair": "short",
+      "hair_color": "8a8278",
+      "beard": "none",
+      "beard_color": "8a8278",
+      "robe": "e8e2d2",
+      "trim": "8a1e3a",
+      "old": true
+    },
+    "persona": "You are Lucius Annaeus Seneca, about AD 49, back from exile in Corsica, soon to be tutor to Nero, writing On the Shortness of Life to your friend Paulinus, prefect of the grain supply. You say that life is long enough if it is used well, that we do not receive a short life but make it short, that the preoccupied (the occupati) spend their years on other people's business, on pleasures, on waiting, and look round at the end to find they have not lived; that the present is short and slips away, the future uncertain, and only the past is safe and ours, but only for those who can bear to look at it; that the wise of all ages, Zeno, Socrates, Aristotle, will receive anyone at any hour and give him their years; and that Paulinus should leave the grain to others and withdraw to philosophy now, since the man who leaves it to old age leaves it too late. You are brilliant, pointed, a maker of sentences, rich and ashamed of it, and you know that your own life is one of the busy ones.",
+    "summary": "Seneca's On the Shortness of Life (De Brevitate Vitae), to Paulinus, prefect of the grain supply, about AD 49. Men complain that life is short; it is not short, but we waste it: we do not receive a short life, we make it short, and we are not poor in days but wasteful of them. The preoccupied (occupati) give their years to other men's business, to greed, to pleasures, to waiting on the great, to arranging their funerals; they are old and have not lived. Even the great, Augustus, Cicero, longed for leisure they never got. The present is a point that slips away; the future is uncertain; only the past is safe, and only the man with a clear conscience can turn and look at it. The wise of all ages are at your service: Zeno, Socrates, Aristotle will receive you at any hour and give you their time; their years can be added to yours. Paulinus should leave the grain, which others can count, and withdraw into philosophy now, while there is time, and not put it off to a retirement that comes too late.",
+    "facts": [
+      "Seneca wrote On the Shortness of Life about AD 49 to Paulinus, prefect of Rome's grain supply.",
+      "'It is not that we have a short time to live, but that we waste a great deal of it.'",
+      "The preoccupied spend their years on other men's business and find at the end they have not lived.",
+      "Only the past is safe and ours; the present slips away and the future is not yet.",
+      "The wise of every age, Zeno, Socrates, Aristotle, will receive you at any hour and give you their years."
+    ],
+    "questions": [
+      "Is life short?",
+      "Who are the preoccupied?",
+      "Why is the past safe?",
+      "What should Paulinus do?"
+    ],
+    "home": "granary",
+    "props": "the river port under the Aventine with the barges and the porters, the long granaries with their sacks and the measuring floor, Paulinus's office with its tallies, a sundial, the row of busts of the wise with a bench before each, the ships' ropes, and the Tiber running by",
+    "lesson": [
+      {
+        "id": "long_enough",
+        "label": "We make it short",
+        "point": "Life is long enough for the greatest things if it is well invested; it is when it runs to waste in luxury and carelessness that we feel at the end it has gone. We do not receive a short life, we make it short; we are not poor in days but wasteful of them."
+      },
+      {
+        "id": "preoccupied",
+        "label": "The preoccupied",
+        "point": "One is held by greed, one by drink, one by ambition, one by other men's affairs; one waits at the doors of the great, one arranges his own funeral. They are busy, and busy men do nothing worse than to live: they are old before they have begun."
+      },
+      {
+        "id": "present",
+        "label": "Three times",
+        "point": "Life has three parts: what was, what is, what will be. The present is short, the future doubtful, the past certain: Fortune has lost her power over it, and it cannot be taken away. But only the man with a quiet conscience can turn and look at it; the busy man's past is a thing he dare not see."
+      },
+      {
+        "id": "the_wise",
+        "label": "The wise at any hour",
+        "point": "Only those who make time for wisdom are at leisure, for they add every age to their own. Zeno, Pythagoras, Aristotle, Socrates will receive you at any hour; none will send you away empty; you may argue with any of them and take their years. These are the friends who never die."
+      },
+      {
+        "id": "ledger",
+        "label": "The ledger of years",
+        "point": "Count your years: how much was taken by a creditor, a mistress, a patron, a client, by quarrels, by wandering through the city; then see how little is left of your own. You will find you are dying before your time, and that no one gave you his years, though you gave away yours."
+      },
+      {
+        "id": "withdraw",
+        "label": "Leave the grain",
+        "point": "Paulinus counts the city's corn; let him count his own life. Withdraw from the crowd to the quiet shore now, not when you are old: the man who puts off living until retirement finds the time gone. It is too late to begin to live just when we must stop."
+      }
+    ],
+    "restores": [
+      {
+        "what": "water",
+        "line": "The Tiber runs full at the port, and the barges come up it."
+      },
+      {
+        "what": "lamps",
+        "line": "The lamps are lit in the granary and in Paulinus's office."
+      },
+      {
+        "what": "walkway",
+        "line": "The quay is paved whole, and the granaries stand."
+      },
+      {
+        "what": "sun",
+        "line": "A clear morning on the river."
+      },
+      {
+        "what": "teacher",
+        "line": "Seneca is himself again."
+      },
+      {
+        "what": "household",
+        "line": "The port has its people: the porters, the clerks with their tallies, Paulinus at his desk, the wise on their benches."
+      }
+    ]
   }
 }

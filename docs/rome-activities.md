@@ -229,5 +229,5 @@ Five sets, each bringing a piece back to Rome's stele on the Heart of the Nexus:
 - **The Ledger** stands as soon as anything is in it. It lists by age what you did when virtue cost something, and is never scored. It is carved when Rome is complete: every set, and every rite in every age.
 
 ## Open
-- **The reading list's own books** attach to these spots and scenes when Essential-Reading-List is connected. They use the same engines: a book's played moment is a scene, and its point is counted in its place.
+- **The reading list's own books** have their places in the zones (sprint 7, `docs/sprints/sprint-07.md`); their played moments are beats, not the city's scenes. Tying a book's point to a city scene (Caesar's Ides to the funeral rite, say) is not done.
 - **Taking office** (quaestor to consul) as a long chain across Eras II–III is not built.

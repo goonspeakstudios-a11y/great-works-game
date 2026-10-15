@@ -501,7 +501,10 @@ func _load_place(to: String, keep: bool = false) -> void:
 			_leave_nexus()
 	for c in world.get_children():
 		world.remove_child(c)
-		c.queue_free()
+		if offline:
+			c.free()  # the tests build place after place without a frame between: free at once, or the old ones pile up
+		else:
+			c.queue_free()
 	var world_id: String = "greece"
 	if to == "nexus":
 		world_id = Nexus.world_reached(progress)

@@ -309,6 +309,8 @@ static func place(world: Node3D, work: String, room: Dictionary, stage: int = 0,
 			return load("res://scripts/hall/places_greek.gd").ephesus(world, work, room, stage)
 		"academy":
 			return load("res://scripts/hall/places_greek.gd").academy(world, work, room, stage, stages.get("city", 0))
+	if room.get("world", "") == "rome":  # Rome's books, each in its zone of the city (places_rome_books.gd)
+		return load("res://scripts/hall/places_rome_books.gd").build(world, work, room, stage)
 	push_error("No place built for %s" % work)
 	return hub(world, [])
 

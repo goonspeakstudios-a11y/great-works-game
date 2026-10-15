@@ -25,6 +25,19 @@ const HEROES := {
 	"croesus": {"skin": "#c8a078", "sleeve": "#6a2a5a", "left": "", "right": ""},
 	"spartan": {"skin": "#b8906a", "sleeve": "#8a2a1a", "left": "shield", "right": "spear"},
 	"socrates": {"skin": "#c09070", "sleeve": "#8a8274", "left": "", "right": ""},
+	# Rome's first module (places_rome_books.gd)
+	"romulus": {"skin": "#b88a64", "sleeve": "#8a6a44", "left": "", "right": "goad"},
+	"hersilia": {"skin": "#d8b090", "sleeve": "#8a5a4a", "left": "", "right": ""},
+	"brutus": {"skin": "#c09070", "sleeve": "#5a4a3a", "left": "", "right": ""},
+	"caesar": {"skin": "#d0b090", "sleeve": "#8a1e3a", "left": "", "right": ""},
+	"aeneas": {"skin": "#c8a078", "sleeve": "bronze", "left": "", "right": ""},
+	"regulus": {"skin": "#b88a64", "sleeve": "#6a5a4a", "left": "", "right": ""},
+	"scipio": {"skin": "#c8a078", "sleeve": "#8a1e3a", "left": "", "right": ""},
+	"apollo": {"skin": "#e8d0b0", "sleeve": "#d8c080", "left": "", "right": ""},
+	"orpheus": {"skin": "#d0b090", "sleeve": "#4a5a7a", "left": "lyre", "right": ""},
+	"pygmalion": {"skin": "#c8a078", "sleeve": "#8a7a5a", "left": "", "right": "chisel"},
+	"calgacus": {"skin": "#d8b8a0", "sleeve": "#4a5a4a", "left": "shield", "right": "spear"},
+	"marcus": {"skin": "#c8a078", "sleeve": "#5a1a4a", "left": "", "right": ""},
 }
 
 
@@ -100,6 +113,25 @@ static func _held(hand: Node3D, what: String, side: float) -> Node3D:
 		"cup":  # the cup the servant of the Eleven brings, held up to drink
 			Kit.cylinder(g, Vector3(0, 0.02, -0.04), 0.04, 0.06, "clay", false, 10, 0.07)
 			Kit.cylinder(g, Vector3(0, 0.072, -0.04), 0.064, 0.006, "#3a3a2a", false, 10)  # the hemlock
+		"knife":  # a short blade, point down, as it comes out of the wound
+			Kit.box(g, Vector3(0, 0.03, 0.04), Vector3(0.03, 0.03, 0.1), "#3a2a1e", false)
+			Kit.box(g, Vector3(0, 0.0, -0.12), Vector3(0.03, 0.01, 0.26), "iron", false, Vector3(0.3, 0, 0))
+		"goad":  # the ploughman's goad, a long rod to drive the oxen
+			Kit.box(g, Vector3(0, 0.3, -0.2), Vector3(0.02, 1.2, 0.02), "wood", false, Vector3(-0.5, 0, 0))
+		"bough":  # the golden bough, a twig of gold with gold leaves
+			Kit.box(g, Vector3(0, 0.12, -0.06), Vector3(0.015, 0.4, 0.015), "gold", false, Vector3(-0.2, 0, 0.2))
+			for k in 3:
+				Kit.blob(g, Vector3(-0.03 + k * 0.03, 0.2 + k * 0.07, -0.08 - k * 0.02), 0.03, "gold", Vector3(1.6, 0.4, 1.0), 5)
+		"lyre":  # Orpheus's lyre, held against the chest
+			Kit.box(g, Vector3(0, 0.15, -0.02), Vector3(0.22, 0.03, 0.04), "wood", false)
+			for x: float in [-0.08, 0.08]:
+				Kit.box(g, Vector3(x, 0.05, -0.02), Vector3(0.02, 0.24, 0.03), "wood", false, Vector3(0, 0, -x * 2.0))
+			for k in 5:
+				Kit.box(g, Vector3(-0.06 + k * 0.03, 0.04, -0.03), Vector3(0.003, 0.2, 0.003), "#d8d0b8", false)
+		"chisel":  # a sculptor's chisel
+			Kit.box(g, Vector3(0, 0.02, -0.08), Vector3(0.02, 0.02, 0.2), "iron", false)
+		"diadem":  # a white fillet, a king's diadem, held out
+			Kit.mesh(g, TorusMesh.new(), "#f2f0ea", Vector3(0, 0.02, -0.06), Vector3(PI / 2.0, 0, 0), Vector3(0.1, 0.1, 0.1))
 	for mi in g.find_children("*", "MeshInstance3D", true, false):
 		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return g
@@ -133,6 +165,51 @@ const WHO := {
 	"muse": {"robe": "d8cfa8", "skin": "e0c0a0", "hair_color": "3a2418", "props": ["veil"]},
 	"pandora": {"robe": "e0d8c4", "skin": "e0c0a0", "hair_color": "8a6a3a", "props": ["crown"]},
 	"kronos": {"robe": "2a2a30", "skin": "8a8078", "hair_color": "3a3a3a", "beard": "long", "size": 2.2, "props": ["sickle"]},
+	# Rome's first module (places_rome_books.gd)
+	"remus": {"robe": "6a5a44", "skin": "b88a64", "hair_color": "2a1e16", "props": []},
+	"sabine": {"robe": "a8604a", "skin": "d8b090", "hair_color": "2a1810", "props": ["veil"]},
+	"tarquin": {"robe": "5a1a4a", "skin": "c09070", "hair_color": "2a1e16", "beard": "short", "props": ["crown", "sceptre"]},
+	"collatinus": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
+	"lucretius_senior": {"robe": "e8e2d2", "skin": "c8b09a", "hair_color": "e0dcd4", "beard": "short", "props": []},
+	"brutus": {"robe": "5a4a3a", "skin": "c09070", "hair_color": "2a1e16", "props": ["sword"]},
+	"antony": {"robe": "8a1e3a", "skin": "c09070", "hair_color": "2a1e16", "props": []},
+	"conspirator": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "3a2a1e", "props": ["sword"]},
+	"senator": {"robe": "e8e2d2", "skin": "c8b09a", "hair_color": "8a8278", "props": []},
+	"anchises": {"robe": "6a5a4a", "skin": "c8b09a", "hair_color": "e0dcd4", "beard": "long", "props": []},
+	"ascanius": {"robe": "8a6a44", "skin": "d0a880", "hair_color": "5a3a22", "size": 0.62, "props": []},
+	"creusa": {"robe": "6a5a8a", "skin": "d8b090", "hair_color": "1a1410", "props": ["veil"]},
+	"dido": {"robe": "5a1a4a", "skin": "d8b090", "hair_color": "1a1410", "props": ["crown", "veil"]},
+	"sibyl": {"robe": "3a3a3a", "skin": "c0b0a0", "hair_color": "c8c4bc", "props": ["veil", "staff"]},
+	"turnus": {"robe": "8a2a2a", "skin": "c09070", "hair_color": "b8904a", "props": ["helmet"]},
+	"memmius": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
+	"iphigenia": {"robe": "e8e0d0", "skin": "e0c0a0", "hair_color": "8a6a3a", "props": ["veil"]},
+	"calchas": {"robe": "4a4a4a", "skin": "b8b0a8", "hair_color": "e8e4dc", "beard": "long", "props": ["staff"]},
+	"natura": {"robe": "4a7a4a", "skin": "e0c0a0", "hair_color": "3a2418", "size": 1.3, "props": ["veil", "crown"]},
+	"laelius": {"robe": "e8e2d2", "skin": "c8b09a", "hair_color": "e0dcd4", "props": []},
+	"fannius": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
+	"carthaginian": {"robe": "5a3a6a", "skin": "b88a64", "hair_color": "1a1410", "beard": "short", "props": ["staff"]},
+	"regulus": {"robe": "6a5a4a", "skin": "b88a64", "hair_color": "4a3a2a", "props": []},
+	"masinissa": {"robe": "8a6a2a", "skin": "8a6040", "hair_color": "e8e4dc", "beard": "long", "props": ["crown"]},
+	"africanus": {"robe": "f2f0ea", "skin": "d8c8b0", "hair_color": "e0dcd4", "size": 1.2, "props": []},
+	"scipio_young": {"robe": "8a1e3a", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
+	"deucalion": {"robe": "6a5a4a", "skin": "c8a078", "hair_color": "8a8278", "beard": "long", "props": []},
+	"pyrrha": {"robe": "8a5a4a", "skin": "d8b090", "hair_color": "8a6a3a", "props": ["veil"]},
+	"daphne": {"robe": "e0d8c4", "skin": "e0c0a0", "hair_color": "4a3018", "props": []},
+	"apollo": {"robe": "d8c080", "skin": "e8d0b0", "hair_color": "e0b640", "props": ["wreath"]},
+	"eurydice": {"robe": "c8c4bc", "skin": "e0d8d0", "hair_color": "3a2418", "props": ["veil"]},
+	"galatea": {"robe": "f2f0ea", "skin": "e8c8b0", "hair_color": "b8904a", "props": []},
+	"agricola": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "4a3a2a", "props": []},
+	"briton": {"robe": "4a5a4a", "skin": "d8b8a0", "hair_color": "b8904a", "props": ["spear"]},
+	"domitian": {"robe": "f2f0ea", "skin": "e8e4dc", "hair_color": "e8e4dc", "size": 1.4, "props": ["crown"]},
+	"epaphroditus": {"robe": "5a1a4a", "skin": "c8a078", "hair_color": "3a2a1e", "props": []},
+	"slave": {"robe": "8a7a5a", "skin": "b88a64", "hair_color": "2a1e16", "props": []},
+	"guest": {"robe": "e0d6c0", "skin": "c8a078", "hair_color": "4a3a2a", "props": ["cup"]},
+	"guard": {"robe": "8a1e1a", "skin": "c09070", "hair_color": "2a1e16", "props": ["helmet", "spear"]},
+	"secretary": {"robe": "8a7a5a", "skin": "c8a078", "hair_color": "3a2a1e", "props": ["scroll"]},
+	"paulinus": {"robe": "e8e2d2", "skin": "c8a078", "hair_color": "4a3a2a", "props": ["scroll"]},
+	"porter": {"robe": "6a5a4a", "skin": "b88a64", "hair_color": "2a1e16", "props": []},
+	"clerk": {"robe": "8a7a5a", "skin": "c8a078", "hair_color": "3a2a1e", "props": ["scroll"]},
+	"sage": {"robe": "e0d8c4", "skin": "c0a080", "hair_color": "e0dcd4", "beard": "long", "props": ["staff"]},
 	# e3: the tragedians
 	"clytemnestra": {"robe": "5a1a2a", "skin": "d0a888", "hair_color": "2a1810", "props": ["crown", "veil"]},
 	"cassandra": {"robe": "e0d8c4", "skin": "d8b090", "hair_color": "1a1410", "props": ["wreath", "staff"]},

@@ -27,7 +27,7 @@ const THINKERS := ["ephesus", "elea", "court", "cephalus_house", "gyges", "the_l
 	"politics", "poetics"]
 
 const NEW_ZONES := ["rome", "troy", "theatre", "lesbos", "alexandria", "academy", "helicon", "sardis", "kerameikos",
-	"ephesus"]
+	"ephesus", "kings", "horti", "spheres", "stoa"]
 const NEW_SOUNDS := ["crowd", "arena", "rain", "oars", "loom", "hooves", "flock", "crickets", "drip", "gulls", "owl", "cornu",
 	"forge", "sheep", "salpinx", "shades"]
 const TEXTURED := ["travertine", "tufa", "brick", "reticulatum", "basalt", "mosaic", "fresco", "porphyry", "giallo", "pine",
